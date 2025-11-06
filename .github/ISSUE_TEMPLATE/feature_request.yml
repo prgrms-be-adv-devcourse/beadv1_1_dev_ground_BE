@@ -1,22 +1,22 @@
-name: ✨ Feature Request
-description: 새로운 기능 요청 시 작성해주세요
-labels: [enhancement]
+name: "✨ Feature Request"
+description: "새로운 기능 요청 시 작성해주세요"
+labels: ["enhancement"]
 body:
   - type: input
     id: summary
     attributes:
-      label: 기능 요약
+      label: "📋 기능 요약"
       placeholder: "상품 검색 필터 추가"
   - type: textarea
     id: details
     attributes:
-      label: 상세 설명
-      description: 어떤 기능인지 구체적으로 설명해주세요.
+      label: "📝 상세 설명"
+      description: "어떤 기능인지 구체적으로 설명해주세요."
   - type: dropdown
     id: priority
     attributes:
-      label: 우선순위
+      label: "✅ 우선순위"
       options:
-        - 낮음
-        - 보통
-        - 높음
+        - "낮음"
+        - "보통"
+        - "높음"
