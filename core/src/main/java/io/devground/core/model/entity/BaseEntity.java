@@ -14,6 +14,8 @@ import jakarta.persistence.EntityListeners;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.MappedSuperclass;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
 import lombok.Getter;
 
 @Getter
@@ -32,6 +34,21 @@ public abstract class BaseEntity {
 
 	@LastModifiedDate
 	private LocalDateTime updatedAt = LocalDateTime.now();
+
+	@PrePersist
+	protected void onCellCreated() {
+		if (this.createdAt == null)
+			this.createdAt = LocalDateTime.now();
+
+		if (this.updatedAt == null)
+			this.updatedAt = LocalDateTime.now();
+	}
+
+	@PreUpdate
+	protected void onUpdate() {
+		if (this.updatedAt == null)
+			this.updatedAt = LocalDateTime.now();
+	}
 
 	public void delete() {
 		this.deleteStatus = DeleteStatus.N;
