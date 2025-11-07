@@ -11,11 +11,15 @@ public enum ErrorCode {
 	// server
 	INTERNAL_SERVER_ERROR(500, "서버 내부 오류가 발생했습니다."),
 
+	// common
+	CODE_INVALID(400, "잘못된 코드 형식입니다."),
+
 	// user/auth
 	UNAUTHORIZED(401, "로그인이 필요합니다."),
 	USER_NOT_FOUNT(404, "사용자를 찾을 수 없습니다."),
 
 	// cart
+	CART_ALREADY_EXIST(409, "장바구니가 이미 존재합니다."),
 	CART_NOT_FOUND(404, "장바구니를 찾을 수 없습니다."),
 
 	// order

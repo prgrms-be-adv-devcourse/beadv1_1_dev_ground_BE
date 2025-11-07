@@ -3,6 +3,8 @@ package io.devground.dbay.domain.cart.cart.model.entity;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.util.StringUtils;
+
 import io.devground.core.model.entity.BaseEntity;
 import io.devground.core.model.vo.ErrorCode;
 import io.devground.dbay.domain.cart.cartItem.model.entity.CartItem;
@@ -33,7 +35,7 @@ public class Cart extends BaseEntity {
 
 	@Builder
 	public Cart(String userCode) {
-		if (userCode == null || userCode.isBlank()) {
+		if (!StringUtils.hasText(userCode)) {
 			throw ErrorCode.CART_NOT_FOUND.throwServiceException();
 		}
 		this.userCode = userCode;

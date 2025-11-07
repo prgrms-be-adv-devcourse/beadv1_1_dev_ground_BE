@@ -1,5 +1,7 @@
 package io.devground.dbay.domain.cart.cartItem.model.entity;
 
+import org.springframework.util.StringUtils;
+
 import io.devground.core.model.entity.BaseEntity;
 import io.devground.core.model.exception.ServiceException;
 import io.devground.core.model.vo.ErrorCode;
@@ -37,7 +39,7 @@ public class CartItem extends BaseEntity {
 			throw new ServiceException(ErrorCode.CART_NOT_FOUND);
 		}
 
-		if (productCode == null || productCode.isBlank()) {
+		if (!StringUtils.hasText(productCode)) {
 			throw ErrorCode.CART_NOT_FOUND.throwServiceException();
 		}
 
