@@ -13,9 +13,14 @@ public enum ErrorCode {
 
 	// user/auth
 	UNAUTHORIZED(401, "로그인이 필요합니다."),
+	USER_NOT_FOUNT(404, "사용자를 찾을 수 없습니다."),
 
 	// cart
 	CART_NOT_FOUND(404, "장바구니를 찾을 수 없습니다."),
+
+	// order
+	ADDRESS_NOT_FOUND(404, "해당 주소를 찾을 수 없습니다."),
+	ORDER_NOT_FOUND(404, "해당 주문을 찾을 수 없습니다."),
 
 	// product
 	PRODUCT_NOT_FOUND(404, "상품을 찾을 수 없습니다."),
@@ -28,7 +33,6 @@ public enum ErrorCode {
 	// deposit
 	AMOUNT_MUST_BE_POSITIVE(400, "금액은 0보다 커야 합니다."),
 	INSUFFICIENT_BALANCE(400, "잔액이 부족합니다.");
-
 
 	private final int httpStatus;
 	private final String message;

@@ -38,7 +38,7 @@ public class CartItem extends BaseEntity {
 		}
 
 		if (productCode == null || productCode.isBlank()) {
-			throw new ServiceException(ErrorCode.PRODUCT_NOT_FOUND);
+			throw ErrorCode.CART_NOT_FOUND.throwServiceException();
 		}
 
 		this.cart = cart;
