@@ -3,6 +3,8 @@ package io.devground.dbay.domain.order.order.model.entity;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.util.StringUtils;
+
 import io.devground.core.model.entity.BaseEntity;
 import io.devground.core.model.vo.ErrorCode;
 import io.devground.dbay.domain.order.order.model.vo.OrderStatus;
@@ -49,15 +51,15 @@ public class Order extends BaseEntity {
 
 	@Builder
 	public Order(String userCode, String nickName, String address, Long totalAmount) {
-		if (userCode == null || userCode.isBlank()) {
+		if (!StringUtils.hasText(userCode)) {
 			throw ErrorCode.USER_NOT_FOUNT.throwServiceException();
 		}
 
-		if (nickName == null || nickName.isBlank()) {
+		if (!StringUtils.hasText(nickName)) {
 			throw ErrorCode.USER_NOT_FOUNT.throwServiceException();
 		}
 
-		if (address == null || address.isBlank()) {
+		if (!StringUtils.hasText(address)) {
 			throw ErrorCode.ADDRESS_NOT_FOUND.throwServiceException();
 		}
 
