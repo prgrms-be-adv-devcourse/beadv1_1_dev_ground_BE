@@ -36,7 +36,7 @@ public abstract class BaseEntity {
 	private LocalDateTime updatedAt = LocalDateTime.now();
 
 	@PrePersist
-	protected void onCellCreated() {
+	protected void onCreate() {
 		if (this.createdAt == null)
 			this.createdAt = LocalDateTime.now();
 
