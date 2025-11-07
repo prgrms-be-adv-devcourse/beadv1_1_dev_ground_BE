@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import io.devground.core.model.entity.BaseEntity;
-import io.devground.core.model.exception.ServiceException;
 import io.devground.core.model.vo.ErrorCode;
 import io.devground.dbay.domain.cart.cartItem.model.entity.CartItem;
 import jakarta.persistence.Column;
@@ -13,13 +12,14 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
+import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
 @Entity
-@NoArgsConstructor(access = lombok.AccessLevel.PROTECTED)
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Cart extends BaseEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -34,7 +34,7 @@ public class Cart extends BaseEntity {
 	@Builder
 	public Cart(String userCode) {
 		if (userCode == null || userCode.isBlank()) {
-			throw new ServiceException(ErrorCode.CART_NOT_FOUND);
+			throw ErrorCode.CART_NOT_FOUND.throwServiceException();
 		}
 		this.userCode = userCode;
 	}
