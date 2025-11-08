@@ -1,7 +1,5 @@
 package com.example.user.model.entity;
 
-import java.util.UUID;
-
 import io.devground.core.model.entity.BaseEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
