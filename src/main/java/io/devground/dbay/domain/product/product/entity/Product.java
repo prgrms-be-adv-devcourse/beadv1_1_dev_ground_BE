@@ -1,13 +1,18 @@
 package io.devground.dbay.domain.product.product.entity;
 
 import io.devground.core.model.entity.BaseEntity;
+import io.devground.core.model.vo.ErrorCode;
+import io.devground.dbay.domain.product.category.entity.Category;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.Lob;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -30,11 +35,17 @@ public class Product extends BaseEntity {
 	@Column(nullable = false)
 	private String description;
 
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "categoryId", nullable = false)
+	private Category category;
+
 	@OneToOne(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
 	private ProductSale productSale;
 
 	@Builder
-	public Product(String title, String description) {
+	public Product(Category category, String title, String description) {
+		validateCategory(category);
+		this.category = category;
 		this.title = title;
 		this.description = description;
 	}
@@ -46,5 +57,11 @@ public class Product extends BaseEntity {
 	public void changeProductInfo(String title, String description) {
 		this.title = title;
 		this.description = description;
+	}
+
+	private void validateCategory(Category category) {
+		if (category != null && !category.isLeaf()) {
+			ErrorCode.PRODUCT_MUST_WITH_LEAF_CATEGORY.throwServiceException();
+		}
 	}
 }

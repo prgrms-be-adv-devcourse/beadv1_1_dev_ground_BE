@@ -27,9 +27,14 @@ public enum ErrorCode {
 	ORDER_NOT_FOUND(404, "해당 주문을 찾을 수 없습니다."),
 
 	// product
-	PRODUCT_NOT_FOUND(404, "상품을 찾을 수 없습니다."),
 	ONLY_ON_SALE_PRODUCT_CHANGEABLE(400, "판매 중인 상품만 판매 완료 처리할 수 있습니다."),
 	SOLD_PRODUCT_CANNOT_UPDATE(400, "이미 판매된 상품 내용은 변경할 수 없습니다."),
+	PRODUCT_MUST_WITH_LEAF_CATEGORY(400, "상품은 반드시 최종 카테고리를 가져야 합니다."),
+	PRODUCT_NOT_FOUND(404, "상품을 찾을 수 없습니다."),
+
+	// category
+	CANNOT_EXCEED_MAX_DEPTH(400, "카테고리는 최대 뎁스를 초과할 수 없습니다."),
+	MISMATCH_ON_DEPTH(400, "해당 카테고리의 하위에 등록할 수 없습니다."),
 
 	// image
 	IMAGE_NOT_FOUND(404, "이미지를 찾을 수 없습니다."),

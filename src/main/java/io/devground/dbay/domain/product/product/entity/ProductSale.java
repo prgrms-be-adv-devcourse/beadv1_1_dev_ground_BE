@@ -74,6 +74,6 @@ public class ProductSale extends BaseEntity {
 	}
 
 	public boolean isSold() {
-		return this.productStatus == ProductStatus.ON_SALE;
+		return this.productStatus == ProductStatus.SOLD;
 	}
 }
