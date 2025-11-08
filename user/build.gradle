@@ -66,6 +66,9 @@ dependencies {
     // swagger
     implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.13'
     implementation 'com.github.gavlyukovskiy:p6spy-spring-boot-starter:1.12.0'
+
+    // Redis
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 }
 
 tasks.named('test') {
