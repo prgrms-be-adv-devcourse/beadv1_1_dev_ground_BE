@@ -49,7 +49,7 @@ public class Category extends BaseEntity {
 		this.validateDepth(parent, depth);
 		this.parent = parent;
 		this.name = name;
-		this.depth = depth != null ? depth : 1;
+		this.depth = depth;
 	}
 
 	public void addChildren(Category children) {
