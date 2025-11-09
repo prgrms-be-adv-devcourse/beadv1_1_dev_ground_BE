@@ -1,0 +1,48 @@
+package io.devground.dbay.domain.product.category.service.impl;
+
+import org.springframework.stereotype.Service;
+
+import io.devground.core.model.vo.ErrorCode;
+import io.devground.dbay.domain.product.category.dto.AdminCategoryResponse;
+import io.devground.dbay.domain.product.category.dto.RegistCategoryRequest;
+import io.devground.dbay.domain.product.category.entity.Category;
+import io.devground.dbay.domain.product.category.mapper.CategoryMapper;
+import io.devground.dbay.domain.product.category.repository.CategoryRepository;
+import io.devground.dbay.domain.product.category.service.CategoryService;
+import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
+
+@Service
+@Transactional
+@RequiredArgsConstructor
+public class CategoryServiceImpl implements CategoryService {
+
+	private final CategoryRepository categoryRepository;
+
+	// TODO: 관리자 인가 확인
+	@Override
+	public AdminCategoryResponse registCategory(RegistCategoryRequest request) {
+		Category parent = null;
+		int depth = 1;
+
+		if (request.parentId() != null) {
+			parent = categoryRepository.findById(request.parentId())
+				.orElseThrow(ErrorCode.CATEGORY_NOT_FOUND::throwServiceException);
+			depth = parent.getDepth() + 1;
+		}
+
+		Category category = Category.builder()
+			.name(request.name())
+			.depth(depth)
+			.parent(parent)
+			.build();
+
+		if (parent != null) {
+			parent.addChildren(category);
+		}
+
+		categoryRepository.save(category);
+
+		return CategoryMapper.adminResponseFromCategoryAndParent(category, parent);
+	}
+}
