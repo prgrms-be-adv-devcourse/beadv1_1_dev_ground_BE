@@ -35,6 +35,7 @@ public enum ErrorCode {
 	// category
 	CANNOT_EXCEED_MAX_DEPTH(400, "카테고리는 최대 뎁스를 초과할 수 없습니다."),
 	MISMATCH_ON_DEPTH(400, "해당 카테고리의 하위에 등록할 수 없습니다."),
+	CATEGORY_NOT_FOUND(404, "카테고리를 찾을 수 없습니다."),
 
 	// image
 	IMAGE_NOT_FOUND(404, "이미지를 찾을 수 없습니다."),
