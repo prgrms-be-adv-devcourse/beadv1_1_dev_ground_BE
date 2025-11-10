@@ -1,9 +1,12 @@
 package io.devground.dbay.domain.product.category.service.impl;
 
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 
 import io.devground.core.model.vo.ErrorCode;
 import io.devground.dbay.domain.product.category.dto.AdminCategoryResponse;
+import io.devground.dbay.domain.product.category.dto.CategoryTreeResponse;
 import io.devground.dbay.domain.product.category.dto.RegistCategoryRequest;
 import io.devground.dbay.domain.product.category.entity.Category;
 import io.devground.dbay.domain.product.category.mapper.CategoryMapper;
@@ -44,5 +47,13 @@ public class CategoryServiceImpl implements CategoryService {
 		categoryRepository.save(category);
 
 		return CategoryMapper.adminResponseFromCategoryAndParent(category, parent);
+	}
+
+	// TODO: 관리자 인가 확인
+	@Override
+	public List<CategoryTreeResponse> getCategoryTree() {
+		List<Category> rootCategories = categoryRepository.findCategoriesByParentIsNullOrderByNameAsc();
+
+		return CategoryMapper.treeResponsesFromCategories(rootCategories);
 	}
 }
