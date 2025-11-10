@@ -2,6 +2,7 @@ package io.devground.dbay.domain.product.category.config;
 
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.WebRequest;
 
@@ -10,6 +11,7 @@ import io.devground.dbay.domain.product.category.repository.CategoryRepository;
 import io.devground.dbay.domain.product.category.service.CategoryService;
 import lombok.RequiredArgsConstructor;
 
+@Profile({"local", "dev"})
 @Component
 @RequiredArgsConstructor
 public class CategoryInit implements ApplicationRunner {
