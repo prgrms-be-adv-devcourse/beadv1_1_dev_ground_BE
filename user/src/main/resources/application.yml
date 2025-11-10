@@ -9,6 +9,7 @@ spring:
     hibernate:
       #      default_batch_fetch_size: 500
       #      format_sql: true
+      ddl-auto: update
       naming:
         physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
 
@@ -27,7 +28,7 @@ spring:
     host: smtp.gmail.com
     port: 587
     username: ${MAIL_EMAIL}
-    password: ${MAIL_PASSWORD
+    password: ${MAIL_PASSWORD}
     properties:
       mail:
         smtp:
