@@ -17,6 +17,7 @@ public class User extends BaseEntity {
 	private String name;
 
 	@Setter
+	@Column(nullable = false)
 	private String password;
 
 	@Column(nullable = false)
@@ -25,7 +26,7 @@ public class User extends BaseEntity {
 	@Setter
 	private Long oauthId;
 
-	@Column(unique = true)
+	@Column(nullable = false, unique = true)
 	private String nickname;
 
 	@Column(nullable = false)
@@ -50,6 +51,8 @@ public class User extends BaseEntity {
 	private RoleType role;
 
 	private String profileImage;
+
+	private String username;
 
 	@Builder
 	public User(String name, String password, String email, String nickname, String address, String addressDetail,

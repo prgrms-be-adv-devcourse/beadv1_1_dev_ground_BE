@@ -30,7 +30,7 @@ public class EmailProvider {
 			redisService.save(email, verificationCode, Duration.ofMinutes(5));
 
 			MimeMessage mimeMessage = mailSender.createMimeMessage();
-			MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true);
+			MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
 
 			Context context = new Context();
 			context.setVariable("code", verificationCode);
@@ -42,8 +42,8 @@ public class EmailProvider {
 			helper.setSubject(subject);
 			helper.setTo(email);
 			helper.setText(htmlContent, true);
-			ClassPathResource logo = new ClassPathResource("static/dbayLogo.jpg");
-			helper.addInline("logo", logo);
+			ClassPathResource logo = new ClassPathResource("static/dbayLogo.png");
+			helper.addInline("dbayLogo", logo);
 
 			mailSender.send(mimeMessage);
 
