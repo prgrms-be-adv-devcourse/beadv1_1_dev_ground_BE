@@ -66,4 +66,15 @@ public class CategoryServiceImpl implements CategoryService {
 
 		return CategoryMapper.responsesFromCategories(rootCategories);
 	}
+
+	@Override
+	public List<CategoryResponse> getChildCategories(Long parentId) {
+		if (!categoryRepository.existsCategoryById(parentId)) {
+			ErrorCode errorCode = ErrorCode.CATEGORY_NOT_FOUND;
+		}
+
+		List<Category> childCategories = categoryRepository.findCategoriesByParentIdOrderByNameAsc(parentId);
+
+		return CategoryMapper.responsesFromCategories(childCategories);
+	}
 }
