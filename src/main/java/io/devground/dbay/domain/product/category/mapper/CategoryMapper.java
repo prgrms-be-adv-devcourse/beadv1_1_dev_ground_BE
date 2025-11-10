@@ -17,6 +17,12 @@ public abstract class CategoryMapper {
 			.build();
 	}
 
+	public static List<CategoryResponse> responsesFromCategories(List<Category> categories) {
+		return categories.stream()
+			.map(CategoryMapper::responseFromCategory)
+			.toList();
+	}
+
 	public static AdminCategoryResponse adminResponseFromCategoryAndParent(Category category, Category parent) {
 		return AdminCategoryResponse.builder()
 			.id(category.getId())
