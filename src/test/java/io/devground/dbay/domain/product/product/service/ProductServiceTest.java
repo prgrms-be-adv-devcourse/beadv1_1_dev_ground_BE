@@ -28,6 +28,7 @@ import io.devground.dbay.domain.product.product.entity.Product;
 import io.devground.dbay.domain.product.product.entity.ProductSale;
 import io.devground.dbay.domain.product.product.repository.ProductRepository;
 import io.devground.dbay.domain.product.product.repository.ProductSaleRepository;
+import io.devground.dbay.domain.product.product.vo.ProductStatus;
 
 @Transactional
 @SpringBootTest
@@ -247,5 +248,62 @@ class ProductServiceTest {
 		// when, then
 		assertThrows(ServiceException.class,
 			() -> productService.getCartProducts(request));
+	}
+
+	@Test
+	@DisplayName("성공_주문된 상품 목록 상태 판매 처리")
+	void success_products_to_sold() throws Exception {
+
+		// given
+		CartProductsRequest request = new CartProductsRequest(productCodes);
+
+		// when
+		productService.updateStatusToSold(request);
+		List<Product> products = productRepository.findAllByCodeIn(productCodes);
+
+		for (Product p : products) {
+			assertEquals(ProductStatus.SOLD, p.getProductSale().getProductStatus());
+		}
+	}
+
+	@Test
+	@DisplayName("실패_주문된 상품 목록 중 이미 판매된 상품 존재")
+	void fail_products_to_sold_already_sold() throws Exception {
+
+		// given
+		String firstCode = productCodes.getFirst();
+		Product beforeProduct = productRepository.findByCode(firstCode).get();
+		beforeProduct.getProductSale().changeAsSold();
+
+		CartProductsRequest request = new CartProductsRequest(productCodes);
+
+		// when, then
+		assertThrows(ServiceException.class,
+			() -> productService.updateStatusToSold(request));
+	}
+
+	@Test
+	@DisplayName("실퍠_주문된 상품 목록 조회 시 잘못된 상품 코드 포함")
+	void fail_products_to_sold_wrong_product_code() throws Exception {
+
+		// given
+		productCodes.add("wrongCode");
+		CartProductsRequest request = new CartProductsRequest(productCodes);
+
+		// when, then
+		assertThrows(ServiceException.class,
+			() -> productService.updateStatusToSold(request));
+	}
+
+	@Test
+	@DisplayName("실퍠_주문된 상품 목록 조회 시 상품 코드 미존재")
+	void fail_products_to_sold_non_product_code() throws Exception {
+
+		// given
+		CartProductsRequest request = new CartProductsRequest(List.of());
+
+		// when, then
+		assertThrows(ServiceException.class,
+			() -> productService.updateStatusToSold(request));
 	}
 }
