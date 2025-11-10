@@ -3,6 +3,7 @@ package io.devground.dbay.domain.product.category.service.impl;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import io.devground.core.model.vo.ErrorCode;
 import io.devground.dbay.domain.product.category.dto.AdminCategoryResponse;
@@ -12,7 +13,6 @@ import io.devground.dbay.domain.product.category.entity.Category;
 import io.devground.dbay.domain.product.category.mapper.CategoryMapper;
 import io.devground.dbay.domain.product.category.repository.CategoryRepository;
 import io.devground.dbay.domain.product.category.service.CategoryService;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -51,6 +51,7 @@ public class CategoryServiceImpl implements CategoryService {
 
 	// TODO: 관리자 인가 확인
 	@Override
+	@Transactional(readOnly = true)
 	public List<CategoryTreeResponse> getCategoryTree() {
 		List<Category> rootCategories = categoryRepository.findCategoriesByParentIsNullOrderByNameAsc();
 
