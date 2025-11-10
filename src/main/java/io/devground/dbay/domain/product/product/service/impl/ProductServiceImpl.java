@@ -76,6 +76,19 @@ public class ProductServiceImpl implements ProductService {
 		return ProductMapper.updateResponseFromProductInfo(product, productSale);
 	}
 
+	@Override
+	@Transactional(readOnly = true)
+	public List<CartProductsResponse> getCartProducts(CartProductsRequest request) {
+
+		List<CartProductsResponse> responses = productRepository.findCartProductsByProductCodes(request.productCodes());
+
+		if (responses.isEmpty() || request.productCodes().size() != responses.size()) {
+			ErrorCode.PRODUCT_NOT_FOUND.throwServiceException();
+		}
+
+		return responses;
+	}
+
 	// TODO: sellerCode 관련 검증 필요
 	@Override
 	public void deleteProduct(String productCode) {
@@ -89,16 +102,14 @@ public class ProductServiceImpl implements ProductService {
 	}
 
 	@Override
-	@Transactional(readOnly = true)
-	public List<CartProductsResponse> getCartProducts(CartProductsRequest request) {
+	public void updateStatusToSold(CartProductsRequest request) {
 
-		List<CartProductsResponse> responses = productRepository.findCartProductsByProductCodes(
-			request.productCodes());
+		List<Product> products = productRepository.findAllByCodeIn(request.productCodes());
 
-		if (responses.isEmpty() || request.productCodes().size() != responses.size()) {
+		if (request.productCodes().size() != products.size() || products.isEmpty()) {
 			ErrorCode.PRODUCT_NOT_FOUND.throwServiceException();
 		}
 
-		return responses;
+		products.forEach(p -> p.getProductSale().changeAsSold());
 	}
 }

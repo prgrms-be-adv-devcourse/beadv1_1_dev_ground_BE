@@ -15,7 +15,9 @@ public interface ProductService {
 
 	UpdateProductResponse updateProduct(String sellerCode, String productCode, UpdateProductRequest request);
 
+	List<CartProductsResponse> getCartProducts(CartProductsRequest request);
+
 	void deleteProduct(String productCode);
 
-	List<CartProductsResponse> getCartProducts(CartProductsRequest request);
+	void updateStatusToSold(CartProductsRequest request);
 }
