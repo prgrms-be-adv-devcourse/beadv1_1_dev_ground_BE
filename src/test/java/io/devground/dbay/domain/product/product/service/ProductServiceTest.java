@@ -14,6 +14,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
 import io.devground.core.model.exception.ServiceException;
+import io.devground.core.model.vo.DeleteStatus;
 import io.devground.dbay.domain.product.category.dto.AdminCategoryResponse;
 import io.devground.dbay.domain.product.category.dto.RegistCategoryRequest;
 import io.devground.dbay.domain.product.category.service.CategoryService;
@@ -165,5 +166,36 @@ class ProductServiceTest {
 		// when, then
 		assertThrows(ServiceException.class,
 			() -> productService.updateProduct(sellerCode, "wrongCode", request));
+	}
+
+	@Test
+	@DisplayName("성공_상품 정보 삭제")
+	void success_delete_product() throws Exception {
+
+		// given
+		String sellerCode = "tempSellerCode";
+		String productCode = productCodes.getFirst();
+
+		// when
+		productService.deleteProduct(productCode);
+
+		Product product = productRepository.findByCode(productCode).get();
+
+		// then
+		assertEquals(DeleteStatus.Y, product.getDeleteStatus());
+	}
+
+	// TODO: 상품 삭제 - 인가 실패
+
+	@Test
+	@DisplayName("실퍠_상품 삭제 시 상품 코드 오입력")
+	void fail_delete_product_wrong_product_code() throws Exception {
+
+		// given
+		String sellerCode = "tempSellerCode";
+
+		// when, then
+		assertThrows(ServiceException.class,
+			() -> productService.deleteProduct("wrongCode"));
 	}
 }
