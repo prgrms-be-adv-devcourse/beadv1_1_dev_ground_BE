@@ -54,7 +54,7 @@ public class Product extends BaseEntity {
 		this.productSale = productSale;
 	}
 
-	public void changeProductInfo(String title, String description) {
+	public void changeProductMetadata(String title, String description) {
 		this.title = title;
 		this.description = description;
 	}

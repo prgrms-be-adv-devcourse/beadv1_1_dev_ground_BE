@@ -7,6 +7,8 @@ import io.devground.dbay.domain.product.category.entity.Category;
 import io.devground.dbay.domain.product.category.repository.CategoryRepository;
 import io.devground.dbay.domain.product.product.dto.RegistProductRequest;
 import io.devground.dbay.domain.product.product.dto.RegistProductResponse;
+import io.devground.dbay.domain.product.product.dto.UpdateProductRequest;
+import io.devground.dbay.domain.product.product.dto.UpdateProductResponse;
 import io.devground.dbay.domain.product.product.entity.Product;
 import io.devground.dbay.domain.product.product.entity.ProductSale;
 import io.devground.dbay.domain.product.product.mapper.ProductMapper;
@@ -24,11 +26,12 @@ public class ProductServiceImpl implements ProductService {
 	private final ProductRepository productRepository;
 	private final ProductSaleRepository productSaleRepository;
 	private final CategoryRepository categoryRepository;
+	private final ProductService productService;
 
 	// TODO: sellerCode 관련 검증 필요
 	@Override
 	public RegistProductResponse registProduct(String sellerCode, RegistProductRequest request) {
-		
+
 		// 유저 관련 검증 필요 시 추가
 
 		Category category = categoryRepository.findById(request.categoryId())
@@ -51,6 +54,22 @@ public class ProductServiceImpl implements ProductService {
 		productSale.addProduct(product);
 		productSaleRepository.save(productSale);
 
-		return ProductMapper.responseFromProductWithSale(product, productSale);
+		return ProductMapper.registResponseFromProductInfos(product, productSale);
+	}
+
+	// TODO: sellerCode 관련 검증 필요
+	@Override
+	public UpdateProductResponse updateProduct(String sellerCode, String productCode, UpdateProductRequest request) {
+
+		// 같은 유저인지 인가 필요
+
+		Product product = productRepository.findByCode(productCode)
+			.orElseThrow(ErrorCode.PRODUCT_NOT_FOUND::throwServiceException);
+		ProductSale productSale = product.getProductSale();
+
+		product.changeProductMetadata(request.title(), request.description());
+		productSale.changePrice(request.price());
+
+		return ProductMapper.updateResponseFromProductInfo(product, productSale);
 	}
 }
