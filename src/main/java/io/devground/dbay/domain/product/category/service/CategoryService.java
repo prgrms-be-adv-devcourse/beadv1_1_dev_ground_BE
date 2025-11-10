@@ -13,4 +13,6 @@ public interface CategoryService {
 	List<CategoryTreeResponse> getCategoryTree();
 
 	List<CategoryResponse> getRootCategories();
+
+	List<CategoryResponse> getChildCategories(Long parentId);
 }

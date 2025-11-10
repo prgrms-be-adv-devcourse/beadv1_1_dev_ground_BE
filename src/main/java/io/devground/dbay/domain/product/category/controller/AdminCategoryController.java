@@ -34,7 +34,10 @@ public class AdminCategoryController {
 		@RequestBody @Valid RegistCategoryRequest request) {
 
 		return BaseResponse.success(
-			CREATED.value(), categoryService.registCategory(request), "카테고리가 등록되었습니다.");
+			CREATED.value(),
+			categoryService.registCategory(request),
+			"카테고리가 등록되었습니다."
+		);
 	}
 
 	@GetMapping("/tree")
@@ -42,6 +45,9 @@ public class AdminCategoryController {
 	public BaseResponse<List<CategoryTreeResponse>> getCategoryTree() {
 
 		return BaseResponse.success(
-			OK.value(), categoryService.getCategoryTree(), "카테고리 트리를 조회합니다.");
+			OK.value(),
+			categoryService.getCategoryTree(),
+			"카테고리 트리를 조회합니다."
+		);
 	}
 }
