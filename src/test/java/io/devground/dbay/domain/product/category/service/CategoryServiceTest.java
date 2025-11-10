@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.List;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,30 +29,43 @@ class CategoryServiceTest {
 	@Autowired
 	CategoryRepository categoryRepository;
 
+	@BeforeEach
+	void init() {
+		AdminCategoryResponse responseDepth1 = categoryService.registCategory(
+			new RegistCategoryRequest("핸드폰", null));
+
+		AdminCategoryResponse responseDepth2 = categoryService.registCategory(
+			new RegistCategoryRequest("아이폰", responseDepth1.id()));
+
+		categoryService.registCategory(new RegistCategoryRequest("아이폰15", responseDepth2.id()));
+	}
+
 	@Test
 	@DisplayName("성공_카테고리 등록")
 	void success_regist_category() throws Exception {
 
-		RegistCategoryRequest requestDepth1 = new RegistCategoryRequest("핸드폰", null);
+		// given, when
+		RegistCategoryRequest requestDepth1 = new RegistCategoryRequest("노트북", null);
 		AdminCategoryResponse responseDepth1 = categoryService.registCategory(requestDepth1);
 
-		RegistCategoryRequest requestDepth2 = new RegistCategoryRequest("아이폰", responseDepth1.id());
+		RegistCategoryRequest requestDepth2 = new RegistCategoryRequest("맥OS", responseDepth1.id());
 		AdminCategoryResponse responseDepth2 = categoryService.registCategory(requestDepth2);
 
-		RegistCategoryRequest requestDepth3 = new RegistCategoryRequest("아이폰15", responseDepth2.id());
+		RegistCategoryRequest requestDepth3 = new RegistCategoryRequest("M2", responseDepth2.id());
 		AdminCategoryResponse responseDepth3 = categoryService.registCategory(requestDepth3);
 
 		Category category1 = categoryRepository.findById(responseDepth1.id()).get();
 		Category category2 = categoryRepository.findById(responseDepth2.id()).get();
 		Category category3 = categoryRepository.findById(responseDepth3.id()).get();
 
-		assertEquals("핸드폰", category1.getName());
+		// then
+		assertEquals("노트북", category1.getName());
 		assertNull(category1.getParent());
 
-		assertEquals("아이폰", category2.getName());
+		assertEquals("맥OS", category2.getName());
 		assertEquals(category1.getId(), category2.getParent().getId());
 
-		assertEquals("아이폰15", category3.getName());
+		assertEquals("M2", category3.getName());
 		assertEquals(category2.getId(), category3.getParent().getId());
 		assertEquals(category1.getId(), category3.getParent().getParent().getId());
 	}
@@ -59,6 +73,8 @@ class CategoryServiceTest {
 	@Test
 	@DisplayName("실패_최하위 카테고리 제한 초과")
 	void fail_exceed_depth() throws Exception {
+
+		// given
 		AdminCategoryResponse depth1 = categoryService.registCategory(
 			new RegistCategoryRequest("1", null));
 		AdminCategoryResponse depth2 = categoryService.registCategory(
@@ -70,6 +86,7 @@ class CategoryServiceTest {
 		AdminCategoryResponse depth5 = categoryService.registCategory(
 			new RegistCategoryRequest("5", depth4.id()));
 
+		// when, then
 		assertThrows(ServiceException.class,
 			() -> categoryService.registCategory(new RegistCategoryRequest("6", depth5.id())));
 	}
@@ -77,6 +94,8 @@ class CategoryServiceTest {
 	@Test
 	@DisplayName("실패_depth 미스매치")
 	void fail_mismatch_depth() throws Exception {
+
+		// given
 		Category parent = Category.builder()
 			.parent(null)
 			.name("parent")
@@ -84,6 +103,7 @@ class CategoryServiceTest {
 			.build();
 		categoryRepository.save(parent);
 
+		// when, then
 		assertThrows(ServiceException.class,
 			() -> Category.builder()
 				.parent(parent)
@@ -95,6 +115,8 @@ class CategoryServiceTest {
 	@Test
 	@DisplayName("실패_상위 카테고리 미존재")
 	void fail_parent_not_found() throws Exception {
+
+		// when, then
 		assertThrows(ServiceException.class,
 			() -> categoryService.registCategory(new RegistCategoryRequest("child", 500L)));
 	}
@@ -103,17 +125,7 @@ class CategoryServiceTest {
 	@DisplayName("성공_카테고리 트리 조회")
 	void success_category_tree() throws Exception {
 
-		// given
-		RegistCategoryRequest requestDepth1 = new RegistCategoryRequest("핸드폰", null);
-		AdminCategoryResponse responseDepth1 = categoryService.registCategory(requestDepth1);
-
-		RegistCategoryRequest requestDepth2 = new RegistCategoryRequest("아이폰", responseDepth1.id());
-		AdminCategoryResponse responseDepth2 = categoryService.registCategory(requestDepth2);
-
-		RegistCategoryRequest requestDepth3 = new RegistCategoryRequest("아이폰15", responseDepth2.id());
-		AdminCategoryResponse responseDepth3 = categoryService.registCategory(requestDepth3);
-
-		// when
+		// given, when
 		List<CategoryTreeResponse> responses = categoryService.getCategoryTree();
 
 		CategoryTreeResponse root = responses.getFirst();
