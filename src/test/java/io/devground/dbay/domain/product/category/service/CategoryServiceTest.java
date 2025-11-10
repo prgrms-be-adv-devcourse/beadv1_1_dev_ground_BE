@@ -158,4 +158,43 @@ class CategoryServiceTest {
 		assertEquals("핸드폰", rootCategory.name());
 		assertFalse(rootCategory.isLeaf());
 	}
+
+	@Test
+	@DisplayName("성공_직속 하위 카테고리 조회")
+	void success_child_category() throws Exception {
+
+		// given
+		AdminCategoryResponse root = categoryService.registCategory(
+			new RegistCategoryRequest("루트", null));
+
+		AdminCategoryResponse depth2_1 = categoryService.registCategory(
+			new RegistCategoryRequest("하위2_1", root.id()));
+
+		AdminCategoryResponse depth2_2 = categoryService.registCategory(
+			new RegistCategoryRequest("하위2_2", root.id()));
+
+		AdminCategoryResponse depth2_3 = categoryService.registCategory(
+			new RegistCategoryRequest("하위2_3", root.id()));
+
+		AdminCategoryResponse depth_3_1 = categoryService.registCategory(
+			new RegistCategoryRequest("하위3_1", depth2_1.id()));
+
+		AdminCategoryResponse depth_3_2 = categoryService.registCategory(
+			new RegistCategoryRequest("하위3_2", depth2_1.id()));
+
+		// when
+		List<CategoryResponse> rootResponses = categoryService.getChildCategories(root.id());
+		List<CategoryResponse> childResponses = categoryService.getChildCategories(depth2_1.id());
+
+		// then
+		assertEquals(3, rootResponses.size());
+		assertEquals("하위2_1", rootResponses.getFirst().name());
+		assertEquals("하위2_3", rootResponses.getLast().name());
+		assertFalse(rootResponses.getFirst().isLeaf());
+		assertTrue(rootResponses.getLast().isLeaf());
+		assertEquals("하위3_1", childResponses.getFirst().name());
+		assertEquals("하위3_2", childResponses.getLast().name());
+		assertTrue(childResponses.getFirst().isLeaf());
+		assertTrue(childResponses.getLast().isLeaf());
+	}
 }
