@@ -26,7 +26,6 @@ public class ProductServiceImpl implements ProductService {
 	private final ProductRepository productRepository;
 	private final ProductSaleRepository productSaleRepository;
 	private final CategoryRepository categoryRepository;
-	private final ProductService productService;
 
 	// TODO: sellerCode 관련 검증 필요
 	@Override

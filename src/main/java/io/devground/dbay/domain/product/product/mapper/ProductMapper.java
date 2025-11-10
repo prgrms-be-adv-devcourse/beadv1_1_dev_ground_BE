@@ -10,9 +10,11 @@ public abstract class ProductMapper {
 	public static RegistProductResponse registResponseFromProductInfos(Product product, ProductSale productSale) {
 
 		return RegistProductResponse.builder()
-			.productId(product.getId())
-			.productSaleId(productSale.getId())
+			.productCode(product.getCode())
+			.productSaleCode(productSale.getCode())
 			.sellerCode(productSale.getSellerCode())
+			.title(product.getTitle())
+			.description(product.getDescription())
 			.price(productSale.getPrice())
 			.build();
 	}
@@ -20,9 +22,11 @@ public abstract class ProductMapper {
 	public static UpdateProductResponse updateResponseFromProductInfo(Product product, ProductSale productSale) {
 
 		return UpdateProductResponse.builder()
-			.productId(product.getId())
-			.productSaleId(productSale.getId())
+			.productCode(product.getCode())
+			.productSaleCode(productSale.getCode())
 			.sellerCode(productSale.getSellerCode())
+			.title(product.getTitle())
+			.description(product.getDescription())
 			.price(productSale.getPrice())
 			.build();
 	}
