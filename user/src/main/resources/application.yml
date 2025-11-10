@@ -1,6 +1,12 @@
+server:
+  port: 8001
+
 spring:
   application:
     name: user
+
+  config:
+    import: optional:classpath:.env[.properties]
 
   profiles:
     active: test
