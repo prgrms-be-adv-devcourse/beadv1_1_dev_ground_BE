@@ -17,6 +17,8 @@ public enum ErrorCode {
 	// user/auth
 	UNAUTHORIZED(401, "로그인이 필요합니다."),
 	USER_NOT_FOUNT(404, "사용자를 찾을 수 없습니다."),
+	CODE_EXPIRED(400, "인증 코드가 만료되었습니다."),
+	WRONG_VERIFICATION_CODE(400, "인증번호가 올바르지 않습니다."),
 
 	// cart
 	CART_ALREADY_EXIST(409, "장바구니가 이미 존재합니다."),
