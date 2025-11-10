@@ -14,7 +14,9 @@ import com.example.user.utils.provider.EmailProvider;
 
 import io.devground.core.model.vo.ErrorCode;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
@@ -27,6 +29,9 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public void sendCertificateEmail(String email) {
 		String verificationCode = RandomStringUtils.randomAlphanumeric(10);
+
+		log.info("verificationCode:{}", verificationCode);
+		log.info("email:{}", email);
 
 		emailProvider.sendEmail(email, verificationCode);
 	}
