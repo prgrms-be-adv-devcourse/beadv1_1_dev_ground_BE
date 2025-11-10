@@ -22,6 +22,7 @@ public enum ErrorCode {
 	NOT_VERIFICATION_EMAIL(400, "이메일이 인증되지 않았습니다."),
 
 	// cart
+	CART_ITEM_ALREADY_EXIST(409, "장바구니에 이미 담긴 상품입니다."),
 	CART_ALREADY_EXIST(409, "장바구니가 이미 존재합니다."),
 	CART_NOT_FOUND(404, "장바구니를 찾을 수 없습니다."),
 
@@ -31,6 +32,7 @@ public enum ErrorCode {
 
 	// product
 	ONLY_ON_SALE_PRODUCT_CHANGEABLE(400, "판매 중인 상품만 판매 완료 처리할 수 있습니다."),
+	SOLD_PRODUCT_CANNOT_PURCHASE(400, "이미 판매된 상품입니다."),
 	SOLD_PRODUCT_CANNOT_UPDATE(400, "이미 판매된 상품 내용은 변경할 수 없습니다."),
 	PRODUCT_MUST_WITH_LEAF_CATEGORY(400, "상품은 반드시 최종 카테고리를 가져야 합니다."),
 	PRODUCT_NOT_FOUND(404, "상품을 찾을 수 없습니다."),
