@@ -5,6 +5,7 @@ import lombok.NonNull;
 
 @Builder
 public record AdminCategoryResponse(
+
 	long id,
 
 	@NonNull

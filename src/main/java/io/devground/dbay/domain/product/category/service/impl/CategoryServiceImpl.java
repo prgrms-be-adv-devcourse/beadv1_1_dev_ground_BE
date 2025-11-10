@@ -26,6 +26,7 @@ public class CategoryServiceImpl implements CategoryService {
 	// TODO: 관리자 인가 확인
 	@Override
 	public AdminCategoryResponse registCategory(RegistCategoryRequest request) {
+
 		Category parent = null;
 		int depth = 1;
 
@@ -54,6 +55,7 @@ public class CategoryServiceImpl implements CategoryService {
 	@Override
 	@Transactional(readOnly = true)
 	public List<CategoryTreeResponse> getCategoryTree() {
+
 		List<Category> rootCategories = categoryRepository.findCategoriesByParentIsNullOrderByNameAsc();
 
 		return CategoryMapper.treeResponsesFromCategories(rootCategories);
@@ -62,6 +64,7 @@ public class CategoryServiceImpl implements CategoryService {
 	@Override
 	@Transactional(readOnly = true)
 	public List<CategoryResponse> getRootCategories() {
+
 		List<Category> rootCategories = categoryRepository.findCategoriesByParentIsNullOrderByNameAsc();
 
 		return CategoryMapper.responsesFromCategories(rootCategories);
@@ -69,8 +72,9 @@ public class CategoryServiceImpl implements CategoryService {
 
 	@Override
 	public List<CategoryResponse> getChildCategories(Long parentId) {
+
 		if (!categoryRepository.existsCategoryById(parentId)) {
-			ErrorCode errorCode = ErrorCode.CATEGORY_NOT_FOUND;
+			ErrorCode.CATEGORY_NOT_FOUND.throwServiceException();
 		}
 
 		List<Category> childCategories = categoryRepository.findCategoriesByParentIdOrderByNameAsc(parentId);
