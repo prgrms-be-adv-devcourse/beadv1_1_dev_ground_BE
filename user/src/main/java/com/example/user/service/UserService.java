@@ -1,10 +1,9 @@
 package com.example.user.service;
 
-import org.springframework.stereotype.Service;
+import com.example.user.model.dto.request.EmailCertificationRequest;
 
-import lombok.RequiredArgsConstructor;
+public interface UserService {
+	void sendCertificateEmail(String email);
 
-@Service
-@RequiredArgsConstructor
-public class UserService {
+	void checkCertificateEmail(EmailCertificationRequest emailCertificationRequest);
 }
