@@ -86,4 +86,14 @@ public class ProductController {
 			"장바구니의 상품 정보들을 성공적으로 불러왔습니다."
 		);
 	}
+
+	@PatchMapping("/status")
+	@ResponseStatus(NO_CONTENT)
+	@Operation(summary = "상품 판매 처리", description = "상품의 상태를 판매된 상태로 변경합니다.")
+	public void updateStatusToSold(
+		@RequestBody CartProductsRequest request
+	) {
+
+		productService.updateStatusToSold(request);
+	}
 }
