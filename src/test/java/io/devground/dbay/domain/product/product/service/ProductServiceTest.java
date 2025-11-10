@@ -18,6 +18,8 @@ import io.devground.core.model.vo.DeleteStatus;
 import io.devground.dbay.domain.product.category.dto.AdminCategoryResponse;
 import io.devground.dbay.domain.product.category.dto.RegistCategoryRequest;
 import io.devground.dbay.domain.product.category.service.CategoryService;
+import io.devground.dbay.domain.product.product.dto.CartProductsRequest;
+import io.devground.dbay.domain.product.product.dto.CartProductsResponse;
 import io.devground.dbay.domain.product.product.dto.RegistProductRequest;
 import io.devground.dbay.domain.product.product.dto.RegistProductResponse;
 import io.devground.dbay.domain.product.product.dto.UpdateProductRequest;
@@ -197,5 +199,53 @@ class ProductServiceTest {
 		// when, then
 		assertThrows(ServiceException.class,
 			() -> productService.deleteProduct("wrongCode"));
+	}
+
+	@Test
+	@DisplayName("성공_장바구니 상품 목록 조회")
+	void success_get_cart_products() throws Exception {
+
+		// given
+		CartProductsRequest request = new CartProductsRequest(productCodes);
+
+		// when
+		List<CartProductsResponse> responses = productService.getCartProducts(request);
+		List<Product> refreshedProducts = productRepository.findAllByCodeIn(productCodes);
+
+		// then
+		assertEquals(refreshedProducts.size(), responses.size());
+
+		for (int i = 0; i < refreshedProducts.size(); i++) {
+			Product p = refreshedProducts.get(i);
+			CartProductsResponse cpResponse = responses.get(i);
+
+			assertEquals(p.getTitle(), cpResponse.title());
+			assertEquals(p.getProductSale().getPrice(), cpResponse.price());
+		}
+	}
+
+	@Test
+	@DisplayName("실패_장바구니 상품 목록 조회 시 잘못된 상품 코드 포함")
+	void fail_get_cart_products_wrong_product_code() throws Exception {
+
+		// given
+		productCodes.add("wrongCode");
+		CartProductsRequest request = new CartProductsRequest(productCodes);
+
+		// when, then
+		assertThrows(ServiceException.class,
+			() -> productService.getCartProducts(request));
+	}
+
+	@Test
+	@DisplayName("실패_장바구니 상품 목록 조회 시 상품 코드 미존재")
+	void fail_get_cart_products_non_product_code() throws Exception {
+
+		// given
+		CartProductsRequest request = new CartProductsRequest(List.of());
+
+		// when, then
+		assertThrows(ServiceException.class,
+			() -> productService.getCartProducts(request));
 	}
 }
