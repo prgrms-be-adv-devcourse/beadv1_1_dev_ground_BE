@@ -33,12 +33,15 @@ public class AdminCategoryController {
 	public BaseResponse<AdminCategoryResponse> registCategory(
 		@RequestBody @Valid RegistCategoryRequest request) {
 
-		return BaseResponse.success(CREATED.value(), categoryService.registCategory(request), "카테고리가 등록되었습니다.");
+		return BaseResponse.success(
+			CREATED.value(), categoryService.registCategory(request), "카테고리가 등록되었습니다.");
 	}
 
 	@GetMapping("/tree")
 	@Operation(summary = "전체 카테고리 트리 형식으로 조회", description = "관리자는 전체 카테고리를 한 눈에 확인할 수 있습니다.")
 	public BaseResponse<List<CategoryTreeResponse>> getCategoryTree() {
-		return BaseResponse.success(OK.value(), categoryService.getCategoryTree(), "카테고리 트리를 조회합니다.");
+
+		return BaseResponse.success(
+			OK.value(), categoryService.getCategoryTree(), "카테고리 트리를 조회합니다.");
 	}
 }

@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import io.devground.core.model.vo.ErrorCode;
 import io.devground.dbay.domain.product.category.dto.AdminCategoryResponse;
+import io.devground.dbay.domain.product.category.dto.CategoryResponse;
 import io.devground.dbay.domain.product.category.dto.CategoryTreeResponse;
 import io.devground.dbay.domain.product.category.dto.RegistCategoryRequest;
 import io.devground.dbay.domain.product.category.entity.Category;
@@ -56,5 +57,13 @@ public class CategoryServiceImpl implements CategoryService {
 		List<Category> rootCategories = categoryRepository.findCategoriesByParentIsNullOrderByNameAsc();
 
 		return CategoryMapper.treeResponsesFromCategories(rootCategories);
+	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public List<CategoryResponse> getRootCategories() {
+		List<Category> rootCategories = categoryRepository.findCategoriesByParentIsNullOrderByNameAsc();
+
+		return CategoryMapper.responsesFromCategories(rootCategories);
 	}
 }
