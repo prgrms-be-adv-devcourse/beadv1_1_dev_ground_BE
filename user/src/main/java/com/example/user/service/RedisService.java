@@ -18,7 +18,7 @@ public class RedisService {
 	private final ObjectMapper objectMapper;
 
 	public void save(String key, String value, Duration timeout) {
-		if(value instanceof String str){
+		if (value instanceof String str) {
 			stringRedisTemplate.opsForValue().set(key, str, timeout);
 		} else {
 			template.opsForValue().set(key, value, timeout);
@@ -26,12 +26,12 @@ public class RedisService {
 	}
 
 	public <T> T find(String key, Class<T> clazz) {
-		if(clazz == String.class){
+		if (clazz == String.class) {
 			String value = stringRedisTemplate.opsForValue().get(key);
 			return clazz.cast(value);
 		}
 		Object rawData = stringRedisTemplate.opsForValue().get(key);
-		if(rawData == null){
+		if (rawData == null) {
 			return null;
 		}
 

@@ -3,9 +3,13 @@ package com.example.user.service;
 import java.time.Duration;
 
 import org.apache.commons.lang3.RandomStringUtils;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.example.user.model.dto.request.EmailCertificationRequest;
+import com.example.user.model.dto.request.UserRequest;
+import com.example.user.model.entity.User;
+import com.example.user.repository.UserRepository;
 import com.example.user.utils.provider.EmailProvider;
 
 import io.devground.core.model.vo.ErrorCode;
@@ -17,6 +21,8 @@ public class UserServiceImpl implements UserService {
 
 	private final EmailProvider emailProvider;
 	private final RedisService redisService;
+	private final BCryptPasswordEncoder bCryptPasswordEncoder;
+	private final UserRepository userRepository;
 
 	@Override
 	public void sendCertificateEmail(String email) {
@@ -42,5 +48,25 @@ public class UserServiceImpl implements UserService {
 		} else {
 			throw ErrorCode.WRONG_VERIFICATION_CODE.throwServiceException();
 		}
+	}
+
+	@Override
+	public void registerUser(UserRequest userRequest) {
+		String email = userRequest.email();
+
+		if (!redisService.find(email, String.class).equals("Verified")
+			|| redisService.find(email, String.class) == null) {
+			throw ErrorCode.NOT_VERIFICATION_EMAIL.throwServiceException();
+		}
+
+		//사용자 정보 저장
+		User user = userRequest.from(userRequest, bCryptPasswordEncoder);
+		userRepository.save(user);
+
+		//장바구니 코드 저장
+
+		//예치금 코드 저장
+
+		//웰컴 쿠폰 발급
 	}
 }
