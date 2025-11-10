@@ -1,10 +1,15 @@
 package io.devground.dbay.domain.product.product.service.impl;
 
+import java.util.List;
+
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import io.devground.core.model.vo.ErrorCode;
 import io.devground.dbay.domain.product.category.entity.Category;
 import io.devground.dbay.domain.product.category.repository.CategoryRepository;
+import io.devground.dbay.domain.product.product.dto.CartProductsRequest;
+import io.devground.dbay.domain.product.product.dto.CartProductsResponse;
 import io.devground.dbay.domain.product.product.dto.RegistProductRequest;
 import io.devground.dbay.domain.product.product.dto.RegistProductResponse;
 import io.devground.dbay.domain.product.product.dto.UpdateProductRequest;
@@ -15,7 +20,6 @@ import io.devground.dbay.domain.product.product.mapper.ProductMapper;
 import io.devground.dbay.domain.product.product.repository.ProductRepository;
 import io.devground.dbay.domain.product.product.repository.ProductSaleRepository;
 import io.devground.dbay.domain.product.product.service.ProductService;
-import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 
 @Service
@@ -82,5 +86,19 @@ public class ProductServiceImpl implements ProductService {
 			.orElseThrow(ErrorCode.PRODUCT_NOT_FOUND::throwServiceException);
 
 		product.delete();
+	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public List<CartProductsResponse> getCartProducts(CartProductsRequest request) {
+
+		List<CartProductsResponse> responses = productRepository.findCartProductsByProductCodes(
+			request.productCodes());
+
+		if (responses.isEmpty() || request.productCodes().size() != responses.size()) {
+			ErrorCode.PRODUCT_NOT_FOUND.throwServiceException();
+		}
+
+		return responses;
 	}
 }

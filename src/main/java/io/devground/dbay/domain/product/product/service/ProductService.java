@@ -1,5 +1,9 @@
 package io.devground.dbay.domain.product.product.service;
 
+import java.util.List;
+
+import io.devground.dbay.domain.product.product.dto.CartProductsRequest;
+import io.devground.dbay.domain.product.product.dto.CartProductsResponse;
 import io.devground.dbay.domain.product.product.dto.RegistProductRequest;
 import io.devground.dbay.domain.product.product.dto.RegistProductResponse;
 import io.devground.dbay.domain.product.product.dto.UpdateProductRequest;
@@ -12,4 +16,6 @@ public interface ProductService {
 	UpdateProductResponse updateProduct(String sellerCode, String productCode, UpdateProductRequest request);
 
 	void deleteProduct(String productCode);
+
+	List<CartProductsResponse> getCartProducts(CartProductsRequest request);
 }

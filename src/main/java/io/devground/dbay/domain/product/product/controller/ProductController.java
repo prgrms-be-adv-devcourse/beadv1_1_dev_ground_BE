@@ -2,6 +2,8 @@ package io.devground.dbay.domain.product.product.controller;
 
 import static org.springframework.http.HttpStatus.*;
 
+import java.util.List;
+
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -13,6 +15,8 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.devground.core.model.web.BaseResponse;
+import io.devground.dbay.domain.product.product.dto.CartProductsRequest;
+import io.devground.dbay.domain.product.product.dto.CartProductsResponse;
 import io.devground.dbay.domain.product.product.dto.RegistProductRequest;
 import io.devground.dbay.domain.product.product.dto.RegistProductResponse;
 import io.devground.dbay.domain.product.product.dto.UpdateProductRequest;
@@ -64,9 +68,22 @@ public class ProductController {
 	// TODO: sellerCode 정책 정해진 후 수정
 	@DeleteMapping("{productCode}")
 	@ResponseStatus(NO_CONTENT)
-	@Operation()
+	@Operation(summary = "상품 삭제", description = "유저는 자신의 상품 판매 정보를 삭제할 수 있습니다.")
 	public void deleteProduct(@PathVariable String productCode) {
 
 		productService.deleteProduct(productCode);
+	}
+
+	@PostMapping("/carts")
+	@Operation(summary = "장바구니의 상품 목록 조회", description = "장바구니에 등록된 상품 목록을 조회합니다.")
+	public BaseResponse<List<CartProductsResponse>> getCartProducts(
+		@RequestBody CartProductsRequest request
+	) {
+
+		return BaseResponse.success(
+			OK.value(),
+			productService.getCartProducts(request),
+			"장바구니의 상품 정보들을 성공적으로 불러왔습니다."
+		);
 	}
 }
