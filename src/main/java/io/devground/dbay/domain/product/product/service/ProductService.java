@@ -10,4 +10,6 @@ public interface ProductService {
 	RegistProductResponse registProduct(String sellerCode, RegistProductRequest request);
 
 	UpdateProductResponse updateProduct(String sellerCode, String productCode, UpdateProductRequest request);
+
+	void deleteProduct(String productCode);
 }
