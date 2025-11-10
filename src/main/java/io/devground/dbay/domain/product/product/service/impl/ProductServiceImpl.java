@@ -71,4 +71,16 @@ public class ProductServiceImpl implements ProductService {
 
 		return ProductMapper.updateResponseFromProductInfo(product, productSale);
 	}
+
+	// TODO: sellerCode 관련 검증 필요
+	@Override
+	public void deleteProduct(String productCode) {
+
+		// 같은 유저인지 인가 필요
+
+		Product product = productRepository.findByCode(productCode)
+			.orElseThrow(ErrorCode.PRODUCT_NOT_FOUND::throwServiceException);
+
+		product.delete();
+	}
 }
