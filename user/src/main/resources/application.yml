@@ -13,10 +13,28 @@ spring:
         physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
 
   datasource:
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3308/dbay_user
-    username: app1
-    password: app1!
+    driver-class-name: org.mariadb.jdbc.Driver
+    url: ${MARIA_DB_URL}
+    username: ${MARIA_DB_USERNAME}
+    password: ${MAIRA_DB_PASSWORD}
+
+  data:
+    redis:
+      port: 6379
+      host: localhost
+
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${MAIL_EMAIL}
+    password: ${MAIL_PASSWORD
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
 
 logging:
   level:
@@ -25,8 +43,8 @@ logging:
     org.hibernate.orm.jdbc.extract: TRACE
     org.springframework.batch: INFO
 
-custom:
-  jwt:
-    secrets:
-      app-key: BBpgN9RJg1nYobpf7KHfJUaoiWSO-gD9EiEApPkV1rWJmH0vAVjMT2Pn-MtaaeElM7GFN88aQFl7d9adK_hB9w
+#custom:
+#  jwt:
+#    secrets:
+#      app-key: BBpgN9RJg1nYobpf7KHfJUaoiWSO-gD9EiEApPkV1rWJmH0vAVjMT2Pn-MtaaeElM7GFN88aQFl7d9adK_hB9w
 
