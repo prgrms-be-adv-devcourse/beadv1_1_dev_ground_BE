@@ -13,6 +13,7 @@ import org.springframework.test.context.ActiveProfiles;
 
 import io.devground.core.model.exception.ServiceException;
 import io.devground.dbay.domain.product.category.dto.AdminCategoryResponse;
+import io.devground.dbay.domain.product.category.dto.CategoryResponse;
 import io.devground.dbay.domain.product.category.dto.CategoryTreeResponse;
 import io.devground.dbay.domain.product.category.dto.RegistCategoryRequest;
 import io.devground.dbay.domain.product.category.entity.Category;
@@ -142,5 +143,19 @@ class CategoryServiceTest {
 		assertEquals("아이폰15", childDepth3.name());
 		assertEquals(3, childDepth3.depth());
 		assertTrue(childDepth3.isLeaf());
+	}
+
+	@Test
+	@DisplayName("성공_최상위 카테고리 조회")
+	void success_root_category() throws Exception {
+
+		// given, when
+		List<CategoryResponse> rootCategories = categoryService.getRootCategories();
+		CategoryResponse rootCategory = rootCategories.getFirst();
+
+		// then
+		assertEquals(1, rootCategories.size());
+		assertEquals("핸드폰", rootCategory.name());
+		assertFalse(rootCategory.isLeaf());
 	}
 }
