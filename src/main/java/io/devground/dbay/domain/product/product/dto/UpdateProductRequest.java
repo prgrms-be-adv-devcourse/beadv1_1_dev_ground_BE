@@ -7,9 +7,6 @@ import jakarta.validation.constraints.Size;
 
 public record UpdateProductRequest(
 
-	@NotNull(message = "상품 아이디는 반드시 전달되어야 합니다.")
-	Long productId,
-
 	@NotBlank(message = "상품명은 필수입니다.")
 	@Size(max = 100, message = "상품명은 100자까지만 가능합니다.")
 	String title,

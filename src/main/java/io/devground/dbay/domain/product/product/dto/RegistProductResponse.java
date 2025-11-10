@@ -6,12 +6,20 @@ import lombok.NonNull;
 @Builder
 public record RegistProductResponse(
 
-	long productId,
+	@NonNull
+	String productCode,
 
-	long productSaleId,
+	@NonNull
+	String productSaleCode,
 
 	@NonNull
 	String sellerCode,
+
+	@NonNull
+	String title,
+
+	@NonNull
+	String description,
 
 	long price
 ) {
