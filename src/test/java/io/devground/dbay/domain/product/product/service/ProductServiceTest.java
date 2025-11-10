@@ -19,6 +19,8 @@ import io.devground.dbay.domain.product.category.dto.RegistCategoryRequest;
 import io.devground.dbay.domain.product.category.service.CategoryService;
 import io.devground.dbay.domain.product.product.dto.RegistProductRequest;
 import io.devground.dbay.domain.product.product.dto.RegistProductResponse;
+import io.devground.dbay.domain.product.product.dto.UpdateProductRequest;
+import io.devground.dbay.domain.product.product.dto.UpdateProductResponse;
 import io.devground.dbay.domain.product.product.entity.Product;
 import io.devground.dbay.domain.product.product.entity.ProductSale;
 import io.devground.dbay.domain.product.product.repository.ProductRepository;
@@ -38,11 +40,15 @@ class ProductServiceTest {
 	@Autowired    // 카테고리 Init 용, 이외 사용 금지
 	CategoryService categoryService;
 
+	List<String> productCodes = new ArrayList<>();
+	List<String> productSaleCodes = new ArrayList<>();
 	List<Long> categoryIds = new ArrayList<>();
 
 	@BeforeEach
 	void init() {
 
+		productCodes.clear();
+		productSaleCodes.clear();
 		categoryIds.clear();
 
 		AdminCategoryResponse responseDepth1 = categoryService.registCategory(
@@ -55,6 +61,25 @@ class ProductServiceTest {
 			new RegistCategoryRequest("아이폰15", responseDepth2.id()));
 
 		categoryIds.addAll(List.of(responseDepth1.id(), responseDepth2.id(), responseDepth3.id()));
+
+		String tempCode1 = "tempSellerCode";
+		RegistProductRequest request1 = new RegistProductRequest
+			(responseDepth3.id(), "갤럭시 팔아요", "이런 갤럭시입니다.", 300000L);
+
+		RegistProductRequest request2 = new RegistProductRequest
+			(responseDepth3.id(), "맥북 팔아요", "이런 맥북입니다.", 500000L);
+
+		String otherCode = "otherSellerCode";
+		RegistProductRequest request3 = new RegistProductRequest
+			(responseDepth3.id(), "에어팟 팔아요", "이런 에어팟입니다.", 40000L);
+
+		RegistProductResponse response1 = productService.registProduct(tempCode1, request1);
+		RegistProductResponse response2 = productService.registProduct(tempCode1, request2);
+		RegistProductResponse response3 = productService.registProduct(otherCode, request3);
+
+		productCodes.addAll(List.of(response1.productCode(), response2.productCode(), response3.productCode()));
+		productSaleCodes.addAll(
+			List.of(response1.productSaleCode(), response2.productSaleCode(), response3.productSaleCode()));
 	}
 
 	@Test
@@ -69,8 +94,8 @@ class ProductServiceTest {
 		// when
 		RegistProductResponse response = productService.registProduct(sellerCode, request);
 
-		Product product = productRepository.findById(response.productId()).get();
-		ProductSale productSale = productSaleRepository.findById(response.productId()).get();
+		Product product = productRepository.findByCode(response.productCode()).get();
+		ProductSale productSale = productSaleRepository.findByCode(response.productSaleCode()).get();
 
 		// then
 		assertEquals(request.title(), product.getTitle());
@@ -106,5 +131,39 @@ class ProductServiceTest {
 		// when, then
 		assertThrows(ServiceException.class,
 			() -> productService.registProduct(sellerCode, request));
+	}
+
+	@Test
+	@DisplayName("성공_상품 정보 수정")
+	void success_update_product() throws Exception {
+
+		// given
+		String sellerCode = "tempSellerCode";
+		Product product = productRepository.findByCode(productCodes.getFirst()).get();
+		UpdateProductRequest request = new UpdateProductRequest("새로운 제목", "새로운 설명", 1000000L);
+
+		// when
+		UpdateProductResponse response = productService.updateProduct(sellerCode, product.getCode(), request);
+		Product updatedProduct = productRepository.findByCode(response.productCode()).get();
+
+		// then
+		assertEquals("새로운 제목", updatedProduct.getTitle());
+		assertEquals("새로운 설명", updatedProduct.getDescription());
+		assertEquals(1000000L, updatedProduct.getProductSale().getPrice());
+	}
+
+	// TODO: 상품 수정 - 인가 실패
+
+	@Test
+	@DisplayName("실패_상품 정보 수정 시 상품 코드 오입력")
+	void fail_update_product_wrong_product_code() throws Exception {
+
+		// given
+		String sellerCode = "tempSellerCode";
+		UpdateProductRequest request = new UpdateProductRequest("새로운 제목", "새로운 설명", 1000000L);
+
+		// when, then
+		assertThrows(ServiceException.class,
+			() -> productService.updateProduct(sellerCode, "wrongCode", request));
 	}
 }
