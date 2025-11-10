@@ -14,17 +14,4 @@ public record UserRequest(
 	String address,
 	String addressDetail
 ) {
-	public static User from(UserRequest userRequest, BCryptPasswordEncoder bCryptPasswordEncoder) {
-		return User.builder()
-			.email(userRequest.email())
-			.name(userRequest.name())
-			.password(bCryptPasswordEncoder.encode(userRequest.password()))
-			.nickname(userRequest.nickname())
-			.phone(userRequest.phone())
-			.address(userRequest.address())
-			.addressDetail(userRequest.addressDetail())
-			.role(RoleType.USER)
-			.profileImage("")
-			.build();
-	}
 }

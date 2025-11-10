@@ -25,28 +25,26 @@ public class UserController {
 
 	@Operation(summary = "인증메일 전송 API", description = "인증 메일을 전송합니다.")
 	@PostMapping("/send")
-	public ResponseEntity<BaseResponse<String>> sendCertificateEmail(@RequestBody UserRequest userRequest) {
+	public BaseResponse<String> sendCertificateEmail(@RequestBody UserRequest userRequest) {
 		userService.sendCertificateEmail(userRequest.email());
 
-		return ResponseEntity.ok()
-			.body(BaseResponse.success(200, userRequest.email(), "인증메일 전송 성공"));
+		return BaseResponse.success(200, userRequest.email(), "인증메일 전송 성공");
 	}
 
 	@Operation(summary = "메일 인증 API", description = "메일로 보낸 인증 코드를 확인합니다")
 	@PostMapping("/check")
-	public ResponseEntity<BaseResponse<String>> checkCertificateEmail(
+	public BaseResponse<String> checkCertificateEmail(
 		@RequestBody @Valid EmailCertificationRequest emailCertificationRequest) {
 		userService.checkCertificateEmail(emailCertificationRequest);
 
-		return ResponseEntity.ok()
-			.body(BaseResponse.success(200, emailCertificationRequest.email(), "이메일 인증 성공"));
+		return BaseResponse.success(200, emailCertificationRequest.email(), "이메일 인증 성공");
 	}
 
 	@Operation(summary = "회원가입 API", description = "회원가입 API입니다.")
 	@PostMapping("/register")
-	public ResponseEntity<BaseResponse<String>> registerUser(@RequestBody @Valid UserRequest userRequest) {
+	public BaseResponse<String> registerUser(@RequestBody @Valid UserRequest userRequest) {
 		userService.registerUser(userRequest);
 
-		return ResponseEntity.ok().body(BaseResponse.success(200, userRequest.email(), "회원가입 성공"));
+		return BaseResponse.success(200, userRequest.email(), "회원가입 성공");
 	}
 }

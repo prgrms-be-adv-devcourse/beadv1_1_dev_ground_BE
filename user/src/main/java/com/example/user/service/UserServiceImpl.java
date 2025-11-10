@@ -6,6 +6,7 @@ import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.example.user.mapper.UserMapper;
 import com.example.user.model.dto.request.EmailCertificationRequest;
 import com.example.user.model.dto.request.UserRequest;
 import com.example.user.model.entity.User;
@@ -65,7 +66,7 @@ public class UserServiceImpl implements UserService {
 		}
 
 		//사용자 정보 저장
-		User user = userRequest.from(userRequest, bCryptPasswordEncoder);
+		User user = UserMapper.toEntity(userRequest, bCryptPasswordEncoder);
 		userRepository.save(user);
 
 		//장바구니 코드 저장
