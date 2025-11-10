@@ -1,5 +1,6 @@
 package io.devground.dbay.domain.cart.cart.controller;
 
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -11,6 +12,7 @@ import io.devground.core.model.web.BaseResponse;
 import io.devground.dbay.domain.cart.cart.mapper.CartMapper;
 import io.devground.dbay.domain.cart.cart.model.vo.AddCartItemRequest;
 import io.devground.dbay.domain.cart.cart.model.vo.AddCartItemResponse;
+import io.devground.dbay.domain.cart.cart.model.vo.GetItemsByCartResponse;
 import io.devground.dbay.domain.cart.cart.service.CartService;
 import io.devground.dbay.domain.cart.cartItem.model.entity.CartItem;
 import io.swagger.v3.oas.annotations.Operation;
@@ -20,7 +22,7 @@ import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/cart")
+@RequestMapping("/api/carts")
 @Tag(name = "CartController")
 public class CartController {
 
@@ -34,5 +36,11 @@ public class CartController {
 	) {
 		CartItem cartItem = cartService.addItem(cartCode, request);
 		return BaseResponse.success(200, CartMapper.toAddCartItemResponse(cartItem), "장바구니 추가 성공");
+	}
+
+	@Operation(summary = "장바구니 상품 조회", description = "장바구니에 상품을 조회합니다.")
+	@GetMapping("/{cartCode}")
+	public BaseResponse<GetItemsByCartResponse> getItemsByCart(@PathVariable String cartCode) {
+		return BaseResponse.success(200, cartService.getItemsByCart(cartCode), "장바구니 조회 성공");
 	}
 }
