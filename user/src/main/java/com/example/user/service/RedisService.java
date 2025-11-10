@@ -24,4 +24,21 @@ public class RedisService {
 			template.opsForValue().set(key, value, timeout);
 		}
 	}
+
+	public <T> T find(String key, Class<T> clazz) {
+		if(clazz == String.class){
+			String value = stringRedisTemplate.opsForValue().get(key);
+			return clazz.cast(value);
+		}
+		Object rawData = stringRedisTemplate.opsForValue().get(key);
+		if(rawData == null){
+			return null;
+		}
+
+		return objectMapper.convertValue(rawData, clazz);
+	}
+
+	public void delete(String key) {
+		template.delete(key);
+	}
 }
