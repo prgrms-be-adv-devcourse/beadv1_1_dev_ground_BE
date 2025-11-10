@@ -2,14 +2,17 @@ package io.devground.dbay.domain.product.category.service;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.util.List;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Profile;
+import org.springframework.test.context.ActiveProfiles;
 
 import io.devground.core.model.exception.ServiceException;
 import io.devground.dbay.domain.product.category.dto.AdminCategoryResponse;
+import io.devground.dbay.domain.product.category.dto.CategoryTreeResponse;
 import io.devground.dbay.domain.product.category.dto.RegistCategoryRequest;
 import io.devground.dbay.domain.product.category.entity.Category;
 import io.devground.dbay.domain.product.category.repository.CategoryRepository;
@@ -17,7 +20,7 @@ import jakarta.transaction.Transactional;
 
 @Transactional
 @SpringBootTest
-@Profile("test")
+@ActiveProfiles("test")
 class CategoryServiceTest {
 
 	@Autowired
@@ -94,5 +97,38 @@ class CategoryServiceTest {
 	void fail_parent_not_found() throws Exception {
 		assertThrows(ServiceException.class,
 			() -> categoryService.registCategory(new RegistCategoryRequest("child", 500L)));
+	}
+
+	@Test
+	@DisplayName("성공_카테고리 트리 조회")
+	void success_category_tree() throws Exception {
+
+		// given
+		RegistCategoryRequest requestDepth1 = new RegistCategoryRequest("핸드폰", null);
+		AdminCategoryResponse responseDepth1 = categoryService.registCategory(requestDepth1);
+
+		RegistCategoryRequest requestDepth2 = new RegistCategoryRequest("아이폰", responseDepth1.id());
+		AdminCategoryResponse responseDepth2 = categoryService.registCategory(requestDepth2);
+
+		RegistCategoryRequest requestDepth3 = new RegistCategoryRequest("아이폰15", responseDepth2.id());
+		AdminCategoryResponse responseDepth3 = categoryService.registCategory(requestDepth3);
+
+		// when
+		List<CategoryTreeResponse> responses = categoryService.getCategoryTree();
+
+		CategoryTreeResponse root = responses.getFirst();
+		CategoryTreeResponse childDepth2 = root.children().getFirst();
+		CategoryTreeResponse childDepth3 = childDepth2.children().getFirst();
+
+		// then
+		assertEquals("핸드폰", root.name());
+		assertEquals(1, root.depth());
+		assertFalse(root.isLeaf());
+		assertEquals("아이폰", childDepth2.name());
+		assertEquals(2, childDepth2.depth());
+		assertFalse(childDepth2.isLeaf());
+		assertEquals("아이폰15", childDepth3.name());
+		assertEquals(3, childDepth3.depth());
+		assertTrue(childDepth3.isLeaf());
 	}
 }
