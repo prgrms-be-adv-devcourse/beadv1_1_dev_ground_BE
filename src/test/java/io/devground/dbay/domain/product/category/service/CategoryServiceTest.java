@@ -197,4 +197,13 @@ class CategoryServiceTest {
 		assertTrue(childResponses.getFirst().isLeaf());
 		assertTrue(childResponses.getLast().isLeaf());
 	}
+
+	@Test
+	@DisplayName("실패_하위 카테고리 조회 시 존재하지 않는 카테고리")
+	void fail_child_category_non_id() throws Exception {
+
+		// given, when, then
+		assertThrows(ServiceException.class,
+			() -> categoryService.getChildCategories(300L));
+	}
 }
