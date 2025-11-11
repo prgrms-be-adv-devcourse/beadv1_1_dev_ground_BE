@@ -1,0 +1,30 @@
+server:
+  port: 8000
+#
+#spring:
+#  application:
+#    name: api-gateway
+
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://43.201.80.95:8761/eureka/
+
+spring:
+  application:
+    name: api-gateway
+  cloud:
+    gateway:
+      routes:
+        - id: user
+          uri: lb://user
+          predicates:
+            - Path=/api/users/**
+
+        #고려해보기
+        - id: main-service
+          uri: lb://main-service
+          predicates:
+            - Path=/api/main/**

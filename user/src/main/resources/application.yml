@@ -1,40 +1,9 @@
-server:
-  port: 8001
-
 spring:
-  application:
-    name: user
-
-  config:
-    import: optional:classpath:.env[.properties]
-
-  profiles:
-    active: test
-
-  jpa:
-    hibernate:
-      #      default_batch_fetch_size: 500
-      #      format_sql: true
-      ddl-auto: update
-      naming:
-        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
-
-  datasource:
-    driver-class-name: org.mariadb.jdbc.Driver
-    url: ${MARIA_DB_URL}
-    username: ${MARIA_DB_USERNAME}
-    password: ${MAIRA_DB_PASSWORD}
-
-  data:
-    redis:
-      port: 6379
-      host: localhost
-
   mail:
     host: smtp.gmail.com
     port: 587
-    username: ${MAIL_EMAIL}
-    password: ${MAIL_PASSWORD}
+    username: your_email@gmail.com
+    password: your_app_password
     properties:
       mail:
         smtp:
@@ -42,16 +11,32 @@ spring:
           starttls:
             enable: true
 
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://mysql:3306/dbay_user?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+    username: root
+    password: root1234   #docker-compose.yml 안의 MYSQL_ROOT_PASSWORD 값과 동일해야 함
 
-logging:
-  level:
-    org.hibernate.SQL: debug
-    org.hibernate.orm.jdbc.bind: TRACE
-    org.hibernate.orm.jdbc.extract: TRACE
-    org.springframework.batch: INFO
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQLDialect
+        show_sql: true
+        format_sql: true
 
-#custom:
-#  jwt:
-#    secrets:
-#      app-key: BBpgN9RJg1nYobpf7KHfJUaoiWSO-gD9EiEApPkV1rWJmH0vAVjMT2Pn-MtaaeElM7GFN88aQFl7d9adK_hB9w
+  application:
+    name: user-service
+
+server:
+  port: 8001
+
+
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://eureka:8761/eureka/
 
