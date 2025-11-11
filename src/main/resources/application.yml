@@ -34,6 +34,15 @@ spring:
         spring.json.trusted.packages: io.devground.dbay.*, io.devground.core.*
         allow.auto.create.topics: false
 
+  cloud:
+    aws:
+      s3:
+        bucket: testBucket # 채울 것
+      credentials:
+        access-key: testAccessKey # 채울 것
+        secret-key: testSecretKey # 채울 것
+      region:
+        static: testRegion # 채울 것
 
 deposits:
   event:
@@ -48,3 +57,10 @@ custom:
     config:
       topic-partitions: 1
       topic-replications: 1
+
+logging:
+  level:
+    org.hibernate.SQL: debug
+    org.hibernate.orm.jdbc.bind: TRACE
+    org.hibernate.orm.jdbc.extract: TRACE
+    org.springframework.batch: INFO
