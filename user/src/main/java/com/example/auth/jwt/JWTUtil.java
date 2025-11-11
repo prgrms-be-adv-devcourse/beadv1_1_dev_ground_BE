@@ -17,15 +17,26 @@ public class JWTUtil {
 	private SecretKey secretKey;
 
 	public JWTUtil(@Value("${custom.jwt.secrets.app-key}") String secret) {
-		this.secretKey = new SecretKeySpec(secret.getBytes(StandardCharsets.UTF_8), Jwts.SIG.HS256.key().build().getAlgorithm());
+		this.secretKey = new SecretKeySpec(secret.getBytes(StandardCharsets.UTF_8),
+			Jwts.SIG.HS256.key().build().getAlgorithm());
 	}
 
-	public String getUserCode(String token){
-		return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("userCode", String.class);
+	public String getUserCode(String token) {
+		return Jwts.parser()
+			.verifyWith(secretKey)
+			.build()
+			.parseSignedClaims(token)
+			.getPayload()
+			.get("userCode", String.class);
 	}
 
 	public String getRole(String token) {
-		return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("role", String.class);
+		return Jwts.parser()
+			.verifyWith(secretKey)
+			.build()
+			.parseSignedClaims(token)
+			.getPayload()
+			.get("role", String.class);
 	}
 
 	public Date getExpiration(String token) {
@@ -33,12 +44,23 @@ public class JWTUtil {
 	}
 
 	public Boolean isExpired(String token) {
-		return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().getExpiration().before(new Date());
+		return Jwts.parser()
+			.verifyWith(secretKey)
+			.build()
+			.parseSignedClaims(token)
+			.getPayload()
+			.getExpiration()
+			.before(new Date());
 	}
 
 	//토큰 종류
 	public String getCategory(String token) {
-		return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("category", String.class);
+		return Jwts.parser()
+			.verifyWith(secretKey)
+			.build()
+			.parseSignedClaims(token)
+			.getPayload()
+			.get("category", String.class);
 	}
 
 	public String createJwt(String category, String userCode, String role, Long expiredMs) {

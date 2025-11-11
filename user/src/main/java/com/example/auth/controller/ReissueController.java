@@ -26,12 +26,12 @@ public class ReissueController {
 		Cookie[] cookies = request.getCookies();
 		if (cookies != null) {
 			for (Cookie cookie : cookies) {
-				if("refresh".equals(cookie.getName())) {
+				if ("refresh".equals(cookie.getName())) {
 					refresh = cookie.getValue();
 				}
 			}
 		}
-		if(refresh == null) {
+		if (refresh == null) {
 			return BaseResponse.fail(400, "refresh token null");
 		}
 
@@ -56,7 +56,7 @@ public class ReissueController {
 
 	private Cookie createCookie(String key, String value) {
 		Cookie cookie = new Cookie(key, value);
-		cookie.setMaxAge(24*60*60);
+		cookie.setMaxAge(24 * 60 * 60);
 		cookie.setHttpOnly(true);
 		cookie.setPath("/");
 		cookie.setDomain("");

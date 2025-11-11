@@ -29,21 +29,25 @@ public class CustomLogoutFilter extends GenericFilterBean {
 	private final ObjectMapper objectMapper = new ObjectMapper();
 
 	@Override
-	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws  IOException, ServletException {
+	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws
+		IOException,
+		ServletException {
 		doFilter((HttpServletRequest) request, (HttpServletResponse) response, chain);
 	}
 
-	private void doFilter(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws IOException, ServletException {
+	private void doFilter(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws
+		IOException,
+		ServletException {
 
 		//경로, 메서드 확인
 		String requestUri = request.getRequestURI();
-		if(!requestUri.matches("^\\/api/users/logout$")) {
+		if (!requestUri.matches("^\\/api/users/logout$")) {
 			filterChain.doFilter(request, response);
 			return;
 		}
 
 		String requestMethod = request.getMethod();
-		if(!requestMethod.equals("POST")) {
+		if (!requestMethod.equals("POST")) {
 			filterChain.doFilter(request, response);
 			return;
 		}
@@ -51,14 +55,14 @@ public class CustomLogoutFilter extends GenericFilterBean {
 		//get refresh token
 		String refresh = null;
 		Cookie[] cookies = request.getCookies();
-		for(Cookie cookie : cookies) {
-			if(cookie.getName().equals("refresh")) {
+		for (Cookie cookie : cookies) {
+			if (cookie.getName().equals("refresh")) {
 				refresh = cookie.getValue();
 			}
 		}
 
 		//refresh null check
-		if(refresh == null) {
+		if (refresh == null) {
 			log.error("refresh 토큰이 없습니다.");
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			return;
@@ -75,7 +79,7 @@ public class CustomLogoutFilter extends GenericFilterBean {
 
 		//토큰이 refresh 토큰인지 확인
 		String category = jwtUtil.getCategory(refresh);
-		if(!category.equals("refresh")) {
+		if (!category.equals("refresh")) {
 			log.error("refresh 토큰이 아닙니다.");
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			return;
@@ -83,7 +87,7 @@ public class CustomLogoutFilter extends GenericFilterBean {
 
 		//유효기간이 남아있는 access 토큰을 남아있는 기간만큼 redis에 저장
 		try {
-			if(!jwtUtil.isExpired(request.getHeader("access"))){
+			if (!jwtUtil.isExpired(request.getHeader("access"))) {
 				String accessToken = request.getHeader("access");
 				Date expiration = jwtUtil.getExpiration(accessToken);
 				Date now = new Date();
