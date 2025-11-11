@@ -57,7 +57,7 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public void registerUser(UserRequest userRequest) {
+	public User registerUser(UserRequest userRequest) {
 		String email = userRequest.email();
 
 		if (!redisService.find(email, String.class).equals("Verified")
@@ -74,5 +74,7 @@ public class UserServiceImpl implements UserService {
 		//예치금 코드 저장
 
 		//웰컴 쿠폰 발급
+
+		return user;
 	}
 }
