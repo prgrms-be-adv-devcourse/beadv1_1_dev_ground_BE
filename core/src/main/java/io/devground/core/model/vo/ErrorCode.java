@@ -61,6 +61,7 @@ public enum ErrorCode {
 	IMAGE_NOT_FOUND(404, "이미지를 찾을 수 없습니다."),
 
 	// s3
+	INVALID_FILE_EXTENSION(400, "지원하지 않는 확장자입니다."),
 	S3_PRESIGNED_URL_GENERATION_FAILED(500, "PresignedURL 생성에 실패하였습니다."),
 	S3_OBJECT_DELETE_FAILED(500, "S3 오브젝트 제거에 실패하였습니다."),
 	S3_OBJECT_GET_FAILED(500, "S3 오브젝트 호출에 실패하였습니다."),
