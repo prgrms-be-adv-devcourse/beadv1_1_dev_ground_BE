@@ -1,7 +1,6 @@
 package io.devground.core.model.entity;
 
 import java.time.LocalDateTime;
-import java.util.Objects;
 import java.util.UUID;
 
 import org.springframework.data.annotation.CreatedDate;
@@ -16,11 +15,13 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.MappedSuperclass;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
 @Getter
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)
+@EqualsAndHashCode(of = {"code", "createdAt"})
 public abstract class BaseEntity {
 
 	@Column(nullable = false, unique = true)
@@ -53,20 +54,5 @@ public abstract class BaseEntity {
 	public void delete() {
 		this.deleteStatus = DeleteStatus.Y;
 		this.updatedAt = LocalDateTime.now();
-	}
-
-	@Override
-	public boolean equals(Object o) {
-		if (o == null || getClass() != o.getClass()) {
-			return false;
-		}
-
-		BaseEntity bo = (BaseEntity) o;
-		return Objects.equals(code, bo.code) && Objects.equals(createdAt, bo.createdAt);
-	}
-
-	@Override
-	public int hashCode() {
-		return Objects.hash(code, createdAt);
 	}
 }
