@@ -1,5 +1,7 @@
 package io.devground.dbay.domain.product.product.dto;
 
+import java.util.List;
+
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
@@ -19,8 +21,8 @@ public record UpdateProductRequest(
 	@Positive(message = "가격은 0원 이상이어야 합니다.")
 	Long price,
 
-	String deleteUrl,
+	List<String> deleteUrl,
 
-	String newFileExtension
+	List<String> newFileExtension
 ) {
 }

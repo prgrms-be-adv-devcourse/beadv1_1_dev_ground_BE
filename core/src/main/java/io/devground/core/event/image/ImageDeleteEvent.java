@@ -1,6 +1,6 @@
-package io.devground.dbay.domain.image.dto;
+package io.devground.core.event.image;
 
-import io.devground.dbay.domain.image.vo.ImageType;
+import io.devground.core.model.vo.ImageType;
 import lombok.NonNull;
 
 public record ImageDeleteEvent(

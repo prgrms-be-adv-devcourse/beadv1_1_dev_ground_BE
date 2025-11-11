@@ -1,7 +1,7 @@
 package io.devground.dbay.domain.image.mapper;
 
+import io.devground.core.model.vo.ImageType;
 import io.devground.dbay.domain.image.entity.Image;
-import io.devground.dbay.domain.image.vo.ImageType;
 
 public abstract class ImageMapper {
 

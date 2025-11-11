@@ -6,12 +6,12 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import io.devground.core.model.vo.ImageType;
 import io.devground.dbay.common.aws.s3.S3Service;
 import io.devground.dbay.domain.image.entity.Image;
 import io.devground.dbay.domain.image.mapper.ImageMapper;
 import io.devground.dbay.domain.image.repository.ImageRepository;
 import io.devground.dbay.domain.image.service.ImageService;
-import io.devground.dbay.domain.image.vo.ImageType;
 import lombok.RequiredArgsConstructor;
 
 @Service

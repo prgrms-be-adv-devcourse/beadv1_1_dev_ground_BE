@@ -12,7 +12,7 @@ import org.springframework.util.CollectionUtils;
 
 import io.devground.core.model.exception.ServiceException;
 import io.devground.core.model.vo.ErrorCode;
-import io.devground.dbay.domain.image.vo.ImageType;
+import io.devground.core.model.vo.ImageType;
 import lombok.RequiredArgsConstructor;
 import software.amazon.awssdk.core.exception.SdkException;
 import software.amazon.awssdk.services.s3.S3Client;

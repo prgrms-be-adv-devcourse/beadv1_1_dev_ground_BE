@@ -58,6 +58,18 @@ custom:
       topic-partitions: 1
       topic-replications: 1
 
+products:
+  event:
+    image:
+      push: products-image-push
+      delete: products-image-delete
+
+images:
+  event:
+    push: images-push
+    delete: images-delete
+
+
 logging:
   level:
     org.hibernate.SQL: debug

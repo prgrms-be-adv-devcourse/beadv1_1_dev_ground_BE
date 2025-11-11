@@ -2,7 +2,7 @@ package io.devground.dbay.domain.image.service;
 
 import java.util.List;
 
-import io.devground.dbay.domain.image.vo.ImageType;
+import io.devground.core.model.vo.ImageType;
 
 public interface ImageService {
 

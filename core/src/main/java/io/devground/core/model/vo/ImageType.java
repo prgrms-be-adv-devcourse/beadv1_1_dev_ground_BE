@@ -1,4 +1,4 @@
-package io.devground.dbay.domain.image.vo;
+package io.devground.core.model.vo;
 
 import lombok.Getter;
 
