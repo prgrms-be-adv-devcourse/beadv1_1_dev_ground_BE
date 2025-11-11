@@ -62,5 +62,5 @@ services:
       SPRING_DATA_REDIS_PORT: 6379
     command: [ "java", "-jar", "app.jar" ]
     ports:
-      - "8001:8001"
+      - "8081:8081"
 
