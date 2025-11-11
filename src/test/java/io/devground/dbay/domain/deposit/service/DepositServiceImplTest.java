@@ -3,8 +3,6 @@ package io.devground.dbay.domain.deposit.service;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.BDDMockito.*;
 
-import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Optional;
 
 import org.junit.jupiter.api.DisplayName;
@@ -13,23 +11,13 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 
 import io.devground.core.model.exception.ServiceException;
-import io.devground.core.model.vo.ErrorCode;
 import io.devground.dbay.domain.deposit.dto.response.DepositBalanceResponse;
-import io.devground.dbay.domain.deposit.dto.response.DepositHistoryResponse;
 import io.devground.dbay.domain.deposit.dto.response.DepositResponse;
 import io.devground.dbay.domain.deposit.entity.Deposit;
 import io.devground.dbay.domain.deposit.entity.DepositHistory;
 import io.devground.dbay.domain.deposit.entity.vo.DepositHistoryType;
-import io.devground.dbay.domain.deposit.mapper.DepositMapper;
 import io.devground.dbay.domain.deposit.repository.DepositHistoryJpaRepository;
 import io.devground.dbay.domain.deposit.repository.DepositJpaRepository;
 
