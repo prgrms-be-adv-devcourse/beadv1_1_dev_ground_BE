@@ -8,9 +8,6 @@ spring:
   config:
     import: optional:classpath:.env[.properties]
 
-  profiles:
-    active: test
-
   jpa:
     hibernate:
       #      default_batch_fetch_size: 500
@@ -50,10 +47,10 @@ logging:
     org.hibernate.orm.jdbc.extract: TRACE
     org.springframework.batch: INFO
 
-#custom:
-#  jwt:
-#    secrets:
-#      app-key: BBpgN9RJg1nYobpf7KHfJUaoiWSO-gD9EiEApPkV1rWJmH0vAVjMT2Pn-MtaaeElM7GFN88aQFl7d9adK_hB9w
+custom:
+  jwt:
+    secrets:
+      app-key: BBpgN9RJg1nYobpf7KHfJUaoiWSO-gD9EiEApPkV1rWJmH0vAVjMT2Pn-MtaaeElM7GFN88aQFl7d9adK_hB9w
 
 
 
