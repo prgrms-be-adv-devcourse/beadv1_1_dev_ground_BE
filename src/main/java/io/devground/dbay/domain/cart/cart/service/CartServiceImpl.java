@@ -11,6 +11,7 @@ import io.devground.core.util.Validators;
 import io.devground.dbay.domain.cart.cart.model.entity.Cart;
 import io.devground.dbay.domain.cart.cart.model.vo.AddCartItemRequest;
 import io.devground.dbay.domain.cart.cart.model.vo.CartProductListResponse;
+import io.devground.dbay.domain.cart.cart.model.vo.DeleteItemsByCartRequest;
 import io.devground.dbay.domain.cart.cart.model.vo.GetItemsByCartResponse;
 import io.devground.dbay.domain.cart.cart.repository.CartRepository;
 import io.devground.dbay.domain.cart.cartItem.model.entity.CartItem;
@@ -101,5 +102,27 @@ public class CartServiceImpl implements CartService {
 			.sum();
 
 		return new GetItemsByCartResponse(totalAmount, cartProducts);
+	}
+
+	@Override
+	@Transactional
+	public int deleteItemsByCart(String cartCode, DeleteItemsByCartRequest request) {
+		if (!Validators.isValidUuid(cartCode)) {
+			throw ErrorCode.CODE_INVALID.throwServiceException();
+		}
+
+		if (request.cartProductCodes().isEmpty()) {
+			throw ErrorCode.CART_ITEM_DELETE_NOT_SELECTED.throwServiceException();
+		}
+
+		cartRepository.findByCode(cartCode).orElseThrow(ErrorCode.CART_NOT_FOUND::throwServiceException);
+
+		int result = cartItemRepository.deleteCartItemByProductCodes(cartCode, request.cartProductCodes());
+
+		if (result != request.cartProductCodes().size()) {
+			throw ErrorCode.DELETE_CART_ITEM_FAILED.throwServiceException();
+		}
+
+		return result;
 	}
 }

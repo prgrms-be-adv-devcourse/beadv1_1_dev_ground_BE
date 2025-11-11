@@ -22,9 +22,11 @@ public enum ErrorCode {
 	NOT_VERIFICATION_EMAIL(400, "이메일이 인증되지 않았습니다."),
 
 	// cart
+	CART_ITEM_DELETE_NOT_SELECTED(400, "삭제할 상품이 선택되지 않았습니다."),
 	CART_ITEM_ALREADY_EXIST(409, "장바구니에 이미 담긴 상품입니다."),
 	CART_ALREADY_EXIST(409, "장바구니가 이미 존재합니다."),
 	CART_NOT_FOUND(404, "장바구니를 찾을 수 없습니다."),
+	DELETE_CART_ITEM_FAILED(400, "장바구니 상품 삭제를 실패했습니다."),
 
 	// order
 	ADDRESS_NOT_FOUND(404, "해당 주소를 찾을 수 없습니다."),
