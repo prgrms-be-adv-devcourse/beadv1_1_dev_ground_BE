@@ -1,0 +1,9 @@
+1762840737421|4|statement|connection 28|url jdbc:h2:mem:test|     drop table if exists Cart cascade |     drop table if exists Cart cascade 
+1762840737425|1|statement|connection 28|url jdbc:h2:mem:test|     drop table if exists CartItem cascade |     drop table if exists CartItem cascade 
+1762840737427|1|statement|connection 28|url jdbc:h2:mem:test|     drop table if exists Category cascade |     drop table if exists Category cascade 
+1762840737427|0|statement|connection 28|url jdbc:h2:mem:test|     drop table if exists Deposit cascade |     drop table if exists Deposit cascade 
+1762840737431|2|statement|connection 28|url jdbc:h2:mem:test|     drop table if exists DepositHistory cascade |     drop table if exists DepositHistory cascade 
+1762840737437|0|statement|connection 28|url jdbc:h2:mem:test|     drop table if exists Order cascade |     drop table if exists Order cascade 
+1762840737441|1|statement|connection 28|url jdbc:h2:mem:test|     drop table if exists OrderItem cascade |     drop table if exists OrderItem cascade 
+1762840737447|5|statement|connection 28|url jdbc:h2:mem:test|     drop table if exists Product cascade |     drop table if exists Product cascade 
+1762840737450|2|statement|connection 28|url jdbc:h2:mem:test|     drop table if exists ProductSale cascade |     drop table if exists ProductSale cascade 

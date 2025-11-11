@@ -19,6 +19,7 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
 		(
 			p.code,
 			ps.code,
+			ps.sellerCode,
 			p.title,
 			ps.price
 		)

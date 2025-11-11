@@ -254,6 +254,7 @@ class ProductServiceTest {
 
 			assertEquals(p.getTitle(), cpResponse.title());
 			assertEquals(p.getProductSale().getPrice(), cpResponse.price());
+			assertEquals(p.getProductSale().getSellerCode(), cpResponse.sellerCode());
 		}
 	}
 
