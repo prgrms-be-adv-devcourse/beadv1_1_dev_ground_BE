@@ -96,8 +96,6 @@ class DepositServiceImplTest {
 
 		expected.charge(10000L);
 
-		given(depositRepository.existsByUserCode(userCode))
-			.willReturn(true);
 		given(depositRepository.findByUserCode(userCode))
 			.willReturn(Optional.of(expected));
 
@@ -108,7 +106,6 @@ class DepositServiceImplTest {
 		assertThat(actual)
 			.hasFieldOrPropertyWithValue("userCode", expected.getUserCode())
 			.hasFieldOrPropertyWithValue("balance", 10000L);
-		then(depositRepository).should().existsByUserCode(userCode);
 		then(depositRepository).should().findByUserCode(userCode);
 	}
 
@@ -121,9 +118,7 @@ class DepositServiceImplTest {
 		// when & then
 		assertThatThrownBy(() -> depositService.getByUserCode(userCode))
 			.isInstanceOf(ServiceException.class)
-			.hasMessage("404 : 예금 계정을 찾을 수 없습니다.");
-
-		then(depositRepository).should(never()).findByUserCode(anyString());
+			.hasMessage("404 : 예치금 계정을 찾을 수 없습니다.");
 	}
 
 	@DisplayName("사용자 코드를 입력하면, 잔액 정보를 반환한다.")
@@ -205,7 +200,7 @@ class DepositServiceImplTest {
 		// when & then
 		assertThatThrownBy(() -> depositService.hasEnoughBalance(depositCode, amount))
 			.isInstanceOf(ServiceException.class)
-			.hasMessage("404 : 예금 계정을 찾을 수 없습니다.");
+			.hasMessage("404 : 예치금 계정을 찾을 수 없습니다.");
 
 		then(depositRepository).should().findByCode(depositCode);
 	}
@@ -253,7 +248,7 @@ class DepositServiceImplTest {
 		// when & then
 		assertThatThrownBy(() -> depositService.charge(userCode, DepositHistoryType.CHARGE_TOSS, amount))
 			.isInstanceOf(ServiceException.class)
-			.hasMessage("404 : 예금 계정을 찾을 수 없습니다.");
+			.hasMessage("404 : 예치금 계정을 찾을 수 없습니다.");
 
 		then(depositRepository).should().findByUserCode(userCode);
 		then(depositHistoryRepository).should(never()).save(any(DepositHistory.class));
@@ -272,7 +267,7 @@ class DepositServiceImplTest {
 		// when & then
 		assertThatThrownBy(() -> depositService.withdraw(userCode, DepositHistoryType.PAYMENT_TOSS, amount))
 			.isInstanceOf(ServiceException.class)
-			.hasMessage("404 : 예금 계정을 찾을 수 없습니다.");
+			.hasMessage("404 : 예치금 계정을 찾을 수 없습니다.");
 
 		then(depositRepository).should().findByUserCode(userCode);
 		then(depositHistoryRepository).should(never()).save(any(DepositHistory.class));
@@ -321,7 +316,7 @@ class DepositServiceImplTest {
 		// when & then
 		assertThatThrownBy(() -> depositService.refund(userCode, DepositHistoryType.REFUND_TOSS, amount))
 			.isInstanceOf(ServiceException.class)
-			.hasMessage("404 : 예금 계정을 찾을 수 없습니다.");
+			.hasMessage("404 : 예치금 계정을 찾을 수 없습니다.");
 
 		then(depositRepository).should().findByUserCode(userCode);
 		then(depositHistoryRepository).should(never()).save(any(DepositHistory.class));
