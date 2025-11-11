@@ -20,6 +20,8 @@ public record RegistProductRequest(
 
 	@NotNull(message = "가격은 필수입니다.")
 	@Positive(message = "가격은 0원 이상이어야 합니다.")
-	Long price
+	Long price,
+
+	String fileExtension
 ) {
 }
