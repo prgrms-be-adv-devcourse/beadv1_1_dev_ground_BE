@@ -36,6 +36,7 @@ dependencies {
     //implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.13'
     implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.5.0'
 
+    // check param binding
     implementation 'com.github.gavlyukovskiy:p6spy-spring-boot-starter:1.12.0'
 
     // mysql
@@ -43,6 +44,10 @@ dependencies {
     implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
     implementation 'org.springframework.kafka:spring-kafka'
     testImplementation 'org.springframework.kafka:spring-kafka-test'
+
+    // s3
+    implementation 'io.awspring.cloud:spring-cloud-aws-starter:3.4.0'
+    implementation 'software.amazon.awssdk:s3:2.38.2'
 
     // h2
     runtimeOnly 'com.h2database:h2'

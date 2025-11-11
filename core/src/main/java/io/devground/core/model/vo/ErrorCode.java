@@ -60,6 +60,11 @@ public enum ErrorCode {
 	// image
 	IMAGE_NOT_FOUND(404, "이미지를 찾을 수 없습니다."),
 
+	// s3
+	S3_PRESIGNED_URL_GENERATION_FAILED(500, "PresignedURL 생성에 실패하였습니다."),
+	S3_OBJECT_DELETE_FAILED(500, "S3 오브젝트 제거에 실패하였습니다."),
+	S3_OBJECT_GET_FAILED(500, "S3 오브젝트 호출에 실패하였습니다."),
+
 	// deposit
 	DEPOSIT_ALREADY_EXISTS(409, "이미 예금 계정이 존재합니다."),
 	DEPOSIT_NOT_FOUND(404, "예치금 계정을 찾을 수 없습니다."),
