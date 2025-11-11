@@ -14,6 +14,6 @@ public record ImagePushEvent(
 	String referenceCode,
 
 	@NonNull
-	List<String> imageUrls
+	List<String> fileExtensions
 ) {
 }
