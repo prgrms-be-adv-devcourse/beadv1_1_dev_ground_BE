@@ -22,7 +22,6 @@ public class ReissueService {
 		String userCode = jwtUtil.getUserCode(refreshToken);
 		String role = jwtUtil.getRole(refreshToken);
 
-
 		return jwtUtil.createJwt("access", userCode, role, 3600000L);
 	}
 
@@ -32,7 +31,6 @@ public class ReissueService {
 		String userCode = jwtUtil.getUserCode(refreshToken);
 		String role = jwtUtil.getRole(refreshToken);
 
-
 		String newRefreshToken = jwtUtil.createJwt("refresh", userCode, role, 3600000L);
 		redisService.delete(refreshToken);
 		redisService.save(newRefreshToken, userCode, Duration.ofDays(7));
@@ -40,15 +38,15 @@ public class ReissueService {
 		return newRefreshToken;
 	}
 
-	public void validateRefreshToken(String refreshToken){
-		if(refreshToken == null
+	public void validateRefreshToken(String refreshToken) {
+		if (refreshToken == null
 			|| !redisService.exists(refreshToken)
 			|| !"refresh".equals(jwtUtil.getCategory(refreshToken))) {
 
 			throw ErrorCode.EMPTY_REFRESH_TOKEN.throwServiceException();
 		}
 
-		if(jwtUtil.isExpired(refreshToken)) {
+		if (jwtUtil.isExpired(refreshToken)) {
 			throw ErrorCode.EXPIRED_REFRESH_TOKEN.throwServiceException();
 		}
 	}

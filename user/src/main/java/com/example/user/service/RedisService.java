@@ -42,7 +42,7 @@ public class RedisService {
 		template.delete(key);
 	}
 
-	public boolean exists(String key){
+	public boolean exists(String key) {
 		return Boolean.TRUE.equals(template.hasKey(key));
 	}
 }
