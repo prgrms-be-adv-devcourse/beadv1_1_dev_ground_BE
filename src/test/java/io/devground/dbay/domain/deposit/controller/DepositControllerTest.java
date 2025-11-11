@@ -10,8 +10,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
@@ -34,7 +34,7 @@ class DepositControllerTest {
 	@Autowired
 	private ObjectMapper objectMapper;
 
-	@MockitoBean
+	@MockBean
 	private DepositServiceImpl depositService;
 
 	@DisplayName("[view][POST] 예치금 생성 - 정상 호출")
@@ -42,9 +42,11 @@ class DepositControllerTest {
 	void givenUserCode_whenCreatingDeposit_thenReturnsDepositResponse() throws Exception {
 		// given
 		String userCode = "USER_CODE";
+		String depositCode =  "DEPOSIT_CODE";
 		DepositResponse response = new DepositResponse(
 			1L,
 			userCode,
+			depositCode,
 			0L,
 			LocalDateTime.now(),
 			LocalDateTime.now()
@@ -73,9 +75,11 @@ class DepositControllerTest {
 		// given
 		String userCode = "USER_CODE";
 		Long balance = 1000L;
+		String depositCode =  "DEPOSIT_CODE";
 		DepositResponse response = new DepositResponse(
 			1L,
 			userCode,
+			depositCode,
 			balance,
 			LocalDateTime.now(),
 			LocalDateTime.now()
