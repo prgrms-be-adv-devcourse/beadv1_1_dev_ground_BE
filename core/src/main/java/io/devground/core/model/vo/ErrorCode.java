@@ -13,6 +13,7 @@ public enum ErrorCode {
 
 	// common
 	CODE_INVALID(400, "잘못된 코드 형식입니다."),
+	METHOD_NOT_ALLOWED(400, "잘못된 Http Method 입니다."),
 
 	// user/auth
 	UNAUTHORIZED(401, "로그인이 필요합니다."),
@@ -20,6 +21,8 @@ public enum ErrorCode {
 	CODE_EXPIRED(400, "인증 코드가 만료되었습니다."),
 	WRONG_VERIFICATION_CODE(400, "인증번호가 올바르지 않습니다."),
 	NOT_VERIFICATION_EMAIL(400, "이메일이 인증되지 않았습니다."),
+	INVALID_TOKEN(400, "잘못된 토큰입니다."),
+	INVALID_PASSWORD(400, "잘못된 비밀번호입니다."),
 
 	// cart
 	CART_ITEM_DELETE_NOT_SELECTED(400, "삭제할 상품이 선택되지 않았습니다."),
