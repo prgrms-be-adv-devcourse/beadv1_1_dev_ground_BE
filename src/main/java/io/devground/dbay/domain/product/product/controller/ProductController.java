@@ -5,6 +5,7 @@ import static org.springframework.http.HttpStatus.*;
 import java.util.List;
 
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import io.devground.core.model.web.BaseResponse;
 import io.devground.dbay.domain.product.product.dto.CartProductsRequest;
 import io.devground.dbay.domain.product.product.dto.CartProductsResponse;
+import io.devground.dbay.domain.product.product.dto.ProductDetailResponse;
 import io.devground.dbay.domain.product.product.dto.RegistProductRequest;
 import io.devground.dbay.domain.product.product.dto.RegistProductResponse;
 import io.devground.dbay.domain.product.product.dto.UpdateProductRequest;
@@ -46,6 +48,20 @@ public class ProductController {
 			CREATED.value(),
 			productService.registProduct(sellerCode, request),
 			"상품이 성공적으로 등록되었습니다."
+		);
+	}
+
+	// TODO: sellerCode 정책 정해진 후 수정
+	@GetMapping("/{productCode}")
+	@Operation(summary = "상품 상세 조회", description = "상품의 상세 정보를 조회할 수 있습니다.")
+	public BaseResponse<ProductDetailResponse> getProductDetail(
+		@PathVariable String productCode
+	) {
+
+		return BaseResponse.success(
+			OK.value(),
+			productService.getProductDetail(productCode),
+			"상품 상세 정보를 성공적으로 불러왔습니다."
 		);
 	}
 

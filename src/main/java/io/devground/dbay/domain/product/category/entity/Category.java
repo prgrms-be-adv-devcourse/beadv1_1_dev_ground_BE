@@ -77,4 +77,12 @@ public class Category extends BaseEntity {
 			ErrorCode.MISMATCH_ON_DEPTH.throwServiceException();
 		}
 	}
+
+	public String getFullPath() {
+		if (parent == null) {
+			return name;
+		}
+
+		return parent.getFullPath() + "/" + name;
+	}
 }
