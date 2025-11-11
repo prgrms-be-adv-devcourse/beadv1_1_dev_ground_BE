@@ -1,5 +1,6 @@
 package io.devground.dbay.domain.product.product.service;
 
+import static io.devground.dbay.domain.product.product.vo.ProductStatus.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.ArrayList;
@@ -20,6 +21,7 @@ import io.devground.dbay.domain.product.category.dto.RegistCategoryRequest;
 import io.devground.dbay.domain.product.category.service.CategoryService;
 import io.devground.dbay.domain.product.product.dto.CartProductsRequest;
 import io.devground.dbay.domain.product.product.dto.CartProductsResponse;
+import io.devground.dbay.domain.product.product.dto.ProductDetailResponse;
 import io.devground.dbay.domain.product.product.dto.RegistProductRequest;
 import io.devground.dbay.domain.product.product.dto.RegistProductResponse;
 import io.devground.dbay.domain.product.product.dto.UpdateProductRequest;
@@ -28,7 +30,6 @@ import io.devground.dbay.domain.product.product.entity.Product;
 import io.devground.dbay.domain.product.product.entity.ProductSale;
 import io.devground.dbay.domain.product.product.repository.ProductRepository;
 import io.devground.dbay.domain.product.product.repository.ProductSaleRepository;
-import io.devground.dbay.domain.product.product.vo.ProductStatus;
 
 @Transactional
 @SpringBootTest
@@ -135,6 +136,37 @@ class ProductServiceTest {
 		// when, then
 		assertThrows(ServiceException.class,
 			() -> productService.registProduct(sellerCode, request));
+	}
+
+	@Test
+	@DisplayName("성공_상품 상세 조회")
+	void success_get_product_detail() throws Exception {
+
+		// given
+		String sellerCode = "tempSellerCode";
+
+		// when
+		ProductDetailResponse product = productService.getProductDetail(productCodes.getFirst());
+
+		// then
+		assertEquals(sellerCode, product.sellerCode());
+		assertEquals("갤럭시 팔아요", product.title());
+		assertEquals("이런 갤럭시입니다.", product.description());
+		assertEquals("핸드폰/아이폰/아이폰15", product.categoryPath());
+		assertEquals(300000L, product.price());
+		assertEquals(ON_SALE.getValue(), product.productStatus());
+	}
+
+	@Test
+	@DisplayName("실패_상품 상세 조회 시 잘못된 상품 코드")
+	void fail_get_product_detail_wrong_product_code() throws Exception {
+
+		// given
+		String productCode = "wrongCode";
+
+		// when, then
+		assertThrows(ServiceException.class,
+			() -> productService.getProductDetail(productCode));
 	}
 
 	@Test
@@ -262,7 +294,7 @@ class ProductServiceTest {
 		List<Product> products = productRepository.findAllByCodeIn(productCodes);
 
 		for (Product p : products) {
-			assertEquals(ProductStatus.SOLD, p.getProductSale().getProductStatus());
+			assertEquals(SOLD, p.getProductSale().getProductStatus());
 		}
 	}
 
