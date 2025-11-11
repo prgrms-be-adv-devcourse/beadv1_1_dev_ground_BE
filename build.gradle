@@ -32,8 +32,9 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     implementation 'org.springframework.boot:spring-boot-starter-batch'
 
-    // swaggerㅡ
-    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.13'
+    // swagger
+    //implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.13'
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.5.0'
 
     implementation 'com.github.gavlyukovskiy:p6spy-spring-boot-starter:1.12.0'
 
