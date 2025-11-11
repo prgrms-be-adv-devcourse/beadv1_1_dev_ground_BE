@@ -10,7 +10,6 @@ ENV LC_ALL=ko_KR.UTF-8
 WORKDIR /app
 
 # 빌드된 jar 복사
-#COPY build/libs/eureka.jar app.jar
 COPY build/libs/*.jar app.jar
 
 
