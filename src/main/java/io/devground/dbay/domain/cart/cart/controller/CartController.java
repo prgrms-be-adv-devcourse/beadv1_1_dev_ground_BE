@@ -1,5 +1,6 @@
 package io.devground.dbay.domain.cart.cart.controller;
 
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -12,6 +13,7 @@ import io.devground.core.model.web.BaseResponse;
 import io.devground.dbay.domain.cart.cart.mapper.CartMapper;
 import io.devground.dbay.domain.cart.cart.model.vo.AddCartItemRequest;
 import io.devground.dbay.domain.cart.cart.model.vo.AddCartItemResponse;
+import io.devground.dbay.domain.cart.cart.model.vo.DeleteItemsByCartRequest;
 import io.devground.dbay.domain.cart.cart.model.vo.GetItemsByCartResponse;
 import io.devground.dbay.domain.cart.cart.service.CartService;
 import io.devground.dbay.domain.cart.cartItem.model.entity.CartItem;
@@ -28,8 +30,8 @@ public class CartController {
 
 	private final CartService cartService;
 
-	@Operation(summary = "장바구니 상품 추가", description = "장바구니에 상품을 추가합니다.")
 	@PostMapping("/{cartCode}")
+	@Operation(summary = "장바구니 상품 추가", description = "장바구니에 상품을 추가합니다.")
 	public BaseResponse<AddCartItemResponse> addItem(
 		@PathVariable String cartCode,
 		@RequestBody @Valid AddCartItemRequest request
@@ -38,9 +40,17 @@ public class CartController {
 		return BaseResponse.success(200, CartMapper.toAddCartItemResponse(cartItem), "장바구니 추가 성공");
 	}
 
-	@Operation(summary = "장바구니 상품 조회", description = "장바구니에 상품을 조회합니다.")
 	@GetMapping("/{cartCode}")
+	@Operation(summary = "장바구니 상품 조회", description = "장바구니에 상품을 조회합니다.")
 	public BaseResponse<GetItemsByCartResponse> getItemsByCart(@PathVariable String cartCode) {
 		return BaseResponse.success(200, cartService.getItemsByCart(cartCode), "장바구니 조회 성공");
 	}
+
+	@DeleteMapping("/{cartCode}")
+	@Operation(summary = "장바구니 상품 삭제", description = "장바구니에 상품을 삭제합니다.(개별, 선택, 전체)")
+	public BaseResponse<Integer> deleteItemsByCart(@PathVariable String cartCode,
+		@RequestBody @Valid DeleteItemsByCartRequest request) {
+		return BaseResponse.success(200, cartService.deleteItemsByCart(cartCode, request), "장바구니 상품 삭제 성공");
+	}
+
 }
