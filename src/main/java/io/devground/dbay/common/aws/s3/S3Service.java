@@ -168,18 +168,21 @@ public class S3Service {
 		try {
 			// 다음 페이지 여부
 			String continuationToken = null;
+			ListObjectsV2Response listResponse;
 			do {
-				ListObjectsV2Request listRequest = ListObjectsV2Request.builder()
+				ListObjectsV2Request.Builder listRequestBuilder = ListObjectsV2Request.builder()
 					.bucket(bucketName)
-					.prefix(folderPath)
-					.continuationToken(continuationToken)
-					.build();
+					.prefix(folderPath);
 
-				ListObjectsV2Response listResponse = s3Client.listObjectsV2(listRequest);
+				if (continuationToken != null) {
+					listRequestBuilder.continuationToken(continuationToken);
+				}
+
+				listResponse = s3Client.listObjectsV2(listRequestBuilder.build());
 				objects.addAll(listResponse.contents());
 
 				continuationToken = listResponse.nextContinuationToken();
-			} while (continuationToken == null);
+			} while (continuationToken != null);
 		} catch (SdkException e) {
 			ErrorCode.S3_OBJECT_GET_FAILED.throwServiceException();
 		}
