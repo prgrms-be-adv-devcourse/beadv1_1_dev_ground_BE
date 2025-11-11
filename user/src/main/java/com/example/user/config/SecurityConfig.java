@@ -13,10 +13,12 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.logout.LogoutFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import com.example.auth.jwt.CustomLogoutFilter;
 import com.example.auth.jwt.JWTUtil;
 import com.example.auth.jwt.LoginFilter;
 import com.example.user.service.RedisService;
@@ -68,6 +70,7 @@ public class SecurityConfig {
 				.anyRequest().permitAll())
 			.addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil, redisService),
 				UsernamePasswordAuthenticationFilter.class)
+			.addFilterBefore(new CustomLogoutFilter(jwtUtil, redisService), LogoutFilter.class)
 			.sessionManagement((session) -> session
 				.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 			.build();
