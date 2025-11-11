@@ -49,7 +49,7 @@ public enum ErrorCode {
 
 	// deposit
 	DEPOSIT_ALREADY_EXISTS(409, "이미 예금 계정이 존재합니다."),
-	DEPOSIT_NOT_FOUND(404, "예금 계정을 찾을 수 없습니다."),
+	DEPOSIT_NOT_FOUND(404, "예치금 계정을 찾을 수 없습니다."),
 	DEPOSIT_HISTORY_NOT_FOUND(404, "거래 내역을 찾을 수 없습니다."),
 	AMOUNT_MUST_BE_POSITIVE(400, "금액은 0보다 커야 합니다."),
 	INSUFFICIENT_BALANCE(400, "잔액이 부족합니다.");

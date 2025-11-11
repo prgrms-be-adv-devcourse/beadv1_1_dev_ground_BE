@@ -62,7 +62,7 @@ class DepositControllerTest {
 			.andExpect(jsonPath("$.resultCode").value(201))
 			.andExpect(jsonPath("$.data.userCode").value(userCode))
 			.andExpect(jsonPath("$.data.balance").value(0L))
-			.andExpect(jsonPath("$.msg").value("예금 계정이 생성되었습니다."));
+			.andExpect(jsonPath("$.msg").value("예치금 계정이 생성되었습니다."));
 
 		then(depositService).should().createDeposit(userCode);
 	}
@@ -93,7 +93,7 @@ class DepositControllerTest {
 			.andExpect(jsonPath("$.resultCode").value(200))
 			.andExpect(jsonPath("$.data.userCode").value(userCode))
 			.andExpect(jsonPath("$.data.balance").value(1000L))
-			.andExpect(jsonPath("$.msg").value("예금 계정 조회 성공"));
+			.andExpect(jsonPath("$.msg").value("예치금 계정 조회 성공"));
 
 		then(depositService).should().getByUserCode(userCode);
 	}
@@ -128,7 +128,7 @@ class DepositControllerTest {
 		// given
 		String userCode = "USER_CODE";
 		Long chargeAmount = 10000L;
-		ChargeRequest request = new ChargeRequest(chargeAmount, "토스 충전");
+		ChargeRequest request = new ChargeRequest(chargeAmount);
 
 		DepositHistoryResponse response = new DepositHistoryResponse(
 			1L,
@@ -147,7 +147,7 @@ class DepositControllerTest {
 			.willReturn(response);
 
 		// when
-		ResultActions actions = mockMvc.perform(post("/api/deposits/charge")
+		ResultActions actions = mockMvc.perform(patch("/api/deposits/charge")
 			.header("X-CODE", userCode)
 			.contentType(MediaType.APPLICATION_JSON)
 			.content(objectMapper.writeValueAsString(request)));
@@ -163,15 +163,15 @@ class DepositControllerTest {
 		then(depositService).should().charge(userCode, DepositHistoryType.CHARGE_TOSS, chargeAmount);
 	}
 
-	@DisplayName("[view][POST] 예치금 충전 금액이 null인 경우 - 실패호출")
+	@DisplayName("[view][PATCH] 예치금 충전 금액이 null인 경우 - 실패호출")
 	@Test
 	void givenNullAmount_whenChargingDeposit_thenReturnsBadRequest() throws Exception {
 		// given
 		String userCode = "USER_CODE";
-		ChargeRequest request = new ChargeRequest(null, "토스 충전");
+		ChargeRequest request = new ChargeRequest(null);
 
 		// when
-		ResultActions actions = mockMvc.perform(post("/api/deposits/charge")
+		ResultActions actions = mockMvc.perform(patch("/api/deposits/charge")
 			.header("X-CODE", userCode)
 			.contentType(MediaType.APPLICATION_JSON)
 			.content(objectMapper.writeValueAsString(request)));
@@ -185,10 +185,10 @@ class DepositControllerTest {
 	void givenNegativeOrZeroAmount_whenChargingDeposit_thenReturnsBadRequest() throws Exception {
 		// given
 		String userCode = "USER_CODE";
-		ChargeRequest request = new ChargeRequest(-1000L, "토스 충전");
+		ChargeRequest request = new ChargeRequest(-1000L);
 
 		// when
-		ResultActions actions = mockMvc.perform(post("/api/deposits/charge")
+		ResultActions actions = mockMvc.perform(patch("/api/deposits/charge")
 			.header("X-CODE", userCode)
 			.contentType(MediaType.APPLICATION_JSON)
 			.content(objectMapper.writeValueAsString(request)));
