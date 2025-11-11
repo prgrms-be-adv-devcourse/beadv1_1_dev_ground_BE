@@ -4,8 +4,11 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
+import io.devground.core.event.image.ImagePushEvent;
 import io.devground.core.model.vo.ErrorCode;
+import io.devground.core.model.vo.ImageType;
 import io.devground.dbay.domain.product.category.entity.Category;
 import io.devground.dbay.domain.product.category.repository.CategoryRepository;
 import io.devground.dbay.domain.product.product.dto.CartProductsRequest;
@@ -17,6 +20,7 @@ import io.devground.dbay.domain.product.product.dto.UpdateProductRequest;
 import io.devground.dbay.domain.product.product.dto.UpdateProductResponse;
 import io.devground.dbay.domain.product.product.entity.Product;
 import io.devground.dbay.domain.product.product.entity.ProductSale;
+import io.devground.dbay.domain.product.product.infra.kafka.ProductEventProducer;
 import io.devground.dbay.domain.product.product.mapper.ProductMapper;
 import io.devground.dbay.domain.product.product.repository.ProductRepository;
 import io.devground.dbay.domain.product.product.repository.ProductSaleRepository;
@@ -31,6 +35,7 @@ public class ProductServiceImpl implements ProductService {
 	private final ProductRepository productRepository;
 	private final ProductSaleRepository productSaleRepository;
 	private final CategoryRepository categoryRepository;
+	private final ProductEventProducer productEventProducer;
 
 	// TODO: sellerCode 관련 검증 필요
 	@Override
@@ -57,6 +62,12 @@ public class ProductServiceImpl implements ProductService {
 
 		productSale.addProduct(product);
 		productSaleRepository.save(productSale);
+
+		// kafka를 통한 S3 이미지 등록
+		if (CollectionUtils.isEmpty(request.fileExtension())) {
+			productEventProducer.publishProductImagePush(
+				new ImagePushEvent(ImageType.PRODUCT, product.getCode(), request.fileExtension()));
+		}
 
 		return ProductMapper.registResponseFromProductInfo(product, productSale);
 	}

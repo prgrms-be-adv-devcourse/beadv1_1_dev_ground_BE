@@ -2,7 +2,7 @@ package io.devground.dbay.common.aws.s3;
 
 import java.util.UUID;
 
-import io.devground.dbay.domain.image.vo.ImageType;
+import io.devground.core.model.vo.ImageType;
 import lombok.experimental.UtilityClass;
 
 @UtilityClass

@@ -7,8 +7,8 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import io.devground.core.model.vo.ImageType;
 import io.devground.dbay.domain.image.entity.Image;
-import io.devground.dbay.domain.image.vo.ImageType;
 
 public interface ImageRepository extends JpaRepository<Image, Long> {
 

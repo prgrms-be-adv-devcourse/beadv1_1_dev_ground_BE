@@ -1,6 +1,7 @@
 package io.devground.dbay.domain.product.product.dto;
 
 import java.net.URL;
+import java.util.List;
 
 import lombok.Builder;
 import lombok.NonNull;
@@ -25,6 +26,6 @@ public record RegistProductResponse(
 
 	long price,
 
-	URL presignedUrl
+	List<URL> presignedUrl
 ) {
 }
