@@ -12,6 +12,7 @@ public class DepositMapper {
 		return new DepositResponse(
 			deposit.getId(),
 			deposit.getUserCode(),
+			deposit.getCode(),
 			deposit.getBalance(),
 			deposit.getCreatedAt(),
 			deposit.getUpdatedAt()
