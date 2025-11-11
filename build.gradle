@@ -41,6 +41,8 @@ dependencies {
     // mysql
     implementation 'com.mysql:mysql-connector-j'
     implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
+    implementation 'org.springframework.kafka:spring-kafka'
+    testImplementation 'org.springframework.kafka:spring-kafka-test'
 
     // h2
     runtimeOnly 'com.h2database:h2'
