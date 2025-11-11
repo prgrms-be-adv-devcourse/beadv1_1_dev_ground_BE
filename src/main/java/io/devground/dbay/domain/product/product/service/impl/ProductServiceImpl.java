@@ -10,6 +10,7 @@ import io.devground.dbay.domain.product.category.entity.Category;
 import io.devground.dbay.domain.product.category.repository.CategoryRepository;
 import io.devground.dbay.domain.product.product.dto.CartProductsRequest;
 import io.devground.dbay.domain.product.product.dto.CartProductsResponse;
+import io.devground.dbay.domain.product.product.dto.ProductDetailResponse;
 import io.devground.dbay.domain.product.product.dto.RegistProductRequest;
 import io.devground.dbay.domain.product.product.dto.RegistProductResponse;
 import io.devground.dbay.domain.product.product.dto.UpdateProductRequest;
@@ -57,7 +58,16 @@ public class ProductServiceImpl implements ProductService {
 		productSale.addProduct(product);
 		productSaleRepository.save(productSale);
 
-		return ProductMapper.registResponseFromProductInfos(product, productSale);
+		return ProductMapper.registResponseFromProductInfo(product, productSale);
+	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public ProductDetailResponse getProductDetail(String productCode) {
+
+		Product product = this.productFindByCode(productCode);
+
+		return ProductMapper.detailFromProduct(product);
 	}
 
 	// TODO: sellerCode 관련 검증 필요
@@ -66,8 +76,7 @@ public class ProductServiceImpl implements ProductService {
 
 		// 같은 유저인지 인가 필요
 
-		Product product = productRepository.findByCode(productCode)
-			.orElseThrow(ErrorCode.PRODUCT_NOT_FOUND::throwServiceException);
+		Product product = this.productFindByCode(productCode);
 		ProductSale productSale = product.getProductSale();
 
 		product.changeProductMetadata(request.title(), request.description());
@@ -95,8 +104,7 @@ public class ProductServiceImpl implements ProductService {
 
 		// 같은 유저인지 인가 필요
 
-		Product product = productRepository.findByCode(productCode)
-			.orElseThrow(ErrorCode.PRODUCT_NOT_FOUND::throwServiceException);
+		Product product = this.productFindByCode(productCode);
 
 		product.delete();
 	}
@@ -111,5 +119,11 @@ public class ProductServiceImpl implements ProductService {
 		}
 
 		products.forEach(p -> p.getProductSale().changeAsSold());
+	}
+
+	private Product productFindByCode(String productCode) {
+
+		return productRepository.findByCode(productCode)
+			.orElseThrow(ErrorCode.PRODUCT_NOT_FOUND::throwServiceException);
 	}
 }
