@@ -11,6 +11,9 @@ public record CartProductsResponse(
 	String productSaleCode,
 
 	@NonNull
+	String sellerCode,
+
+	@NonNull
 	String title,
 
 	long price
