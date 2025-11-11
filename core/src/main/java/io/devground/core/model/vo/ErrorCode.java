@@ -23,6 +23,8 @@ public enum ErrorCode {
 	NOT_VERIFICATION_EMAIL(400, "이메일이 인증되지 않았습니다."),
 	INVALID_TOKEN(400, "잘못된 토큰입니다."),
 	INVALID_PASSWORD(400, "잘못된 비밀번호입니다."),
+	EMPTY_REFRESH_TOKEN(400, "refresh 토큰이 없습니다."),
+	EXPIRED_REFRESH_TOKEN(400, "refresh 토큰이 만료되었습니다."),
 
 	// cart
 	CART_ITEM_DELETE_NOT_SELECTED(400, "삭제할 상품이 선택되지 않았습니다."),
