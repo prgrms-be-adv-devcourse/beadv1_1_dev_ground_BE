@@ -1,4 +1,4 @@
-package io.devground.dbay.common.validation;
+package io.devground.dbay.domain.image.validation;
 
 import java.util.List;
 
@@ -8,7 +8,7 @@ import io.devground.core.model.vo.ErrorCode;
 import lombok.experimental.UtilityClass;
 
 @UtilityClass
-public class FileValidator {
+public class ImageFileValidator {
 
 	private static final List<String> ALLOWED_EXTENSIONS = List.of("png", "jpg", "jpeg", "webp");
 
