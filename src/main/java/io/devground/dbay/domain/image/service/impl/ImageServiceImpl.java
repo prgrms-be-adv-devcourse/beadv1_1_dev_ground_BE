@@ -2,9 +2,9 @@ package io.devground.dbay.domain.image.service.impl;
 
 import java.util.List;
 
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 import io.devground.core.model.vo.ImageType;
 import io.devground.dbay.common.aws.s3.S3Service;
@@ -21,6 +21,24 @@ public class ImageServiceImpl implements ImageService {
 
 	private final ImageRepository imageRepository;
 	private final S3Service s3Service;
+
+	// TODO: 사용하지 않을 시 삭제
+/*
+	@Override
+	public Void saveImages(UploadImagesRequest request, MultipartFile[] files) {
+
+		ImageType imageType = request.imageType();
+		String referenceCode = request.referenceCode();
+
+		List<String> urls = s3Service.uploadFiles(request.imageType(), request.referenceCode(), files);
+
+		if (!urls.isEmpty()) {
+			this.saveImages(imageType, referenceCode, urls);
+		}
+
+		return null;
+	}
+*/
 
 	@Override
 	public void saveImages(ImageType imageType, String referenceCode, List<String> urls) {
@@ -58,14 +76,18 @@ public class ImageServiceImpl implements ImageService {
 	}
 
 	@Override
-	public void deleteImagesByReferencesAndUrl(ImageType imageType, String referenceCode, String url) {
+	public Void deleteImagesByReferencesAndUrls(ImageType imageType, String referenceCode, List<String> urls) {
 
-		long imageDeleteCount = StringUtils.isNotBlank(url)
-			? imageRepository.deleteImageByReferenceCodeAndImageTypeAndImageUrl(referenceCode, imageType, url)
-			: 0;
-
-		if (imageDeleteCount > 0) {
-			s3Service.deleteObjectByUrl(url);
+		if (CollectionUtils.isEmpty(urls)) {
+			return null;
 		}
+
+		long cnt = imageRepository.deleteImagesByReferencesAndImageUrls(imageType, referenceCode, urls);
+
+		if (cnt > 0) {
+			s3Service.deleteObjectsByUrls(urls);
+		}
+
+		return null;
 	}
 }
