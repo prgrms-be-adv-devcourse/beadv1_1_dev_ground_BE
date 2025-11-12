@@ -16,33 +16,13 @@ spring:
         default_batch_fetch_size: 500
         format_sql: true
 
-  kafka:
-    bootstrap-servers:
-      - kafka:9092
+  batch:
+    job:
+      enabled: false
+    jdbc:
+      initialize-schema: never
 
-    producer:
-      key-serializer: org.apache.kafka.common.serialization.StringSerializer
-      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
-
-      acks: all
-
-      properties:
-        delivery.timeout.ms: 120000
-        linger.ms: 0
-        request.timeout.ms: 30000
-        enable.idempotence: true
-        allow.auto.create.topics: false
-
-custom:
-  kafka:
-    config:
-      topic-partitions: 1
-      topic-replications: 1
-
-deposits:
-  event:
-    topic:
-      name: deposits-events
-  command:
-    topic:
-      name: deposits-commands
+  cloud:
+    service-registry:
+      auto-registration:
+        enabled: false

@@ -77,7 +77,6 @@ images:
     push: images-push
     delete: images-delete
 
-
 logging:
   level:
     org.hibernate.SQL: debug
