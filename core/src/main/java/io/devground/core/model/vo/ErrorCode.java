@@ -62,6 +62,7 @@ public enum ErrorCode {
 
 	// s3
 	INVALID_FILE_EXTENSION(400, "지원하지 않는 확장자입니다."),
+	S3_UPLOAD_FAILED(500, "S3 업로드를 실패하였습니다."),
 	S3_PRESIGNED_URL_GENERATION_FAILED(500, "PresignedURL 생성에 실패하였습니다."),
 	S3_OBJECT_DELETE_FAILED(500, "S3 오브젝트 제거에 실패하였습니다."),
 	S3_OBJECT_GET_FAILED(500, "S3 오브젝트 호출에 실패하였습니다."),
@@ -71,7 +72,10 @@ public enum ErrorCode {
 	DEPOSIT_NOT_FOUND(404, "예치금 계정을 찾을 수 없습니다."),
 	DEPOSIT_HISTORY_NOT_FOUND(404, "거래 내역을 찾을 수 없습니다."),
 	AMOUNT_MUST_BE_POSITIVE(400, "금액은 0보다 커야 합니다."),
-	INSUFFICIENT_BALANCE(400, "잔액이 부족합니다.");
+	INSUFFICIENT_BALANCE(400, "잔액이 부족합니다."),
+
+	// saga
+	SAGA_NOT_FOUND(404, "사가 정보를 찾을 수 없습니다.");
 
 	private final int httpStatus;
 	private final String message;
