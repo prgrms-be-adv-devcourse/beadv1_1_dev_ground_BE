@@ -59,6 +59,7 @@ eureka:
     register-with-eureka: true
     fetch-registry: true
     service-url:
-      defaultZone: http://43.201.80.95:8761/eureka/
+      defaultZone: http://localhost:8761/eureka/
 
-
+  instance:
+    instance-id: "${spring.application.name}:${server.port}:${random.uuid}"

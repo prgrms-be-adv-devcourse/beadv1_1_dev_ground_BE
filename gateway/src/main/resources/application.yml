@@ -5,12 +5,17 @@ server:
 #  application:
 #    name: api-gateway
 
+logging:
+  level:
+    org.springframework.cloud.gateway: TRACE
+    org.springframework.cloud.gateway.filter: TRACE
+
 eureka:
   client:
     register-with-eureka: true
     fetch-registry: true
     service-url:
-      defaultZone: http://43.201.80.95:8761/eureka/
+      defaultZone: http://localhost:8761/eureka/
 
 spring:
   application:
@@ -18,13 +23,69 @@ spring:
   cloud:
     gateway:
       routes:
-        - id: user
-          uri: lb://user
+        - id: login
+          uri: lb://USER
           predicates:
             - Path=/api/users/**
+          filters:
+            - CustomAuthFilter
+
+#        - id:
+#          uri:
+#          predicates:
+#            - Path=
+#          filters:
+#            - GatewayAuthFilter
+
+        - id: deposits
+          uri: lb://DBAY
+          predicates:
+            - Path=/api/deposits/**
+          filters:
+            - CustomAuthFilter
+
+        - id: carts
+          uri: lb://DBAY
+          predicates:
+            - Path=/api/carts/**
+          filters:
+            - CustomAuthFilter
+
+        - id: products
+          uri: lb://DBAY
+          predicates:
+            - Path=/api/products/**
+          filters:
+            - CustomAuthFilter
+
+        - id: orders
+          uri: lb://DBAY
+          predicates:
+            - Path=/api/orders/**
+          filters:
+            - CustomAuthFilter
+
+        - id: payments
+          uri: lb://DBAY
+          predicates:
+            - Path=/api/payments/**
+          filters:
+            - CustomAuthFilter
+
+        - id: settlements
+          uri: lb://DBAY
+          predicates:
+            - Path=/api/settlements/**
+          filters:
+            - CustomAuthFilter
 
         #고려해보기
         - id: main-service
           uri: lb://main-service
           predicates:
             - Path=/api/main/**
+
+custom:
+  jwt:
+    secrets:
+      app-key: BBpgN9RJg1nYobpf7KHfJUaoiWSO-gD9EiEApPkV1rWJmH0vAVjMT2Pn-MtaaeElM7GFN88aQFl7d9adK_hB9w
