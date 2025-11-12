@@ -9,12 +9,15 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.ObjectUtils;
+import org.springframework.web.multipart.MultipartFile;
 
 import io.devground.core.model.exception.ServiceException;
 import io.devground.core.model.vo.ErrorCode;
 import io.devground.core.model.vo.ImageType;
 import lombok.RequiredArgsConstructor;
 import software.amazon.awssdk.core.exception.SdkException;
+import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
 import software.amazon.awssdk.services.s3.model.DeleteObjectsRequest;
@@ -35,6 +38,54 @@ public class S3Service {
 	@Value("${spring.cloud.aws.s3.bucket}")
 	private String bucketName;
 
+	@Value("${spring.cloud.aws.region.static}")
+	private String region;
+
+	// MultipartFile[]을 서버에서 S3에 바로 업로드
+	public List<String> uploadFiles(ImageType imageType, String referenceCode, MultipartFile[] files) {
+
+		if (ObjectUtils.isEmpty(files)) {
+			return List.of();
+		}
+
+		try {
+			List<String> uploadedUrls = new ArrayList<>();
+
+			for (MultipartFile file : files) {
+				String uploadedUrl = uploadFile(imageType, referenceCode, file);
+				uploadedUrls.add(uploadedUrl);
+			}
+
+			return uploadedUrls;
+		} catch (SdkException e) {
+			throw new ServiceException(ErrorCode.S3_UPLOAD_FAILED);
+		} catch (Exception e) {
+			throw new ServiceException(ErrorCode.INTERNAL_SERVER_ERROR);
+		}
+	}
+
+	// MultipartFile을 S3에 바로 업로드
+	public String uploadFile(ImageType imageType, String referenceCode, MultipartFile file) {
+
+		try {
+			String fileExtension = S3Util.extractFileExtensions(file.getOriginalFilename());
+			String key = S3Util.buildS3Key(imageType, referenceCode, fileExtension);
+
+			PutObjectRequest putObjectRequest = PutObjectRequest.builder()
+				.bucket(bucketName)
+				.key(key)
+				.contentType(file.getContentType())
+				.build();
+
+			s3Client.putObject(putObjectRequest, RequestBody.fromBytes(file.getBytes()));
+
+			return String.format("https://%s.s3.%s.amazonaws.com/%s", bucketName, region, key);
+		} catch (Exception e) {
+			throw new ServiceException(ErrorCode.S3_UPLOAD_FAILED);
+		}
+	}
+
+	// PresignedURLs 생성
 	public List<URL> generatePresignedUrls(ImageType imageType, String referenceCode, List<String> fileExtensions) {
 
 		if (CollectionUtils.isEmpty(fileExtensions)) {
@@ -52,10 +103,11 @@ public class S3Service {
 		}
 	}
 
+	// PresignedURL 생성
 	public URL generatePresignedUrl(ImageType imageType, String referenceCode, String fileExtension) {
 
 		try {
-			// PresignedURL 생성
+			// PresignedURL
 			return s3Presigner.presignPutObject(builder -> builder
 					.putObjectRequest(this.buildPutObjectRequest(imageType, referenceCode, fileExtension))
 					.signatureDuration(Duration.ofMinutes(5)))
@@ -115,7 +167,7 @@ public class S3Service {
 	}
 
 	// S3 객체 모두 삭제 (다건 삭제), url 참조
-	public void deleteObjectsByUrl(List<String> urls) {
+	public void deleteObjectsByUrls(List<String> urls) {
 
 		if (CollectionUtils.isEmpty(urls)) {
 			return;
