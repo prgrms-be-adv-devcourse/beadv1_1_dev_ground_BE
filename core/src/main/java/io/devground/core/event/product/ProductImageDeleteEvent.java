@@ -1,11 +1,11 @@
-package io.devground.core.event.image;
+package io.devground.core.event.product;
 
 import java.util.List;
 
 import io.devground.core.model.vo.ImageType;
 import lombok.NonNull;
 
-public record ImagePushEvent(
+public record ProductImageDeleteEvent(
 
 	@NonNull
 	ImageType imageType,
@@ -13,7 +13,6 @@ public record ImagePushEvent(
 	@NonNull
 	String referenceCode,
 
-	@NonNull
-	List<String> imageUrls
+	List<String> deleteUrls
 ) {
 }
