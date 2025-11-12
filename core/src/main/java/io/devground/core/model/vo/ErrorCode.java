@@ -34,8 +34,16 @@ public enum ErrorCode {
 	DELETE_CART_ITEM_FAILED(400, "장바구니 상품 삭제를 실패했습니다."),
 
 	// order
+	ORDER_ITEM_NOT_SELECTED(400, "상품이 선택되지 않았습니다."),
+	ORDER_ITEM_ALREADY_SOLD(400, "주문 목록에 이미 판매된 상품이 있습니다."),
 	ADDRESS_NOT_FOUND(404, "해당 주소를 찾을 수 없습니다."),
 	ORDER_NOT_FOUND(404, "해당 주문을 찾을 수 없습니다."),
+	ORDER_ALREADY_CANCELLED(400, "이미 취소된 주문입니다."),
+	ORDER_ALREADY_DELIVERED(400, "이미 배송완료된 주문입니다."),
+	ORDER_CANCELLED_NOT_ALLOWED_WHEN_DELIVERED(400, "배송완료된 상품에 대해선 주문 취소를 할 수 없습니다."),
+	ORDER_CANCELLED_NOT_ALLOWED_WHEN_CONFIRMED(400, "구매확정된 상품에 대해선 주문 취소를 할 수 없습니다."),
+	ORDER_CONFIRM_NOT_ALLOWED(400, "배송완료 전에는 구매확정을 할 수 없습니다."),
+	ORDER_ALREADY_CONFIRMED(400, "이미 구매확정된 주문입니다."),
 
 	// product
 	ONLY_ON_SALE_PRODUCT_CHANGEABLE(400, "판매 중인 상품만 판매 완료 처리할 수 있습니다."),
