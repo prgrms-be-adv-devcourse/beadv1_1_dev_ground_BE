@@ -1,8 +1,8 @@
-package io.devground.dbay.domain.cart.cart.model.vo;
+package io.devground.dbay.domain.order.order.model.vo;
 
 import lombok.NonNull;
 
-public record CartProductListResponse(
+public record OrderProductListResponse(
 	String productCode,
 
 	String productSaleCode,
@@ -11,6 +11,6 @@ public record CartProductListResponse(
 
 	String title,
 
-	Long price
+	long price
 ) {
 }
