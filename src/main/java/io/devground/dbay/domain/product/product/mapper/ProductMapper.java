@@ -1,5 +1,9 @@
 package io.devground.dbay.domain.product.product.mapper;
 
+import java.util.List;
+
+import io.devground.core.dto.image.DeleteImagesRequest;
+import io.devground.core.model.vo.ImageType;
 import io.devground.dbay.domain.product.product.dto.ProductDetailResponse;
 import io.devground.dbay.domain.product.product.dto.RegistProductResponse;
 import io.devground.dbay.domain.product.product.dto.UpdateProductResponse;
@@ -47,4 +51,28 @@ public abstract class ProductMapper {
 			.price(productSale.getPrice())
 			.build();
 	}
+
+	public static DeleteImagesRequest toDeleteImagesRequest(
+		ImageType imageType,
+		String referenceCode,
+		List<String> deleteUrls
+	) {
+
+		return DeleteImagesRequest.builder()
+			.imageType(imageType)
+			.referenceCode(referenceCode)
+			.deleteUrls(deleteUrls)
+			.build();
+	}
+
+	// TODO: 추후 불필요 시 삭제
+/*
+	public static UploadImagesRequest toUploadRequest(String referenceCode, ImageType imageType) {
+
+		return UploadImagesRequest.builder()
+			.referenceCode(referenceCode)
+			.imageType(imageType)
+			.build();
+	}
+*/
 }

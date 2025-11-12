@@ -4,6 +4,7 @@ import static org.springframework.http.HttpStatus.*;
 
 import java.util.List;
 
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -12,8 +13,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import io.devground.core.model.web.BaseResponse;
 import io.devground.dbay.domain.product.product.dto.CartProductsRequest;
@@ -37,16 +40,17 @@ public class ProductController {
 	private final ProductService productService;
 
 	// TODO: sellerCode 정책 정해진 후 수정
-	@PostMapping
+	@PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
 	@Operation(summary = "상품 등록", description = "모든 유저는 상품을 등록할 수 있습니다.")
 	public BaseResponse<RegistProductResponse> registProduct(
 		@RequestBody RegistProductRequest request,
-		@RequestHeader(name = "X-CODE") String sellerCode
+		@RequestPart(value = "files", required = false) MultipartFile[] files,
+		@RequestHeader("X-CODE") String sellerCode
 	) {
 
 		return BaseResponse.success(
 			CREATED.value(),
-			productService.registProduct(sellerCode, request),
+			productService.registProduct(sellerCode, request, files),
 			"상품이 성공적으로 등록되었습니다."
 		);
 	}
@@ -66,28 +70,32 @@ public class ProductController {
 	}
 
 	// TODO: sellerCode 정책 정해진 후 수정
-	@PatchMapping("{productCode}")
+	@PatchMapping(value = "{productCode}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
 	@Operation(summary = "상품 수정", description = "유저는 자신의 상품 판매 정보를 수정할 수 있습니다.")
 	public BaseResponse<UpdateProductResponse> updateProduct(
 		@PathVariable String productCode,
+		@RequestPart(value = "files", required = false) MultipartFile[] files,
 		@RequestBody UpdateProductRequest request,
 		@RequestHeader(name = "X-CODE") String sellerCode
 	) {
 
 		return BaseResponse.success(
 			OK.value(),
-			productService.updateProduct(sellerCode, productCode, request),
+			productService.updateProduct(sellerCode, productCode, files, request),
 			"상품 정보가 성공적으로 수정되었습니다."
 		);
 	}
 
 	// TODO: sellerCode 정책 정해진 후 수정
 	@DeleteMapping("{productCode}")
-	@ResponseStatus(NO_CONTENT)
 	@Operation(summary = "상품 삭제", description = "유저는 자신의 상품 판매 정보를 삭제할 수 있습니다.")
-	public void deleteProduct(@PathVariable String productCode) {
+	public BaseResponse<Void> deleteProduct(@PathVariable String productCode) {
 
-		productService.deleteProduct(productCode);
+		return BaseResponse.success(
+			NO_CONTENT.value(),
+			productService.deleteProduct(productCode),
+			"상품 정보가 성공적으로 삭제되었습니다."
+		);
 	}
 
 	@PostMapping("/carts")
