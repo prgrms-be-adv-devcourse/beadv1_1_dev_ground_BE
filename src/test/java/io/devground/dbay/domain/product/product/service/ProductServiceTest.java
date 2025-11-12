@@ -78,9 +78,9 @@ class ProductServiceTest {
 		RegistProductRequest request3 = new RegistProductRequest
 			(responseDepth3.id(), "에어팟 팔아요", "이런 에어팟입니다.", 40000L);
 
-		RegistProductResponse response1 = productService.registProduct(tempCode1, request1);
-		RegistProductResponse response2 = productService.registProduct(tempCode1, request2);
-		RegistProductResponse response3 = productService.registProduct(otherCode, request3);
+		RegistProductResponse response1 = productService.registProduct(tempCode1, request1, null);
+		RegistProductResponse response2 = productService.registProduct(tempCode1, request2, null);
+		RegistProductResponse response3 = productService.registProduct(otherCode, request3, null);
 
 		productCodes.addAll(List.of(response1.productCode(), response2.productCode(), response3.productCode()));
 		productSaleCodes.addAll(
@@ -97,7 +97,7 @@ class ProductServiceTest {
 			(categoryIds.getLast(), "아이폰 팔아요", "이런 아이폰입니다.", 300000L);
 
 		// when
-		RegistProductResponse response = productService.registProduct(sellerCode, request);
+		RegistProductResponse response = productService.registProduct(sellerCode, request, null);
 
 		Product product = productRepository.findByCode(response.productCode()).get();
 		ProductSale productSale = productSaleRepository.findByCode(response.productSaleCode()).get();
@@ -121,7 +121,7 @@ class ProductServiceTest {
 
 		// when, then
 		assertThrows(ServiceException.class,
-			() -> productService.registProduct(sellerCode, request));
+			() -> productService.registProduct(sellerCode, request, null));
 	}
 
 	@Test
@@ -135,7 +135,7 @@ class ProductServiceTest {
 
 		// when, then
 		assertThrows(ServiceException.class,
-			() -> productService.registProduct(sellerCode, request));
+			() -> productService.registProduct(sellerCode, request, null));
 	}
 
 	@Test
@@ -176,10 +176,10 @@ class ProductServiceTest {
 		// given
 		String sellerCode = "tempSellerCode";
 		Product product = productRepository.findByCode(productCodes.getFirst()).get();
-		UpdateProductRequest request = new UpdateProductRequest("새로운 제목", "새로운 설명", 1000000L);
+		UpdateProductRequest request = new UpdateProductRequest("새로운 제목", "새로운 설명", 1000000L, null);
 
 		// when
-		UpdateProductResponse response = productService.updateProduct(sellerCode, product.getCode(), request);
+		UpdateProductResponse response = productService.updateProduct(sellerCode, product.getCode(), null, request);
 		Product updatedProduct = productRepository.findByCode(response.productCode()).get();
 
 		// then
@@ -196,11 +196,11 @@ class ProductServiceTest {
 
 		// given
 		String sellerCode = "tempSellerCode";
-		UpdateProductRequest request = new UpdateProductRequest("새로운 제목", "새로운 설명", 1000000L);
+		UpdateProductRequest request = new UpdateProductRequest("새로운 제목", "새로운 설명", 1000000L, null);
 
 		// when, then
 		assertThrows(ServiceException.class,
-			() -> productService.updateProduct(sellerCode, "wrongCode", request));
+			() -> productService.updateProduct(sellerCode, "wrongCode", null, request));
 	}
 
 	@Test
