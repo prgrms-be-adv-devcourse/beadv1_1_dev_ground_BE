@@ -73,8 +73,6 @@ public class UserServiceImpl implements UserService {
 
 		//예치금 코드 저장
 
-		//웰컴 쿠폰 발급
-
 		return user;
 	}
 }

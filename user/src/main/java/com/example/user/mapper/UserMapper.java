@@ -3,7 +3,7 @@ package com.example.user.mapper;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import com.example.user.model.dto.request.UserRequest;
-import com.example.user.model.entity.RoleType;
+import io.devground.core.model.entity.RoleType;
 import com.example.user.model.entity.User;
 
 public class UserMapper {
