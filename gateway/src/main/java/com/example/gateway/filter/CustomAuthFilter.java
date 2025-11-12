@@ -43,7 +43,6 @@ public class CustomAuthFilter extends AbstractGatewayFilterFactory<CustomAuthFil
 		super(Config.class);
 	}
 
-
 	@Override
 	public GatewayFilter apply(Config config) {
 
@@ -120,11 +119,6 @@ public class CustomAuthFilter extends AbstractGatewayFilterFactory<CustomAuthFil
 			}
 			return Optional.of(token);
 		}
-
-		// HttpCookie tokenCookie = request.getCookies().getFirst("refresh");
-		// if (tokenCookie != null && !tokenCookie.getValue().isBlank()) {
-		// 	return Optional.of(tokenCookie.getValue());
-		// }
 
 		return Optional.empty();
 	}
