@@ -1,16 +1,18 @@
 package io.devground.dbay.domain.product.product.service.impl;
 
+import static io.devground.core.model.vo.ImageType.*;
+
 import java.util.List;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
+import org.springframework.web.multipart.MultipartFile;
 
-import io.devground.core.event.image.ImagePushEvent;
 import io.devground.core.model.vo.ErrorCode;
-import io.devground.core.model.vo.ImageType;
 import io.devground.dbay.domain.product.category.entity.Category;
 import io.devground.dbay.domain.product.category.repository.CategoryRepository;
+import io.devground.dbay.domain.product.product.client.ImageClient;
 import io.devground.dbay.domain.product.product.dto.CartProductsRequest;
 import io.devground.dbay.domain.product.product.dto.CartProductsResponse;
 import io.devground.dbay.domain.product.product.dto.ProductDetailResponse;
@@ -36,10 +38,11 @@ public class ProductServiceImpl implements ProductService {
 	private final ProductSaleRepository productSaleRepository;
 	private final CategoryRepository categoryRepository;
 	private final ProductEventProducer productEventProducer;
+	private final ImageClient imageClient;
 
 	// TODO: sellerCode 관련 검증 필요
 	@Override
-	public RegistProductResponse registProduct(String sellerCode, RegistProductRequest request) {
+	public RegistProductResponse registProduct(String sellerCode, RegistProductRequest request, MultipartFile[] files) {
 
 		// 유저 관련 검증 필요 시 추가
 
@@ -63,11 +66,7 @@ public class ProductServiceImpl implements ProductService {
 		productSale.addProduct(product);
 		productSaleRepository.save(productSale);
 
-		// kafka를 통한 S3 이미지 등록
-		if (CollectionUtils.isEmpty(request.fileExtension())) {
-			productEventProducer.publishProductImagePush(
-				new ImagePushEvent(ImageType.PRODUCT, product.getCode(), request.fileExtension()));
-		}
+		// TODO: 이미지 저장 Kafka
 
 		return ProductMapper.registResponseFromProductInfo(product, productSale);
 	}
@@ -83,7 +82,9 @@ public class ProductServiceImpl implements ProductService {
 
 	// TODO: sellerCode 관련 검증 필요
 	@Override
-	public UpdateProductResponse updateProduct(String sellerCode, String productCode, UpdateProductRequest request) {
+	public UpdateProductResponse updateProduct(
+		String sellerCode, String productCode, MultipartFile[] files, UpdateProductRequest request
+	) {
 
 		// 같은 유저인지 인가 필요
 
@@ -92,6 +93,21 @@ public class ProductServiceImpl implements ProductService {
 
 		product.changeProductMetadata(request.title(), request.description());
 		productSale.changePrice(request.price());
+
+		List<String> deleteUrls = request.deleteUrls();
+
+		// 파일 삭제: openFeign - 동기
+		if (!CollectionUtils.isEmpty(deleteUrls)) {
+			imageClient.deleteAll(
+					ProductMapper.toDeleteImagesRequest(
+						PRODUCT,
+						productCode,
+						deleteUrls
+					))
+				.throwIfNotSuccess();
+		}
+
+		// TODO: 파일 등록 Kafka
 
 		return ProductMapper.updateResponseFromProductInfo(product, productSale);
 	}
@@ -111,13 +127,22 @@ public class ProductServiceImpl implements ProductService {
 
 	// TODO: sellerCode 관련 검증 필요
 	@Override
-	public void deleteProduct(String productCode) {
+	public Void deleteProduct(String productCode) {
 
 		// 같은 유저인지 인가 필요
 
 		Product product = this.productFindByCode(productCode);
 
 		product.delete();
+
+		// TODO: 이미지 삭제 Kafka - 비동기
+/*
+		productEventProducer.publishProductImageDelete(
+			new ProductImageDeleteEvent(PRODUCT, productCode, List.of())
+		);
+*/
+
+		return null;
 	}
 
 	@Override
