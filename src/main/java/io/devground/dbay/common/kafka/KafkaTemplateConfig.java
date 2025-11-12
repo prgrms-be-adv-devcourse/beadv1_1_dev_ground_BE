@@ -7,7 +7,7 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.core.ProducerFactory;
 
 @Configuration
-public class kafkaTemplateConfig {
+public class KafkaTemplateConfig {
 
 	@Bean
 	public KafkaTemplate<String, Object> kafkaTemplate(
