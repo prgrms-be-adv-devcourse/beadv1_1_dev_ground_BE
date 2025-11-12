@@ -8,8 +8,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.gateway.filter.GatewayFilter;
 import org.springframework.cloud.gateway.filter.factory.AbstractGatewayFilterFactory;
 import org.springframework.core.io.buffer.DataBuffer;
-import org.springframework.http.HttpCookie;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.http.server.reactive.ServerHttpResponse;
@@ -97,12 +95,12 @@ public class CustomAuthFilter extends AbstractGatewayFilterFactory<CustomAuthFil
 		response.setStatusCode(HttpStatus.UNAUTHORIZED);
 		response.getHeaders().add(org.springframework.http.HttpHeaders.CONTENT_TYPE, "application/json");
 
-		BaseResponse body = BaseResponse.success(401, "인증이 필요합니다!");
+		BaseResponse<Object> body = BaseResponse.success(401, "인증이 필요합니다!");
 
 		return response.bufferFactory().wrap(writeResponseBody(body));
 	}
 
-	private byte[] writeResponseBody(BaseResponse body) {
+	private byte[] writeResponseBody(BaseResponse<Object> body) {
 		try {
 			return om.writeValueAsBytes(body);
 		} catch (JsonProcessingException e) {
