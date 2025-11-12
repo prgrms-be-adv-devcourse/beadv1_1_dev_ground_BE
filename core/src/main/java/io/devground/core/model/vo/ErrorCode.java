@@ -87,4 +87,14 @@ public enum ErrorCode {
 	public ServiceException throwServiceException(Throwable cause) {
 		throw new ServiceException(this, cause);
 	}
+
+	public static ErrorCode fromHttpStatus(int httpStatus, String msg) {
+		for (ErrorCode errorCode : ErrorCode.values()) {
+			if (errorCode.getHttpStatus() == httpStatus && errorCode.getMessage().equals(msg)) {
+				return errorCode;
+			}
+		}
+
+		return INTERNAL_SERVER_ERROR;
+	}
 }
