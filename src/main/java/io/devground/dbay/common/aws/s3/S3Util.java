@@ -24,6 +24,15 @@ public class S3Util {
 		return domainEndIdx != -1 ? url.substring(domainEndIdx + 5) : null;
 	}
 
+	public String extractFileExtensions(String filename) {
+
+		if (filename == null || !filename.contains(".")) {
+			return "jpg";
+		}
+
+		return filename.substring(filename.lastIndexOf(".") + 1);
+	}
+
 	public String getFolderPath(ImageType imageType, String referenceCode) {
 
 		String domain = switch (imageType) {
