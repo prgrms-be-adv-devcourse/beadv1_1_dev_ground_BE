@@ -2,7 +2,6 @@ package com.example.auth.model.dto;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -26,7 +25,7 @@ public class CustomUserDetails implements UserDetails {
 		authorities.add(new GrantedAuthority() {
 			@Override
 			public String getAuthority() {
-				return user.getRole().getText();
+				return user.getRole().toString();
 			}
 		});
 
