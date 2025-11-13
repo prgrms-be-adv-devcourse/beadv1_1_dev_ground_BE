@@ -1,10 +1,11 @@
-package io.devground.dbay.domain.saga.entity;
+package io.devground.dbay.common.saga.entity;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-import io.devground.dbay.domain.saga.vo.SagaStatus;
-import io.devground.dbay.domain.saga.vo.SagaStep;
+import io.devground.dbay.common.saga.vo.SagaStatus;
+import io.devground.dbay.common.saga.vo.SagaStep;
+import io.devground.dbay.common.saga.vo.SagaType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -29,11 +30,12 @@ public class Saga {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
+	// TODO: id 대신 sagaId를 꼭 써야하는지 확인
 	@Column(unique = true, nullable = false, updatable = false)
 	private String sagaId;
 
 	@Column(nullable = false)
-	private String sagaType;
+	private SagaType sagaType;
 
 	@Column(nullable = false)
 	private String referenceCode;
@@ -55,7 +57,7 @@ public class Saga {
 	private Long version;
 
 	@Builder
-	public Saga(String sagaType, String referenceCode, SagaStatus sagaStatus, SagaStep currentStep) {
+	public Saga(SagaType sagaType, String referenceCode, SagaStatus sagaStatus, SagaStep currentStep) {
 		this.sagaType = sagaType;
 		this.referenceCode = referenceCode;
 		this.sagaStatus = sagaStatus;
