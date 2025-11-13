@@ -147,7 +147,7 @@ public class UserSaga {
 			event.userCode(), "장바구니 삭제에 실패했습니다.");
 		log.info("장바구니 삭제에 실패했습니다.");
 
-		kafkaTemplate.send(cartsCommandTopicName, notifyUserCreateFailedAlertCommand);
+		kafkaTemplate.send(userCommandTopicName, notifyUserCreateFailedAlertCommand);
 	}
 
 	//예치금 삭제 실패
@@ -157,6 +157,6 @@ public class UserSaga {
 			event.userCode(), "예치금 삭제에 실패했습니다.");
 		log.info("예치금 삭제에 실패했습니다.");
 
-		kafkaTemplate.send(depositsCommandTopicName, notifyUserCreateFailedAlertCommand);
+		kafkaTemplate.send(userCommandTopicName, notifyUserCreateFailedAlertCommand);
 	}
 }

@@ -1,8 +1,10 @@
 package com.example.user.controller;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -46,5 +48,13 @@ public class UserController {
 		userService.registerUser(userRequest);
 
 		return BaseResponse.success(200, userRequest.email(), "회원가입 성공");
+	}
+
+	@Operation(summary = "회원탈퇴 API", description = "회원탈퇴 API입니다.")
+	@DeleteMapping("/")
+	public BaseResponse<String> deleteUser(@RequestHeader("X-CODE") String userCode){
+		userService.requestDeleteUser(userCode);
+
+		return BaseResponse.success(200, "회원탈퇴 성공");
 	}
 }
