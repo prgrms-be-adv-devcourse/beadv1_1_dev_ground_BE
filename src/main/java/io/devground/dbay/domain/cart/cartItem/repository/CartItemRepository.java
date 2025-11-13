@@ -24,7 +24,27 @@ public interface CartItemRepository extends JpaRepository<CartItem, Long> {
 			AND ci.deleteStatus = 'N'
 			AND ci.productCode IN :cartProductCodes
 		""")
-	int deleteCartItemByProductCodes(@Param("cartCode") String cartCode, @Param("cartProductCodes")List<String> cartProductCodes);
+	int deleteCartItemByProductCodes(@Param("cartCode") String cartCode,
+		@Param("cartProductCodes") List<String> cartProductCodes);
 
-	String cart(Cart cart);
+	// String cart(Cart cart);
+
+	@Query(
+		"""
+			SELECT ci.code
+			FROM CartItem ci
+			WHERE ci.cart = :cart
+			"""
+	)
+	List<String> getCartItemCodesByCart(Cart cart);
+
+	@Query(
+		"""
+			UPDATE CartItem ci
+			SET ci.deleteStatus = 'Y',
+				ci.updatedAt = CURRENT_TIMESTAMP
+			WHERE ci.code = :cartItemCodes
+			"""
+	)
+	void deleteCartItemByCartCodes(List<String> cartItemCodes);
 }

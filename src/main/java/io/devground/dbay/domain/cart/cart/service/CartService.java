@@ -1,7 +1,5 @@
 package io.devground.dbay.domain.cart.cart.service;
 
-import java.util.List;
-
 import io.devground.dbay.domain.cart.cart.model.entity.Cart;
 import io.devground.dbay.domain.cart.cart.model.vo.AddCartItemRequest;
 import io.devground.dbay.domain.cart.cart.model.vo.DeleteItemsByCartRequest;
@@ -16,4 +14,6 @@ public interface CartService {
 	GetItemsByCartResponse getItemsByCart(String cartCode);
 
 	int deleteItemsByCart(String cartCode, DeleteItemsByCartRequest request);
+
+	Cart deleteCart(String userCode);
 }

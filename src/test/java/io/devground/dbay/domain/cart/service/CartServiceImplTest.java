@@ -48,7 +48,7 @@ class CartServiceImplTest {
 	void createCart_success() {
 
 		String userCode = UUID.randomUUID().toString();
-		given(cartRepository.existsByUserCode(userCode)).willReturn(false);
+		given(cartRepository.findByUserCode(userCode)).willReturn(Optional.empty());
 
 		Cart cart = Cart.builder()
 			.userCode(userCode)
@@ -58,7 +58,7 @@ class CartServiceImplTest {
 		Cart result = cartService.createCart(userCode);
 
 		assertThat(result.getUserCode()).isEqualTo(userCode);
-		verify(cartRepository).existsByUserCode(userCode);
+		verify(cartRepository).findByCode(userCode);
 		verify(cartRepository).save(any(Cart.class));
 	}
 
@@ -79,7 +79,9 @@ class CartServiceImplTest {
 	@DisplayName("실패_장바구니 이미 존재")
 	void createCart_throwException_whenCartAlreadyExists() {
 		String userCode = UUID.randomUUID().toString();
-		given(cartRepository.existsByUserCode(userCode)).willReturn(true);
+		Cart cart = new Cart(userCode);
+
+		given(cartRepository.findByUserCode(userCode)).willReturn(Optional.of(cart));
 
 		assertThatThrownBy(() -> cartService.createCart(userCode))
 			.isInstanceOf(ServiceException.class)
