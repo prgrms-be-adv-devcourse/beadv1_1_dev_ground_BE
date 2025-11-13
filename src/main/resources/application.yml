@@ -69,13 +69,14 @@ custom:
 products:
   topic:
     image:
-      push: products-image-push
-      delete: products-image-delete
+      push: product-images-push
+      delete: product-images-delete
 
 images:
   topic:
     push: images-push
     delete: images-delete
+    processed: images-processed
 
 logging:
   level:

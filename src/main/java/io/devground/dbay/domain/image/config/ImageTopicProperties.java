@@ -14,4 +14,5 @@ public class ImageTopicProperties {
 
 	private String push;
 	private String delete;
+	private String processed;
 }
