@@ -106,4 +106,10 @@ public class UserServiceImpl implements UserService {
 		user.setCartCode(cartCode);
 	}
 
+	@Override
+	public void deleteByUserCode(String userCode) {
+		User findUser = getByUserCode(userCode);
+		findUser.delete();
+	}
+
 }
