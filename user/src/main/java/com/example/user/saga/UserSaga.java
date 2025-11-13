@@ -26,7 +26,6 @@ import io.devground.core.events.deposit.DepositCreatedSuccess;
 import io.devground.core.events.deposit.DepositDeleteFailed;
 import io.devground.core.events.deposit.DepositDeletedSuccess;
 import io.devground.core.events.user.UserCreatedEvent;
-import io.devground.core.events.user.UserDeletedEvent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
