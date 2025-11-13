@@ -28,6 +28,7 @@ public class DepositMapper {
 	public static DepositHistoryResponse toDepositHistoryResponse(DepositHistory history) {
 		return new DepositHistoryResponse(
 			history.getId(),
+			history.getCode(),
 			history.getDeposit() != null ? history.getDeposit().getId() : null,
 			history.getUserCode(),
 			history.getPayerDeposit() != null ? history.getPayerDeposit().getId() : null,

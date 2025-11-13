@@ -106,8 +106,6 @@ public class DepositServiceImpl implements DepositService {
 		Deposit deposit = getDepositByUserCode(userCode);
 
 		deposit.delete();
-
-		depositRepository.save(deposit);
 	}
 
 	private Deposit getDepositByUserCode(String userCode) {
