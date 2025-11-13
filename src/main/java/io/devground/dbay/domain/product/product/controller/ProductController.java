@@ -38,6 +38,7 @@ public class ProductController {
 	private final ProductService productService;
 
 	// TODO: sellerCode 정책 정해진 후 수정
+	@PostMapping
 	@Operation(summary = "상품 등록",
 		description = "모든 유저는 상품을 등록할 수 있습니다. PresignedUrl 목록을 함께 반환합니다.")
 	public BaseResponse<RegistProductResponse> registProduct(
