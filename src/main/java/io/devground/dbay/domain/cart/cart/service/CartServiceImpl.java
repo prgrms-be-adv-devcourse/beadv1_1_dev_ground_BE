@@ -1,7 +1,6 @@
 package io.devground.dbay.domain.cart.cart.service;
 
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,9 +34,8 @@ public class CartServiceImpl implements CartService {
 			throw ErrorCode.CODE_INVALID.throwServiceException();
 		}
 
-		if (cartRepository.existsByUserCode(userCode)) {
-			throw ErrorCode.CART_ALREADY_EXIST.throwServiceException();
-		}
+		cartRepository.findByCode(userCode)
+			.orElseThrow(ErrorCode.CART_ALREADY_EXIST::throwServiceException);
 
 		Cart cart = Cart.builder()
 			.userCode(userCode)
@@ -122,5 +120,23 @@ public class CartServiceImpl implements CartService {
 		}
 
 		return result;
+	}
+
+	@Override
+	@Transactional
+	public Cart deleteCart(String userCode) {
+		if (!Validators.isValidUuid(userCode)) {
+			throw ErrorCode.CODE_INVALID.throwServiceException();
+		}
+
+		Cart cart = cartRepository.findByUserCode(userCode).orElseThrow(ErrorCode.CART_NOT_FOUND::throwServiceException);
+
+		List<String> cartItemCodes = cartItemRepository.getCartItemCodesByCart(cart);
+
+		cartItemRepository.deleteCartItemByCartCodes(cartItemCodes);
+
+		cart.delete();
+
+		return cart;
 	}
 }
