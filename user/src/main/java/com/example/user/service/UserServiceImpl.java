@@ -17,6 +17,7 @@ import com.example.user.repository.UserRepository;
 import com.example.user.utils.provider.EmailProvider;
 
 import io.devground.core.events.user.UserCreatedEvent;
+import io.devground.core.events.user.UserDeletedEvent;
 import io.devground.core.model.vo.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -110,6 +111,12 @@ public class UserServiceImpl implements UserService {
 	public void deleteByUserCode(String userCode) {
 		User findUser = getByUserCode(userCode);
 		findUser.delete();
+	}
+
+	@Override
+	public void requestDeleteUser(String userCode) {
+		UserDeletedEvent event = new UserDeletedEvent(userCode);
+		kafkaTemplate.send(userCommandTopicName, event);
 	}
 
 }

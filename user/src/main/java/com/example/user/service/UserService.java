@@ -18,4 +18,6 @@ public interface UserService {
 	void applyCartCode(String userCode, String cartCode);
 
 	void deleteByUserCode(String userCode);
+
+	void requestDeleteUser(String userCode);
 }
