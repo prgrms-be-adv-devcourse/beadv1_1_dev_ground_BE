@@ -43,8 +43,6 @@ public class CartServiceImpl implements CartService {
 			.userCode(userCode)
 			.build();
 
-		// deposit에 kafka 이벤트 전달
-
 		return cartRepository.save(cart);
 	}
 

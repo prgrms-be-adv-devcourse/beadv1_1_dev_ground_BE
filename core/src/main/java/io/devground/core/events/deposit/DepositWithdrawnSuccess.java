@@ -4,6 +4,7 @@ public record DepositWithdrawnSuccess(
 	String userCode,
 	String depositHistoryCode,
 	Long amount,
-	Long balanceAfter
+	Long balanceAfter,
+	String orderCode
 ) {
 }

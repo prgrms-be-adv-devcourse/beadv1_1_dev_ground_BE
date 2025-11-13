@@ -30,7 +30,7 @@ public class OrderItem extends BaseEntity {
 	private Long id;
 
 	@ManyToOne(optional = false)
-	@JoinColumn(name = "order_code", nullable = false)
+	@JoinColumn(name = "orderCode", nullable = false)
 	private Order order;
 
 	@Column(nullable = false, columnDefinition = "VARCHAR(36)")
