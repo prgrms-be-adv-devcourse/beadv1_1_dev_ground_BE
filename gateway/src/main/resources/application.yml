@@ -1,9 +1,5 @@
 server:
   port: 8000
-#
-#spring:
-#  application:
-#    name: api-gateway
 
 logging:
   level:
@@ -79,7 +75,7 @@ spring:
           filters:
             - CustomAuthFilter
 
-        #고려해보기
+        #연결예정
         - id: main-service
           uri: lb://main-service
           predicates:
