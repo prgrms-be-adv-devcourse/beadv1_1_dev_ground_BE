@@ -1,13 +1,18 @@
 package io.devground.dbay.domain.image.infra.kafka;
 
+import java.util.List;
+
 import org.springframework.kafka.annotation.KafkaHandler;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
-import io.devground.core.event.product.ProductImageDeleteEvent;
-import io.devground.core.event.product.ProductImagePushEvent;
+import io.devground.core.event.image.ImageProcessedEvent;
+import io.devground.core.event.product.ProductImagesDeleteEvent;
+import io.devground.core.event.product.ProductImagesPushEvent;
+import io.devground.core.event.vo.EventType;
+import io.devground.core.model.vo.ImageType;
 import io.devground.dbay.domain.image.service.ImageService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,42 +22,70 @@ import lombok.extern.slf4j.Slf4j;
 @Transactional
 @RequiredArgsConstructor
 @KafkaListener(
-	topics = "${products.topic.image.push}"
+	topics = {
+		"${products.topic.image.push}",
+		"${products.topic.image.delete}"
+	}
 )
 public class ImageKafkaListener {
 
 	private final ImageService imageService;
+	private final ImageKafkaProducer imageKafkaProducer;
 
 	@KafkaHandler
-	public void handleProductImagePush(ProductImagePushEvent event) {
+	public void handleProductImagePush(ProductImagesPushEvent event) {
+
+		String sagaId = event.sagaId();
+		String referenceCode = event.referenceCode();
+		ImageType imageType = event.imageType();
 
 		try {
 			imageService.saveImages(event.imageType(), event.referenceCode(), event.imageUrls());
-			log.info("성공 Code:{} - DB에 이미지 저장 완료", event.referenceCode());
+
+			log.error("상품 이미지 등록 성공 - SagaId: {}, ReferenceCode: {}", event.sagaId(), event.referenceCode());
+
+			imageKafkaProducer.publishImageProcessed(
+				new ImageProcessedEvent(sagaId, imageType, referenceCode, EventType.PUSH, true, null));
+
 		} catch (Exception e) {
-			// TODO: 분산 트랜잭션 처리?
-			log.error("실패 Code:{} - DB에 이미지 저장 실패", event.referenceCode());
-			throw e;
+			log.error(
+				"상품 이미지 등록 실패 - SagaId: {}, ReferenceCode: {}, Exception: ", event.sagaId(), event.referenceCode(), e
+			);
+
+			imageKafkaProducer.publishImageProcessed(
+				new ImageProcessedEvent(sagaId, imageType, referenceCode, EventType.PUSH, false, e.getMessage()));
 		}
 	}
 
 	@KafkaHandler
-	public void handleProductImageDelete(ProductImageDeleteEvent event) {
+	public void handleProductImageDelete(ProductImagesDeleteEvent event) {
+
+		String sagaId = event.sagaId();
+		String referenceCode = event.referenceCode();
+		ImageType imageType = event.imageType();
+		List<String> deleteUrls = event.deleteUrls();
 
 		try {
-			if (CollectionUtils.isEmpty(event.deleteUrls())) {
-				imageService.deleteImageByReferences(event.imageType(), event.referenceCode());
+			if (CollectionUtils.isEmpty(deleteUrls)) {
+				imageService.deleteImageByReferences(imageType, referenceCode);
+
+				log.info("상품 전체 이미지 삭제 완료 - SagaId: {}, ReferenceCode: {}", sagaId, referenceCode);
 			} else {
 				imageService.deleteImagesByReferencesAndUrls(
-					event.imageType(),
-					event.referenceCode(),
-					event.deleteUrls());
+					imageType, referenceCode, deleteUrls
+				);
+
+				log.info("선택된 상품 이미지 삭제 완료 - SagaId: {}, ReferenceCode: {}, size: {}",
+					sagaId, referenceCode, deleteUrls.size());
 			}
-			log.info("성공 Code:{} - DB에 이미지 저장 완료", event.referenceCode());
+
+			imageKafkaProducer.publishImageProcessed(
+				new ImageProcessedEvent(sagaId, imageType, referenceCode, EventType.DELETE, true, null));
 		} catch (Exception e) {
-			// TODO: 분산 트랜잭션 처리?
-			log.error("실패 Code:{} - DB에 이미지 저장 실패", event.referenceCode());
-			throw e;
+			log.error("상품 이미지 삭제 실패 - SagaId: {}, referenceCode: {}, Exception: ", sagaId, referenceCode, e);
+
+			imageKafkaProducer.publishImageProcessed(
+				new ImageProcessedEvent(sagaId, imageType, referenceCode, EventType.DELETE, false, e.getMessage()));
 		}
 	}
 }

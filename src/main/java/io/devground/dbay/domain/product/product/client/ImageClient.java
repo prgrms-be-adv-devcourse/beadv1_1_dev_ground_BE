@@ -1,24 +1,28 @@
 package io.devground.dbay.domain.product.product.client;
 
+import java.net.URL;
+import java.util.List;
+
 import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
-import io.devground.core.dto.image.DeleteImagesRequest;
+import io.devground.core.dto.image.GeneratePresignedRequest;
+import io.devground.core.dto.image.UpdateImagesRequest;
 import io.devground.core.model.web.BaseResponse;
 
 @FeignClient(name = "image", url = "http://localhost:8080", path = "/api/images")
 public interface ImageClient {
 
+	@PostMapping(value = "/upload")
+	BaseResponse<List<URL>> generatePresignedUrls(@RequestBody GeneratePresignedRequest request);
+
+	@PatchMapping(value = "/update")
+	BaseResponse<List<URL>> updateImages(@RequestBody UpdateImagesRequest request);
+
+/*
 	@DeleteMapping(value = "/delete")
 	BaseResponse<Void> deleteAll(@RequestBody DeleteImagesRequest request);
-
-	// TODO: 배포 시 확인 후 삭제 - 동기로 업로드
-/*
-	@PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-	BaseResponse<Void> uploadToS3(
-		@RequestPart("images") MultipartFile[] files,
-		@RequestBody UploadImagesRequest request
-	);
 */
 }

@@ -1,8 +1,11 @@
 package io.devground.dbay.domain.product.product.mapper;
 
+import java.net.URL;
 import java.util.List;
 
 import io.devground.core.dto.image.DeleteImagesRequest;
+import io.devground.core.dto.image.GeneratePresignedRequest;
+import io.devground.core.dto.image.UpdateImagesRequest;
 import io.devground.core.model.vo.ImageType;
 import io.devground.dbay.domain.product.product.dto.ProductDetailResponse;
 import io.devground.dbay.domain.product.product.dto.RegistProductResponse;
@@ -12,7 +15,9 @@ import io.devground.dbay.domain.product.product.entity.ProductSale;
 
 public abstract class ProductMapper {
 
-	public static RegistProductResponse registResponseFromProductInfo(Product product, ProductSale productSale) {
+	public static RegistProductResponse registResponseFromProductInfo(
+		Product product, ProductSale productSale, List<URL> presignedUrls
+	) {
 
 		return RegistProductResponse.builder()
 			.productCode(product.getCode())
@@ -21,6 +26,7 @@ public abstract class ProductMapper {
 			.title(product.getTitle())
 			.description(product.getDescription())
 			.price(productSale.getPrice())
+			.presignedUrls(presignedUrls)
 			.build();
 	}
 
@@ -40,7 +46,9 @@ public abstract class ProductMapper {
 			.build();
 	}
 
-	public static UpdateProductResponse updateResponseFromProductInfo(Product product, ProductSale productSale) {
+	public static UpdateProductResponse updateResponseFromProductInfo(
+		Product product, ProductSale productSale, List<URL> newPresignedUrls
+	) {
 
 		return UpdateProductResponse.builder()
 			.productCode(product.getCode())
@@ -49,6 +57,35 @@ public abstract class ProductMapper {
 			.title(product.getTitle())
 			.description(product.getDescription())
 			.price(productSale.getPrice())
+			.presignedUrl(newPresignedUrls)
+			.build();
+	}
+
+	public static GeneratePresignedRequest toGeneratePresignedRequest(
+		ImageType imageType,
+		String referenceCode,
+		List<String> fileExtensions
+	) {
+
+		return GeneratePresignedRequest.builder()
+			.imageType(imageType)
+			.referenceCode(referenceCode)
+			.fileExtensions(fileExtensions)
+			.build();
+	}
+
+	public static UpdateImagesRequest toUpdateImagesRequest(
+		ImageType imageType,
+		String referenceCode,
+		List<String> deleteUrls,
+		List<String> newImageExtensions
+	) {
+
+		return UpdateImagesRequest.builder()
+			.imageType(imageType)
+			.referenceCode(referenceCode)
+			.deleteUrls(deleteUrls)
+			.newImageExtensions(newImageExtensions)
 			.build();
 	}
 
