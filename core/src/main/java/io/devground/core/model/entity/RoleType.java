@@ -1,4 +1,4 @@
-package com.example.user.model.entity;
+package io.devground.core.model.entity;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -6,8 +6,8 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 public enum RoleType {
-	USER("회원"),
-	ADMIN("관리자");
+	USER("USER"),
+	ADMIN("ADMIN");
 
 	private final String text;
 
