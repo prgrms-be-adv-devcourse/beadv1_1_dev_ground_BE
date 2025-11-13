@@ -53,12 +53,13 @@ services:
       - redis
       - kafka
     volumes:
-      - ./user-0.0.1-SNAPSHOT.jar:/app/app.jar
+      - ./dbay-0.0.1-SNAPSHOT.jar:/app/app.jar
     environment:
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/dbay_user?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
       SPRING_DATASOURCE_USERNAME: root
       SPRING_DATASOURCE_PASSWORD: root1234
-      SPRING_KAFKA_BOOTSTRAP_SERVERS: localhost:9092
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      #SPRING_KAFKA_BOOTSTRAP_SERVERS: 43:201:80:95:9092
       SPRING_PROFILES_ACTIVE: deploy #수정
       SPRING_JPA_HIBERNATE_DDL_AUTO: update
       SPRING_DATA_REDIS_HOST: redis
@@ -67,22 +68,45 @@ services:
     ports:
       - "8081:8081"
 
+
+  user:
+    image: eclipse-temurin:21-jdk
+    container_name: user
+    working_dir: /app
+    depends_on:
+      - mysql
+      - redis
+      - kafka
+      - eureka
+    volumes:
+      - ./user-0.0.1-SNAPSHOT.jar:/app/app.jar
+    environment:
+      SPRING_PROFILES_ACTIVE: deploy
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/dbay_user?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: root1234
+      SPRING_DATA_REDIS_HOST: redis
+      SPRING_DATA_REDIS_PORT: 6379
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+    command: [ "java", "-jar", "app.jar" ]
+    ports:
+      - "8082:8082"
+
   kafka:
-    image: apache/kafka:3.7.0
+    image: apache/kafka
     container_name: kafka
     ports:
-      - "9090:9090"
-      - "9091:9091"
       - "9092:9092"
     environment:
-      - KAFKA_NODE_ID=1
-      - KAFKA_PROCESS_ROLES=controller,broker
-      - KAFKA_CONTROLLER_QUORUM_VOTERS=1@kafka:9091
-      - KAFKA_LISTENERS=PLAINTEXT://:9090,CONTROLLER://:9091,EXTERNAL://:9092
-      - KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://kafka:9090,EXTERNAL://localhost:9092
-      - KAFKA_LISTENER_SECURITY_PROTOCOL_MAP=PLAINTEXT:PLAINTEXT,CONTROLLER:PLAINTEXT,EXTERNAL:PLAINTEXT
-      - KAFKA_INTER_BROKER_LISTENER_NAME=PLAINTEXT
-      - KAFKA_CONTROLLER_LISTENER_NAMES=CONTROLLER
-      - CLUSTER_ID=ZWU1Y2JiNDctNDg3ZC4tNGY2Ny1iNzJh
-
+      KAFKA_NODE_ID: "1"
+      KAFKA_PROCESS_ROLES: "controller,broker"
+      KAFKA_CONTROLLER_QUORUM_VOTERS: "1@kafka:9093"
+      KAFKA_LISTENERS: "PLAINTEXT://0.0.0.0:9092,CONTROLLER://0.0.0.0:9093"
+      KAFKA_ADVERTISED_LISTENERS: "PLAINTEXT://kafka:9092"
+      #KAFKA_ADVERTISED_LISTENERS: "PLAINTEXT://43.201.80.95:9092"
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: "PLAINTEXT:PLAINTEXT,CONTROLLER:PLAINTEXT"
+      KAFKA_INTER_BROKER_LISTENER_NAME: "PLAINTEXT"
+      KAFKA_CONTROLLER_LISTENER_NAMES: "CONTROLLER"
+      CLUSTER_ID: "ZWU1Y2JiNDctNDg3ZC4tNGY2Ny1iNzJh"
     restart: always
+

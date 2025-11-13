@@ -2,19 +2,12 @@ spring:
   application:
     name: dbay
 
-  spring:
-    config:
-      activate:
-        on-profile: deploy
-
-#
-#  profiles:
-#    active: deploy
+  config:
+    activate:
+      on-profile: deploy
 
   jpa:
     hibernate:
-      #      default_batch_fetch_size: 500
-      #      format_sql: true
       naming:
         physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
 
@@ -25,9 +18,7 @@ spring:
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
-
       acks: all
-
       properties:
         delivery.timeout.ms: 120000
         linger.ms: 0
@@ -39,17 +30,10 @@ spring:
       group-id: dbay-consumer-group
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
-
       properties:
         spring.json.trusted.packages: io.devground.dbay.*, io.devground.core.*
         allow.auto.create.topics: false
 
-logging:
-  level:
-    org.hibernate.SQL: debug
-    org.hibernate.orm.jdbc.bind: TRACE
-    org.hibernate.orm.jdbc.extract: TRACE
-    org.springframework.batch: INFO
 
 deposits:
   event:
