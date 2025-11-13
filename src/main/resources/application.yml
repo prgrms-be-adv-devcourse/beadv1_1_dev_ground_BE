@@ -13,8 +13,8 @@ spring:
 
   kafka:
     bootstrap-servers:
-      - kafka:9092
-
+      #- kafka:9092
+      - localhost:9092
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
@@ -41,7 +41,7 @@ deposits:
       name: deposits-events
   command:
     topic:
-      name: deposits-commands
+      name: deposits-commandsS
 
 custom:
   kafka:

@@ -26,8 +26,8 @@ spring:
   kafka:
     bootstrap-servers:
     #  - 43.201.80.95:9092
-    #  - localhost:9092
-      - kafka:9092
+      - localhost:9092
+    #  - kafka:9092
 
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
@@ -49,7 +49,7 @@ spring:
 
       properties:
         spring.json.trusted.packages: io.devground.dbay.*, io.devground.core.*
-        allow.auto.create.topics: false
+        allow.auto.create.topics: true
 
 custom:
   kafka:
@@ -57,13 +57,13 @@ custom:
       topic-partitions: 1
       topic-replications: 1
 
-#carts:
-#  event:
-#    topic:
-#      name: carts-events
-#  command:
-#    topic:
-#      name: carts-commands
+carts:
+  event:
+    topic:
+      name: carts-events
+  command:
+    topic:
+      name: carts-commands
 
 deposits:
   event:
