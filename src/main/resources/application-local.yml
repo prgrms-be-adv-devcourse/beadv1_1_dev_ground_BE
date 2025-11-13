@@ -1,8 +1,4 @@
 spring:
-  config:
-    activate:
-      on-profile: local
-
   datasource:
     url: jdbc:h2:./dbay-db;MODE=MYSQL;
     driver-class-name: org.h2.Driver
@@ -25,9 +21,7 @@ spring:
 
   kafka:
     bootstrap-servers:
-    #  - 43.201.80.95:9092
       - localhost:9092
-    #  - kafka:9092
 
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
@@ -49,7 +43,7 @@ spring:
 
       properties:
         spring.json.trusted.packages: io.devground.dbay.*, io.devground.core.*
-        allow.auto.create.topics: true
+        allow.auto.create.topics: false
 
 custom:
   kafka:
@@ -64,6 +58,22 @@ carts:
   command:
     topic:
       name: carts-commands
+
+orders:
+  event:
+    topic:
+      name: orders-events
+  command:
+    topic:
+      name: orders-commands
+
+payments:
+  event:
+    topic:
+      name: payments-events
+  command:
+    topic:
+      name: payments-commands
 
 deposits:
   event:
