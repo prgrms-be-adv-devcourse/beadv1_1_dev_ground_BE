@@ -2,9 +2,12 @@ spring:
   application:
     name: dbay
 
-  config:
-    activate:
-      on-profile: deploy
+  profiles:
+    active: deploy
+
+#  config:
+#    activate:
+#      on-profile: deploy
 
   jpa:
     hibernate:
@@ -52,19 +55,43 @@ spring:
       region:
         static: testRegion # 채울 것
 
+custom:
+  kafka:
+    config:
+      topic-partitions: 1
+      topic-replications: 1
+
+carts:
+  event:
+    topic:
+      name: carts-events
+  command:
+    topic:
+      name: carts-commands
+
+orders:
+  event:
+    topic:
+      name: orders-events
+  command:
+    topic:
+      name: orders-commands
+
+payments:
+  event:
+    topic:
+      name: payments-events
+  command:
+    topic:
+      name: payments-commands
+
 deposits:
   event:
     topic:
       name: deposits-events
   command:
     topic:
-      name: deposits-commandsS
-
-custom:
-  kafka:
-    config:
-      topic-partitions: 1
-      topic-replications: 1
+      name: deposits-commands
 
 products:
   topic:
