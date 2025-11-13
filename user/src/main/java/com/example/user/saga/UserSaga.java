@@ -44,7 +44,6 @@ public class UserSaga {
 
 	private final UserService userService;
 	private final KafkaTemplate<String, Object> kafkaTemplate;
-	private final RetryTemplate retryTemplate;
 
 	@Value("${users.commands.topic.name}")
 	private String userCommandTopicName;
