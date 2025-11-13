@@ -5,5 +5,13 @@ public enum OrderStatus {
 	PAID,
 	START_DELIVERY,
 	DELIVERED,
-	CANCELLED
+	CONFIRMED,
+	CANCELLED;
+
+	public boolean isCancellable() {
+		return switch (this) {
+			case PENDING,PAID, START_DELIVERY -> true;
+			default -> false;
+		};
+	}
 }

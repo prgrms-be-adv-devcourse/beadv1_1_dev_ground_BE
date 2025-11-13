@@ -1,4 +1,8 @@
 spring:
+
+  profiles:
+    active: local
+
   mail:
     host: smtp.gmail.com
     port: 587
@@ -67,4 +71,6 @@ eureka:
     service-url:
       defaultZone: http://eureka:8761/eureka/
 
-
+  instance:
+    prefer-ip-address: true
+    ip-address: 127.0.0.1

@@ -68,16 +68,16 @@ public class User extends BaseEntity {
 
 	@Builder
 	public User(String name, String password, String email, String nickname, String address, String addressDetail,
-			String phone, RoleType role, String profileImage) {
-			this.name = name;
-			this.password = password;
-			this.email = email;
-			this.nickname = nickname;
-			this.address = address;
-			this.addressDetail = addressDetail;
-			this.phone = phone;
-			this.role = role;
-			this.profileImage = profileImage;
-		}
-
+		String phone, RoleType role, String profileImage) {
+		this.name = name;
+		this.password = password;
+		this.email = email;
+		this.nickname = nickname;
+		this.address = address;
+		this.addressDetail = addressDetail;
+		this.phone = phone;
+		this.role = role;
+		this.profileImage = profileImage;
 	}
+
+}

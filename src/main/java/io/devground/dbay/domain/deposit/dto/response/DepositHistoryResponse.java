@@ -6,6 +6,7 @@ import io.devground.dbay.domain.deposit.entity.vo.DepositHistoryType;
 
 public record DepositHistoryResponse(
 	Long id,
+	String code,
 	Long depositId,
 	String userCode,
 	Long payerDepositId,
