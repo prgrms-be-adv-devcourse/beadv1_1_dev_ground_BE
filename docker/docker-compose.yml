@@ -43,6 +43,20 @@ services:
     volumes:
       - ./mysql-data:/var/lib/mysql
 
+  mariadb:
+    image: mariadb:11.3
+    container_name: mariadb
+    restart: always
+    environment:
+      MARIADB_ROOT_PASSWORD: root1234
+      MARIADB_DATABASE: dbay_user
+      TZ: Asia/Seoul
+    ports:
+      - "3307:3306"
+    volumes:
+      - ./maria-data:/var/lib/mysql
+
+
   dbay:
     image: eclipse-temurin:21-jdk
     container_name: dbay
