@@ -220,7 +220,7 @@ public class DepositEventHandler {
 
 			log.error("예치금을 삭제 하는데 오류가 발생했습니다!", e);
 
-			DepositDeleteFailed depositDeleteFailed = new DepositDeleteFailed(
+			DepositDeleteFailed depositDeleteFailed = new DepositDeleteFailed(command.userCode(),
 				"예치금 삭제에 실패했어요"
 			);
 
