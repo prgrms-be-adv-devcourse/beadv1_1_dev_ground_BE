@@ -212,7 +212,7 @@ public class DepositEventHandler {
 
 			depositService.deleteDeposit(command.userCode());
 
-			kafkaTemplate.send(depositsEventTopicName, new DepositDeletedSuccess("예치금 삭제 완료"));
+			kafkaTemplate.send(depositsEventTopicName, new DepositDeletedSuccess(command.userCode(), "예치금 삭제 완료"));
 
 			log.info("예치금 삭제 완료: userCode={}", command.userCode());
 

@@ -16,4 +16,6 @@ public interface UserService {
 	void applyDepositCode(String userCode, String depositCode);
 
 	void applyCartCode(String userCode, String cartCode);
+
+	void deleteByUserCode(String userCode);
 }
