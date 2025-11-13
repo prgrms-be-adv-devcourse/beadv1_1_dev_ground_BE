@@ -27,7 +27,7 @@ public class CartItem extends BaseEntity {
 	private Long id;
 
 	@ManyToOne(optional = false)
-	@JoinColumn(name = "cartId", nullable = false)
+	@JoinColumn(name = "cartCode", nullable = false)
 	private Cart cart;
 
 	@Column(nullable = false, columnDefinition = "VARCHAR(36)")
