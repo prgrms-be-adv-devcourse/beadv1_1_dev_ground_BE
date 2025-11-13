@@ -1,6 +1,7 @@
 package com.example.user.model.entity;
 
 import io.devground.core.model.entity.BaseEntity;
+import io.devground.core.model.entity.RoleType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;

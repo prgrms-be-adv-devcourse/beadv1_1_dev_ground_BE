@@ -39,6 +39,65 @@ spring:
           starttls:
             enable: true
 
+  kafka:
+    bootstrap-servers:
+      - localhost:9092
+      - localhost:9094
+      - localhost:9096
+
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+
+      acks: all
+
+      properties:
+        delivery.timeout.ms: 120000
+        linger.ms: 0
+        request.timeout.ms: 30000
+        enable.idempotence: true
+        allow.auto.create.topics: false
+
+    consumer:
+      group-id: accounts-service
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer org.springframework.kafka.support.serializer.JsonDeserializer
+
+    properties:
+      spring.json.trusted.packages: com.example.*, io.devground.core.*
+      allow.auto.create.topics: false
+
+
+users:
+  config:
+    topic-partitions: 1
+    topic-replications: 1
+
+  commands:
+    topic:
+      name: users-commands
+
+  events:
+    topic:
+      name: users-events
+
+deposits:
+  commands:
+    topic:
+      name: deposits-commands
+
+  events:
+    topic:
+      name: deposits-events
+
+carts:
+  commands:
+    topic:
+      name: carts-commands
+
+  events:
+    topic:
+      name: carts-events
 
 logging:
   level:
