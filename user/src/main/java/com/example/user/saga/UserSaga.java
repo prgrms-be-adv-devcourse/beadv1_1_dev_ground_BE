@@ -5,6 +5,7 @@ import org.springframework.kafka.annotation.KafkaHandler;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.messaging.handler.annotation.Payload;
+import org.springframework.retry.support.RetryTemplate;
 import org.springframework.stereotype.Component;
 
 import com.example.user.service.UserService;
@@ -14,13 +15,17 @@ import io.devground.core.commands.cart.DeleteCartCommand;
 import io.devground.core.commands.deposit.CreateDeposit;
 import io.devground.core.commands.deposit.DeleteDeposit;
 import io.devground.core.commands.user.DeleteUser;
+import io.devground.core.commands.user.NotifyCartDeleteFailedAlertCommand;
 import io.devground.core.commands.user.NotifyCreatedUserAlertCommand;
+import io.devground.core.commands.user.NotifyDepositDeleteFailedAlertCommand;
 import io.devground.core.commands.user.NotifyUserCreateFailedAlertCommand;
+import io.devground.core.event.cart.CartDeletedFailedEvent;
 import io.devground.core.events.cart.CartCreateFailed;
 import io.devground.core.events.cart.CartCreatedEvent;
 import io.devground.core.events.cart.CartDeleteEvent;
 import io.devground.core.events.deposit.DepositCreateFailed;
 import io.devground.core.events.deposit.DepositCreatedSuccess;
+import io.devground.core.events.deposit.DepositDeleteFailed;
 import io.devground.core.events.deposit.DepositDeletedSuccess;
 import io.devground.core.events.user.UserCreatedEvent;
 import io.devground.core.events.user.UserDeletedEvent;
@@ -39,6 +44,7 @@ public class UserSaga {
 
 	private final UserService userService;
 	private final KafkaTemplate<String, Object> kafkaTemplate;
+	private final RetryTemplate retryTemplate;
 
 	@Value("${users.commands.topic.name}")
 	private String userCommandTopicName;
@@ -119,11 +125,39 @@ public class UserSaga {
 
 	//user 삭제 요청 -> cart 삭제
 	@KafkaHandler
-	public void handleEvent(@Payload UserDeletedEvent event){
+	public void handleEvent(@Payload UserDeletedEvent event) {
 		DeleteCartCommand deleteCartCommand = new DeleteCartCommand(event.userCode());
 		log.info("user 삭제 요청으로 cart를 삭제합니다.");
 
+		kafkaTemplate.send(cartsCommandTopicName, deleteCartCommand);
 	}
 
+	//장바구니 삭제 성공 -> 예치금 삭제
+	@KafkaHandler
+	public void handleEvent(@Payload CartDeleteEvent event) {
+		DeleteDeposit deleteDeposit = new DeleteDeposit(event.userCode());
+		log.info("user 삭제 요청으로 cart 삭제 후 deposit을 삭제합니다.");
 
+		kafkaTemplate.send(depositsCommandTopicName, deleteDeposit);
+	}
+
+	//장바구니 삭제 실패
+	@KafkaHandler
+	public void handleEvent(@Payload CartDeletedFailedEvent event) {
+		NotifyCartDeleteFailedAlertCommand notifyUserCreateFailedAlertCommand = new NotifyCartDeleteFailedAlertCommand(
+			event.userCode(), "장바구니 삭제에 실패했습니다.");
+		log.info("장바구니 삭제에 실패했습니다.");
+
+		kafkaTemplate.send(cartsCommandTopicName, notifyUserCreateFailedAlertCommand);
+	}
+
+	//예치금 삭제 실패
+	@KafkaHandler
+	public void handleEvent(@Payload DepositDeleteFailed event) {
+		NotifyDepositDeleteFailedAlertCommand notifyUserCreateFailedAlertCommand = new NotifyDepositDeleteFailedAlertCommand(
+			event.userCode(), "예치금 삭제에 실패했습니다.");
+		log.info("예치금 삭제에 실패했습니다.");
+
+		kafkaTemplate.send(depositsCommandTopicName, notifyUserCreateFailedAlertCommand);
+	}
 }
