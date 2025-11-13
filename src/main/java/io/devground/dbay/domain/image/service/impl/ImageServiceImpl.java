@@ -1,5 +1,6 @@
 package io.devground.dbay.domain.image.service.impl;
 
+import java.net.URL;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -22,23 +23,11 @@ public class ImageServiceImpl implements ImageService {
 	private final ImageRepository imageRepository;
 	private final S3Service s3Service;
 
-	// TODO: 사용하지 않을 시 삭제
-/*
 	@Override
-	public Void saveImages(UploadImagesRequest request, MultipartFile[] files) {
+	public List<URL> generatePresignedUrls(ImageType imageType, String referenceCode, List<String> fileExtensions) {
 
-		ImageType imageType = request.imageType();
-		String referenceCode = request.referenceCode();
-
-		List<String> urls = s3Service.uploadFiles(request.imageType(), request.referenceCode(), files);
-
-		if (!urls.isEmpty()) {
-			this.saveImages(imageType, referenceCode, urls);
-		}
-
-		return null;
+		return s3Service.generatePresignedUrls(imageType, referenceCode, fileExtensions);
 	}
-*/
 
 	@Override
 	public void saveImages(ImageType imageType, String referenceCode, List<String> urls) {
@@ -51,9 +40,13 @@ public class ImageServiceImpl implements ImageService {
 	}
 
 	@Override
-	public void saveImage(ImageType imageType, String referenceCode, String url) {
+	public List<URL> updateUrls(
+		ImageType imageType, String referenceCode, List<String> deleteUrls, List<String> newImageExtensions
+	) {
 
-		imageRepository.save(ImageMapper.of(imageType, referenceCode, url));
+		this.deleteImagesByReferencesAndUrls(imageType, referenceCode, deleteUrls);
+
+		return this.generatePresignedUrls(imageType, referenceCode, newImageExtensions);
 	}
 
 	@Override
