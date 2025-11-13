@@ -1,8 +1,7 @@
 package io.devground.dbay.common.aws.s3;
 
-import java.util.UUID;
-
 import io.devground.core.model.vo.ImageType;
+import io.devground.core.util.CodeUtil;
 import lombok.experimental.UtilityClass;
 
 @UtilityClass
@@ -44,6 +43,6 @@ public class S3Util {
 
 	private String generateKey(String fileExtension) {
 
-		return "/" + UUID.randomUUID() + "." + fileExtension;
+		return "/" + CodeUtil.generateUUID() + "." + fileExtension;
 	}
 }
