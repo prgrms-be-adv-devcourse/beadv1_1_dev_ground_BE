@@ -1,11 +1,10 @@
-package io.devground.dbay.domain.saga.vo;
+package io.devground.dbay.common.saga.vo;
 
 import lombok.Getter;
 
 @Getter
 public enum SagaStatus {
 
-	PENDING,
 	IN_PROCESS,
 	SUCCESS,
 	FAILED,
