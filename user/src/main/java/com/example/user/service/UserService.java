@@ -10,4 +10,10 @@ public interface UserService {
 	void checkCertificateEmail(EmailCertificationRequest emailCertificationRequest);
 
 	User registerUser(UserRequest userRequest);
+
+	User getByUserCode(String userCode);
+
+	void applyDepositCode(String userCode, String depositCode);
+
+	void applyCartCode(String userCode, String cartCode);
 }
