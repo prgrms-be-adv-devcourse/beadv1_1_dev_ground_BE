@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -20,7 +19,6 @@ import io.devground.core.model.exception.ServiceException;
 import io.devground.core.model.vo.ErrorCode;
 import io.devground.dbay.domain.cart.cart.model.entity.Cart;
 import io.devground.dbay.domain.cart.cart.model.vo.AddCartItemRequest;
-import io.devground.dbay.domain.cart.cart.model.vo.AddCartItemResponse;
 import io.devground.dbay.domain.cart.cart.model.vo.CartProductListResponse;
 import io.devground.dbay.domain.cart.cart.model.vo.DeleteItemsByCartRequest;
 import io.devground.dbay.domain.cart.cart.model.vo.GetItemsByCartResponse;
@@ -189,6 +187,8 @@ class CartServiceImplTest {
 		String productCode1 = UUID.randomUUID().toString();
 		String productCode2 = UUID.randomUUID().toString();
 
+		String sellerCode = UUID.randomUUID().toString();
+
 		String productSaleCode1 = UUID.randomUUID().toString();
 		String productSaleCode2 = UUID.randomUUID().toString();
 
@@ -202,8 +202,8 @@ class CartServiceImplTest {
 		given(cart.getCartItems()).willReturn(List.of(item1, item2));
 		given(cartRepository.findByCode(cartCode)).willReturn(Optional.of(cart));
 
-		CartProductListResponse p1 = new CartProductListResponse(productCode1, productSaleCode1, "아이폰 프로 17", 1500000L);
-		CartProductListResponse p2 = new CartProductListResponse(productCode2, productSaleCode2, "맥북3 프로", 3500000L);
+		CartProductListResponse p1 = new CartProductListResponse(productCode1, productSaleCode1, sellerCode, "아이폰 프로 17", 1500000L);
+		CartProductListResponse p2 = new CartProductListResponse(productCode2, productSaleCode2, sellerCode, "맥북3 프로", 3500000L);
 		given(productFeignClient.productListByCodes(List.of(productCode1, productCode2))).willReturn(List.of(p1, p2));
 
 		GetItemsByCartResponse result = cartService.getItemsByCart(cartCode);
@@ -221,6 +221,8 @@ class CartServiceImplTest {
 		String productCode = UUID.randomUUID().toString();
 		String productSaleCode = UUID.randomUUID().toString();
 
+		String sellerCode = UUID.randomUUID().toString();
+
 		CartItem item1 = mock(CartItem.class);
 		given(item1.getProductCode()).willReturn(productCode);
 
@@ -231,7 +233,7 @@ class CartServiceImplTest {
 		given(cart.getCartItems()).willReturn(List.of(item1, item2));
 		given(cartRepository.findByCode(cartCode)).willReturn(Optional.of(cart));
 
-		CartProductListResponse p1 = new CartProductListResponse(productCode, productSaleCode, "아이폰 프로 17", 1500000L);
+		CartProductListResponse p1 = new CartProductListResponse(productCode, productSaleCode, sellerCode, "아이폰 프로 17", 1500000L);
 		given(productFeignClient.productListByCodes(List.of(productCode))).willReturn(List.of(p1));
 
 		GetItemsByCartResponse result = cartService.getItemsByCart(cartCode);
@@ -250,6 +252,8 @@ class CartServiceImplTest {
 
 		String productSaleCode = UUID.randomUUID().toString();
 
+		String sellerCode = UUID.randomUUID().toString();
+
 		CartItem item1 = mock(CartItem.class);
 		given(item1.getProductCode()).willReturn(productCode);
 
@@ -257,7 +261,7 @@ class CartServiceImplTest {
 		given(cart.getCartItems()).willReturn(List.of(item1));
 		given(cartRepository.findByCode(cartCode)).willReturn(Optional.of(cart));
 
-		CartProductListResponse p1 = new CartProductListResponse(productCode, productSaleCode, "아이폰 프로 17", 1500000L);
+		CartProductListResponse p1 = new CartProductListResponse(productCode, productSaleCode, sellerCode, "아이폰 프로 17", 1500000L);
 		given(productFeignClient.productListByCodes(List.of(productCode))).willReturn(List.of(p1));
 
 		GetItemsByCartResponse result = cartService.getItemsByCart(cartCode);
