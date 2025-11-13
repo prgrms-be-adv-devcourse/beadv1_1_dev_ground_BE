@@ -126,7 +126,7 @@ public class DepositEventHandler {
 
 		try {
 
-			DepositHistoryType type = DepositHistoryType.valueOf(command.type());
+			DepositHistoryType type =  DepositHistoryType.valueOf(command.type());
 			DepositHistoryResponse response = depositService.withdraw(
 				command.userCode(),
 				type,
@@ -137,7 +137,8 @@ public class DepositEventHandler {
 				response.userCode(),
 				response.code(),
 				response.amount(),
-				response.balanceAfter()
+				response.balanceAfter(),
+				command.orderCode()
 			);
 
 			kafkaTemplate.send(depositsEventTopicName, depositWithdrawnSuccessEvent);
@@ -151,7 +152,8 @@ public class DepositEventHandler {
 			DepositWithdrawFailed depositWithdrawFailed = new DepositWithdrawFailed(
 				command.userCode(),
 				command.amount(),
-				"예치금 인출에 실패했어요"
+				"예치금 인출에 실패했어요",
+				command.orderCode()
 			);
 
 			kafkaTemplate.send(depositsEventTopicName, depositWithdrawFailed);

@@ -16,14 +16,14 @@ public class OrderKafkaTopicConfig {
 	private int topic_replications;
 
 	@Value("${orders.event.topic.name}")
-	private String orderEvenTopicName;
+	private String orderEventTopicName;
 
 	@Value("${orders.command.topic.name}")
 	private String orderCommandTopicName;
 
 	@Bean
 	public NewTopic createOrderEventTopic() {
-		return TopicBuilder.name(orderEvenTopicName)
+		return TopicBuilder.name(orderEventTopicName)
 			.partitions(topic_partitions)
 			.replicas(topic_replications)
 			.build();
