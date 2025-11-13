@@ -21,6 +21,8 @@ public record UpdateProductRequest(
 	@Positive(message = "가격은 0원 이상이어야 합니다.")
 	Long price,
 
-	List<String> deleteUrls
+	List<String> deleteUrls,
+
+	List<String> newImageExtensions
 ) {
 }
