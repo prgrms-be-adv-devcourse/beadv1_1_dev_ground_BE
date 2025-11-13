@@ -6,10 +6,12 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
 
 import io.devground.dbay.domain.cart.cart.model.entity.Cart;
 import io.devground.dbay.domain.cart.cartItem.model.entity.CartItem;
 
+@Repository
 public interface CartItemRepository extends JpaRepository<CartItem, Long> {
 	boolean existsByCart_CodeAndProductCode(String cartCode, String productCode);
 

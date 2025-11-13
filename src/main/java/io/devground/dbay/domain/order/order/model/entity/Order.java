@@ -70,4 +70,36 @@ public class Order extends BaseEntity {
 		this.address = address;
 		this.totalAmount = totalAmount;
 	}
+
+	public void cancel() {
+		if (this.orderStatus == OrderStatus.CANCELLED) {
+			throw ErrorCode.ORDER_ALREADY_CANCELLED.throwServiceException();
+		}
+
+		if (this.orderStatus == OrderStatus.DELIVERED) {
+			throw ErrorCode.ORDER_CANCELLED_NOT_ALLOWED_WHEN_DELIVERED.throwServiceException();
+		}
+
+		if (this.orderStatus == OrderStatus.CONFIRMED) {
+			throw ErrorCode.ORDER_CANCELLED_NOT_ALLOWED_WHEN_CONFIRMED.throwServiceException();
+		}
+
+		this.orderStatus = OrderStatus.CANCELLED;
+	}
+
+	public void confirm() {
+		if (this.orderStatus == OrderStatus.CONFIRMED) {
+			throw ErrorCode.ORDER_ALREADY_CONFIRMED.throwServiceException();
+		}
+
+		if (this.orderStatus != OrderStatus.DELIVERED) {
+			throw ErrorCode.ORDER_CONFIRM_NOT_ALLOWED.throwServiceException();
+		}
+
+		this.orderStatus = OrderStatus.CONFIRMED;
+	}
+
+	public void paid() {
+		this.orderStatus = OrderStatus.PAID;
+	}
 }
