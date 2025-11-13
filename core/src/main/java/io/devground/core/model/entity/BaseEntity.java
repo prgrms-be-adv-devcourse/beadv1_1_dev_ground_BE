@@ -1,13 +1,13 @@
 package io.devground.core.model.entity;
 
 import java.time.LocalDateTime;
-import java.util.UUID;
 
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import io.devground.core.model.vo.DeleteStatus;
+import io.devground.core.util.CodeUtil;
 import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.EnumType;
@@ -25,7 +25,7 @@ import lombok.Getter;
 public abstract class BaseEntity {
 
 	@Column(nullable = false, unique = true)
-	private String code = UUID.randomUUID().toString();
+	private String code = CodeUtil.generateUUID().toString();
 
 	@Enumerated(EnumType.STRING)
 	private DeleteStatus deleteStatus = DeleteStatus.N;
