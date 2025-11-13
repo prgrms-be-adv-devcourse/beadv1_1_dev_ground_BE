@@ -5,6 +5,7 @@ import java.time.Duration;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.example.user.mapper.UserMapper;
 import com.example.user.model.dto.request.EmailCertificationRequest;
@@ -77,4 +78,25 @@ public class UserServiceImpl implements UserService {
 
 		return user;
 	}
+
+	@Override
+	public User getByUserCode(String userCode) {
+		return userRepository.findByCode(userCode)
+			.orElseThrow(() -> new IllegalArgumentException("해당 회원은 존재하지 않습니다."));
+	}
+
+	@Override
+	@Transactional
+	public void applyDepositCode(String userCode, String depositCode) {
+		User user = getByUserCode(userCode);
+		user.setDepositCode(depositCode);
+	}
+
+	@Override
+	@Transactional
+	public void applyCartCode(String userCode, String cartCode) {
+		User user = getByUserCode(userCode);
+		user.setCartCode(cartCode);
+	}
+
 }
