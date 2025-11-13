@@ -3,6 +3,8 @@ package com.example.user.service;
 import java.time.Duration;
 
 import org.apache.commons.lang3.RandomStringUtils;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,6 +16,7 @@ import com.example.user.model.entity.User;
 import com.example.user.repository.UserRepository;
 import com.example.user.utils.provider.EmailProvider;
 
+import io.devground.core.events.user.UserCreatedEvent;
 import io.devground.core.model.vo.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,6 +30,10 @@ public class UserServiceImpl implements UserService {
 	private final RedisService redisService;
 	private final BCryptPasswordEncoder bCryptPasswordEncoder;
 	private final UserRepository userRepository;
+	private final KafkaTemplate<String, Object> kafkaTemplate;
+
+	@Value("${users.commands.topic.name}")
+	private String userCommandTopicName;
 
 	@Override
 	public void sendCertificateEmail(String email) {
@@ -65,14 +72,14 @@ public class UserServiceImpl implements UserService {
 			|| redisService.find(email, String.class) == null) {
 			throw ErrorCode.NOT_VERIFICATION_EMAIL.throwServiceException();
 		}
-
 		//사용자 정보 저장
 		User user = UserMapper.toEntity(userRequest, bCryptPasswordEncoder);
-		userRepository.save(user);
+		User savedUser = userRepository.save(user);
 
-		//장바구니 코드 저장
-
-		//예치금 코드 저장
+		//유저 생성 이벤트 발행
+		String userCode = savedUser.getCode();
+		UserCreatedEvent event = new UserCreatedEvent(userCode);
+		kafkaTemplate.send(userCommandTopicName, event);
 
 		//웰컴 쿠폰 발급
 
