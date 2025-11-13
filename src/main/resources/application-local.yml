@@ -1,4 +1,8 @@
 spring:
+  config:
+    activate:
+      on-profile: local
+
   datasource:
     url: jdbc:h2:./dbay-db;MODE=MYSQL;
     driver-class-name: org.h2.Driver
@@ -21,7 +25,9 @@ spring:
 
   kafka:
     bootstrap-servers:
-      - localhost:9092
+      - 43.201.80.95:29092
+     # - 43.201.80.95:9092
+    #  - localhost:9092
 
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer

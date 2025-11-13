@@ -1,0 +1,13 @@
+apiVersion: v1
+
+kind: ConfigMap
+
+metadata:
+  name: mysql-configmap
+
+data:
+  MYSQL_USER: "app1"
+  MYSQL_PASSWORD: "app1!"
+  MYSQL_DATABASE: "test_db"
+  MYSQL_ALLOW_EMPTY_PASSWORD: "true"
+  TZ: "Asia/Seoul"

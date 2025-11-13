@@ -2,8 +2,14 @@ spring:
   application:
     name: dbay
 
-  profiles:
-    active: deploy
+  spring:
+    config:
+      activate:
+        on-profile: deploy
+
+#
+#  profiles:
+#    active: deploy
 
   jpa:
     hibernate:
@@ -44,3 +50,17 @@ logging:
     org.hibernate.orm.jdbc.bind: TRACE
     org.hibernate.orm.jdbc.extract: TRACE
     org.springframework.batch: INFO
+
+deposits:
+  event:
+    topic:
+      name: deposits-events
+  command:
+    topic:
+      name: deposits-commands
+
+custom:
+  kafka:
+    config:
+      topic-partitions: 1
+      topic-replications: 1
