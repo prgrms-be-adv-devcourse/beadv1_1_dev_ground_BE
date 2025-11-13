@@ -85,7 +85,7 @@ public class DepositEventHandler {
 
 		try {
 
-			DepositHistoryType type = DepositHistoryType.valueOf(command.type());
+			DepositHistoryType type = DepositHistoryType.valueOf(command.type().name());
 			DepositHistoryResponse response = depositService.charge(
 				command.userCode(),
 				type,
@@ -126,7 +126,7 @@ public class DepositEventHandler {
 
 		try {
 
-			DepositHistoryType type =  DepositHistoryType.valueOf(command.type());
+			DepositHistoryType type = DepositHistoryType.valueOf(command.type().name());
 			DepositHistoryResponse response = depositService.withdraw(
 				command.userCode(),
 				type,
@@ -169,7 +169,7 @@ public class DepositEventHandler {
 
 		try {
 
-			DepositHistoryType type = DepositHistoryType.valueOf(command.type());
+			DepositHistoryType type = DepositHistoryType.valueOf(command.type().name());
 			DepositHistoryResponse response = depositService.refund(
 				command.userCode(),
 				type,
