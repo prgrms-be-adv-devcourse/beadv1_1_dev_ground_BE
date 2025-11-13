@@ -1,14 +1,19 @@
 package io.devground.core.dto.image;
 
+import java.util.List;
+
 import io.devground.core.model.vo.ImageType;
 import lombok.Builder;
 
-// TODO: 사용하지 않을 시 삭제
 @Builder
-public record UploadImagesRequest(
+public record UpdateImagesRequest(
+
+	ImageType imageType,
 
 	String referenceCode,
-	
-	ImageType imageType
+
+	List<String> deleteUrls,
+
+	List<String> newImageExtensions
 ) {
 }

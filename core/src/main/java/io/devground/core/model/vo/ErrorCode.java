@@ -50,6 +50,7 @@ public enum ErrorCode {
 	SOLD_PRODUCT_CANNOT_PURCHASE(400, "이미 판매된 상품입니다."),
 	SOLD_PRODUCT_CANNOT_UPDATE(400, "이미 판매된 상품 내용은 변경할 수 없습니다."),
 	PRODUCT_MUST_WITH_LEAF_CATEGORY(400, "상품은 반드시 최종 카테고리를 가져야 합니다."),
+	IS_NOT_PRODUCT_OWNER(403, "해당 상품의 판매자가 아닙니다"),
 	PRODUCT_NOT_FOUND(404, "상품을 찾을 수 없습니다."),
 
 	// category

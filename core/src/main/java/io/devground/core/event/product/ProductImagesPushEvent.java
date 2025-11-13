@@ -5,7 +5,10 @@ import java.util.List;
 import io.devground.core.model.vo.ImageType;
 import lombok.NonNull;
 
-public record ProductImageDeleteEvent(
+public record ProductImagesPushEvent(
+
+	@NonNull
+	String sagaId,
 
 	@NonNull
 	ImageType imageType,
@@ -13,6 +16,7 @@ public record ProductImageDeleteEvent(
 	@NonNull
 	String referenceCode,
 
-	List<String> deleteUrls
+	@NonNull
+	List<String> imageUrls
 ) {
 }
