@@ -76,6 +76,7 @@ public class UserServiceImpl implements UserService {
 			|| redisService.find(email, String.class) == null) {
 			throw ErrorCode.NOT_VERIFICATION_EMAIL.throwServiceException();
 		}
+
 		//사용자 정보 저장
 		User user = UserMapper.toEntity(userRequest, bCryptPasswordEncoder);
 		User savedUser = userRepository.save(user);
