@@ -12,7 +12,9 @@ import io.devground.dbay.domain.image.entity.Image;
 
 public interface ImageRepository extends JpaRepository<Image, Long> {
 
-	List<Image> findAllByImageTypeAndReferenceCode(ImageType imageType, String referenceCode);
+	List<Image> findAllByImageTypeAndReferenceCodeAndImageUrlIn(
+		ImageType imageType, String referenceCode, List<String> imageUrls
+	);
 
 	Image findByImageTypeAndReferenceCode(ImageType imageType, String referenceCode);
 
