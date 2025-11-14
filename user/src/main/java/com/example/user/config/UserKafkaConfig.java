@@ -22,19 +22,19 @@ public class UserKafkaConfig {
 	private String usersEventsTopicName;
 
 	@Value("${carts.events.topic.name}")
-	private String cartsEventsTopicName;
+	private String cartsUserEventsTopicName;
 
 	@Value("${deposits.events.topic.name}")
-	private String depositsEventsTopicName;
+	private String depositsUserEventsTopicName;
 
 	@Value("${carts.commands.topic.name}")
-	private String cartsCommandsTopicName;
+	private String cartsUserCommandsTopicName;
 
 	@Value("${deposits.commands.topic.name}")
-	private String depositsCommandTopicName;
+	private String depositsUserCommandTopicName;
 
 	@Value("${users.commands.topic.name}")
-	private String usersCommandTopicName;
+	private String usersUserCommandTopicName;
 
 	@Bean
 	public KafkaTemplate<String, Object> kafkaTemplate(
@@ -52,8 +52,8 @@ public class UserKafkaConfig {
 	}
 
 	@Bean
-	public NewTopic createCartsEventTopic() {
-		return TopicBuilder.name(cartsEventsTopicName)
+	public NewTopic createCartsUserEventTopic() {
+		return TopicBuilder.name(cartsUserEventsTopicName)
 			.partitions(topic_partitions)
 			.replicas(topic_replications)
 			.build();
@@ -61,7 +61,7 @@ public class UserKafkaConfig {
 
 	@Bean
 	public NewTopic createDepositsEventTopic() {
-		return TopicBuilder.name(depositsEventsTopicName)
+		return TopicBuilder.name(depositsUserEventsTopicName)
 			.partitions(topic_partitions)
 			.replicas(topic_replications)
 			.build();
@@ -69,7 +69,7 @@ public class UserKafkaConfig {
 
 	@Bean
 	public NewTopic createCartsCommandsTopic() {
-		return TopicBuilder.name(cartsCommandsTopicName)
+		return TopicBuilder.name(cartsUserCommandsTopicName)
 			.partitions(topic_partitions)
 			.replicas(topic_replications)
 			.build();
@@ -78,7 +78,7 @@ public class UserKafkaConfig {
 	@Bean
 	public NewTopic createDepositsCommandsTopic() {
 		return TopicBuilder
-			.name(depositsCommandTopicName)
+			.name(depositsUserCommandTopicName)
 			.partitions(topic_partitions)
 			.replicas(topic_replications)
 			.build();
@@ -87,9 +87,10 @@ public class UserKafkaConfig {
 	@Bean
 	public NewTopic createUsersCommandsTopic() {
 		return TopicBuilder
-			.name(usersCommandTopicName)
+			.name(usersUserCommandTopicName)
 			.partitions(topic_partitions)
 			.replicas(topic_replications)
 			.build();
 	}
+
 }
