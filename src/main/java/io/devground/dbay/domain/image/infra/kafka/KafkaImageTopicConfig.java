@@ -19,6 +19,8 @@ public class KafkaImageTopicConfig {
 	@Value("${custom.kafka.config.topic-replications}")
 	private int replicas;
 
+	private static final String DLT = ".DLT";
+
 	private final ImageTopicProperties imageTopicProperties;
 
 	@Bean
@@ -34,6 +36,42 @@ public class KafkaImageTopicConfig {
 	public NewTopic imagesDeleteTopic() {
 
 		return TopicBuilder.name(imageTopicProperties.getDelete())
+			.partitions(partitions)
+			.replicas(replicas)
+			.build();
+	}
+
+	@Bean
+	public NewTopic imagesProcessedTopic() {
+
+		return TopicBuilder.name(imageTopicProperties.getProcessed())
+			.partitions(partitions)
+			.replicas(replicas)
+			.build();
+	}
+
+	@Bean
+	public NewTopic imagesPushDltTopic() {
+
+		return TopicBuilder.name(imageTopicProperties.getPush() + DLT)
+			.partitions(partitions)
+			.replicas(replicas)
+			.build();
+	}
+
+	@Bean
+	public NewTopic imagesDeleteDltTopic() {
+
+		return TopicBuilder.name(imageTopicProperties.getDelete() + DLT)
+			.partitions(partitions)
+			.replicas(replicas)
+			.build();
+	}
+
+	@Bean
+	public NewTopic imagesProcessedDltTopic() {
+
+		return TopicBuilder.name(imageTopicProperties.getProcessed() + DLT)
 			.partitions(partitions)
 			.replicas(replicas)
 			.build();
