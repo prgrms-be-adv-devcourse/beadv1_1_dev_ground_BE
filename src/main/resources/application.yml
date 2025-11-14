@@ -16,7 +16,7 @@ spring:
 
   kafka:
     bootstrap-servers:
-      #- kafka:9092
+#      - kafka:9092
       - localhost:9092
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
@@ -37,13 +37,13 @@ spring:
         spring.json.trusted.packages: io.devground.dbay.*, io.devground.core.*
         allow.auto.create.topics: false
 
-    retry:
-      topic:
-        enabled: true
-        attempts: 5
-        delay: 1000
-        multiplier: 2.0
-        max-delay: 20000
+#    retry:
+#      topic:
+#        enabled: true
+#        attempts: 5
+#        delay: 1000
+#        multiplier: 2.0
+#        max-delay: 20000
 
   cloud:
     aws:
