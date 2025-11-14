@@ -33,6 +33,9 @@ public class UserServiceImpl implements UserService {
 	private final UserRepository userRepository;
 	private final KafkaTemplate<String, Object> kafkaTemplate;
 
+	@Value("${users.events.topic.name}")
+	private String userEventsTopicName;
+
 	@Value("${users.commands.topic.name}")
 	private String userCommandTopicName;
 
@@ -80,7 +83,8 @@ public class UserServiceImpl implements UserService {
 		//유저 생성 이벤트 발행
 		String userCode = savedUser.getCode();
 		UserCreatedEvent event = new UserCreatedEvent(userCode);
-		kafkaTemplate.send(userCommandTopicName, event);
+		log.info("Sending event: {}", event);
+		kafkaTemplate.send(userEventsTopicName, event);
 
 		//웰컴 쿠폰 발급
 
