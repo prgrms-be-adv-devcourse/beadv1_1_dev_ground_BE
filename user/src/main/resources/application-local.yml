@@ -84,20 +84,20 @@ users:
 deposits:
   commands:
     topic:
-      name: deposits-commands
+      name: deposits-user-commands
 
   events:
     topic:
-      name: deposits-events
+      name: deposit-user-events
 
 carts:
   commands:
     topic:
-      name: carts-commands
+      name: carts-user-commands
 
   events:
     topic:
-      name: carts-events
+      name: carts-user-events
 
 logging:
   level:
