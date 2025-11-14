@@ -21,7 +21,8 @@ import lombok.extern.slf4j.Slf4j;
  * 1. Retry 는 우선 최대 5회, 지수 백오프
  * 2. DLT (Dead Letter Topic) : 재시도 실패할 때 전송
  * 3. Non_Retryable : 역직렬화 실패 등은 바로 DLT 전송
- * TODO: 4. DLT 토픽 수동 생성 필요
+ * 4. DLT 토픽 생성 필요 -> 따로 생성함
+ * TODO: 5. Retry 토픽도 추가로 필요한가?
  */
 @Slf4j
 @Configuration
@@ -31,6 +32,8 @@ public class KafkaErrorHandler {
 	@Value("${custom.kafka.config.topic-partitions}")
 	private Integer topicPartitions;
 
+	private static final String DLT = ".DLT";
+
 	@Bean
 	public CommonErrorHandler commonErrorHandler(KafkaTemplate<String, Object> kafkaTemplate) {
 
@@ -38,7 +41,7 @@ public class KafkaErrorHandler {
 			kafkaTemplate,
 			(record, exception) -> {
 				String topic = record.topic();
-				String dltTopic = topic + ".DLT";
+				String dltTopic = topic + DLT;
 
 				log.error("Kafka 메시지 DLT 전송 - Topic: {} -> {}, Key: {}, Offset: {}, Exception: ",
 					topic, dltTopic, record.key(), record.offset(), exception);
@@ -47,7 +50,7 @@ public class KafkaErrorHandler {
 			}
 		);
 
-		ExponentialBackOffWithMaxRetries backOff = new ExponentialBackOffWithMaxRetries(3);
+		ExponentialBackOffWithMaxRetries backOff = new ExponentialBackOffWithMaxRetries(5);
 		backOff.setInitialInterval(1000L);
 		backOff.setMultiplier(2.0);
 		backOff.setMaxInterval(20000L);
