@@ -140,7 +140,7 @@ class DepositEventHandlerTest {
 		String depositCode = "DEPOSIT_CODE";
 		Long amount = 10000L;
 		Long balanceAfter = 10000L;
-		String type = "CHARGE_TOSS";
+		io.devground.core.model.vo.DepositHistoryType type = io.devground.core.model.vo.DepositHistoryType.CHARGE_TOSS;
 		ChargeDeposit command = new ChargeDeposit(userCode, amount, type);
 		DepositHistoryResponse historyResponse = new DepositHistoryResponse(
 			2L,
@@ -179,7 +179,7 @@ class DepositEventHandlerTest {
 		// given
 		String userCode = "USER_CODE";
 		Long amount = 10000L;
-		String type = "CHARGE_TOSS";
+		io.devground.core.model.vo.DepositHistoryType type = io.devground.core.model.vo.DepositHistoryType.CHARGE_TOSS;
 		ChargeDeposit command = new ChargeDeposit(userCode, amount, type);
 
 		given(depositService.charge(userCode, DepositHistoryType.CHARGE_TOSS, amount))
@@ -205,8 +205,10 @@ class DepositEventHandlerTest {
 		String depositCode = "DEPOSIT_CODE";
 		Long amount = 5000L;
 		Long balanceAfter = 5000L;
-		String type = "PAYMENT_TOSS";
-		WithdrawDeposit command = new WithdrawDeposit(userCode, amount, type);
+		io.devground.core.model.vo.DepositHistoryType type = io.devground.core.model.vo.DepositHistoryType.PAYMENT_TOSS;
+		String orderCode = "ORDER_CODE";
+
+		WithdrawDeposit command = new WithdrawDeposit(userCode, amount, type, orderCode);
 		DepositHistoryResponse historyResponse = new DepositHistoryResponse(
 			2L,
 			depositCode,
@@ -244,8 +246,10 @@ class DepositEventHandlerTest {
 		// given
 		String userCode = "USER_CODE";
 		Long amount = 5000L;
-		String type = "PAYMENT_TOSS";
-		WithdrawDeposit command = new WithdrawDeposit(userCode, amount, type);
+		io.devground.core.model.vo.DepositHistoryType type = io.devground.core.model.vo.DepositHistoryType.PAYMENT_TOSS;
+		String orderCode = "ORDER_CODE";
+
+		WithdrawDeposit command = new WithdrawDeposit(userCode, amount, type, orderCode);
 
 		given(depositService.withdraw(userCode, DepositHistoryType.PAYMENT_TOSS, amount))
 			.willThrow(new RuntimeException("인출 실패"));
@@ -270,7 +274,7 @@ class DepositEventHandlerTest {
 		String depositCode = "DEPOSIT_CODE";
 		Long amount = 3000L;
 		Long balanceAfter = 8000L;
-		String type = "REFUND_TOSS";
+		io.devground.core.model.vo.DepositHistoryType type = io.devground.core.model.vo.DepositHistoryType.REFUND_TOSS;
 		RefundDeposit command = new RefundDeposit(userCode, amount, type);
 		DepositHistoryResponse historyResponse = new DepositHistoryResponse(
 			2L,
@@ -309,7 +313,7 @@ class DepositEventHandlerTest {
 		// given
 		String userCode = "USER_CODE";
 		Long amount = 3000L;
-		String type = "REFUND_TOSS";
+		io.devground.core.model.vo.DepositHistoryType type = io.devground.core.model.vo.DepositHistoryType.REFUND_TOSS;
 		RefundDeposit command = new RefundDeposit(userCode, amount, type);
 
 		given(depositService.refund(userCode, DepositHistoryType.REFUND_TOSS, amount))
