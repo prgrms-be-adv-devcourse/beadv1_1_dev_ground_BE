@@ -4,6 +4,7 @@ import static org.springframework.http.HttpStatus.*;
 
 import java.util.List;
 
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -16,8 +17,10 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.devground.core.model.web.BaseResponse;
+import io.devground.core.model.web.PageDto;
 import io.devground.dbay.domain.product.product.dto.CartProductsRequest;
 import io.devground.dbay.domain.product.product.dto.CartProductsResponse;
+import io.devground.dbay.domain.product.product.dto.GetAllProductsResponse;
 import io.devground.dbay.domain.product.product.dto.ProductDetailResponse;
 import io.devground.dbay.domain.product.product.dto.ProductImageUrlsRequest;
 import io.devground.dbay.domain.product.product.dto.RegistProductRequest;
@@ -36,6 +39,18 @@ import lombok.RequiredArgsConstructor;
 public class ProductController {
 
 	private final ProductService productService;
+
+	// TODO: sellerCode 정책 정해진 후 수정
+	@GetMapping
+	@Operation(summary = "상품 목록 조회", description = "DB에서 상품 목록을 반환합니다. 페이징, 정렬을 사용합니다.")
+	public BaseResponse<PageDto<GetAllProductsResponse>> getProducts(Pageable pageable) {
+
+		return BaseResponse.success(
+			OK.value(),
+			productService.getProducts(pageable),
+			"상품 목록이 성공적으로 조회되었습니다."
+		);
+	}
 
 	// TODO: sellerCode 정책 정해진 후 수정
 	@PostMapping

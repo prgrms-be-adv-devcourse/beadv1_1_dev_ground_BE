@@ -2,16 +2,23 @@ package io.devground.dbay.domain.product.product.service;
 
 import java.util.List;
 
+import org.springframework.data.domain.Pageable;
+
+import io.devground.core.model.web.PageDto;
 import io.devground.dbay.domain.product.product.dto.CartProductsRequest;
 import io.devground.dbay.domain.product.product.dto.CartProductsResponse;
+import io.devground.dbay.domain.product.product.dto.GetAllProductsResponse;
 import io.devground.dbay.domain.product.product.dto.ProductDetailResponse;
 import io.devground.dbay.domain.product.product.dto.ProductImageUrlsRequest;
 import io.devground.dbay.domain.product.product.dto.RegistProductRequest;
 import io.devground.dbay.domain.product.product.dto.RegistProductResponse;
 import io.devground.dbay.domain.product.product.dto.UpdateProductRequest;
 import io.devground.dbay.domain.product.product.dto.UpdateProductResponse;
+import io.devground.dbay.domain.product.product.entity.Product;
 
 public interface ProductService {
+
+	PageDto<GetAllProductsResponse> getProducts(Pageable pageable);
 
 	RegistProductResponse registProduct(String sellerCode, RegistProductRequest request);
 
@@ -26,4 +33,6 @@ public interface ProductService {
 	void updateStatusToSold(CartProductsRequest request);
 
 	Void saveImageUrls(String sellerCode, String productCode, ProductImageUrlsRequest request);
+
+	Product getProductByCode(String productCode);
 }

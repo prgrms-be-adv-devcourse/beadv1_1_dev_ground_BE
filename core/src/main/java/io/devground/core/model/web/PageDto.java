@@ -15,8 +15,8 @@ public record PageDto<T>(
 	@NonNull
 	List<T> items
 ) {
-	public PageDto(Page<T> page) {
-		this(
+	public static <T> PageDto<T> from(Page<T> page) {
+		return new PageDto<>(
 			page.getNumber() + 1,
 			page.getSize(),
 			page.getTotalPages(),

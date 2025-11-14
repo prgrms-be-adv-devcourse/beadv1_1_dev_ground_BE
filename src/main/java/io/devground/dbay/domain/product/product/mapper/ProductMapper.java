@@ -7,6 +7,7 @@ import io.devground.core.dto.image.DeleteImagesRequest;
 import io.devground.core.dto.image.GeneratePresignedRequest;
 import io.devground.core.dto.image.UpdateImagesRequest;
 import io.devground.core.model.vo.ImageType;
+import io.devground.dbay.domain.product.product.dto.GetAllProductsResponse;
 import io.devground.dbay.domain.product.product.dto.ProductDetailResponse;
 import io.devground.dbay.domain.product.product.dto.RegistProductResponse;
 import io.devground.dbay.domain.product.product.dto.UpdateProductResponse;
@@ -14,6 +15,16 @@ import io.devground.dbay.domain.product.product.entity.Product;
 import io.devground.dbay.domain.product.product.entity.ProductSale;
 
 public abstract class ProductMapper {
+
+	public static GetAllProductsResponse getProductsFromProductInfo(Product product, ProductSale productSale) {
+
+		return GetAllProductsResponse.builder()
+			.productCode(product.getCode())
+			.title(product.getTitle())
+			.price(productSale.getPrice())
+			.thumbnailUrl(product.getThumbnailUrl())
+			.build();
+	}
 
 	public static RegistProductResponse registResponseFromProductInfo(
 		Product product, ProductSale productSale, List<URL> presignedUrls

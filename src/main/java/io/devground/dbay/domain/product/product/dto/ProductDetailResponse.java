@@ -29,5 +29,7 @@ public record ProductDetailResponse(
 	@NonNull
 	String productStatus
 
+	// TODO: 상품 이미지들 추가
+
 ) {
 }

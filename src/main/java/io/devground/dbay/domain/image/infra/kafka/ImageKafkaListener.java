@@ -40,12 +40,12 @@ public class ImageKafkaListener {
 		ImageType imageType = event.imageType();
 
 		try {
-			imageService.saveImages(event.imageType(), event.referenceCode(), event.imageUrls());
+			String thumbnailUrl = imageService.saveImages(event.imageType(), event.referenceCode(), event.imageUrls());
 
 			log.error("상품 이미지 등록 성공 - SagaId: {}, ProductCode: {}", event.sagaId(), event.referenceCode());
 
 			imageKafkaProducer.publishImageProcessed(
-				new ImageProcessedEvent(sagaId, imageType, referenceCode, EventType.PUSH, true, null));
+				new ImageProcessedEvent(sagaId, imageType, referenceCode, EventType.PUSH, thumbnailUrl, true, null));
 
 		} catch (Exception e) {
 			log.error(
@@ -53,7 +53,7 @@ public class ImageKafkaListener {
 			);
 
 			imageKafkaProducer.publishImageProcessed(
-				new ImageProcessedEvent(sagaId, imageType, referenceCode, EventType.PUSH, false, e.getMessage()));
+				new ImageProcessedEvent(sagaId, imageType, referenceCode, EventType.PUSH, null, false, e.getMessage()));
 		}
 	}
 
@@ -80,12 +80,12 @@ public class ImageKafkaListener {
 			}
 
 			imageKafkaProducer.publishImageProcessed(
-				new ImageProcessedEvent(sagaId, imageType, referenceCode, EventType.DELETE, true, null));
+				new ImageProcessedEvent(sagaId, imageType, referenceCode, EventType.DELETE, null, true, null));
 		} catch (Exception e) {
 			log.error("상품 이미지 삭제 실패 - SagaId: {}, ProductCode: {}, Exception: ", sagaId, referenceCode, e);
 
 			imageKafkaProducer.publishImageProcessed(
-				new ImageProcessedEvent(sagaId, imageType, referenceCode, EventType.DELETE, false, e.getMessage()));
+				new ImageProcessedEvent(sagaId, imageType, referenceCode, EventType.DELETE, null, false, e.getMessage()));
 		}
 	}
 }
