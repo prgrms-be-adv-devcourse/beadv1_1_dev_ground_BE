@@ -64,9 +64,11 @@ custom:
 carts:
   event:
     topic:
+      user: carts-user-events
       name: carts-events
   command:
     topic:
+      user: carts-user-commands
       name: carts-commands
 
 orders:

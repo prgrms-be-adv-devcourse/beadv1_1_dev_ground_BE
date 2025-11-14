@@ -16,6 +16,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import io.devground.core.model.exception.ServiceException;
+import io.devground.core.model.vo.DeleteStatus;
 import io.devground.core.model.vo.ErrorCode;
 import io.devground.dbay.domain.cart.cart.model.entity.Cart;
 import io.devground.dbay.domain.cart.cart.model.vo.AddCartItemRequest;
@@ -27,7 +28,9 @@ import io.devground.dbay.domain.cart.cart.service.CartServiceImpl;
 import io.devground.dbay.domain.cart.cartItem.model.entity.CartItem;
 import io.devground.dbay.domain.cart.cartItem.repository.CartItemRepository;
 import io.devground.dbay.domain.cart.infra.client.ProductFeignClient;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @ExtendWith(MockitoExtension.class)
 class CartServiceImplTest {
 
@@ -58,7 +61,7 @@ class CartServiceImplTest {
 		Cart result = cartService.createCart(userCode);
 
 		assertThat(result.getUserCode()).isEqualTo(userCode);
-		verify(cartRepository).findByCode(userCode);
+		verify(cartRepository).findByUserCode(userCode);
 		verify(cartRepository).save(any(Cart.class));
 	}
 
@@ -95,33 +98,32 @@ class CartServiceImplTest {
 	@DisplayName("성공_장바구니 상품 추가")
 	void addItem_success() {
 		String userCode = UUID.randomUUID().toString();
-		String cartCode = UUID.randomUUID().toString();
 		String productCode = UUID.randomUUID().toString();
-
-		given(cartItemRepository.existsByCart_CodeAndProductCode(cartCode, productCode))
-			.willReturn(false);
 
 		Cart cart = Cart.builder()
 			.userCode(userCode)
 			.build();
 
-		ReflectionTestUtils.setField(cart, "code", cartCode);
+		given(cartItemRepository.existsByCartAndProductCode(cart, productCode))
+			.willReturn(false);
 
-		given(cartRepository.findByCode(cartCode)).willReturn(Optional.of(cart));
+		ReflectionTestUtils.setField(cart, "code", cart.getCode());
+
+		given(cartRepository.findByCode(cart.getCode())).willReturn(Optional.of(cart));
 
 		given(cartItemRepository.save(any(CartItem.class)))
 			.willAnswer(i -> i.getArgument(0));
 
 		AddCartItemRequest request = new AddCartItemRequest(productCode);
 
-		CartItem result = cartService.addItem(cartCode, request);
+		CartItem result = cartService.addItem(cart.getCode(), request);
 
-		assertThat(result.getCart().getCode()).isEqualTo(cartCode);
+		assertThat(result.getCart().getCode()).isEqualTo(cart.getCode());
 		assertThat(result.getProductCode()).isEqualTo(productCode);
 
-		verify(cartRepository).findByCode(cartCode);
-		verify(cartItemRepository).existsByCart_CodeAndProductCode(cartCode, productCode);
-		verify(cartRepository).findByCode(cartCode);
+		verify(cartRepository).findByCode(cart.getCode());
+		verify(cartItemRepository).existsByCartAndProductCode(cart, productCode);
+		verify(cartRepository).findByCode(cart.getCode());
 		verify(cartItemRepository).save(any(CartItem.class));
 	}
 
@@ -163,17 +165,17 @@ class CartServiceImplTest {
 	@DisplayName("실패_장바구니에 상품 이미 존재")
 	void addItem_thrownException_whenCartItemAlreadyExists() {
 		String userCode = UUID.randomUUID().toString();
-		String cartCode = UUID.randomUUID().toString();
 		String productCode = UUID.randomUUID().toString();
 
 		Cart cart = Cart.builder().userCode(userCode).build();
-		ReflectionTestUtils.setField(cart, "code", cartCode);
 
-		given(cartItemRepository.existsByCart_CodeAndProductCode(cartCode, productCode)).willReturn(true);
+		given(cartRepository.findByCode(cart.getCode())).willReturn(Optional.of(cart));
+
+		given(cartItemRepository.existsByCartAndProductCode(cart, productCode)).willReturn(true);
 
 		AddCartItemRequest request = new AddCartItemRequest(productCode);
 
-		assertThatThrownBy(() -> cartService.addItem(cartCode, request))
+		assertThatThrownBy(() -> cartService.addItem(cart.getCode(), request))
 			.isInstanceOf(ServiceException.class)
 			.satisfies(ex -> {
 				ServiceException se = (ServiceException) ex;
@@ -184,7 +186,7 @@ class CartServiceImplTest {
 	@Test
 	@DisplayName("성공_장바구니 조회")
 	void getItemsByCart_success() {
-		String cartCode = UUID.randomUUID().toString();
+		String userCode = UUID.randomUUID().toString();
 
 		String productCode1 = UUID.randomUUID().toString();
 		String productCode2 = UUID.randomUUID().toString();
@@ -194,21 +196,24 @@ class CartServiceImplTest {
 		String productSaleCode1 = UUID.randomUUID().toString();
 		String productSaleCode2 = UUID.randomUUID().toString();
 
-		CartItem item1 = mock(CartItem.class);
-		given(item1.getProductCode()).willReturn(productCode1);
+		Cart cart = Cart.builder().userCode(userCode).build();
 
-		CartItem item2 = mock(CartItem.class);
-		given(item2.getProductCode()).willReturn(productCode2);
+		CartItem item1 = CartItem.builder().cart(cart).productCode(productCode1).build();
+		CartItem item2 = CartItem.builder().cart(cart).productCode(productCode2).build();
 
-		Cart cart = mock(Cart.class);
-		given(cart.getCartItems()).willReturn(List.of(item1, item2));
-		given(cartRepository.findByCode(cartCode)).willReturn(Optional.of(cart));
+		cart.setCartItems(List.of(item1, item2));
 
-		CartProductListResponse p1 = new CartProductListResponse(productCode1, productSaleCode1, sellerCode, "아이폰 프로 17", 1500000L);
-		CartProductListResponse p2 = new CartProductListResponse(productCode2, productSaleCode2, sellerCode, "맥북3 프로", 3500000L);
+		given(cartRepository.findByCode(cart.getCode())).willReturn(Optional.of(cart));
+		given(cartItemRepository.findByCart(cart)).willReturn(List.of(item1, item2));
+
+		CartProductListResponse p1 = new CartProductListResponse(productCode1, productSaleCode1, sellerCode,
+			"아이폰 프로 17", 1500000L);
+		CartProductListResponse p2 = new CartProductListResponse(productCode2, productSaleCode2, sellerCode, "맥북3 프로",
+			3500000L);
+
 		given(productFeignClient.productListByCodes(List.of(productCode1, productCode2))).willReturn(List.of(p1, p2));
 
-		GetItemsByCartResponse result = cartService.getItemsByCart(cartCode);
+		GetItemsByCartResponse result = cartService.getItemsByCart(cart.getCode());
 
 		assertThat(result.totalAmount()).isEqualTo(5000000L);
 		assertThat(result.productLists()).containsExactlyInAnyOrder(p1, p2);
@@ -218,27 +223,30 @@ class CartServiceImplTest {
 	@Test
 	@DisplayName("성공_장바구니 상품 중복 제거")
 	void getItemsByCart_duplication_success() {
-		String cartCode = UUID.randomUUID().toString();
+		String userCode = UUID.randomUUID().toString();
 
 		String productCode = UUID.randomUUID().toString();
 		String productSaleCode = UUID.randomUUID().toString();
 
 		String sellerCode = UUID.randomUUID().toString();
 
-		CartItem item1 = mock(CartItem.class);
-		given(item1.getProductCode()).willReturn(productCode);
+		Cart cart = Cart.builder().userCode(userCode).build();
 
-		CartItem item2 = mock(CartItem.class);
-		given(item2.getProductCode()).willReturn(productCode);
+		CartItem item1 = CartItem.builder().cart(cart).productCode(productCode).build();
+		CartItem item2 = CartItem.builder().cart(cart).productCode(productCode).build();
 
-		Cart cart = mock(Cart.class);
-		given(cart.getCartItems()).willReturn(List.of(item1, item2));
-		given(cartRepository.findByCode(cartCode)).willReturn(Optional.of(cart));
+		cart.setCartItems(List.of(item1, item2));
 
-		CartProductListResponse p1 = new CartProductListResponse(productCode, productSaleCode, sellerCode, "아이폰 프로 17", 1500000L);
+		given(cartRepository.findByCode(cart.getCode())).willReturn(Optional.of(cart));
+
+		given(cartItemRepository.findByCart(cart)).willReturn(List.of(item1, item2));
+
+		CartProductListResponse p1 = new CartProductListResponse(productCode, productSaleCode, sellerCode, "아이폰 프로 17",
+			1500000L);
+
 		given(productFeignClient.productListByCodes(List.of(productCode))).willReturn(List.of(p1));
 
-		GetItemsByCartResponse result = cartService.getItemsByCart(cartCode);
+		GetItemsByCartResponse result = cartService.getItemsByCart(cart.getCode());
 
 		assertThat(result.totalAmount()).isEqualTo(1500000L);
 		assertThat(result.productLists()).containsExactlyInAnyOrder(p1);
@@ -248,7 +256,7 @@ class CartServiceImplTest {
 	@Test
 	@DisplayName("성공_장바구니 상품 한개 조회")
 	void getItemsByCart_only_one_success() {
-		String cartCode = UUID.randomUUID().toString();
+		String userCode = UUID.randomUUID().toString();
 
 		String productCode = UUID.randomUUID().toString();
 
@@ -256,17 +264,25 @@ class CartServiceImplTest {
 
 		String sellerCode = UUID.randomUUID().toString();
 
-		CartItem item1 = mock(CartItem.class);
-		given(item1.getProductCode()).willReturn(productCode);
+		Cart cart = Cart.builder()
+			.userCode(userCode)
+			.build();
 
-		Cart cart = mock(Cart.class);
-		given(cart.getCartItems()).willReturn(List.of(item1));
-		given(cartRepository.findByCode(cartCode)).willReturn(Optional.of(cart));
+		CartItem item = CartItem.builder()
+			.cart(cart)
+			.productCode(productCode)
+			.build();
 
-		CartProductListResponse p1 = new CartProductListResponse(productCode, productSaleCode, sellerCode, "아이폰 프로 17", 1500000L);
+		cart.setCartItems(List.of(item));
+
+		given(cartRepository.findByCode(cart.getCode())).willReturn(Optional.of(cart));
+		given(cartItemRepository.findByCart(cart)).willReturn(List.of(item));
+
+		CartProductListResponse p1 = new CartProductListResponse(productCode, productSaleCode, sellerCode, "아이폰 프로 17",
+			1500000L);
 		given(productFeignClient.productListByCodes(List.of(productCode))).willReturn(List.of(p1));
 
-		GetItemsByCartResponse result = cartService.getItemsByCart(cartCode);
+		GetItemsByCartResponse result = cartService.getItemsByCart(cart.getCode());
 
 		assertThat(result.totalAmount()).isEqualTo(1500000L);
 		assertThat(result.productLists()).containsExactlyInAnyOrder(p1);
@@ -276,13 +292,13 @@ class CartServiceImplTest {
 	@Test
 	@DisplayName("성공_빈 장바구니 조회")
 	void getItemsByCart_empty_success() {
-		String cartCode = UUID.randomUUID().toString();
+		String userCode = UUID.randomUUID().toString();
 
-		Cart cart = mock(Cart.class);
+		Cart cart = Cart.builder().userCode(userCode).build();
 
-		given(cartRepository.findByCode(cartCode)).willReturn(Optional.of(cart));
+		given(cartRepository.findByCode(cart.getCode())).willReturn(Optional.of(cart));
 
-		GetItemsByCartResponse result = cartService.getItemsByCart(cartCode);
+		GetItemsByCartResponse result = cartService.getItemsByCart(cart.getCode());
 
 		assertThat(result.totalAmount()).isEqualTo(0L);
 		assertThat(result.productLists().size()).isEqualTo(0);
@@ -316,7 +332,7 @@ class CartServiceImplTest {
 			.isInstanceOf(ServiceException.class)
 			.satisfies(ex -> {
 				ServiceException se = (ServiceException) ex;
-				assertThat(se.getErrorCode().getMessage()).isEqualTo("장바구니를 찾을 수 없습니다.");
+				assertThat(se.getErrorCode()).isEqualTo(ErrorCode.CART_NOT_FOUND);
 			});
 
 		verifyNoInteractions(productFeignClient);
@@ -325,18 +341,21 @@ class CartServiceImplTest {
 	@Test
 	@DisplayName("성공_장바구니 상품 삭제")
 	void deleteItemsByCart_success() {
-		String cartCode = UUID.randomUUID().toString();
+		String userCode = UUID.randomUUID().toString();
 		List<String> cartProductCodes = List.of("p1", "p2", "p3");
 
-		given(cartRepository.findByCode(cartCode))
-			.willReturn(Optional.of(mock(Cart.class)));
-		given(cartItemRepository.deleteCartItemByProductCodes(cartCode, cartProductCodes))
+		Cart cart = Cart.builder()
+			.userCode(userCode).build();
+
+		given(cartRepository.findByCode(cart.getCode()))
+			.willReturn(Optional.of(cart));
+		given(cartItemRepository.deleteCartItemByProductCodes(cart, cartProductCodes))
 			.willReturn(cartProductCodes.size());
 
-		int result = cartService.deleteItemsByCart(cartCode, new DeleteItemsByCartRequest(cartProductCodes));
+		int result = cartService.deleteItemsByCart(cart.getCode(), new DeleteItemsByCartRequest(cartProductCodes));
 
 		assertThat(result).isEqualTo(cartProductCodes.size());
-		then(cartItemRepository).should().deleteCartItemByProductCodes(cartCode, cartProductCodes);
+		then(cartItemRepository).should().deleteCartItemByProductCodes(cart, cartProductCodes);
 	}
 
 	@Test
@@ -348,7 +367,7 @@ class CartServiceImplTest {
 			.isInstanceOf(ServiceException.class)
 			.satisfies(ex -> {
 				ServiceException se = (ServiceException) ex;
-				assertThat(se.getErrorCode().getMessage()).isEqualTo("잘못된 코드 형식입니다.");
+				assertThat(se.getErrorCode()).isEqualTo(ErrorCode.CODE_INVALID);
 			});
 
 		verifyNoInteractions(cartRepository, cartItemRepository);
@@ -363,7 +382,7 @@ class CartServiceImplTest {
 			.isInstanceOf(ServiceException.class)
 			.satisfies(ex -> {
 				ServiceException se = (ServiceException) ex;
-				assertThat(se.getErrorCode().getMessage()).isEqualTo("삭제할 상품이 선택되지 않았습니다.");
+				assertThat(se.getErrorCode()).isEqualTo(ErrorCode.CART_ITEM_DELETE_NOT_SELECTED);
 			});
 
 		verifyNoInteractions(cartRepository, cartItemRepository);
@@ -381,28 +400,84 @@ class CartServiceImplTest {
 			.isInstanceOf(ServiceException.class)
 			.satisfies(ex -> {
 				ServiceException se = (ServiceException) ex;
-				assertThat(se.getErrorCode().getMessage()).isEqualTo("장바구니를 찾을 수 없습니다.");
+				assertThat(se.getErrorCode()).isEqualTo(ErrorCode.CART_NOT_FOUND);
 			});
 
 		verifyNoInteractions(cartItemRepository);
 	}
 
 	@Test
-	@DisplayName("실패_장바구니 삭제 결과 수 != 요청 수")
+	@DisplayName("실패_장바구니 상품 삭제 결과 수 != 요청 수")
 	void deleteItemsByCart_thrownException_failed() {
-		String cartCode = UUID.randomUUID().toString();
+		String userCode = UUID.randomUUID().toString();
 		DeleteItemsByCartRequest request = new DeleteItemsByCartRequest(List.of("p1", "p2"));
 
-		given(cartRepository.findByCode(cartCode))
-			.willReturn(Optional.of(mock(Cart.class)));
-		given(cartItemRepository.deleteCartItemByProductCodes(cartCode, request.cartProductCodes()))
+		Cart cart = Cart.builder().userCode(userCode).build();
+
+		given(cartRepository.findByCode(cart.getCode()))
+			.willReturn(Optional.of(cart));
+		given(cartItemRepository.deleteCartItemByProductCodes(cart, request.cartProductCodes()))
 			.willReturn(1);
 
-		assertThatThrownBy(() -> cartService.deleteItemsByCart(cartCode, request))
+		assertThatThrownBy(() -> cartService.deleteItemsByCart(cart.getCode(), request))
 			.isInstanceOf(ServiceException.class)
 			.satisfies(ex -> {
 				ServiceException se = (ServiceException) ex;
-				assertThat(se.getErrorCode().getMessage()).isEqualTo("장바구니 상품 삭제를 실패했습니다.");
+				assertThat(se.getErrorCode()).isEqualTo(ErrorCode.DELETE_CART_ITEM_FAILED);
 			});
+	}
+
+	@Test
+	@DisplayName("성공_장바구니 삭제")
+	void deleteCart_success() {
+		String userCode = UUID.randomUUID().toString();
+
+		Cart cart = Cart.builder()
+			.userCode(userCode)
+			.build();
+
+		given(cartRepository.findByUserCode(userCode)).willReturn(Optional.of(cart));
+
+		Cart deletedCart = cartService.deleteCart(userCode);
+
+		assertThat(deletedCart).isNotNull();
+		assertThat(deletedCart.getUserCode()).isEqualTo(userCode);
+		assertThat(deletedCart.getDeleteStatus()).isEqualTo(DeleteStatus.Y);
+
+		verify(cartRepository).findByUserCode(userCode);
+		verify(cartItemRepository).deleteCartItemByCartCode(cart);
+		verify(cartItemRepository, never()).deleteAll(anyList());
+	}
+
+	@Test
+	@DisplayName("실패_장바구니 삭제 유저 코드 유효한 값x")
+	void deleteCart_throwException_whenInvalidCode() {
+		String userCode = "Invalid code";
+
+		assertThatThrownBy(() -> cartService.createCart(userCode))
+			.isInstanceOf(ServiceException.class)
+			.satisfies(ex -> {
+				ServiceException se = (ServiceException) ex;
+				assertThat(se.getErrorCode()).isEqualTo(ErrorCode.CODE_INVALID);
+			});
+
+		verifyNoInteractions(cartRepository, cartItemRepository);
+	}
+
+	@Test
+	@DisplayName("실패_장바구니 삭제에서 장바구니가 존재하지 않음")
+	void deleteCart_thrownException_whenCartNotExists() {
+		String userCode = UUID.randomUUID().toString();
+
+		given(cartRepository.findByUserCode(userCode)).willReturn(Optional.empty());
+
+		assertThatThrownBy(() -> cartService.deleteCart(userCode))
+			.isInstanceOf(ServiceException.class)
+			.satisfies(ex -> {
+				ServiceException se = (ServiceException) ex;
+				assertThat(se.getErrorCode()).isEqualTo(ErrorCode.CART_NOT_FOUND);
+			});
+
+		verifyNoInteractions(cartItemRepository);
 	}
 }

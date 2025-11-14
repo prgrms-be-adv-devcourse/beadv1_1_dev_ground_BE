@@ -21,7 +21,7 @@ import lombok.extern.slf4j.Slf4j;
 @Component
 @Slf4j
 @KafkaListener(topics = {
-	"${carts.command.topic.name}"
+	"${carts.command.topic.user}"
 })
 @RequiredArgsConstructor
 public class CartCommandsHandler {
@@ -30,7 +30,7 @@ public class CartCommandsHandler {
 
 	private final KafkaTemplate<String, Object> kafkaTemplate;
 
-	@Value("${carts.event.topic.name}")
+	@Value("${carts.event.topic.user}")
 	private String cartsEventTopicName;
 
 	@KafkaHandler
@@ -51,7 +51,7 @@ public class CartCommandsHandler {
 	}
 
 	@KafkaHandler
-	public void handler(@Payload DeleteCartCommand command) {
+	public void handlerDeleteCart(@Payload DeleteCartCommand command) {
 		try {
 			Cart deleteCart = cartService.deleteCart(command.userCode());
 
@@ -65,6 +65,5 @@ public class CartCommandsHandler {
 
 			kafkaTemplate.send(cartsEventTopicName, event.userCode(), event);
 		}
-
 	}
 }
