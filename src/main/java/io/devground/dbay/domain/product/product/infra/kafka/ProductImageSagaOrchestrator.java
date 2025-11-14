@@ -20,6 +20,7 @@ import io.devground.dbay.common.saga.vo.SagaStep;
 import io.devground.dbay.common.saga.vo.SagaType;
 import io.devground.dbay.domain.product.product.client.ImageClient;
 import io.devground.dbay.domain.product.product.mapper.ProductMapper;
+import io.devground.dbay.domain.product.product.service.ProductService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -29,6 +30,7 @@ import lombok.extern.slf4j.Slf4j;
  * 2. 각 단계의 성공/실패 결과 처리
  * 3. 실패 시 보상 트랜잭션 결정 후 실행
  * 4. Saga 상태 관리 총괄
+ * TODO: 실패된 Saga 처리(타임아웃 등) 필요
  */
 @Slf4j
 @Component
@@ -39,6 +41,7 @@ public class ProductImageSagaOrchestrator {
 	private final ImageClient imageClient;
 	private final SagaService sagaService;
 	private final ProductKafkaProducer productKafkaProducer;
+	private final ProductService productService;
 
 	public List<URL> startGetPresignedUrlsSaga(String productCode, List<String> imageExtensions) {
 
@@ -162,7 +165,13 @@ public class ProductImageSagaOrchestrator {
 			}
 
 			switch (event.eventType()) {
-				case PUSH -> sagaService.updateStep(sagaId, SagaStep.IMAGE_DB_SAVE);
+				case PUSH -> {
+					if (event.thumbnailUrl() != null) {
+						productService.getProductByCode(event.referenceCode()).updateThumbnail(event.thumbnailUrl());
+					}
+
+					sagaService.updateStep(sagaId, SagaStep.IMAGE_DB_SAVE);
+				}
 				case DELETE -> sagaService.updateStep(sagaId, SagaStep.IMAGE_DELETED);
 			}
 
