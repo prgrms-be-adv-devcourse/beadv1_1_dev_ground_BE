@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import io.devground.core.model.web.BaseResponse;
 import io.devground.dbay.domain.cart.cart.mapper.CartMapper;
+import io.devground.dbay.domain.cart.cart.model.entity.Cart;
 import io.devground.dbay.domain.cart.cart.model.vo.AddCartItemRequest;
 import io.devground.dbay.domain.cart.cart.model.vo.AddCartItemResponse;
 import io.devground.dbay.domain.cart.cart.model.vo.DeleteItemsByCartRequest;
@@ -29,6 +30,14 @@ import lombok.RequiredArgsConstructor;
 public class CartController {
 
 	private final CartService cartService;
+
+	@PostMapping("/create/{userCode}")
+	@Operation(summary = "장바구니 생성", description = "장바구니에 생성.")
+	public BaseResponse<Cart> createCart(
+		@PathVariable String userCode
+	) {
+		return BaseResponse.success(200, cartService.createCart(userCode), "장바구니 생성 성공");
+	}
 
 	@PostMapping("/{cartCode}")
 	@Operation(summary = "장바구니 상품 추가", description = "장바구니에 상품을 추가합니다.")

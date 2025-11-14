@@ -12,7 +12,7 @@ import io.devground.dbay.domain.cart.cart.model.vo.ProductDetailResponse;
 import io.devground.dbay.domain.cart.cart.model.vo.CartProductListResponse;
 
 @FeignClient(
-	name = "CartToProduct",
+	name = "product",
 	url = "http://localhost:8080",
 	path = "/api/products"
 )

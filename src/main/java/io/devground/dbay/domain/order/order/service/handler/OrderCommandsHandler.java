@@ -27,6 +27,7 @@ public class OrderCommandsHandler {
 
 	// 실패 이벤트
 	// 결제에서 실패했을때 주문 상태 취소
+	// 롤백
 	@KafkaHandler
 	public void handle(@Payload NotifyOrderCreateFailedAlertCommand command) {
 		orderService.cancelOrder(command.userCode(), command.orderCode());

@@ -194,8 +194,6 @@ public class OrderServiceImpl implements OrderService {
 
 		order.confirm();
 
-		// 정산으로 kafka 이벤트 전송
-
 		return OrderMapper.toConfirmOrderResponse(order);
 	}
 

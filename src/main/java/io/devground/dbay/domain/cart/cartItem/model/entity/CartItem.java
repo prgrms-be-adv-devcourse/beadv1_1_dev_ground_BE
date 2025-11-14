@@ -13,6 +13,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -27,7 +28,7 @@ public class CartItem extends BaseEntity {
 	private Long id;
 
 	@ManyToOne(optional = false)
-	@JoinColumn(name = "cartCode", nullable = false)
+	@JoinColumn(name = "cartId", nullable = false)
 	private Cart cart;
 
 	@Column(nullable = false, columnDefinition = "VARCHAR(36)")
