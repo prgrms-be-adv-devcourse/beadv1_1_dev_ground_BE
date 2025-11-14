@@ -13,38 +13,28 @@ import io.devground.dbay.domain.cart.cartItem.model.entity.CartItem;
 
 @Repository
 public interface CartItemRepository extends JpaRepository<CartItem, Long> {
-	boolean existsByCart_CodeAndProductCode(String cartCode, String productCode);
+	boolean existsByCartAndProductCode(Cart cart, String productCode);
 
 	@Modifying
 	@Query("""
 		UPDATE CartItem ci
 		SET ci.deleteStatus = 'Y',
 			ci.updatedAt = CURRENT_TIMESTAMP
-		WHERE ci.cart = :cartCode
+		WHERE ci.cart = :cart
 			AND ci.deleteStatus = 'N'
 			AND ci.productCode IN :cartProductCodes
 		""")
-	int deleteCartItemByProductCodes(@Param("cartCode") String cartCode,
+	int deleteCartItemByProductCodes(@Param("cart") Cart cart,
 		@Param("cartProductCodes") List<String> cartProductCodes);
 
-	// String cart(Cart cart);
-
-	@Query(
-		"""
-			SELECT ci.code
-			FROM CartItem ci
-			WHERE ci.cart = :cart
-			"""
-	)
-	List<String> getCartItemCodesByCart(Cart cart);
-
-	@Query(
-		"""
-			UPDATE CartItem ci
+	@Modifying
+	@Query("""
+		UPDATE CartItem ci
 			SET ci.deleteStatus = 'Y',
 				ci.updatedAt = CURRENT_TIMESTAMP
-			WHERE ci.code = :cartItemCodes
-			"""
-	)
-	void deleteCartItemByCartCodes(List<String> cartItemCodes);
+			WHERE ci.cart = :cart
+		""")
+	void deleteCartItemByCartCode(@Param("cart") Cart cart);
+
+	List<CartItem> findByCart(Cart cart);
 }

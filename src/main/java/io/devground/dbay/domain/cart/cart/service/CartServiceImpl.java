@@ -34,8 +34,9 @@ public class CartServiceImpl implements CartService {
 			throw ErrorCode.CODE_INVALID.throwServiceException();
 		}
 
-		cartRepository.findByCode(userCode)
-			.orElseThrow(ErrorCode.CART_ALREADY_EXIST::throwServiceException);
+		cartRepository.findByUserCode(userCode).ifPresent(c -> {
+			throw ErrorCode.CART_ALREADY_EXIST.throwServiceException();
+		});
 
 		Cart cart = Cart.builder()
 			.userCode(userCode)
@@ -52,7 +53,9 @@ public class CartServiceImpl implements CartService {
 			throw ErrorCode.CODE_INVALID.throwServiceException();
 		}
 
-		if (cartItemRepository.existsByCart_CodeAndProductCode(cartCode, request.productCode())) {
+		Cart cart = cartRepository.findByCode(cartCode).orElseThrow(ErrorCode.CART_NOT_FOUND::throwServiceException);
+
+		if (cartItemRepository.existsByCartAndProductCode(cart, request.productCode())) {
 			throw ErrorCode.CART_ITEM_ALREADY_EXIST.throwServiceException();
 		}
 
@@ -60,8 +63,6 @@ public class CartServiceImpl implements CartService {
 		// if (!Objects.equals(productFeignClient.productInfoByCode(request.productCode()).productStatus(), "ON_SALE")) {
 		// 	throw ErrorCode.SOLD_PRODUCT_CANNOT_PURCHASE.throwServiceException();
 		// }
-
-		Cart cart = cartRepository.findByCode(cartCode).orElseThrow(ErrorCode.CART_NOT_FOUND::throwServiceException);
 
 		CartItem cartItem = CartItem.builder()
 			.cart(cart)
@@ -80,13 +81,13 @@ public class CartServiceImpl implements CartService {
 
 		Cart cart = cartRepository.findByCode(cartCode).orElseThrow(ErrorCode.CART_NOT_FOUND::throwServiceException);
 
-		List<CartItem> cartItems = cart.getCartItems();
+		List<CartItem> cartItems = cartItemRepository.findByCart(cart);
 
 		if (cartItems.isEmpty()) {
 			return new GetItemsByCartResponse(0L, List.of());
 		}
 
-		List<String> productCodes = cart.getCartItems().stream()
+		List<String> productCodes = cartItems.stream()
 			.map(CartItem::getProductCode)
 			.distinct()
 			.toList();
@@ -111,9 +112,9 @@ public class CartServiceImpl implements CartService {
 			throw ErrorCode.CART_ITEM_DELETE_NOT_SELECTED.throwServiceException();
 		}
 
-		cartRepository.findByCode(cartCode).orElseThrow(ErrorCode.CART_NOT_FOUND::throwServiceException);
+		Cart cart = cartRepository.findByCode(cartCode).orElseThrow(ErrorCode.CART_NOT_FOUND::throwServiceException);
 
-		int result = cartItemRepository.deleteCartItemByProductCodes(cartCode, request.cartProductCodes());
+		int result = cartItemRepository.deleteCartItemByProductCodes(cart, request.cartProductCodes());
 
 		if (result != request.cartProductCodes().size()) {
 			throw ErrorCode.DELETE_CART_ITEM_FAILED.throwServiceException();
@@ -129,11 +130,10 @@ public class CartServiceImpl implements CartService {
 			throw ErrorCode.CODE_INVALID.throwServiceException();
 		}
 
-		Cart cart = cartRepository.findByUserCode(userCode).orElseThrow(ErrorCode.CART_NOT_FOUND::throwServiceException);
+		Cart cart = cartRepository.findByUserCode(userCode)
+			.orElseThrow(ErrorCode.CART_NOT_FOUND::throwServiceException);
 
-		List<String> cartItemCodes = cartItemRepository.getCartItemCodesByCart(cart);
-
-		cartItemRepository.deleteCartItemByCartCodes(cartItemCodes);
+		cartItemRepository.deleteCartItemByCartCode(cart);
 
 		cart.delete();
 

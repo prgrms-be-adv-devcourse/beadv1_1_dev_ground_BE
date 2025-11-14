@@ -18,8 +18,16 @@ public class CartKafkaTopicConfig {
 	@Value("${carts.event.topic.name}")
 	private String cartEventTopicName;
 
+	@Value("${carts.event.topic.user}")
+	private String cartUserEventTopicName;
+
 	@Value("${carts.command.topic.name}")
 	private String cartCommandTopicName;
+
+	@Value("${carts.command.topic.user}")
+	private String cartUserCommandTopicName;
+
+	private static final String DLT = ".DLT";
 
 	@Bean
 	public NewTopic createCartEventTopic() {
@@ -32,6 +40,54 @@ public class CartKafkaTopicConfig {
 	@Bean
 	public NewTopic creatCartCommandTopic() {
 		return TopicBuilder.name(cartCommandTopicName)
+			.partitions(topic_partitions)
+			.replicas(topic_replications)
+			.build();
+	}
+
+	@Bean
+	public NewTopic cartsUserEventTopic() {
+		return TopicBuilder.name(cartUserEventTopicName)
+			.partitions(topic_partitions)
+			.replicas(topic_replications)
+			.build();
+	}
+
+	@Bean
+	public NewTopic cartsUserCommandTopic() {
+		return TopicBuilder.name(cartUserCommandTopicName)
+			.partitions(topic_partitions)
+			.replicas(topic_replications)
+			.build();
+	}
+
+	@Bean
+	public NewTopic createCartEventDltTopic() {
+		return TopicBuilder.name(cartEventTopicName + DLT)
+			.partitions(topic_partitions)
+			.replicas(topic_replications)
+			.build();
+	}
+
+	@Bean
+	public NewTopic creatCartCommandDltTopic() {
+		return TopicBuilder.name(cartCommandTopicName + DLT)
+			.partitions(topic_partitions)
+			.replicas(topic_replications)
+			.build();
+	}
+
+	@Bean
+	public NewTopic cartsUserEventDltTopic() {
+		return TopicBuilder.name(cartUserEventTopicName + DLT)
+			.partitions(topic_partitions)
+			.replicas(topic_replications)
+			.build();
+	}
+
+	@Bean
+	public NewTopic cartsUserCommandDltTopic() {
+		return TopicBuilder.name(cartUserCommandTopicName + DLT)
 			.partitions(topic_partitions)
 			.replicas(topic_replications)
 			.build();
