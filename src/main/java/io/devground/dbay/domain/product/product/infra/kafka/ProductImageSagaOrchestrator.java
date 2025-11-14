@@ -13,6 +13,7 @@ import org.springframework.util.CollectionUtils;
 import io.devground.core.event.image.ImageProcessedEvent;
 import io.devground.core.event.product.ProductImagesDeleteEvent;
 import io.devground.core.event.product.ProductImagesPushEvent;
+import io.devground.core.model.exception.ServiceException;
 import io.devground.core.model.web.BaseResponse;
 import io.devground.dbay.common.saga.entity.Saga;
 import io.devground.dbay.common.saga.service.SagaService;
@@ -59,6 +60,13 @@ public class ProductImageSagaOrchestrator {
 			log.info("이미지 PresignedUrl 발급 완료 - SagaId: {}, ProductCode: {}", sagaId, productCode);
 
 			return presignedUrlsResponse.data();
+		} catch (ServiceException e) {
+			log.error(
+				"이미지 PresignedUrl 발급 실패/수동 삭제 필요 - SagaId: {}, ProductCode: {}, Exception: ", sagaId, productCode, e);
+
+			sagaService.updateToFail(sagaId, "이미지 PresignedUrl 발급 실패/수동 삭제 필요: " + e.getMessage());
+
+			throw e;
 		} catch (Exception e) {
 			log.error("이미지 PresignedUrl 발급 실패 - SagaId: {}, ProductCode: {}, Exception: ", sagaId, productCode, e);
 
@@ -92,6 +100,7 @@ public class ProductImageSagaOrchestrator {
 		}
 	}
 
+	// TODO: 우선 Saga 마킹만 진행. 구체적인 보상 트랜잭션은 구상 필요
 	public List<URL> startProductImageUpdateSaga(
 		String productCode, List<String> deleteUrls, List<String> newExtensions
 	) {
@@ -121,6 +130,7 @@ public class ProductImageSagaOrchestrator {
 			log.error("상품 이미지 수정 실패 - SagaId: {}, ProductCode: {}, Exception: ", sagaId, productCode, e);
 
 			sagaService.updateToFail(sagaId, "이미지 수정 실패: " + e.getMessage());
+
 			throw e;
 		}
 	}
@@ -141,7 +151,9 @@ public class ProductImageSagaOrchestrator {
 			log.info("이미지 삭제 이벤트 발행 완료 - SagaId: {}, ProductCode: {}", sagaId, productCode);
 		} catch (Exception e) {
 			log.error("이미지 삭제 이벤트 발행 실패 - SagaId: {}, ProductCode: {}, Exception: ", sagaId, productCode, e);
+
 			sagaService.updateToFail(sagaId, "이미지 삭제 이벤트 발행 실패" + e.getMessage());
+
 			throw e;
 		}
 	}
@@ -158,7 +170,7 @@ public class ProductImageSagaOrchestrator {
 
 			sagaService.updateToSuccess(sagaId);
 
-			log.info("Saga 완료 - SagaId: {}, ReferenceCode: {}", sagaId, event.referenceCode());
+			log.info("Saga 완료 - SagaId: {}, ProductCode: {}", sagaId, event.referenceCode());
 		} catch (Exception e) {
 			log.error("Saga 성공 처리 중 오류 발생 - SagaId: {}, Exception: ", sagaId, e);
 
@@ -172,12 +184,23 @@ public class ProductImageSagaOrchestrator {
 			sagaService.isExistSagaById(sagaId);
 
 			switch (event.eventType()) {
-				case PUSH -> compensateProductImageUploadFailure(null, sagaId, event.referenceCode(), event.errorMsg());
-				case DELETE -> {
-					log.error("이미지 삭제 수동 삭제 필요 - SagaId: {}, ReferenceCode: {}, ErrorMessage: {}",
+				case PUSH -> {
+					log.error("이미지 업로드 실패/수동 보상 필요 - SagaId: {}, ProductCode: {}, ErrorMessage: {}",
 						sagaId, event.referenceCode(), event.errorMsg());
 
-					sagaService.updateToFail(sagaId, "이미지 삭제 실패 및 수동 삭제 필요: " + event.errorMsg());
+					sagaService.updateToFail(sagaId, "이미지 업로드 실패 및 수동 보상 필요: " + event.errorMsg());
+				}
+				case DELETE -> {
+					log.error("이미지 삭제 실패/수동 보상 필요 - SagaId: {}, ProductCode: {}, ErrorMessage: {}",
+						sagaId, event.referenceCode(), event.errorMsg());
+
+					sagaService.updateToFail(sagaId, "이미지 삭제 실패 및 수동 보상 필요: " + event.errorMsg());
+				}
+				default -> {
+					log.error("미지원 이벤트 실패 - SagaId: {}, ProductCode: {}, ErrorMessage: {}",
+						sagaId, event.referenceCode(), event.errorMsg());
+
+					sagaService.updateToFail(sagaId, "미지원 이벤트 실패: " + event.eventType());
 				}
 			}
 		} catch (Exception e) {
@@ -191,20 +214,35 @@ public class ProductImageSagaOrchestrator {
 		List<String> urls, String sagaId, String productCode, String errorMsg
 	) {
 
-		try {
-			log.info("보상 트랜잭션 시작 - SagaId: {}, ProductCode: {}, S3 파일 삭제: {}", productCode, sagaId, urls.size());
-
-			sagaService.updateToCompensating(sagaId);
-
-			productKafkaProducer.publishProductImageDelete(
-				new ProductImagesDeleteEvent(sagaId, PRODUCT, productCode, urls)
-			);
-
-			log.info("보상 트랜잭션 완료 - SagaId: {}, ProductCode: {}, S3 파일 삭제: {}", sagaId, productCode, urls.size());
+		if (CollectionUtils.isEmpty(urls)) {
+			log.error("보상 트랜잭션 시작 불가/삭제 대상 URL 미존재 - SagaId: {}, ProductCode: {}", sagaId, productCode);
 
 			sagaService.updateToFail(
 				sagaId,
-				String.format("보상 트랜잭션 실행 - SagaId: %s, ProductCode: %s, Exception: %s", sagaId, productCode, errorMsg)
+				String.format("보상 트랜잭션 시작 불가/삭제 대상 URL 미존재 - SagaId: %s, ProductCode: %s, Exception: %s",
+					sagaId, productCode, errorMsg
+				)
+			);
+
+			return;
+		}
+
+		try {
+			log.info("보상 트랜잭션 시작 - SagaId: {}, ProductCode: {}", sagaId, productCode);
+
+			sagaService.updateToCompensating(sagaId);
+
+			imageClient.compensateUpload(
+					ProductMapper.toDeleteImagesRequest(PRODUCT, productCode, urls)
+				)
+				.throwIfNotSuccess();
+
+			log.info("보상 트랜잭션 완료 - SagaId: {}, ProductCode: {}", sagaId, productCode);
+
+			sagaService.updateToFail(
+				sagaId,
+				String.format("보상 트랜잭션 실행 완료 - SagaId: %s, ProductCode: %s, Exception: %s", sagaId, productCode,
+					errorMsg)
 			);
 		} catch (Exception e) {
 			log.error(

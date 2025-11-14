@@ -25,7 +25,7 @@ public class ProductKafkaListener {
 
 		String sagaId = event.sagaId();
 
-		log.info("이미지 처리 결과 수신 - SagaId: {}, referenceCode: {}, isSuccess: {}",
+		log.info("이미지 처리 결과 수신 - SagaId: {}, ProductCode: {}, isSuccess: {}",
 			sagaId, event.referenceCode(), event.isSuccess());
 
 		// 외부에서 직접 Image API 호출한 경우
