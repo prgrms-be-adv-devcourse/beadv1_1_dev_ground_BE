@@ -21,6 +21,12 @@ public class UserKafkaConfig {
 	@Value("${users.events.topic.name}")
 	private String usersEventsTopicName;
 
+	@Value("${carts.events.topic.name}")
+	private String cartsEventsTopicName;
+
+	@Value("${deposits.events.topic.name}")
+	private String depositsEventsTopicName;
+
 	@Value("${carts.commands.topic.name}")
 	private String cartsCommandsTopicName;
 
@@ -40,6 +46,22 @@ public class UserKafkaConfig {
 	@Bean
 	public NewTopic createUsersEventTopic() {
 		return TopicBuilder.name(usersEventsTopicName)
+			.partitions(topic_partitions)
+			.replicas(topic_replications)
+			.build();
+	}
+
+	@Bean
+	public NewTopic createCartsEventTopic() {
+		return TopicBuilder.name(cartsEventsTopicName)
+			.partitions(topic_partitions)
+			.replicas(topic_replications)
+			.build();
+	}
+
+	@Bean
+	public NewTopic createDepositsEventTopic() {
+		return TopicBuilder.name(depositsEventsTopicName)
 			.partitions(topic_partitions)
 			.replicas(topic_replications)
 			.build();
