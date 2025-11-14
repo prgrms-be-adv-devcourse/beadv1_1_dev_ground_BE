@@ -47,10 +47,10 @@ public class UserSaga {
 	private String userCommandTopicName;
 
 	@Value("${deposits.commands.topic.name}")
-	private String depositsCommandTopicName;
+	private String depositsUserCommandTopicName;
 
 	@Value("${carts.commands.topic.name}")
-	private String cartsCommandTopicName;
+	private String cartsUserCommandTopicName;
 
 	//User 생성 성공 -> 예치금
 	@KafkaHandler
@@ -59,7 +59,7 @@ public class UserSaga {
 		log.info("user가 생성되어 예치금이 생성됩니다.");
 		CreateDeposit createDepositCommand = new CreateDeposit(event.userCode());
 
-		kafkaTemplate.send(depositsCommandTopicName, createDepositCommand);
+		kafkaTemplate.send(depositsUserCommandTopicName, createDepositCommand);
 	}
 
 	//예치금 생성 성공 -> 장바구니
@@ -72,7 +72,7 @@ public class UserSaga {
 		//이후 장바구니 생성
 		CreateCart createCartCommand = new CreateCart(event.userCode());
 
-		kafkaTemplate.send(cartsCommandTopicName, createCartCommand);
+		kafkaTemplate.send(cartsUserCommandTopicName, createCartCommand);
 	}
 
 	//장바구니 생성완료 알림
@@ -94,7 +94,7 @@ public class UserSaga {
 		DeleteDeposit DeleteDeposit = new DeleteDeposit(event.userCode());
 		log.info("장바구니 생성에 실패해 예치금을 삭제하였습니다.");
 
-		kafkaTemplate.send(depositsCommandTopicName, DeleteDeposit);
+		kafkaTemplate.send(depositsUserCommandTopicName, DeleteDeposit);
 	}
 
 	//예치금 생성 실패 -> user 삭제
@@ -105,7 +105,7 @@ public class UserSaga {
 		log.info("예치금 생성에 실패해 user를 삭제했습니다.");
 		NotifyUserCreateFailedAlertCommand notifyUserCreateFailedAlertCommand = new NotifyUserCreateFailedAlertCommand(
 			event.userCode());
-		kafkaTemplate.send(depositsCommandTopicName, notifyUserCreateFailedAlertCommand);
+		kafkaTemplate.send(depositsUserCommandTopicName, notifyUserCreateFailedAlertCommand);
 	}
 
 	//예치금 삭제 -> user 삭제
@@ -127,7 +127,7 @@ public class UserSaga {
 		DeleteCartCommand deleteCartCommand = new DeleteCartCommand(event.userCode());
 		log.info("user 삭제 요청으로 cart를 삭제합니다.");
 
-		kafkaTemplate.send(cartsCommandTopicName, deleteCartCommand);
+		kafkaTemplate.send(cartsUserCommandTopicName, deleteCartCommand);
 	}
 
 	//장바구니 삭제 성공 -> 예치금 삭제
@@ -136,7 +136,7 @@ public class UserSaga {
 		DeleteDeposit deleteDeposit = new DeleteDeposit(event.userCode());
 		log.info("user 삭제 요청으로 cart 삭제 후 deposit을 삭제합니다.");
 
-		kafkaTemplate.send(depositsCommandTopicName, deleteDeposit);
+		kafkaTemplate.send(depositsUserCommandTopicName, deleteDeposit);
 	}
 
 	//장바구니 삭제 실패
