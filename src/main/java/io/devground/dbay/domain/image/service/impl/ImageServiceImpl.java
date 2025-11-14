@@ -32,7 +32,12 @@ public class ImageServiceImpl implements ImageService {
 	@Override
 	public void saveImages(ImageType imageType, String referenceCode, List<String> urls) {
 
+		if (CollectionUtils.isEmpty(urls)) {
+			return;
+		}
+
 		List<Image> images = urls.stream()
+			.distinct()
 			.map(url -> ImageMapper.of(imageType, referenceCode, url))
 			.toList();
 
@@ -44,7 +49,16 @@ public class ImageServiceImpl implements ImageService {
 		ImageType imageType, String referenceCode, List<String> deleteUrls, List<String> newImageExtensions
 	) {
 
-		this.deleteImagesByReferencesAndUrls(imageType, referenceCode, deleteUrls);
+		if (!CollectionUtils.isEmpty(deleteUrls)) {
+			List<Image> imagesToDelete =
+				imageRepository.findAllByImageTypeAndReferenceCodeAndImageUrlIn(imageType, referenceCode, deleteUrls);
+
+			if (!imagesToDelete.isEmpty()) {
+				s3Service.deleteObjectsByUrls(deleteUrls);
+			}
+
+			imageRepository.deleteAllInBatch(imagesToDelete);
+		}
 
 		return this.generatePresignedUrls(imageType, referenceCode, newImageExtensions);
 	}
@@ -69,10 +83,10 @@ public class ImageServiceImpl implements ImageService {
 	}
 
 	@Override
-	public Void deleteImagesByReferencesAndUrls(ImageType imageType, String referenceCode, List<String> urls) {
+	public void deleteImagesByReferencesAndUrls(ImageType imageType, String referenceCode, List<String> urls) {
 
 		if (CollectionUtils.isEmpty(urls)) {
-			return null;
+			return;
 		}
 
 		long cnt = imageRepository.deleteImagesByReferencesAndImageUrls(imageType, referenceCode, urls);
@@ -80,6 +94,18 @@ public class ImageServiceImpl implements ImageService {
 		if (cnt > 0) {
 			s3Service.deleteObjectsByUrls(urls);
 		}
+	}
+
+	@Override
+	public Void compensateUpload(ImageType imageType, String referenceCode, List<String> imageUrls) {
+
+		if (CollectionUtils.isEmpty(imageUrls)) {
+			return null;
+		}
+
+		s3Service.deleteObjectsByUrls(imageUrls);
+
+		imageRepository.deleteImagesByReferencesAndImageUrls(imageType, referenceCode, imageUrls);
 
 		return null;
 	}

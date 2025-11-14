@@ -42,14 +42,14 @@ public class ImageKafkaListener {
 		try {
 			imageService.saveImages(event.imageType(), event.referenceCode(), event.imageUrls());
 
-			log.error("상품 이미지 등록 성공 - SagaId: {}, ReferenceCode: {}", event.sagaId(), event.referenceCode());
+			log.error("상품 이미지 등록 성공 - SagaId: {}, ProductCode: {}", event.sagaId(), event.referenceCode());
 
 			imageKafkaProducer.publishImageProcessed(
 				new ImageProcessedEvent(sagaId, imageType, referenceCode, EventType.PUSH, true, null));
 
 		} catch (Exception e) {
 			log.error(
-				"상품 이미지 등록 실패 - SagaId: {}, ReferenceCode: {}, Exception: ", event.sagaId(), event.referenceCode(), e
+				"상품 이미지 등록 실패 - SagaId: {}, ProductCode: {}, Exception: ", event.sagaId(), event.referenceCode(), e
 			);
 
 			imageKafkaProducer.publishImageProcessed(
@@ -69,20 +69,20 @@ public class ImageKafkaListener {
 			if (CollectionUtils.isEmpty(deleteUrls)) {
 				imageService.deleteImageByReferences(imageType, referenceCode);
 
-				log.info("상품 전체 이미지 삭제 완료 - SagaId: {}, ReferenceCode: {}", sagaId, referenceCode);
+				log.info("상품 전체 이미지 삭제 완료 - SagaId: {}, ProductCode: {}", sagaId, referenceCode);
 			} else {
 				imageService.deleteImagesByReferencesAndUrls(
 					imageType, referenceCode, deleteUrls
 				);
 
-				log.info("선택된 상품 이미지 삭제 완료 - SagaId: {}, ReferenceCode: {}, size: {}",
+				log.info("선택된 상품 이미지 삭제 완료 - SagaId: {}, ProductCode: {}, size: {}",
 					sagaId, referenceCode, deleteUrls.size());
 			}
 
 			imageKafkaProducer.publishImageProcessed(
 				new ImageProcessedEvent(sagaId, imageType, referenceCode, EventType.DELETE, true, null));
 		} catch (Exception e) {
-			log.error("상품 이미지 삭제 실패 - SagaId: {}, referenceCode: {}, Exception: ", sagaId, referenceCode, e);
+			log.error("상품 이미지 삭제 실패 - SagaId: {}, ProductCode: {}, Exception: ", sagaId, referenceCode, e);
 
 			imageKafkaProducer.publishImageProcessed(
 				new ImageProcessedEvent(sagaId, imageType, referenceCode, EventType.DELETE, false, e.getMessage()));

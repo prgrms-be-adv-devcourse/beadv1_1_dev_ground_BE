@@ -11,6 +11,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Index;
 import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -23,6 +24,11 @@ import lombok.NoArgsConstructor;
 	name = "image",
 	indexes = {
 		@Index(name = "idx_image_reference_code_image_type", columnList = "referenceCode, imageType")
+	},
+	uniqueConstraints = {
+		@UniqueConstraint(
+			name = "uk_image_reference_code_image_type_url", columnNames = {"referenceCode", "imageType", "imageUrl"}
+		)
 	}
 )
 public class Image extends BaseEntity {

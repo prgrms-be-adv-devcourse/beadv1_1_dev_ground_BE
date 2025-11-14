@@ -5,12 +5,14 @@ import static org.springframework.http.HttpStatus.*;
 import java.net.URL;
 import java.util.List;
 
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import io.devground.core.dto.image.DeleteImagesRequest;
 import io.devground.core.dto.image.GeneratePresignedRequest;
 import io.devground.core.dto.image.UpdateImagesRequest;
 import io.devground.core.model.web.BaseResponse;
@@ -51,17 +53,15 @@ public class ImageController {
 		);
 	}
 
-/*
-	@DeleteMapping(value = "/delete")
-	public BaseResponse<Void> deleteAll(
+	@DeleteMapping(value = "/compensate-upload")
+	public BaseResponse<Void> compensateUpload(
 		@RequestBody DeleteImagesRequest request
 	) {
 
 		return BaseResponse.success(
 			NO_CONTENT.value(),
-			imageService.deleteImagesByReferencesAndUrls(request.imageType(), request.referenceCode(),
+			imageService.compensateUpload(request.imageType(), request.referenceCode(),
 				request.deleteUrls())
 		);
 	}
-*/
 }

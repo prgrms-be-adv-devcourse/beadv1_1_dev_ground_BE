@@ -101,15 +101,4 @@ public abstract class ProductMapper {
 			.deleteUrls(deleteUrls)
 			.build();
 	}
-
-	// TODO: 추후 불필요 시 삭제
-/*
-	public static UploadImagesRequest toUploadRequest(String referenceCode, ImageType imageType) {
-
-		return UploadImagesRequest.builder()
-			.referenceCode(referenceCode)
-			.imageType(imageType)
-			.build();
-	}
-*/
 }
