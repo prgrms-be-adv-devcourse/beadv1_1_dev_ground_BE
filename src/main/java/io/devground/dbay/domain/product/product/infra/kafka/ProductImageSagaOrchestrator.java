@@ -13,7 +13,6 @@ import org.springframework.util.CollectionUtils;
 import io.devground.core.event.image.ImageProcessedEvent;
 import io.devground.core.event.product.ProductImagesDeleteEvent;
 import io.devground.core.event.product.ProductImagesPushEvent;
-import io.devground.core.model.exception.ServiceException;
 import io.devground.core.model.web.BaseResponse;
 import io.devground.dbay.common.saga.entity.Saga;
 import io.devground.dbay.common.saga.service.SagaService;
@@ -60,13 +59,6 @@ public class ProductImageSagaOrchestrator {
 			log.info("이미지 PresignedUrl 발급 완료 - SagaId: {}, ProductCode: {}", sagaId, productCode);
 
 			return presignedUrlsResponse.data();
-		} catch (ServiceException e) {
-			log.error(
-				"이미지 PresignedUrl 발급 실패/수동 삭제 필요 - SagaId: {}, ProductCode: {}, Exception: ", sagaId, productCode, e);
-
-			sagaService.updateToFail(sagaId, "이미지 PresignedUrl 발급 실패/수동 삭제 필요: " + e.getMessage());
-
-			throw e;
 		} catch (Exception e) {
 			log.error("이미지 PresignedUrl 발급 실패 - SagaId: {}, ProductCode: {}, Exception: ", sagaId, productCode, e);
 
@@ -161,7 +153,13 @@ public class ProductImageSagaOrchestrator {
 	public void handleImageProcessSuccess(String sagaId, ImageProcessedEvent event) {
 
 		try {
-			sagaService.isExistSagaById(sagaId);
+			Saga saga = sagaService.getSaga(sagaId);
+
+			if (saga.getSagaStatus().isTerminal()) {
+				log.info("이미 처리된 성공 Saga - SagaId: {}, ProductCode: {}", sagaId, event.referenceCode());
+
+				return;
+			}
 
 			switch (event.eventType()) {
 				case PUSH -> sagaService.updateStep(sagaId, SagaStep.IMAGE_DB_SAVE);
@@ -172,7 +170,9 @@ public class ProductImageSagaOrchestrator {
 
 			log.info("Saga 완료 - SagaId: {}, ProductCode: {}", sagaId, event.referenceCode());
 		} catch (Exception e) {
-			log.error("Saga 성공 처리 중 오류 발생 - SagaId: {}, Exception: ", sagaId, e);
+			log.error("Saga 성공 처리 중 오류 발생/보상 필요 - SagaId: {}, Exception: ", sagaId, e);
+
+			sagaService.updateToFail(sagaId, "Saga 성공 처리 중 오류 발생/보상 필요: " + e.getMessage());
 
 			throw e;
 		}
@@ -181,7 +181,13 @@ public class ProductImageSagaOrchestrator {
 	public void handleImageProcessFailure(String sagaId, ImageProcessedEvent event) {
 
 		try {
-			sagaService.isExistSagaById(sagaId);
+			Saga saga = sagaService.getSaga(sagaId);
+
+			if (saga.getSagaStatus().isTerminal()) {
+				log.info("이미 처리된 실패 Saga - SagaId: {}, ProductCode: {}", sagaId, event.referenceCode());
+
+				return;
+			}
 
 			switch (event.eventType()) {
 				case PUSH -> {
@@ -204,7 +210,9 @@ public class ProductImageSagaOrchestrator {
 				}
 			}
 		} catch (Exception e) {
-			log.error("Saga 실패 처리 중 오류 발생 - SagaId: {}, Exception: ", sagaId, e);
+			log.error("Saga 실패 처리 중 오류 발생/보상 필요 - SagaId: {}, Exception: ", sagaId, e);
+
+			sagaService.updateToFail(sagaId, "Saga 실패 처리 중 오류 발생/보상 필요" + e.getMessage());
 
 			throw e;
 		}
@@ -239,7 +247,7 @@ public class ProductImageSagaOrchestrator {
 
 			log.info("보상 트랜잭션 완료 - SagaId: {}, ProductCode: {}", sagaId, productCode);
 
-			sagaService.updateToFail(
+			sagaService.updateToCompensated(
 				sagaId,
 				String.format("보상 트랜잭션 실행 완료 - SagaId: %s, ProductCode: %s, Exception: %s", sagaId, productCode,
 					errorMsg)

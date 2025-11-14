@@ -34,7 +34,7 @@ public class SagaService {
 
 		Saga saga = getSaga(sagaId);
 
-		if (saga.getSagaStatus().isTerminal()) {
+		if (saga.getSagaStatus().isTerminal() || saga.getCurrentStep() == step) {
 			return;
 		}
 
@@ -76,6 +76,17 @@ public class SagaService {
 		saga.updateStatus(SagaStatus.COMPENSATING);
 	}
 
+	public void updateToCompensated(String sagaId, String message) {
+
+		Saga saga = getSaga(sagaId);
+
+		if (saga.getSagaStatus().isTerminal()) {
+			return;
+		}
+
+		saga.updateToCompensated(message);
+	}
+
 	// Step 조건 없이 해당 Code의 최신 Saga 조회
 	@Transactional(readOnly = true)
 	public Saga findLatestSagaByReferenceCode(String referenceCode) {
@@ -96,7 +107,7 @@ public class SagaService {
 	}
 
 	@Transactional(readOnly = true)
-	protected Saga getSaga(String sagaId) {
+	public Saga getSaga(String sagaId) {
 
 		return sagaRepository.findBySagaId(sagaId)
 			.orElseThrow(ErrorCode.SAGA_NOT_FOUND::throwServiceException);
