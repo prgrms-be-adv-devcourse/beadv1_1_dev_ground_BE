@@ -5,7 +5,6 @@ import org.springframework.kafka.annotation.KafkaHandler;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.messaging.handler.annotation.Payload;
-import org.springframework.retry.support.RetryTemplate;
 import org.springframework.stereotype.Component;
 
 import com.example.user.service.UserService;
@@ -14,7 +13,6 @@ import io.devground.core.commands.cart.CreateCart;
 import io.devground.core.commands.cart.DeleteCartCommand;
 import io.devground.core.commands.deposit.CreateDeposit;
 import io.devground.core.commands.deposit.DeleteDeposit;
-import io.devground.core.commands.user.DeleteUser;
 import io.devground.core.commands.user.NotifyCartDeleteFailedAlertCommand;
 import io.devground.core.commands.user.NotifyCreatedUserAlertCommand;
 import io.devground.core.commands.user.NotifyDepositDeleteFailedAlertCommand;
@@ -58,6 +56,7 @@ public class UserSaga {
 	@KafkaHandler
 	public void handleEvent(@Payload UserCreatedEvent event) {
 		//예치금 생성
+		log.info("user가 생성되어 예치금이 생성됩니다.");
 		CreateDeposit createDepositCommand = new CreateDeposit(event.userCode());
 
 		kafkaTemplate.send(depositsCommandTopicName, createDepositCommand);

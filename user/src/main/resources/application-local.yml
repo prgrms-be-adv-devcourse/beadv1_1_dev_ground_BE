@@ -42,8 +42,8 @@ spring:
   kafka:
     bootstrap-servers:
       - localhost:9092
-      - localhost:9094
-      - localhost:9096
+#      - localhost:9094
+#      - localhost:9096
 
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
@@ -105,6 +105,7 @@ logging:
     org.hibernate.orm.jdbc.bind: TRACE
     org.hibernate.orm.jdbc.extract: TRACE
     org.springframework.batch: INFO
+    org.springframework.kafka: debug
 
 custom:
   jwt:
