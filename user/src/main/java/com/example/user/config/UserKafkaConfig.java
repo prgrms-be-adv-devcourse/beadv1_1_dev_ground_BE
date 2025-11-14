@@ -36,7 +36,6 @@ public class UserKafkaConfig {
 	@Value("${users.commands.topic.name}")
 	private String usersUserCommandTopicName;
 
-
 	@Bean
 	public KafkaTemplate<String, Object> kafkaTemplate(
 		ProducerFactory<String, Object> producerFactory
@@ -93,6 +92,5 @@ public class UserKafkaConfig {
 			.replicas(topic_replications)
 			.build();
 	}
-
 
 }
