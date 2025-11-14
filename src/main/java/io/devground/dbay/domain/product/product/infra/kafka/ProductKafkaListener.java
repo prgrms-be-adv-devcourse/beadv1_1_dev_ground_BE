@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import io.devground.core.event.image.ImageProcessedEvent;
+import io.devground.dbay.domain.product.product.service.ProductService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -19,6 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 public class ProductKafkaListener {
 
 	private final ProductImageSagaOrchestrator orchestrator;
+	private final ProductService productService;
 
 	@KafkaHandler
 	public void handleImageProcessed(ImageProcessedEvent event) {
@@ -36,6 +38,12 @@ public class ProductKafkaListener {
 
 		try {
 			if (event.isSuccess()) {
+				String thumbnailUrl = event.thumbnailUrl();
+
+				if (thumbnailUrl != null) {
+					productService.getProductByCode(event.referenceCode()).updateThumbnail(thumbnailUrl);
+				}
+
 				orchestrator.handleImageProcessSuccess(sagaId, event);
 			} else {
 				orchestrator.handleImageProcessFailure(sagaId, event);
