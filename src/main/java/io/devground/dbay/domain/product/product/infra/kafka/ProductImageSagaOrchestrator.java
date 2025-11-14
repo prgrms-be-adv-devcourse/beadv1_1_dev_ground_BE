@@ -20,7 +20,6 @@ import io.devground.dbay.common.saga.vo.SagaStep;
 import io.devground.dbay.common.saga.vo.SagaType;
 import io.devground.dbay.domain.product.product.client.ImageClient;
 import io.devground.dbay.domain.product.product.mapper.ProductMapper;
-import io.devground.dbay.domain.product.product.service.ProductService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -41,7 +40,6 @@ public class ProductImageSagaOrchestrator {
 	private final ImageClient imageClient;
 	private final SagaService sagaService;
 	private final ProductKafkaProducer productKafkaProducer;
-	private final ProductService productService;
 
 	public List<URL> startGetPresignedUrlsSaga(String productCode, List<String> imageExtensions) {
 
@@ -165,13 +163,7 @@ public class ProductImageSagaOrchestrator {
 			}
 
 			switch (event.eventType()) {
-				case PUSH -> {
-					if (event.thumbnailUrl() != null) {
-						productService.getProductByCode(event.referenceCode()).updateThumbnail(event.thumbnailUrl());
-					}
-
-					sagaService.updateStep(sagaId, SagaStep.IMAGE_DB_SAVE);
-				}
+				case PUSH -> sagaService.updateStep(sagaId, SagaStep.IMAGE_DB_SAVE);
 				case DELETE -> sagaService.updateStep(sagaId, SagaStep.IMAGE_DELETED);
 			}
 
