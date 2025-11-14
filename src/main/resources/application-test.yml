@@ -1,6 +1,5 @@
 spring:
-  profiles:
-    active: deploy //로컬 실행을 위해 막아둠
+
   datasource:
     url: jdbc:h2:mem:test;MODE=MYSQL;
     driver-class-name: org.h2.Driver
