@@ -34,12 +34,20 @@ public class SagaService {
 
 		Saga saga = getSaga(sagaId);
 
+		if (saga.getSagaStatus().isTerminal()) {
+			return;
+		}
+
 		saga.updateStep(step);
 	}
 
 	public void updateToSuccess(String sagaId) {
 
 		Saga saga = getSaga(sagaId);
+
+		if (saga.getSagaStatus().isTerminal()) {
+			return;
+		}
 
 		saga.updateStep(SagaStep.COMPLETE);
 		saga.updateStatus(SagaStatus.SUCCESS);
@@ -49,12 +57,20 @@ public class SagaService {
 
 		Saga saga = getSaga(sagaId);
 
+		if (saga.getSagaStatus().isTerminal()) {
+			return;
+		}
+
 		saga.updateToFail(errorMsg);
 	}
 
 	public void updateToCompensating(String sagaId) {
 
 		Saga saga = getSaga(sagaId);
+
+		if (saga.getSagaStatus().isTerminal()) {
+			return;
+		}
 
 		saga.updateStep(SagaStep.COMPENSATING);
 		saga.updateStatus(SagaStatus.COMPENSATING);

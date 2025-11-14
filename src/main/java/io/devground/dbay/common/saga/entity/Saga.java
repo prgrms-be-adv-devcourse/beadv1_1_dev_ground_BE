@@ -35,6 +35,7 @@ public class Saga {
 	private String sagaId;
 
 	@Column(nullable = false)
+	@Enumerated(EnumType.STRING)
 	private SagaType sagaType;
 
 	@Column(nullable = false)

@@ -8,5 +8,9 @@ public enum SagaStatus {
 	IN_PROCESS,
 	SUCCESS,
 	FAILED,
-	COMPENSATING
+	COMPENSATING;
+
+	public boolean isTerminal() {
+		return this == SUCCESS || this == FAILED;
+	}
 }
