@@ -1,6 +1,7 @@
 package io.devground.dbay.domain.product.product.service;
 
 import static io.devground.dbay.domain.product.product.vo.ProductStatus.*;
+import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.ArrayList;
@@ -11,15 +12,19 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
 import io.devground.core.model.exception.ServiceException;
+import io.devground.core.model.web.PageDto;
 import io.devground.dbay.domain.product.category.dto.AdminCategoryResponse;
 import io.devground.dbay.domain.product.category.dto.RegistCategoryRequest;
 import io.devground.dbay.domain.product.category.service.CategoryService;
 import io.devground.dbay.domain.product.product.dto.CartProductsRequest;
 import io.devground.dbay.domain.product.product.dto.CartProductsResponse;
+import io.devground.dbay.domain.product.product.dto.GetAllProductsResponse;
 import io.devground.dbay.domain.product.product.dto.ProductDetailResponse;
 import io.devground.dbay.domain.product.product.dto.RegistProductRequest;
 import io.devground.dbay.domain.product.product.dto.RegistProductResponse;
@@ -135,6 +140,31 @@ class ProductServiceTest {
 		// when, then
 		assertThrows(ServiceException.class,
 			() -> productService.registProduct(sellerCode, request));
+	}
+
+	@Test
+	@DisplayName("성공_상품 목록 조회")
+	void success_get_all_products() throws Exception {
+
+		// given
+		PageRequest pageRequest = PageRequest.of(1, 10, Sort.by("createdAt").descending());
+
+		// when
+		PageDto<GetAllProductsResponse> productsWithinPageDto = productService.getProducts(pageRequest);
+		List<GetAllProductsResponse> products = productsWithinPageDto.items();
+
+		// then
+		assertEquals(3, products.size());
+
+		for (GetAllProductsResponse product : products) {
+			assertThat(productCodes)
+				.contains(product.productCode());
+		}
+	}
+	
+	@Test
+	void fail_get_all_products_() throws Exception {
+	    
 	}
 
 	@Test

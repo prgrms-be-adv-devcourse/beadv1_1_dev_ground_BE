@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,6 +12,7 @@ import org.springframework.util.CollectionUtils;
 
 import io.devground.core.model.vo.ErrorCode;
 import io.devground.core.model.web.PageDto;
+import io.devground.core.util.PageUtils;
 import io.devground.dbay.domain.product.category.entity.Category;
 import io.devground.dbay.domain.product.category.repository.CategoryRepository;
 import io.devground.dbay.domain.product.product.dto.CartProductsRequest;
@@ -47,12 +47,9 @@ public class ProductServiceImpl implements ProductService {
 	@Transactional(readOnly = true)
 	public PageDto<GetAllProductsResponse> getProducts(Pageable pageable) {
 
-		int page = pageable.getPageNumber();
-		int pageSize = pageable.getPageSize();
+		Pageable convertedPageable = PageUtils.convertToSafePageable(pageable);
 
-		pageable = PageRequest.of(Math.max(page - 1, 0), pageSize, pageable.getSort());
-
-		Page<Product> products = productRepository.findAllWithSale(pageable);
+		Page<Product> products = productRepository.findAllWithSale(convertedPageable);
 
 		Page<GetAllProductsResponse> responses = products
 			.map(product -> ProductMapper.getProductsFromProductInfo(product, product.getProductSale()));
