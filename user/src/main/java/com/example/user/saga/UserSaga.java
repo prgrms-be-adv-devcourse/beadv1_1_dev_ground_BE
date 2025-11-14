@@ -36,7 +36,7 @@ import lombok.extern.slf4j.Slf4j;
 @Component
 @KafkaListener(
 	topics = {
-		"${accounts.events.topic.name}"
+		"${users.events.topic.name}"
 	}
 )
 @RequiredArgsConstructor
@@ -51,7 +51,7 @@ public class UserSaga {
 	@Value("${deposits.commands.topic.name}")
 	private String depositsCommandTopicName;
 
-	@Value("${carts.command.topic.name}")
+	@Value("${carts.commands.topic.name}")
 	private String cartsCommandTopicName;
 
 	//User 생성 성공 -> 예치금
