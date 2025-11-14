@@ -92,4 +92,10 @@ public class Saga {
 		this.sagaStatus = SagaStatus.FAILED;
 		this.lastErrorMessage = message;
 	}
+
+	public void updateToCompensated(String message) {
+		this.sagaStatus = SagaStatus.COMPENSATED;
+		this.currentStep = SagaStep.COMPLETE;
+		this.lastErrorMessage = message;
+	}
 }
