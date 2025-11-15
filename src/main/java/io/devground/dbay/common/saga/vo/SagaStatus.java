@@ -18,4 +18,8 @@ public enum SagaStatus {
 	public boolean isTerminal() {
 		return !isProcess();
 	}
+
+	public boolean isCompensating() {
+		return this == COMPENSATING;
+	}
 }
