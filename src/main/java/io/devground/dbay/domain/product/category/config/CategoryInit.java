@@ -11,7 +11,7 @@ import io.devground.dbay.domain.product.category.repository.CategoryRepository;
 import io.devground.dbay.domain.product.category.service.CategoryService;
 import lombok.RequiredArgsConstructor;
 
-@Profile({"local", "dev"})
+@Profile({"local", "stage"})
 @Component
 @RequiredArgsConstructor
 public class CategoryInit implements ApplicationRunner {
