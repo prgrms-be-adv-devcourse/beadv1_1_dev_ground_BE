@@ -9,7 +9,7 @@ spring:
     active: stage
 
   config:
-    import: optional:classpath:.env[.properties]
+    import: optional:classpath:env.properties
 
   jpa:
     hibernate:
@@ -84,7 +84,6 @@ eureka:
     non-secure-port: 8080
     metadata-map:
       port: 8080
-
 
 deposits:
   event:

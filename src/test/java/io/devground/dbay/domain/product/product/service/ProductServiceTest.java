@@ -18,6 +18,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
 import io.devground.core.model.exception.ServiceException;
+import io.devground.core.model.vo.DeleteStatus;
 import io.devground.core.model.web.PageDto;
 import io.devground.dbay.domain.product.category.dto.AdminCategoryResponse;
 import io.devground.dbay.domain.product.category.dto.RegistCategoryRequest;
@@ -317,8 +318,6 @@ class ProductServiceTest {
 			() -> productService.updateProduct(sellerCode, "wrongCode", request));
 	}
 
-	// TODO: Kafka 연동 후 다시 테스트
-/*
 	@Test
 	@DisplayName("성공_상품 정보 삭제")
 	void success_delete_product() throws Exception {
@@ -335,7 +334,6 @@ class ProductServiceTest {
 		// then
 		assertEquals(DeleteStatus.Y, product.getDeleteStatus());
 	}
-*/
 
 	// TODO: 상품 삭제 - 인가 실패
 
