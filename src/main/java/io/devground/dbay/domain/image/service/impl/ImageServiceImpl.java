@@ -99,15 +99,15 @@ public class ImageServiceImpl implements ImageService {
 	}
 
 	@Override
-	public Void compensateUpload(ImageType imageType, String referenceCode, List<String> imageUrls) {
+	public Void compensateUpload(ImageType imageType, String referenceCode) {
 
-		if (CollectionUtils.isEmpty(imageUrls)) {
-			return null;
+		List<Image> images = imageRepository.findAllByImageTypeAndReferenceCode(imageType, referenceCode);
+
+		if (!CollectionUtils.isEmpty(images)) {
+			s3Service.deleteAllObjectsByIdentifier(imageType, referenceCode);
+
+			imageRepository.deleteAllInBatch(images);
 		}
-
-		s3Service.deleteObjectsByUrls(imageUrls);
-
-		imageRepository.deleteImagesByReferencesAndImageUrls(imageType, referenceCode, imageUrls);
 
 		return null;
 	}

@@ -24,5 +24,5 @@ public interface ImageService {
 
 	void deleteImagesByReferencesAndUrls(ImageType imageType, String referenceCode, List<String> urls);
 
-	Void compensateUpload(ImageType imageType, String referenceCode, List<String> imageUrls);
+	Void compensateUpload(ImageType imageType, String referenceCode);
 }

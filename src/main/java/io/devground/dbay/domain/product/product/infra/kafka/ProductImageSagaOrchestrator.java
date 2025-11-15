@@ -87,7 +87,7 @@ public class ProductImageSagaOrchestrator {
 		} catch (Exception e) {
 			log.error("이미지 등록 이벤트 발행 실패 - SagaId: {}, ProductCode: {}, Exception: ", sagaId, productCode, e);
 
-			compensateProductImageUploadFailure(urls, sagaId, productCode, "이벤트 발행 실패: " + e.getMessage());
+			compensateProductImageUploadFailure(sagaId, productCode, "이벤트 발행 실패: " + e.getMessage());
 
 			throw e;
 		}
@@ -195,7 +195,7 @@ public class ProductImageSagaOrchestrator {
 					log.error("이미지 업로드 실패/수동 보상 필요 - SagaId: {}, ProductCode: {}, ErrorMessage: {}",
 						sagaId, event.referenceCode(), event.errorMsg());
 
-					sagaService.updateToFail(sagaId, "이미지 업로드 실패 및 수동 보상 필요: " + event.errorMsg());
+					compensateProductImageUploadFailure(sagaId, event.referenceCode(), event.errorMsg());
 				}
 				case DELETE -> {
 					log.error("이미지 삭제 실패/수동 보상 필요 - SagaId: {}, ProductCode: {}, ErrorMessage: {}",
@@ -220,49 +220,54 @@ public class ProductImageSagaOrchestrator {
 	}
 
 	private void compensateProductImageUploadFailure(
-		List<String> urls, String sagaId, String productCode, String errorMsg
+		String sagaId, String productCode, String errorMsg
 	) {
 
-		if (CollectionUtils.isEmpty(urls)) {
-			log.error("보상 트랜잭션 시작 불가/삭제 대상 URL 미존재 - SagaId: {}, ProductCode: {}", sagaId, productCode);
-
-			sagaService.updateToFail(
-				sagaId,
-				String.format("보상 트랜잭션 시작 불가/삭제 대상 URL 미존재 - SagaId: %s, ProductCode: %s, Exception: %s",
-					sagaId, productCode, errorMsg
-				)
-			);
-
-			return;
-		}
+		Saga saga = sagaService.getSaga(sagaId);
+		SagaStep step = saga.getCurrentStep();
 
 		try {
-			log.info("보상 트랜잭션 시작 - SagaId: {}, ProductCode: {}", sagaId, productCode);
+			log.info("이미지 등록 보상 트랜잭션 시작 - SagaId: {}, ProductCode: {}, Step: {}", sagaId, productCode, step);
 
 			sagaService.updateToCompensating(sagaId);
 
-			imageClient.compensateUpload(
-					ProductMapper.toDeleteImagesRequest(PRODUCT, productCode, urls)
-				)
-				.throwIfNotSuccess();
+			switch (step) {
+				case WAITING_S3_UPLOAD, IMAGE_KAFKA_PUBLISHED -> {
+					log.info("S3 저장 실패 보상 - SagaId: {}, ProductCode: {}", sagaId, productCode);
 
-			log.info("보상 트랜잭션 완료 - SagaId: {}, ProductCode: {}", sagaId, productCode);
+					imageClient.compensateUpload(ProductMapper.toDeleteImagesRequest(PRODUCT, productCode))
+						.throwIfNotSuccess();
+				}
+				case IMAGE_DB_SAVE -> {
+					log.info("이미지 DB 저장 실패 보상 - SagaId: {}, ProductCode: {}", sagaId, productCode);
+
+					imageClient.compensateUpload(ProductMapper.toDeleteImagesRequest(PRODUCT, productCode))
+						.throwIfNotSuccess();
+				}
+				case PENDING_S3_UPLOAD ->
+					log.info("PresignedURL 발급/보상 불필요 - SagaId: {}, ProductCode: {}", sagaId, productCode);
+			}
 
 			sagaService.updateToCompensated(
 				sagaId,
-				String.format("보상 트랜잭션 실행 완료 - SagaId: %s, ProductCode: %s, Exception: %s", sagaId, productCode,
+				String.format("이미지 등록 보상 완료 - SagaId: %s, ProductCode: %s, Exception: %s", sagaId, productCode,
 					errorMsg)
 			);
+
+			log.info("이미지 등록 보상 완료 - SagaId: {}, ProductCode: {}", sagaId, productCode);
 		} catch (Exception e) {
 			log.error(
-				"보상 트랜잭션 실패 - SagaId: {}, productCode: {}, 삭제 URL: {}, Exception: ", sagaId, productCode, urls, e);
+				"이미지 등록 보상 트랜잭션 실패 - SagaId: {}, productCode: {}, Exception: {}", sagaId, productCode, e.getMessage()
+			);
 
 			sagaService.updateToFail(
 				sagaId,
-				String.format("보상 트랜잭션 실패 - SagaId: %s, ProductCode: %s, Exception: %s",
+				String.format("이미지 등록 보상 트랜잭션 실패 - SagaId: %s, ProductCode: %s, Exception: %s",
 					sagaId, productCode, e.getMessage()
 				)
 			);
+
+			throw e;
 		}
 	}
 }
