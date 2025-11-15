@@ -22,4 +22,6 @@ public interface SagaRepository extends JpaRepository<Saga, Long> {
 	);
 
 	List<Saga> findSagaByCurrentStepAndStartedAtBefore(SagaStep currentStep, LocalDateTime startedAt);
+
+	List<Saga> findSagaBySagaStatusAndUpdatedAtBefore(SagaStatus sagaStatus, LocalDateTime updatedAt);
 }
