@@ -3,11 +3,10 @@ spring:
     name: dbay
 
   profiles:
-    active: deploy
+    active: stage
 
-#  config:
-#    activate:
-#      on-profile: deploy
+  config:
+    import: optional:classpath:.env[.properties]
 
   jpa:
     hibernate:
@@ -16,7 +15,6 @@ spring:
 
   kafka:
     bootstrap-servers:
-#      - kafka:9092
       - localhost:9092
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
@@ -37,23 +35,15 @@ spring:
         spring.json.trusted.packages: io.devground.dbay.*, io.devground.core.*
         allow.auto.create.topics: false
 
-#    retry:
-#      topic:
-#        enabled: true
-#        attempts: 5
-#        delay: 1000
-#        multiplier: 2.0
-#        max-delay: 20000
-
   cloud:
     aws:
       s3:
-        bucket: testBucket # 채울 것
+        bucket: ${S3_BUCKET_NAME}
       credentials:
-        access-key: testAccessKey # 채울 것
-        secret-key: testSecretKey # 채울 것
+        access-key: ${S3_ACCESS_KEY}
+        secret-key: ${S3_SECRET_KEY}
       region:
-        static: testRegion # 채울 것
+        static: ${S3_REGION}
 
 custom:
   kafka:
