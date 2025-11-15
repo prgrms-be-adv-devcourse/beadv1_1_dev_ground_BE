@@ -11,7 +11,11 @@ public enum SagaStatus {
 	COMPENSATING,
 	COMPENSATED;
 
+	public boolean isProcess() {
+		return this == IN_PROCESS;
+	}
+
 	public boolean isTerminal() {
-		return this == SUCCESS || this == FAILED || this == COMPENSATING;
+		return !isProcess();
 	}
 }

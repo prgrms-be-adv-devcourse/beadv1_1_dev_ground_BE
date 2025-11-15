@@ -60,8 +60,7 @@ public class ImageController {
 
 		return BaseResponse.success(
 			NO_CONTENT.value(),
-			imageService.compensateUpload(request.imageType(), request.referenceCode(),
-				request.deleteUrls())
+			imageService.compensateUpload(request.imageType(), request.referenceCode())
 		);
 	}
 }
