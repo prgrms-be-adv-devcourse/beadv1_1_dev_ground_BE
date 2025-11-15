@@ -1,3 +1,6 @@
+server:
+  port: 8081
+
 spring:
   application:
     name: dbay
@@ -45,12 +48,6 @@ spring:
       region:
         static: ${S3_REGION}
 
-custom:
-  kafka:
-    config:
-      topic-partitions: 1
-      topic-replications: 1
-
 carts:
   event:
     topic:
@@ -75,6 +72,20 @@ payments:
     topic:
       name: payments-commands
 
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://eureka:8761/eureka/
+  instance:
+    prefer-ip-address: true
+    ip-address: dbay
+    non-secure-port: 8081
+    metadata-map:
+      port: 8081
+
+
 deposits:
   event:
     topic:
@@ -88,6 +99,19 @@ products:
     image:
       push: product-images-push
       delete: product-images-delete
+      name: deposits-commands
+
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    enabled: true
+
+custom:
+  kafka:
+    config:
+      topic-partitions: 1
+      topic-replications: 1
 
 images:
   topic:

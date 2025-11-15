@@ -8,6 +8,19 @@ services:
     ports:
       - "6379:6379"
 
+  nginx:
+    image: nginx:latest
+    container_name: nginx
+    ports:
+      - "80:80"
+#    volumes:
+#      - ./nginx.conf:/etc/nginx/conf.d/default.conf
+    volumes:
+      - ./nginx:/etc/nginx/conf.d
+    depends_on:
+      - gateway
+
+
   eureka:
     image: eclipse-temurin:21-jdk
     container_name: eureka
@@ -26,9 +39,11 @@ services:
       - eureka
     volumes:
       - ./gateway-0.0.1-SNAPSHOT.jar:/app/app.jar
+    environment:
+      SPRING_PROFILES_ACTIVE: deploy
     command: [ "java", "-jar", "app.jar" ]
     ports:
-      - "8080:8080"
+      - "8000:8000"
 
   mysql:
     image: mysql:8.0
@@ -73,8 +88,7 @@ services:
       SPRING_DATASOURCE_USERNAME: root
       SPRING_DATASOURCE_PASSWORD: root1234
       SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
-      #SPRING_KAFKA_BOOTSTRAP_SERVERS: 43:201:80:95:9092
-      SPRING_PROFILES_ACTIVE: deploy #수정
+      SPRING_PROFILES_ACTIVE: deploy
       SPRING_JPA_HIBERNATE_DDL_AUTO: update
       SPRING_DATA_REDIS_HOST: redis
       SPRING_DATA_REDIS_PORT: 6379
@@ -116,11 +130,12 @@ services:
       KAFKA_PROCESS_ROLES: "controller,broker"
       KAFKA_CONTROLLER_QUORUM_VOTERS: "1@kafka:9091"
       KAFKA_LISTENERS: "PLAINTEXT://0.0.0.0:9090,CONTROLLER://0.0.0.0:9091,EXTERNAL://0.0.0.0:9092"
-      KAFKA_ADVERTISED_LISTENERS: "PLAINTEXT://kafka:9090,EXTERNAL://localhost:9092"
+      KAFKA_ADVERTISED_LISTENERS: "PLAINTEXT://kafka:9090,EXTERNAL://43.201.80.95:9092"
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: "PLAINTEXT:PLAINTEXT,CONTROLLER:PLAINTEXT,EXTERNAL:PLAINTEXT"
       KAFKA_INTER_BROKER_LISTENER_NAME: "PLAINTEXT"
       KAFKA_CONTROLLER_LISTENER_NAMES: "CONTROLLER"
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
       CLUSTER_ID: "ZWU1Y2JiNDctNDg3ZC4tNGY2Ny1iNzJh"
     restart: always
+
 

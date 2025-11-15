@@ -67,6 +67,7 @@ public class SecurityConfig {
 				.requestMatchers("/**").permitAll()
 				.requestMatchers("/admin").hasRole("ADMIN")
 				.requestMatchers("/reissue").permitAll()
+
 				.anyRequest().permitAll())
 			.addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil, redisService),
 				UsernamePasswordAuthenticationFilter.class)

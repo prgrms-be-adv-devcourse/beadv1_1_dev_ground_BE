@@ -5,6 +5,9 @@ spring:
     username: sa
     password:
 
+  config:
+    import: optional:classpath:env:properties
+
   h2:
     console:
       enabled: true
@@ -18,3 +21,67 @@ spring:
         dialect: org.hibernate.dialect.H2Dialect
         default_batch_fetch_size: 500
         format_sql: true
+
+  kafka:
+    bootstrap-servers:
+      - localhost:9092 #인텔리제이에서 실행할 때
+     # - kafka:9092 #도커에서 compose띄울 때
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+
+      acks: all
+
+      properties:
+        delivery.timeout.ms: 120000
+        linger.ms: 0
+        request.timeout.ms: 30000
+        enable.idempotence: true
+        allow.auto.create.topics: false
+
+    consumer:
+      group-id: dbay-consumer-group
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+
+      properties:
+        spring.json.trusted.packages: io.devground.dbay.*, io.devground.core.*
+        allow.auto.create.topics: false
+
+custom:
+  kafka:
+    config:
+      topic-partitions: 1
+      topic-replications: 1
+
+carts:
+  event:
+    topic:
+      name: carts-events
+  command:
+    topic:
+      name: carts-commands
+
+orders:
+  event:
+    topic:
+      name: orders-events
+  command:
+    topic:
+      name: orders-commands
+
+payments:
+  event:
+    topic:
+      name: payments-events
+  command:
+    topic:
+      name: payments-commands
+
+deposits:
+  event:
+    topic:
+      name: deposits-events
+  command:
+    topic:
+      name: deposits-commands

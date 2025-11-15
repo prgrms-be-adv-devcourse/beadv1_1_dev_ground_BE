@@ -6,7 +6,7 @@ spring:
     name: user
 
   config:
-    import: optional:classpath:.env[.properties]
+    import: optional:classpath:env:properties
 
   jpa:
     hibernate:
