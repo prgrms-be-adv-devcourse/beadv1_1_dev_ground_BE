@@ -20,8 +20,3 @@ spring:
       enabled: false
     jdbc:
       initialize-schema: never
-
-  cloud:
-    service-registry:
-      auto-registration:
-        enabled: false
