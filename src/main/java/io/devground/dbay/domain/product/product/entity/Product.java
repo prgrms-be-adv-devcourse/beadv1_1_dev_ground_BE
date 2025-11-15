@@ -60,6 +60,7 @@ public class Product extends BaseEntity {
 		this.category = category;
 		this.title = title;
 		this.description = description;
+		this.thumbnailUrl = "";
 	}
 
 	public void addProductSale(ProductSale productSale) {

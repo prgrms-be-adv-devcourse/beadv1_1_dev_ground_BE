@@ -178,6 +178,10 @@ public class ProductServiceImpl implements ProductService {
 			ErrorCode.IS_NOT_PRODUCT_OWNER.throwServiceException();
 		}
 
+		if (CollectionUtils.isEmpty(request.urls())) {
+			return null;
+		}
+
 		productImageSagaOrchestrator.startProductImageUploadSaga(productCode, request.urls());
 
 		return null;
