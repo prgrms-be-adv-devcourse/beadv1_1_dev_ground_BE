@@ -32,7 +32,6 @@ public class Cart extends BaseEntity {
 	@Column(nullable = false, columnDefinition = "VARCHAR(36)")
 	private String userCode;
 
-	@Setter
 	@OneToMany(mappedBy = "cart")
 	List<CartItem> cartItems = new ArrayList<>();
 
