@@ -137,5 +137,3 @@ services:
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
       CLUSTER_ID: "ZWU1Y2JiNDctNDg3ZC4tNGY2Ny1iNzJh"
     restart: always
-
-
