@@ -197,10 +197,10 @@ public class ProductImageSagaOrchestrator {
 					this.compensateProductImageUploadFailure(sagaId, event.referenceCode(), event.errorMsg());
 				}
 				case DELETE -> {
-					log.error("이미지 삭제 실패/수동 보상 필요 - SagaId: {}, ProductCode: {}, ErrorMessage: {}",
+					log.error("이미지 삭제 실패 - SagaId: {}, ProductCode: {}, ErrorMessage: {}",
 						sagaId, event.referenceCode(), event.errorMsg());
 
-					sagaService.updateToFail(sagaId, "이미지 삭제 실패 및 수동 보상 필요: " + event.errorMsg());
+					sagaService.updateToFail(sagaId, "이미지 삭제 실패 (재시도, DLT 확인) : " + event.errorMsg());
 				}
 				default -> {
 					log.error("미지원 이벤트 실패 - SagaId: {}, ProductCode: {}, ErrorMessage: {}",
@@ -245,6 +245,8 @@ public class ProductImageSagaOrchestrator {
 				}
 				case PENDING_S3_UPLOAD ->
 					log.info("PresignedURL 발급/보상 불필요 - SagaId: {}, ProductCode: {}", sagaId, productCode);
+				default -> log.error("보상 불가능한 Step - SagaId: {}, ProductCode: {}, Step: {}, ErrorMessage: {}",
+					sagaId, productCode, step, errorMsg);
 			}
 
 			sagaService.updateToCompensated(
