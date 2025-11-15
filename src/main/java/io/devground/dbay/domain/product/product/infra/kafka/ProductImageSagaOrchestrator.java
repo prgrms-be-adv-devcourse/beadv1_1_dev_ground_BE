@@ -87,13 +87,12 @@ public class ProductImageSagaOrchestrator {
 		} catch (Exception e) {
 			log.error("이미지 등록 이벤트 발행 실패 - SagaId: {}, ProductCode: {}, Exception: ", sagaId, productCode, e);
 
-			compensateProductImageUploadFailure(sagaId, productCode, "이벤트 발행 실패: " + e.getMessage());
+			this.compensateProductImageUploadFailure(sagaId, productCode, "이벤트 발행 실패: " + e.getMessage());
 
 			throw e;
 		}
 	}
 
-	// TODO: 우선 Saga 마킹만 진행. 구체적인 보상 트랜잭션은 구상 필요
 	public List<URL> startProductImageUpdateSaga(
 		String productCode, List<String> deleteUrls, List<String> newExtensions
 	) {
@@ -122,7 +121,7 @@ public class ProductImageSagaOrchestrator {
 		} catch (Exception e) {
 			log.error("상품 이미지 수정 실패 - SagaId: {}, ProductCode: {}, Exception: ", sagaId, productCode, e);
 
-			sagaService.updateToFail(sagaId, "이미지 수정 실패: " + e.getMessage());
+			this.compensateProductImageUpdateFailure(sagaId, productCode, deleteUrls, e.getMessage());
 
 			throw e;
 		}
@@ -195,7 +194,7 @@ public class ProductImageSagaOrchestrator {
 					log.error("이미지 업로드 실패/수동 보상 필요 - SagaId: {}, ProductCode: {}, ErrorMessage: {}",
 						sagaId, event.referenceCode(), event.errorMsg());
 
-					compensateProductImageUploadFailure(sagaId, event.referenceCode(), event.errorMsg());
+					this.compensateProductImageUploadFailure(sagaId, event.referenceCode(), event.errorMsg());
 				}
 				case DELETE -> {
 					log.error("이미지 삭제 실패/수동 보상 필요 - SagaId: {}, ProductCode: {}, ErrorMessage: {}",
@@ -269,5 +268,20 @@ public class ProductImageSagaOrchestrator {
 
 			throw e;
 		}
+	}
+
+	private void compensateProductImageUpdateFailure(
+		String sagaId, String productCode, List<String> deleteUrls, String errorMsg
+	) {
+
+		log.error("이미지 업데이트 실패/삭제된 이미지는 복구 불가능 - SagaId: {}, ProductCode: {}, deleteUrls: {}",
+			sagaId, productCode, deleteUrls
+		);
+
+		sagaService.updateToFail(
+			sagaId,
+			String.format("이미지 업데이트 실패/수동 복구 필요 - ProductCode: %s, deleteUrls: %s, Exception: %s",
+				productCode, deleteUrls, errorMsg)
+		);
 	}
 }
