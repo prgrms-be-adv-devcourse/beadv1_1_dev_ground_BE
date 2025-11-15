@@ -1,6 +1,8 @@
 package com.example.user.model.entity;
 
 import io.devground.core.model.entity.BaseEntity;
+
+import io.devground.core.model.entity.RoleType;
 import io.devground.core.model.entity.RoleType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -69,7 +71,7 @@ public class User extends BaseEntity {
 
 	@Builder
 	public User(String name, String password, String email, String nickname, String address, String addressDetail,
-		String phone, RoleType role, String profileImage) {
+				String phone, RoleType role, String profileImage) {
 		this.name = name;
 		this.password = password;
 		this.email = email;

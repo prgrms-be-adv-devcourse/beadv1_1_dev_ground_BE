@@ -1,7 +1,9 @@
-spring:
+server:
+  port: 8082
 
+spring:
   profiles:
-    active: local
+    active: deploy
 
   mail:
     host: smtp.gmail.com
@@ -19,7 +21,7 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://mysql:3306/dbay_user?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
     username: root
-    password: root1234   #docker-compose.yml 안의 MYSQL_ROOT_PASSWORD 값과 동일해야 함
+    password: root1234
 
   jpa:
     hibernate:
@@ -31,6 +33,7 @@ spring:
         format_sql: true
 
   application:
+
     name: user-service
 
   kafka:
@@ -40,9 +43,7 @@ spring:
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
-
       acks: all
-
       properties:
         delivery.timeout.ms: 120000
         linger.ms: 0
@@ -54,15 +55,9 @@ spring:
       group-id: dbay-consumer-group
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
-
       properties:
         spring.json.trusted.packages: io.devground.dbay.*, io.devground.core.*
         allow.auto.create.topics: false
-
-
-server:
-  port: 8001
-
 
 eureka:
   client:
@@ -70,7 +65,23 @@ eureka:
     fetch-registry: true
     service-url:
       defaultZone: http://eureka:8761/eureka/
-
   instance:
     prefer-ip-address: true
-    ip-address: 127.0.0.1
+    ip-address: user
+    non-secure-port: 8082
+    metadata-map:
+      port: 8082
+
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    enabled: true
+
+
+
+
+custom:
+  jwt:
+    secrets:
+      app-key: BBpgN9RJg1nYobpf7KHfJUaoiWSO-gD9EiEApPkV1rWJmH0vAVjMT2Pn-MtaaeElM7GFN88aQFl7d9adK_hB9w

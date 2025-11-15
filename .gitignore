@@ -41,3 +41,4 @@ dbay-db.mv.db
 dbay-db.trace.db
 .env
 /docker
+env.properties
