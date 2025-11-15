@@ -37,7 +37,7 @@ public class S3Config {
 
 		return S3Client.builder()
 				.credentialsProvider(awsCredentialsProvider)
-				.httpClientBuilder(UrlConnectionHttpClient.builder())
+				//.httpClientBuilder(UrlConnectionHttpClient.builder())
 				.region(Region.of(region))
 				.build();
 	}
