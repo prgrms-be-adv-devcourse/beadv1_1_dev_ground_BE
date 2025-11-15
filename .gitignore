@@ -41,3 +41,5 @@ dbay-db.mv.db
 dbay-db.trace.db
 .env
 env.properties
+docker/maria-data
+docker/mysql-data
