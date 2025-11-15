@@ -4,17 +4,20 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import io.devground.core.model.vo.ErrorCode;
-import io.devground.dbay.common.saga.service.SagaService;
+import io.devground.core.model.web.PageDto;
+import io.devground.core.util.PageUtils;
 import io.devground.dbay.domain.product.category.entity.Category;
 import io.devground.dbay.domain.product.category.repository.CategoryRepository;
-import io.devground.dbay.domain.product.product.client.ImageClient;
 import io.devground.dbay.domain.product.product.dto.CartProductsRequest;
 import io.devground.dbay.domain.product.product.dto.CartProductsResponse;
+import io.devground.dbay.domain.product.product.dto.GetAllProductsResponse;
 import io.devground.dbay.domain.product.product.dto.ProductDetailResponse;
 import io.devground.dbay.domain.product.product.dto.ProductImageUrlsRequest;
 import io.devground.dbay.domain.product.product.dto.RegistProductRequest;
@@ -23,10 +26,10 @@ import io.devground.dbay.domain.product.product.dto.UpdateProductRequest;
 import io.devground.dbay.domain.product.product.dto.UpdateProductResponse;
 import io.devground.dbay.domain.product.product.entity.Product;
 import io.devground.dbay.domain.product.product.entity.ProductSale;
+import io.devground.dbay.domain.product.product.infra.kafka.ProductImageSagaOrchestrator;
 import io.devground.dbay.domain.product.product.mapper.ProductMapper;
 import io.devground.dbay.domain.product.product.repository.ProductRepository;
 import io.devground.dbay.domain.product.product.repository.ProductSaleRepository;
-import io.devground.dbay.domain.product.product.infra.kafka.ProductImageSagaOrchestrator;
 import io.devground.dbay.domain.product.product.service.ProductService;
 import lombok.AllArgsConstructor;
 
@@ -38,9 +41,21 @@ public class ProductServiceImpl implements ProductService {
 	private final ProductRepository productRepository;
 	private final ProductSaleRepository productSaleRepository;
 	private final CategoryRepository categoryRepository;
-	private final ImageClient imageClient;
 	private final ProductImageSagaOrchestrator productImageSagaOrchestrator;
-	private final SagaService sagaService;
+
+	@Override
+	@Transactional(readOnly = true)
+	public PageDto<GetAllProductsResponse> getProducts(Pageable pageable) {
+
+		Pageable convertedPageable = PageUtils.convertToSafePageable(pageable);
+
+		Page<Product> products = productRepository.findAllWithSale(convertedPageable);
+
+		Page<GetAllProductsResponse> responses = products
+			.map(product -> ProductMapper.getProductsFromProductInfo(product, product.getProductSale()));
+
+		return PageDto.from(responses);
+	}
 
 	// TODO: sellerCode 관련 검증 필요
 	@Override
@@ -83,6 +98,8 @@ public class ProductServiceImpl implements ProductService {
 	public ProductDetailResponse getProductDetail(String productCode) {
 
 		Product product = this.getProductByCode(productCode);
+
+		// TODO: 상품 이미지 가져오기 OpenFeign
 
 		return ProductMapper.detailFromProduct(product);
 	}
@@ -166,7 +183,8 @@ public class ProductServiceImpl implements ProductService {
 		return null;
 	}
 
-	private Product getProductByCode(String productCode) {
+	@Override
+	public Product getProductByCode(String productCode) {
 
 		return productRepository.findByCode(productCode)
 			.orElseThrow(ErrorCode.PRODUCT_NOT_FOUND::throwServiceException);

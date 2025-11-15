@@ -30,10 +30,10 @@ public class ImageServiceImpl implements ImageService {
 	}
 
 	@Override
-	public void saveImages(ImageType imageType, String referenceCode, List<String> urls) {
+	public String saveImages(ImageType imageType, String referenceCode, List<String> urls) {
 
 		if (CollectionUtils.isEmpty(urls)) {
-			return;
+			return null;
 		}
 
 		List<Image> images = urls.stream()
@@ -42,6 +42,8 @@ public class ImageServiceImpl implements ImageService {
 			.toList();
 
 		imageRepository.saveAll(images);
+
+		return images.getFirst().getImageUrl();
 	}
 
 	@Override

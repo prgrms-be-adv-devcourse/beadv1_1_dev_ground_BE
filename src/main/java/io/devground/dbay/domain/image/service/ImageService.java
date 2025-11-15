@@ -12,7 +12,7 @@ public interface ImageService {
 
 	List<URL> generatePresignedUrls(ImageType imageType, String referenceCode, List<String> fileExtensions);
 
-	void saveImages(ImageType imageType, String referenceCode, List<String> imageUrls);
+	String saveImages(ImageType imageType, String referenceCode, List<String> imageUrls);
 
 	List<URL> updateUrls(
 		ImageType imageType, String referenceCode, List<String> deleteUrls, List<String> newImageExtensions

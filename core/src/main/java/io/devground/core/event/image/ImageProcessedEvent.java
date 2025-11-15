@@ -17,6 +17,8 @@ public record ImageProcessedEvent(
 	@NonNull
 	EventType eventType,
 
+	String thumbnailUrl,
+
 	boolean isSuccess,
 
 	String errorMsg

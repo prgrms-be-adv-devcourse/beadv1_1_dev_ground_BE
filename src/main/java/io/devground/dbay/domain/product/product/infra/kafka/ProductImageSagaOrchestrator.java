@@ -29,6 +29,7 @@ import lombok.extern.slf4j.Slf4j;
  * 2. 각 단계의 성공/실패 결과 처리
  * 3. 실패 시 보상 트랜잭션 결정 후 실행
  * 4. Saga 상태 관리 총괄
+ * TODO: 실패된 Saga 처리(타임아웃 등) 필요
  */
 @Slf4j
 @Component

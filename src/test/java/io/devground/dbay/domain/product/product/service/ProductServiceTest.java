@@ -1,6 +1,7 @@
 package io.devground.dbay.domain.product.product.service;
 
 import static io.devground.dbay.domain.product.product.vo.ProductStatus.*;
+import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.ArrayList;
@@ -11,15 +12,19 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
 import io.devground.core.model.exception.ServiceException;
+import io.devground.core.model.web.PageDto;
 import io.devground.dbay.domain.product.category.dto.AdminCategoryResponse;
 import io.devground.dbay.domain.product.category.dto.RegistCategoryRequest;
 import io.devground.dbay.domain.product.category.service.CategoryService;
 import io.devground.dbay.domain.product.product.dto.CartProductsRequest;
 import io.devground.dbay.domain.product.product.dto.CartProductsResponse;
+import io.devground.dbay.domain.product.product.dto.GetAllProductsResponse;
 import io.devground.dbay.domain.product.product.dto.ProductDetailResponse;
 import io.devground.dbay.domain.product.product.dto.RegistProductRequest;
 import io.devground.dbay.domain.product.product.dto.RegistProductResponse;
@@ -68,14 +73,14 @@ class ProductServiceTest {
 
 		String tempCode1 = "tempSellerCode";
 		RegistProductRequest request1 = new RegistProductRequest
-			(responseDepth3.id(), "갤럭시 팔아요", "이런 갤럭시입니다.", 300000L, null);
+			(responseDepth3.id(), "갤럭시 팔아요", "이런 갤럭시입니다.", 600000L, null);
 
 		RegistProductRequest request2 = new RegistProductRequest
 			(responseDepth3.id(), "맥북 팔아요", "이런 맥북입니다.", 500000L, null);
 
 		String otherCode = "otherSellerCode";
 		RegistProductRequest request3 = new RegistProductRequest
-			(responseDepth3.id(), "에어팟 팔아요", "이런 에어팟입니다.", 40000L, null);
+			(responseDepth3.id(), "에어팟 팔아요", "이런 에어팟입니다.", 300000L, null);
 
 		RegistProductResponse response1 = productService.registProduct(tempCode1, request1);
 		RegistProductResponse response2 = productService.registProduct(tempCode1, request2);
@@ -138,6 +143,116 @@ class ProductServiceTest {
 	}
 
 	@Test
+	@DisplayName("성공_상품 목록 조회")
+	void success_get_all_products() throws Exception {
+
+		// given
+		PageRequest pageRequest = PageRequest.of(1, 10, Sort.by("createdAt").descending());
+
+		// when
+		PageDto<GetAllProductsResponse> productsWithinPageDto = productService.getProducts(pageRequest);
+		List<GetAllProductsResponse> products = productsWithinPageDto.items();
+
+		// then
+		assertEquals(3, products.size());
+
+		for (GetAllProductsResponse product : products) {
+			assertThat(productCodes)
+				.contains(product.productCode());
+		}
+	}
+
+	@Test
+	@DisplayName("성공_상품 목록 조회 시 잘못된 Pageable")
+	void success_get_all_products_with_wrong_format_pageable() throws Exception {
+
+		// given
+		PageRequest pageRequest = PageRequest.of(0, 10, Sort.by("tempSort").descending());
+
+		// when
+		PageDto<GetAllProductsResponse> productsWithinPageDto = productService.getProducts(pageRequest);
+		List<GetAllProductsResponse> products = productsWithinPageDto.items();
+
+		// then
+		assertEquals(3, products.size());
+
+		for (int i = 0; i < products.size(); i++) {
+			assertEquals(productCodes.get(products.size() - i - 1), products.get(i).productCode());
+		}
+	}
+
+	@Test
+	@DisplayName("성공_상품 목록 조회 시 2개씩 조회")
+	void success_get_all_products_with_less_page_size() throws Exception {
+
+		// given
+		PageRequest pageRequest = PageRequest.of(1, 2, Sort.by("createdAt").descending());
+
+		// when
+		PageDto<GetAllProductsResponse> productsWithinPageDto = productService.getProducts(pageRequest);
+		List<GetAllProductsResponse> products = productsWithinPageDto.items();
+
+		// then
+		assertEquals(2, products.size());
+
+		for (int i = 0; i < products.size(); i++) {
+			assertEquals(productCodes.get(products.size() - i), products.get(i).productCode());
+		}
+	}
+
+	@Test
+	@DisplayName("성공_상품 목록 조회 시 0개 조회")
+	void success_get_all_products_no_data() throws Exception {
+
+		// given
+		PageRequest pageRequest = PageRequest.of(10, 2, Sort.by("createdAt").descending());
+
+		// when
+		PageDto<GetAllProductsResponse> productsWithinPageDto = productService.getProducts(pageRequest);
+		List<GetAllProductsResponse> products = productsWithinPageDto.items();
+
+		// then
+		assertThat(products).isEmpty();
+	}
+
+	@Test
+	@DisplayName("성공_상품 목록 조회 시 price로 정렬")
+	void success_get_all_products_sort_by_price() throws Exception {
+
+		// 가격 내림차순
+
+		// given
+		PageRequest pageRequest = PageRequest.of(1, 10, Sort.by("price").descending());
+
+		// when
+		PageDto<GetAllProductsResponse> productsWithinPageDto = productService.getProducts(pageRequest);
+		List<GetAllProductsResponse> products = productsWithinPageDto.items();
+
+		// then
+		assertEquals(3, products.size());
+
+		for (int i = 0; i < products.size(); i++) {
+			assertEquals(productCodes.get(i), products.get(i).productCode());
+		}
+
+		// 가격 오름차순
+
+		// given
+		pageRequest = PageRequest.of(0, 10, Sort.by("price").ascending());
+
+		// when
+		productsWithinPageDto = productService.getProducts(pageRequest);
+		products = productsWithinPageDto.items();
+
+		// then
+		assertEquals(3, products.size());
+
+		for (int i = 0; i < products.size(); i++) {
+			assertEquals(productCodes.get(products.size() - i - 1), products.get(i).productCode());
+		}
+	}
+
+	@Test
 	@DisplayName("성공_상품 상세 조회")
 	void success_get_product_detail() throws Exception {
 
@@ -152,7 +267,7 @@ class ProductServiceTest {
 		assertEquals("갤럭시 팔아요", product.title());
 		assertEquals("이런 갤럭시입니다.", product.description());
 		assertEquals("핸드폰/아이폰/아이폰15", product.categoryPath());
-		assertEquals(300000L, product.price());
+		assertEquals(600000L, product.price());
 		assertEquals(ON_SALE.getValue(), product.productStatus());
 	}
 
