@@ -11,16 +11,24 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import io.devground.core.model.exception.ServiceException;
 import io.devground.core.model.vo.ErrorCode;
 import io.devground.core.model.web.BaseResponse;
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
 
 @RestControllerAdvice
+@RequiredArgsConstructor
 public class GlobalExceptionHandler {
+
+	private final HttpServletResponse response;
 
 	@ExceptionHandler(ServiceException.class)
 	public BaseResponse<String> handleServiceException(ServiceException ex) {
 
 		ErrorCode errorCode = ex.getErrorCode();
+		int status = errorCode.getHttpStatus();
 
-		return BaseResponse.fail(errorCode.getHttpStatus(), errorCode.getMessage());
+		response.setStatus(status);
+
+		return BaseResponse.fail(status, errorCode.getMessage());
 	}
 
 	@ExceptionHandler(MethodArgumentNotValidException.class)
@@ -36,12 +44,20 @@ public class GlobalExceptionHandler {
 				.append("\n");
 		}
 
-		return BaseResponse.fail(HttpStatus.INTERNAL_SERVER_ERROR.value(), errorMessages.toString());
+		int status = HttpStatus.INTERNAL_SERVER_ERROR.value();
+
+		response.setStatus(status);
+
+		return BaseResponse.fail(status, errorMessages.toString());
 	}
 
 	@ExceptionHandler(Exception.class)
 	public BaseResponse<String> handleException(Exception ex) {
 
-		return BaseResponse.fail(HttpStatus.INTERNAL_SERVER_ERROR.value(), ex.getMessage());
+		int status = HttpStatus.INTERNAL_SERVER_ERROR.value();
+
+		response.setStatus(status);
+
+		return BaseResponse.fail(status, ex.getMessage());
 	}
 }
