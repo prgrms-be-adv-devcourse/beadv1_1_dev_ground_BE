@@ -10,7 +10,9 @@ import io.devground.dbay.common.saga.vo.SagaStatus;
 import io.devground.dbay.common.saga.vo.SagaStep;
 import io.devground.dbay.common.saga.vo.SagaType;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -34,7 +36,19 @@ public class SagaService {
 
 		Saga saga = getSaga(sagaId);
 
-		if (saga.getSagaStatus().isTerminal() || saga.getCurrentStep() == step) {
+		if (saga.getSagaStatus().isTerminal()) {
+			log.warn("이미 종료된 Saga/업데이트 중지 - SagaId: {}, Status: {}, Step: {}", sagaId, saga.getSagaStatus(), step);
+
+			return;
+		}
+
+		if (saga.getSagaStatus().isCompensating()) {
+			log.warn("보상 중인 Saga/업데이트 중지 - SagaId: {}, Status: {}, Step: {}", sagaId, saga.getSagaStatus(), step);
+
+			return;
+		}
+
+		if (saga.getCurrentStep() == step) {
 			return;
 		}
 
@@ -46,6 +60,8 @@ public class SagaService {
 		Saga saga = getSaga(sagaId);
 
 		if (saga.getSagaStatus().isTerminal()) {
+			log.warn("이미 종료된 Saga/성공 처리 중지 - SagaId: {}, Status: {}", sagaId, saga.getSagaStatus());
+
 			return;
 		}
 
@@ -58,6 +74,8 @@ public class SagaService {
 		Saga saga = getSaga(sagaId);
 
 		if (saga.getSagaStatus().isTerminal()) {
+			log.warn("이미 종료된 Saga/실패 처리 중지 - SagaId: {}, Status: {}", sagaId, saga.getSagaStatus());
+
 			return;
 		}
 
@@ -69,6 +87,8 @@ public class SagaService {
 		Saga saga = getSaga(sagaId);
 
 		if (saga.getSagaStatus().isTerminal()) {
+			log.warn("이미 종료된 Saga/보상 처리 중지 - SagaId: {}, Status: {}", sagaId, saga.getSagaStatus());
+
 			return;
 		}
 
@@ -80,14 +100,15 @@ public class SagaService {
 
 		Saga saga = getSaga(sagaId);
 
-		if (saga.getSagaStatus().isTerminal()) {
+		if (!saga.getSagaStatus().isCompensating()) {
+			log.warn("보상 중이 아닌 Saga/보상 완료 처리 중지 - SagaId: {}, Status: {}", sagaId, saga.getSagaStatus());
+
 			return;
 		}
 
 		saga.updateToCompensated(message);
 	}
 
-	// Step 조건 없이 해당 Code의 최신 Saga 조회
 	@Transactional(readOnly = true)
 	public Saga findLatestSagaByReferenceCode(String referenceCode) {
 
@@ -96,14 +117,6 @@ public class SagaService {
 				SagaStatus.IN_PROCESS
 			)
 			.orElseThrow(ErrorCode.SAGA_NOT_FOUND::throwServiceException);
-	}
-
-	@Transactional(readOnly = true)
-	public void isExistSagaById(String sagaId) {
-
-		if (!sagaRepository.existsBySagaId(sagaId)) {
-			ErrorCode.SAGA_NOT_FOUND.throwServiceException();
-		}
 	}
 
 	@Transactional(readOnly = true)
