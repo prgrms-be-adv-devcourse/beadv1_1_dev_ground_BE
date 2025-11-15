@@ -11,27 +11,72 @@ eureka:
     register-with-eureka: true
     fetch-registry: true
     service-url:
-      defaultZone: http://localhost:8761/eureka/
+      defaultZone: http://eureka:8761/eureka/
 
 spring:
   application:
     name: api-gateway
+
   cloud:
     gateway:
       routes:
-        - id: login
-          uri: lb://USER
+        # 1) Swagger UI
+        - id: user-swagger-ui
+          uri: http://user:8082
           predicates:
-            - Path=/api/users/**
+            - Path=/user/swagger-ui/**
           filters:
-            - CustomAuthFilter
+            - StripPrefix=1
 
-#        - id:
-#          uri:
-#          predicates:
-#            - Path=
-#          filters:
-#            - GatewayAuthFilter
+        - id: user-api-docs
+          uri: http://user:8082
+          predicates:
+            - Path=/user/v3/api-docs/**
+          filters:
+            - StripPrefix=1
+
+        - id: user-swagger-config
+          uri: http://user:8082
+          predicates:
+            - Path=/user/v3/api-docs/swagger-config/**
+          filters:
+            - StripPrefix=1
+
+        - id: user-api-docs-root
+          uri: http://user:8082
+          predicates:
+            - Path=/v3/api-docs/**
+          filters:
+            - StripPrefix=0
+
+        # 1) Swagger UI
+        - id: dbay-swagger-ui
+          uri: http://dbay:8081
+          predicates:
+            - Path=/dbay/swagger-ui/**
+          filters:
+            - StripPrefix=0
+
+        - id: dbay-api-docs
+          uri: http://dbay:8081
+          predicates:
+            - Path=/dbay/v3/api-docs/**
+          filters:
+            - StripPrefix=0
+
+        - id: dbay-swagger-config
+          uri: http://dbay:8081
+          predicates:
+            - Path=/dbay/v3/api-docs/swagger-config/**
+          filters:
+            - StripPrefix=1
+
+        - id: dbay-api-docs-root
+          uri: http://dbay:8081
+          predicates:
+            - Path=/v3/api-docs/**
+          filters:
+            - StripPrefix=0
 
         - id: deposits
           uri: lb://DBAY
@@ -75,11 +120,11 @@ spring:
           filters:
             - CustomAuthFilter
 
-        #연결예정
-        - id: main-service
-          uri: lb://main-service
-          predicates:
-            - Path=/api/main/**
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
 
 custom:
   jwt:
