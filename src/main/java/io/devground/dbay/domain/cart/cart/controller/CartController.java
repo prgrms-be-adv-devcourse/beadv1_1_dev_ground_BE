@@ -6,12 +6,10 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.devground.core.model.web.BaseResponse;
 import io.devground.dbay.domain.cart.cart.mapper.CartMapper;
-import io.devground.dbay.domain.cart.cart.model.entity.Cart;
 import io.devground.dbay.domain.cart.cart.model.vo.AddCartItemRequest;
 import io.devground.dbay.domain.cart.cart.model.vo.AddCartItemResponse;
 import io.devground.dbay.domain.cart.cart.model.vo.DeleteItemsByCartRequest;
@@ -31,14 +29,6 @@ public class CartController {
 
 	private final CartService cartService;
 
-	@PostMapping("/create/{userCode}")
-	@Operation(summary = "장바구니 생성", description = "장바구니에 생성.")
-	public BaseResponse<Cart> createCart(
-		@PathVariable String userCode
-	) {
-		return BaseResponse.success(200, cartService.createCart(userCode), "장바구니 생성 성공");
-	}
-
 	@PostMapping("/{cartCode}")
 	@Operation(summary = "장바구니 상품 추가", description = "장바구니에 상품을 추가합니다.")
 	public BaseResponse<AddCartItemResponse> addItem(
@@ -56,7 +46,7 @@ public class CartController {
 	}
 
 	@DeleteMapping("/{cartCode}")
-	@Operation(summary = "장바구니 상품 삭제", description = "장바구니에 상품을 삭제합니다.(개별, 선택, 전체)")
+	@Operation(summary = "장바구니 상품 삭제", description = "장바구니 상품을 삭제합니다.(개별, 선택, 전체)")
 	public BaseResponse<Integer> deleteItemsByCart(@PathVariable String cartCode,
 		@RequestBody @Valid DeleteItemsByCartRequest request) {
 		return BaseResponse.success(200, cartService.deleteItemsByCart(cartCode, request), "장바구니 상품 삭제 성공");
