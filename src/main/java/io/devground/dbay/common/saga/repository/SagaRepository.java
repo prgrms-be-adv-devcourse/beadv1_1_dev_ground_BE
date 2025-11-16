@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import io.devground.dbay.common.saga.entity.Saga;
 import io.devground.dbay.common.saga.vo.SagaStatus;
@@ -12,8 +14,6 @@ import io.devground.dbay.common.saga.vo.SagaStep;
 import io.devground.dbay.common.saga.vo.SagaType;
 
 public interface SagaRepository extends JpaRepository<Saga, Long> {
-
-	boolean existsBySagaId(String sagaId);
 
 	Optional<Saga> findBySagaId(String sagaId);
 
@@ -28,7 +28,17 @@ public interface SagaRepository extends JpaRepository<Saga, Long> {
 		SagaStatus sagaStatus
 	);
 
-	List<Saga> findSagaByCurrentStepAndStartedAtBefore(SagaStep currentStep, LocalDateTime startedAt);
+	@Query("""
+		SELECT s
+		FROM Saga s
+		WHERE s.currentStep in :steps
+		AND s.startedAt < :startedAt
+		AND s.sagaStatus = 'IN_PROCESS'
+		""")
+	List<Saga> findSagaByCurrentStepInAndStartedAtBefore(
+		@Param("steps") List<SagaStep> steps,
+		@Param("startedAt") LocalDateTime startedAt
+	);
 
 	List<Saga> findSagaBySagaStatusAndUpdatedAtBefore(SagaStatus sagaStatus, LocalDateTime updatedAt);
 }
