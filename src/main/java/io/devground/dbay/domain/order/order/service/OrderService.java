@@ -11,11 +11,12 @@ import io.devground.dbay.domain.order.order.model.vo.CreateOrderResponse;
 import io.devground.dbay.domain.order.order.model.vo.GetOrderDetailResponse;
 import io.devground.dbay.domain.order.order.model.vo.GetOrdersResponse;
 import io.devground.dbay.domain.order.order.model.vo.PaidOrderResponse;
+import io.devground.core.model.entity.RoleType;
 
 public interface OrderService {
 	CreateOrderResponse createOrder(String userCode, CreateOrderRequest request);
 
-	Page<GetOrdersResponse> getOrders(String userCode, Pageable pageable);
+	Page<GetOrdersResponse> getOrders(String userCode, RoleType userRole, Pageable pageable);
 
 	GetOrderDetailResponse getOrderDetail(String userCode, String orderCode);
 

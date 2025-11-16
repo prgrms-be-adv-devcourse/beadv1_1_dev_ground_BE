@@ -12,19 +12,16 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.devground.core.model.web.BaseResponse;
-import io.devground.core.model.web.PageDto;
-import io.devground.dbay.domain.order.order.mapper.OrderMapper;
-import io.devground.dbay.domain.order.order.model.entity.Order;
 import io.devground.dbay.domain.order.order.model.vo.CancelOrderResponse;
 import io.devground.dbay.domain.order.order.model.vo.ConfirmOrderResponse;
 import io.devground.dbay.domain.order.order.model.vo.CreateOrderRequest;
 import io.devground.dbay.domain.order.order.model.vo.CreateOrderResponse;
 import io.devground.dbay.domain.order.order.model.vo.GetOrderDetailResponse;
 import io.devground.dbay.domain.order.order.model.vo.GetOrdersResponse;
+import io.devground.core.model.entity.RoleType;
 import io.devground.dbay.domain.order.order.service.OrderService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -52,9 +49,10 @@ public class OrderController {
 	@Operation(summary = "주문 조회", description = "주문 목록 조회")
 	public BaseResponse<Page<GetOrdersResponse>> getOrders(
 		@RequestHeader("X-CODE") String userCode,
+		@RequestHeader("ROLE") RoleType userRole,
 		@PageableDefault Pageable pageable
 	) {
-		return BaseResponse.success(200, orderService.getOrders(userCode, pageable), "주문 목록 조회 성공");
+		return BaseResponse.success(200, orderService.getOrders(userCode, userRole, pageable), "주문 목록 조회 성공");
 	}
 
 	@GetMapping("/{orderCode}")

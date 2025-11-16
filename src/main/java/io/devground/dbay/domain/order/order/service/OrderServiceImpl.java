@@ -1,5 +1,6 @@
 package io.devground.dbay.domain.order.order.service;
 
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -28,8 +29,9 @@ import io.devground.dbay.domain.order.order.model.vo.GetOrdersResponse;
 import io.devground.dbay.domain.order.order.model.vo.OrderItemInfo;
 import io.devground.dbay.domain.order.order.model.vo.OrderProductListResponse;
 import io.devground.dbay.domain.order.order.model.vo.CreateOrderRequest;
+import io.devground.dbay.domain.order.order.model.vo.OrderStatus;
 import io.devground.dbay.domain.order.order.model.vo.PaidOrderResponse;
-import io.devground.dbay.domain.order.order.model.vo.RoleType;
+import io.devground.core.model.entity.RoleType;
 import io.devground.dbay.domain.order.order.repository.OrderRepository;
 import io.devground.dbay.domain.order.orderItem.model.entity.OrderItem;
 import io.devground.dbay.domain.order.orderItem.repository.OrderItemRepository;
@@ -43,8 +45,6 @@ public class OrderServiceImpl implements OrderService {
 	private final OrderItemRepository orderItemRepository;
 	private final ProductFeignClient productFeignClient;
 	private final UserFeignClient userFeignClient;
-
-
 
 	@Override
 	@Transactional
@@ -100,14 +100,12 @@ public class OrderServiceImpl implements OrderService {
 
 	@Override
 	@Transactional(readOnly = true)
-	public Page<GetOrdersResponse> getOrders(String userCode, Pageable pageable) {
+	public Page<GetOrdersResponse> getOrders(String userCode, RoleType userRole, Pageable pageable) {
 		if (!Validators.isValidUuid(userCode)) {
 			throw ErrorCode.CODE_INVALID.throwServiceException();
 		}
 
-		RoleType role = RoleType.USER; // userFeignClient.getUserRole(userCode);
-
-		Page<Order> orderPage = pageOrdersByRole(userCode, role, pageable);
+		Page<Order> orderPage = pageOrdersByRole(userCode, userRole, pageable);
 
 		List<Order> orders = orderPage.getContent();
 
@@ -117,9 +115,9 @@ public class OrderServiceImpl implements OrderService {
 
 		List<OrderItem> items = orderItemRepository.findByOrderInAndDeleteStatus(orders, DeleteStatus.N);
 
-		Map<Long, List<OrderItemInfo>> itemsByOrderId = items.stream()
+		Map<String, List<OrderItemInfo>> itemsByOrderId = items.stream()
 			.collect(Collectors.groupingBy(
-				oi -> oi.getOrder().getId(),
+				oi -> oi.getOrder().getCode(),
 				Collectors.mapping(
 					oi -> new OrderItemInfo(
 						oi.getCode(),
@@ -136,7 +134,7 @@ public class OrderServiceImpl implements OrderService {
 				o.getCreatedAt(),
 				o.getTotalAmount(),
 				o.getOrderStatus(),
-				itemsByOrderId.getOrDefault(o.getId(), Collections.emptyList())
+				itemsByOrderId.getOrDefault(o.getCode(), Collections.emptyList())
 			))
 			.toList();
 
@@ -148,7 +146,9 @@ public class OrderServiceImpl implements OrderService {
 	public GetOrderDetailResponse getOrderDetail(String userCode, String orderCode) {
 		Order order = checkOrder(userCode, orderCode);
 
-		long productTotalAmount = order.getOrderItems().stream()
+		List<OrderItem> orderItems = orderItemRepository.findByOrder(order);
+
+		long productTotalAmount = orderItems.stream()
 			.mapToLong(OrderItem::getProductPrice)
 			.sum();
 
@@ -157,8 +157,8 @@ public class OrderServiceImpl implements OrderService {
 			order.getCreatedAt(),
 			order.getOrderStatus(),
 			order.getTotalAmount(),
-			productTotalAmount,
 			order.getTotalAmount() - productTotalAmount, // 할인금액
+			productTotalAmount,
 			0, // 배송비 일단 0원
 			order.getNickName(),
 			order.getAddress(),
@@ -198,23 +198,17 @@ public class OrderServiceImpl implements OrderService {
 	}
 
 	private Order checkOrder(String userCode, String orderCode) {
-		if (Validators.isValidUuid(userCode)) {
+		if (!Validators.isValidUuid(userCode)) {
 			throw ErrorCode.CODE_INVALID.throwServiceException();
 		}
 
-		if (Validators.isValidUuid(orderCode)) {
+		if (!Validators.isValidUuid(orderCode)) {
 			throw ErrorCode.CODE_INVALID.throwServiceException();
 		}
 
-		RoleType role = userFeignClient.getUserRole(userCode);
+		return orderRepository.findByCode(orderCode)
+			.orElseThrow(ErrorCode.ORDER_NOT_FOUND::throwServiceException);
 
-		if (role == RoleType.USER) {
-			return orderRepository.findByCodeAndUserCode(userCode, orderCode)
-				.orElseThrow(ErrorCode.ORDER_NOT_FOUND::throwServiceException);
-		} else {
-			return orderRepository.findByCode(orderCode)
-				.orElseThrow(ErrorCode.ORDER_NOT_FOUND::throwServiceException);
-		}
 	}
 
 	private Page<Order> pageOrdersByRole(String userCode, RoleType role, Pageable pageable) {

@@ -13,7 +13,10 @@ public class OrderMapper {
 	public CreateOrderResponse toCreateOrderResponse(Order order) {
 		return new CreateOrderResponse(
 			order.getUserCode(),
-			order.getCode()
+			order.getCode(),
+			order.getNickName(),
+			order.getAddress(),
+			order.getTotalAmount()
 		);
 	}
 
