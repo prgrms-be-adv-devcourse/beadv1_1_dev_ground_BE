@@ -13,6 +13,4 @@ import io.devground.dbay.domain.order.order.model.vo.RoleType;
 	path = "/api/users"
 )
 public interface UserFeignClient {
-	@GetMapping("/{userCode}")
-	RoleType getUserRole(@PathVariable String userCode);
 }
