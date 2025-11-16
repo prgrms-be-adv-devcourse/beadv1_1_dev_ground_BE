@@ -6,6 +6,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import io.devground.core.event.image.ImageProcessedEvent;
+import io.devground.dbay.common.saga.entity.Saga;
+import io.devground.dbay.common.saga.service.SagaService;
 import io.devground.dbay.domain.product.product.service.ProductService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,6 +23,7 @@ public class ProductKafkaListener {
 
 	private final ProductImageSagaOrchestrator orchestrator;
 	private final ProductService productService;
+	private final SagaService sagaService;
 
 	@KafkaHandler
 	public void handleImageProcessed(ImageProcessedEvent event) {
@@ -36,22 +39,25 @@ public class ProductKafkaListener {
 			return;
 		}
 
-		try {
-			if (event.isSuccess()) {
-				String thumbnailUrl = event.thumbnailUrl();
+		Saga saga = sagaService.getSaga(sagaId);
 
-				if (thumbnailUrl != null) {
-					productService.getProductByCode(event.referenceCode()).updateThumbnail(thumbnailUrl);
-				}
+		if (saga.getSagaStatus().isTerminal()) {
+			log.warn("이미 종료된 Saga - SagaId: {}, ProductCode: {}, Step: {}",
+				sagaId, event.referenceCode(), saga.getCurrentStep());
 
-				orchestrator.handleImageProcessSuccess(sagaId, event);
-			} else {
-				orchestrator.handleImageProcessFailure(sagaId, event);
+			return;
+		}
+
+		if (event.isSuccess()) {
+			String thumbnailUrl = event.thumbnailUrl();
+
+			if (thumbnailUrl != null) {
+				productService.getProductByCode(event.referenceCode()).updateThumbnail(thumbnailUrl);
 			}
-		} catch (Exception e) {
-			log.error("Saga 처리 중 오류 발생 - SagaId: {}, Exception: ", sagaId, e);
 
-			throw e;
+			orchestrator.handleImageProcessSuccess(sagaId, event);
+		} else {
+			orchestrator.handleImageProcessFailure(sagaId, event);
 		}
 	}
 }

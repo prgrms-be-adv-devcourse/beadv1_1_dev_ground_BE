@@ -99,7 +99,8 @@ products:
     image:
       push: product-images-push
       delete: product-images-delete
-      name: deposits-commands
+      push-dlt: ${products.topic.image.push}.DLT
+      delete-dlt: ${products.topic.image.delete}.DLT
 
 springdoc:
   api-docs:
@@ -118,6 +119,7 @@ images:
     push: images-push
     delete: images-delete
     processed: images-processed
+    processed-dlt: ${images.topic.processed}.DLT
 
 logging:
   level:

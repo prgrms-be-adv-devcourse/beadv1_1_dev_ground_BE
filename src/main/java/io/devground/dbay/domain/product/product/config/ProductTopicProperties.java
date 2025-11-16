@@ -19,5 +19,7 @@ public class ProductTopicProperties {
 	public static class ImageTopic {
 		private String push;
 		private String delete;
+		private String pushDlt;
+		private String deleteDlt;
 	}
 }

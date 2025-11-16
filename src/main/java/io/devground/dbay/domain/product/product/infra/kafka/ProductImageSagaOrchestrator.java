@@ -6,7 +6,9 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
@@ -29,7 +31,7 @@ import lombok.extern.slf4j.Slf4j;
  * 2. 각 단계의 성공/실패 결과 처리
  * 3. 실패 시 보상 트랜잭션 결정 후 실행
  * 4. Saga 상태 관리 총괄
- * TODO: 실패된 Saga 처리(타임아웃 등) 필요
+ * 5. 보상 트랜잭션은 새로운 트랜잭션에서 실행되어야 함
  */
 @Slf4j
 @Component
@@ -40,6 +42,7 @@ public class ProductImageSagaOrchestrator {
 	private final ImageClient imageClient;
 	private final SagaService sagaService;
 	private final ProductKafkaProducer productKafkaProducer;
+	private final ObjectProvider<ProductImageSagaOrchestrator> orchestratorProvider;
 
 	public List<URL> startGetPresignedUrlsSaga(String productCode, List<String> imageExtensions) {
 
@@ -87,7 +90,7 @@ public class ProductImageSagaOrchestrator {
 		} catch (Exception e) {
 			log.error("이미지 등록 이벤트 발행 실패 - SagaId: {}, ProductCode: {}, Exception: ", sagaId, productCode, e);
 
-			this.compensateProductImageUploadFailure(sagaId, productCode, "이벤트 발행 실패: " + e.getMessage());
+			this.getSelf().compensateProductImageUploadFailure(sagaId, productCode, "이벤트 발행 실패: " + e.getMessage());
 
 			throw e;
 		}
@@ -121,7 +124,7 @@ public class ProductImageSagaOrchestrator {
 		} catch (Exception e) {
 			log.error("상품 이미지 수정 실패 - SagaId: {}, ProductCode: {}, Exception: ", sagaId, productCode, e);
 
-			this.compensateProductImageUpdateFailure(sagaId, productCode, deleteUrls, e.getMessage());
+			this.getSelf().compensateProductImageUpdateFailure(sagaId, productCode, deleteUrls, e.getMessage());
 
 			throw e;
 		}
@@ -173,8 +176,6 @@ public class ProductImageSagaOrchestrator {
 			log.error("Saga 성공 처리 중 오류 발생/보상 필요 - SagaId: {}, Exception: ", sagaId, e);
 
 			sagaService.updateToFail(sagaId, "Saga 성공 처리 중 오류 발생/보상 필요: " + e.getMessage());
-
-			throw e;
 		}
 	}
 
@@ -194,7 +195,7 @@ public class ProductImageSagaOrchestrator {
 					log.error("이미지 업로드 실패/수동 보상 필요 - SagaId: {}, ProductCode: {}, ErrorMessage: {}",
 						sagaId, event.referenceCode(), event.errorMsg());
 
-					this.compensateProductImageUploadFailure(sagaId, event.referenceCode(), event.errorMsg());
+					this.getSelf().compensateProductImageUploadFailure(sagaId, event.referenceCode(), event.errorMsg());
 				}
 				case DELETE -> {
 					log.error("이미지 삭제 실패 - SagaId: {}, ProductCode: {}, ErrorMessage: {}",
@@ -213,23 +214,37 @@ public class ProductImageSagaOrchestrator {
 			log.error("Saga 실패 처리 중 오류 발생/보상 필요 - SagaId: {}, Exception: ", sagaId, e);
 
 			sagaService.updateToFail(sagaId, "Saga 실패 처리 중 오류 발생/보상 필요" + e.getMessage());
-
-			throw e;
 		}
 	}
 
-	private void compensateProductImageUploadFailure(
+	@Transactional(propagation = Propagation.REQUIRES_NEW)
+	public void compensateProductImageUploadFailure(
 		String sagaId, String productCode, String errorMsg
 	) {
 
 		Saga saga = sagaService.getSaga(sagaId);
 		SagaStep step = saga.getCurrentStep();
 
+		log.info("이미지 등록 보상 트랜잭션 시작 - SagaId: {}, ProductCode: {}, Step: {}", sagaId, productCode, step);
+
+		if (saga.getSagaStatus().isTerminal()) {
+			log.warn("이미 종료된 Saga/업로드 보상 중지 - SagaId: {}, Status: {}, Step: {}", sagaId, saga.getSagaStatus(), step);
+
+			return;
+		}
+
+		if (saga.getSagaStatus().isCompensating()) {
+			log.warn("이미 보상 중인 Saga/업로드 보상 중지 - SagaId: {}, Status: {}, Step: {}", sagaId, saga.getSagaStatus(), step);
+
+			return;
+		}
+
+		sagaService.updateToCompensating(sagaId);
+
+		boolean isCompensated = false;
+		String compensateErrorMsg = null;
+
 		try {
-			log.info("이미지 등록 보상 트랜잭션 시작 - SagaId: {}, ProductCode: {}, Step: {}", sagaId, productCode, step);
-
-			sagaService.updateToCompensating(sagaId);
-
 			switch (step) {
 				case WAITING_S3_UPLOAD, IMAGE_KAFKA_PUBLISHED -> {
 					log.info("S3 저장 실패 보상 - SagaId: {}, ProductCode: {}", sagaId, productCode);
@@ -249,30 +264,37 @@ public class ProductImageSagaOrchestrator {
 					sagaId, productCode, step, errorMsg);
 			}
 
+			isCompensated = true;
+		} catch (Exception e) {
+			compensateErrorMsg = e.getMessage();
+		}
+
+		if (isCompensated) {
 			sagaService.updateToCompensated(
 				sagaId,
-				String.format("이미지 등록 보상 완료 - SagaId: %s, ProductCode: %s, Exception: %s", sagaId, productCode,
-					errorMsg)
+				String.format("이미지 등록 보상 완료 - SagaId: %s, ProductCode: %s, Exception: %s",
+					sagaId, productCode, errorMsg
+				)
 			);
 
 			log.info("이미지 등록 보상 완료 - SagaId: {}, ProductCode: {}", sagaId, productCode);
-		} catch (Exception e) {
+		} else {
 			log.error(
-				"이미지 등록 보상 트랜잭션 실패 - SagaId: {}, productCode: {}, Exception: {}", sagaId, productCode, e.getMessage()
+				"이미지 등록 보상 트랜잭션 실패 - SagaId: {}, productCode: {}, Exception: {}",
+				sagaId, productCode, compensateErrorMsg
 			);
 
 			sagaService.updateToFail(
 				sagaId,
 				String.format("이미지 등록 보상 트랜잭션 실패 - SagaId: %s, ProductCode: %s, Exception: %s",
-					sagaId, productCode, e.getMessage()
+					sagaId, productCode, compensateErrorMsg
 				)
 			);
-
-			throw e;
 		}
 	}
 
-	private void compensateProductImageUpdateFailure(
+	@Transactional(propagation = Propagation.REQUIRES_NEW)
+	public void compensateProductImageUpdateFailure(
 		String sagaId, String productCode, List<String> deleteUrls, String errorMsg
 	) {
 
@@ -280,10 +302,31 @@ public class ProductImageSagaOrchestrator {
 			sagaId, productCode, deleteUrls
 		);
 
+		Saga saga = sagaService.getSaga(sagaId);
+		if (saga.getSagaStatus().isTerminal()) {
+			log.warn("이미 종료된 Saga/업데이트 보상 중지 - SagaId: {}, Status: {}, Step: {}",
+				sagaId, saga.getSagaStatus(), saga.getCurrentStep()
+			);
+
+			return;
+		}
+
+		if (saga.getSagaStatus().isCompensating()) {
+			log.warn("이미 보상 중인 Saga/업데이트 보상 중지 - SagaId: {}, Status: {}, Step: {}",
+				sagaId, saga.getSagaStatus(), saga.getCurrentStep()
+			);
+
+			return;
+		}
+
 		sagaService.updateToFail(
 			sagaId,
 			String.format("이미지 업데이트 실패/수동 복구 필요 - ProductCode: %s, deleteUrls: %s, Exception: %s",
 				productCode, deleteUrls, errorMsg)
 		);
+	}
+
+	private ProductImageSagaOrchestrator getSelf() {
+		return orchestratorProvider.getObject();
 	}
 }
