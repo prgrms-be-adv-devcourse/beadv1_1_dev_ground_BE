@@ -18,7 +18,7 @@ public interface ImageRepository extends JpaRepository<Image, Long> {
 
 	Image findByImageTypeAndReferenceCode(ImageType imageType, String referenceCode);
 
-	long deleteImageByImageTypeAndReferenceCode(ImageType imageType, String referenceCode);
+	long deleteByImageTypeAndReferenceCode(ImageType imageType, String referenceCode);
 
 	@Modifying
 	@Query("""

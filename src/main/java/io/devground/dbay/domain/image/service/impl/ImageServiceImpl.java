@@ -36,14 +36,26 @@ public class ImageServiceImpl implements ImageService {
 			return null;
 		}
 
-		List<Image> images = urls.stream()
-			.distinct()
-			.map(url -> ImageMapper.of(imageType, referenceCode, url))
+		List<String> foundUrls = imageRepository.findAllByImageTypeAndReferenceCode(imageType, referenceCode).stream()
+			.map(Image::getImageUrl)
 			.toList();
 
-		imageRepository.saveAll(images);
+		List<String> newUrls = urls.stream()
+			.distinct()
+			.filter(url -> !foundUrls.contains(url))
+			.toList();
 
-		return images.getFirst().getImageUrl();
+		if (!newUrls.isEmpty()) {
+			List<Image> newImages = newUrls.stream()
+				.map(url -> ImageMapper.of(imageType, referenceCode, url))
+				.toList();
+
+			imageRepository.saveAll(newImages);
+		}
+
+		return foundUrls.isEmpty()
+			? newUrls.getFirst()
+			: foundUrls.getFirst();
 	}
 
 	@Override
@@ -57,9 +69,9 @@ public class ImageServiceImpl implements ImageService {
 
 			if (!imagesToDelete.isEmpty()) {
 				s3Service.deleteObjectsByUrls(deleteUrls);
-			}
 
-			imageRepository.deleteAllInBatch(imagesToDelete);
+				imageRepository.deleteAllInBatch(imagesToDelete);
+			}
 		}
 
 		return this.generatePresignedUrls(imageType, referenceCode, newImageExtensions);
@@ -77,7 +89,7 @@ public class ImageServiceImpl implements ImageService {
 	@Override
 	public void deleteImageByReferences(ImageType imageType, String referenceCode) {
 
-		long imageDeleteCount = imageRepository.deleteImageByImageTypeAndReferenceCode(imageType, referenceCode);
+		long imageDeleteCount = imageRepository.deleteByImageTypeAndReferenceCode(imageType, referenceCode);
 
 		if (imageDeleteCount > 0) {
 			s3Service.deleteAllObjectsByIdentifier(imageType, referenceCode);
