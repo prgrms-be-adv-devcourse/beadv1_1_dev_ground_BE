@@ -28,7 +28,9 @@ public class ImageScheduledProcessor {
 
 	/**
 	 * Timeout된 Saga 보상 처리
-	 * 현재는 5분마다 실행
+	 * 1. S3 업로드 대기 중에서 멈춘 상태
+	 * 2. Kafka 메시지가 발행되었지만 deadline까지 처리되지 않은 상태
+	 * 3. 현재는 5분마다 실행, 추후 모니터링 후 변동 가능
 	 */
 	@Scheduled(fixedDelay = 300000)
 	public void checkTimeoutSagas() {
@@ -46,14 +48,19 @@ public class ImageScheduledProcessor {
 
 		for (Saga timeoutSaga : timeoutSagas) {
 			try {
-				log.warn("Timeout된 Saga 처리 시작 - SagaId: {}, ProductCode: {}, Step: {}",
-					timeoutSaga.getSagaId(), timeoutSaga.getReferenceCode(), timeoutSaga.getCurrentStep());
+				log.error("Timeout된 Saga 보상 시작 - SagaId: {}, ProductCode: {}, Step: {}, Exception: {}",
+					timeoutSaga.getSagaId(), timeoutSaga.getReferenceCode(),
+					timeoutSaga.getCurrentStep(), timeoutSaga.getLastErrorMessage()
+				);
 
 				compensationService.compensateProductImageUploadFailure(
 					timeoutSaga.getSagaId(), timeoutSaga.getReferenceCode(), "Saga Timeout"
 				);
+
+				log.error("Timeout된 Saga 보상 완료 - SagaId: {}, ProductCode: {}, Exception: {}",
+					timeoutSaga.getSagaId(), timeoutSaga.getReferenceCode(), timeoutSaga.getLastErrorMessage());
 			} catch (Exception e) {
-				log.error("Timeout된 Saga 처리 실패 - SagaId: {}, ProductCode: {}, Exception: {}",
+				log.error("Timeout된 Saga 보상 실패 - SagaId: {}, ProductCode: {}, Exception: {}",
 					timeoutSaga.getSagaId(), timeoutSaga.getReferenceCode(), e.getMessage());
 			}
 		}
