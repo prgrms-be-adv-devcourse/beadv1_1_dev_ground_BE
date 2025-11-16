@@ -48,6 +48,9 @@ spring:
       region:
         static: ${S3_REGION}
 
+  elasticsearch:
+    uris: http://localhost:9200
+
 carts:
   event:
     topic:

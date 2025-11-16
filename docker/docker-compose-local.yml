@@ -134,6 +134,17 @@ services:
       - xpack.security.http.ssl.enabled=false
       - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
 
+  logstash:
+    image: eddie1031/es:9.1.3
+    container_name: logstash
+    ports:
+      - "5044:5044"
+      - "9600:9600"
+    volumes:
+      - ./lib/pipeline:/usr/share/logstash/pipeline
+    depends_on:
+      - elasticsearch
+
   kibana:
     image: kibana:9.1.3
     container_name: kibana
