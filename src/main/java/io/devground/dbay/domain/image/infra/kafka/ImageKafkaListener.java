@@ -20,7 +20,7 @@ import io.devground.dbay.domain.image.service.ImageService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-@Slf4j
+@Slf4j(topic = "saga")
 @Component
 @Transactional
 @RequiredArgsConstructor
