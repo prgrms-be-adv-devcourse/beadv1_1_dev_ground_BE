@@ -15,6 +15,8 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
+import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 import jakarta.persistence.Version;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -24,6 +26,14 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Table(
+	uniqueConstraints = {
+		@UniqueConstraint(
+			name = "uk_saga_reference_code_type_status",
+			columnNames = {"referenceCode", "sagaType", "sagaStatus"}
+		)
+	}
+)
 public class Saga {
 
 	@Id
