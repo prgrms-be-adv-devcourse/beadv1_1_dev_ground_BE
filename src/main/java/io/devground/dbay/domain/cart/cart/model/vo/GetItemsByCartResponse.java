@@ -4,6 +4,6 @@ import java.util.List;
 
 public record GetItemsByCartResponse(
 	Long totalAmount,
-	List<CartProductListResponse> productLists
+	List<CartProductsResponse> productLists
 ) {
 }

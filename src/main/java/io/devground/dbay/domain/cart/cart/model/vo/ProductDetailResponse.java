@@ -1,9 +1,24 @@
 package io.devground.dbay.domain.cart.cart.model.vo;
 
+import java.util.List;
+
 public record ProductDetailResponse(
-	String code,
-	String productName,
+	String productCode,
+
+	String productSaleCode,
+
+	String sellerCode,
+
+	String title,
+
+	String description,
+
+	String categoryPath,
+
 	long price,
-	String productStatus
+
+	String productStatus,
+
+	List<String> imageUrls
 ) {
 }

@@ -6,6 +6,7 @@ import static org.mockito.BDDMockito.*;
 import java.util.List;
 import java.util.UUID;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,11 +18,14 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.transaction.annotation.Transactional;
 
 import io.devground.core.model.vo.DeleteStatus;
+import io.devground.core.model.web.BaseResponse;
 import io.devground.dbay.domain.cart.cart.model.entity.Cart;
 import io.devground.dbay.domain.cart.cart.model.vo.AddCartItemRequest;
-import io.devground.dbay.domain.cart.cart.model.vo.CartProductListResponse;
+import io.devground.dbay.domain.cart.cart.model.vo.CartProductsRequest;
+import io.devground.dbay.domain.cart.cart.model.vo.CartProductsResponse;
 import io.devground.dbay.domain.cart.cart.model.vo.DeleteItemsByCartRequest;
 import io.devground.dbay.domain.cart.cart.model.vo.GetItemsByCartResponse;
+import io.devground.dbay.domain.cart.cart.model.vo.ProductDetailResponse;
 import io.devground.dbay.domain.cart.cart.repository.CartRepository;
 import io.devground.dbay.domain.cart.cart.service.CartService;
 import io.devground.dbay.domain.cart.cartItem.model.entity.CartItem;
@@ -58,6 +62,26 @@ public class CartIntegrationTest {
 	@MockBean
 	private ProductFeignClient productFeignClient;
 
+	private BaseResponse<ProductDetailResponse> onSaleResponse;
+	private BaseResponse<ProductDetailResponse> soldResponse;
+
+	@BeforeEach
+	void setUp() {
+		ProductDetailResponse onSaleDetail = new ProductDetailResponse(
+			null,
+			null,
+			null,
+			null,
+			null,
+			null,
+			0L,
+			"ON_SALE",
+			null
+		);
+
+		onSaleResponse = BaseResponse.success(200, onSaleDetail);
+	}
+
 	@Test
 	@DisplayName("장바구니 생성 성공")
 	void createCart_success() {
@@ -82,6 +106,8 @@ public class CartIntegrationTest {
 		Cart cart = cartService.createCart(userCode);
 
 		AddCartItemRequest request = new AddCartItemRequest(productCode);
+
+		given(productFeignClient.getProductDetail(request.productCode())).willReturn(onSaleResponse);
 
 		CartItem cartItem = cartService.addItem(cart.getCode(), request);
 
@@ -108,7 +134,10 @@ public class CartIntegrationTest {
 		AddCartItemRequest request1 = new AddCartItemRequest(productCode1);
 		AddCartItemRequest request2 = new AddCartItemRequest(productCode2);
 
+		given(productFeignClient.getProductDetail(request1.productCode())).willReturn(onSaleResponse);
 		cartService.addItem(cart.getCode(), request1);
+
+		given(productFeignClient.getProductDetail(request2.productCode())).willReturn(onSaleResponse);
 		cartService.addItem(cart.getCode(), request2);
 
 		Cart savedCart = cartRepository.findByCode(cart.getCode()).orElseThrow();
@@ -119,25 +148,28 @@ public class CartIntegrationTest {
 
 		List<String> productCodes = List.of(productCode1, productCode2);
 
-		CartProductListResponse p1 = new CartProductListResponse(
+		CartProductsResponse p1 = new CartProductsResponse(
 			productCode1, productSaleCode1, sellerCode1, "상품1", 1000L
 		);
-		CartProductListResponse p2 = new CartProductListResponse(
+		CartProductsResponse p2 = new CartProductsResponse(
 			productCode2, productSaleCode2, sellerCode2, "상품2", 2000L
 		);
 
-		List<CartProductListResponse> cartProductListResponses = List.of(p1, p2);
+		List<CartProductsResponse> cartProductListResponses = List.of(p1, p2);
 
-		given(productFeignClient.productListByCodes(productCodes))
-			.willReturn(cartProductListResponses);
+		BaseResponse<List<CartProductsResponse>> response =
+			BaseResponse.success(200, List.of(p1, p2));
+
+		given(productFeignClient.getCartProducts(new CartProductsRequest(List.of(productCode1, productCode2))))
+			.willReturn(response);
 
 		GetItemsByCartResponse result = cartService.getItemsByCart(savedCart.getCode());
 
-		verify(productFeignClient, times(1)).productListByCodes(anyList());
+		verify(productFeignClient, times(1)).getCartProducts(any());
 
 		assertThat(result.totalAmount()).isEqualTo(3000L);
 		assertThat(result.productLists())
-			.extracting(CartProductListResponse::productCode)
+			.extracting(CartProductsResponse::productCode)
 			.containsExactlyInAnyOrder(productCode1, productCode2);
 	}
 
@@ -154,7 +186,10 @@ public class CartIntegrationTest {
 		AddCartItemRequest request1 = new AddCartItemRequest(productCode1);
 		AddCartItemRequest request2 = new AddCartItemRequest(productCode2);
 
+		given(productFeignClient.getProductDetail(request1.productCode())).willReturn(onSaleResponse);
 		cartService.addItem(cart.getCode(), request1);
+
+		given(productFeignClient.getProductDetail(request2.productCode())).willReturn(onSaleResponse);
 		cartService.addItem(cart.getCode(), request2);
 
 		DeleteItemsByCartRequest request3 = new DeleteItemsByCartRequest(List.of(productCode1, productCode2));
@@ -184,7 +219,10 @@ public class CartIntegrationTest {
 		AddCartItemRequest request = new AddCartItemRequest(productCode1);
 		AddCartItemRequest request2 = new AddCartItemRequest(productCode2);
 
+		given(productFeignClient.getProductDetail(request.productCode())).willReturn(onSaleResponse);
 		cartService.addItem(cart.getCode(), request);
+
+		given(productFeignClient.getProductDetail(request2.productCode())).willReturn(onSaleResponse);
 		cartService.addItem(cart.getCode(), request2);
 
 		Cart deleted = cartService.deleteCart(userCode);

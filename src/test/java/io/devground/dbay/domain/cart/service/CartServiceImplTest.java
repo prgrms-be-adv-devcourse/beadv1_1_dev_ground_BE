@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -18,11 +19,14 @@ import org.springframework.test.util.ReflectionTestUtils;
 import io.devground.core.model.exception.ServiceException;
 import io.devground.core.model.vo.DeleteStatus;
 import io.devground.core.model.vo.ErrorCode;
+import io.devground.core.model.web.BaseResponse;
 import io.devground.dbay.domain.cart.cart.model.entity.Cart;
 import io.devground.dbay.domain.cart.cart.model.vo.AddCartItemRequest;
-import io.devground.dbay.domain.cart.cart.model.vo.CartProductListResponse;
+import io.devground.dbay.domain.cart.cart.model.vo.CartProductsRequest;
+import io.devground.dbay.domain.cart.cart.model.vo.CartProductsResponse;
 import io.devground.dbay.domain.cart.cart.model.vo.DeleteItemsByCartRequest;
 import io.devground.dbay.domain.cart.cart.model.vo.GetItemsByCartResponse;
+import io.devground.dbay.domain.cart.cart.model.vo.ProductDetailResponse;
 import io.devground.dbay.domain.cart.cart.repository.CartRepository;
 import io.devground.dbay.domain.cart.cart.service.CartServiceImpl;
 import io.devground.dbay.domain.cart.cartItem.model.entity.CartItem;
@@ -43,8 +47,41 @@ class CartServiceImplTest {
 	@Mock
 	private ProductFeignClient productFeignClient;
 
+	private BaseResponse<ProductDetailResponse> onSaleResponse;
+	private BaseResponse<ProductDetailResponse> soldResponse;
+
 	@InjectMocks
 	private CartServiceImpl cartService;
+
+	@BeforeEach
+	void setUp() {
+		ProductDetailResponse onSaleDetail = new ProductDetailResponse(
+			null,
+			null,
+			null,
+			null,
+			null,
+			null,
+			0L,
+			"ON_SALE",
+			null
+		);
+
+		ProductDetailResponse soldDetail = new ProductDetailResponse(
+			null,
+			null,
+			null,
+			null,
+			null,
+			null,
+			0L,
+			"SOLD",
+			null
+		);
+
+		onSaleResponse = BaseResponse.success(200, onSaleDetail);
+		soldResponse = BaseResponse.success(200, soldDetail);
+	}
 
 	@Test
 	@DisplayName("성공_장바구니 생성")
@@ -79,7 +116,7 @@ class CartServiceImplTest {
 	}
 
 	@Test
-	@DisplayName("실패_장바구니 이미 존재")
+	@DisplayName("실패_장바구니 생성에서 이미 존재")
 	void createCart_throwException_whenCartAlreadyExists() {
 		String userCode = UUID.randomUUID().toString();
 		Cart cart = new Cart(userCode);
@@ -116,6 +153,9 @@ class CartServiceImplTest {
 
 		AddCartItemRequest request = new AddCartItemRequest(productCode);
 
+		given(productFeignClient.getProductDetail(productCode))
+			.willReturn(onSaleResponse);
+
 		CartItem result = cartService.addItem(cart.getCode(), request);
 
 		assertThat(result.getCart().getCode()).isEqualTo(cart.getCode());
@@ -128,7 +168,7 @@ class CartServiceImplTest {
 	}
 
 	@Test
-	@DisplayName("실패_장바구니,상품코드 유효한 값")
+	@DisplayName("실패_장바구니 상품 추가에서 장바구니,상품코드 유효한 값")
 	void addItem_throwException_whenInvalidCode() {
 		String cartCode = "invalid-uuid";
 		String productCode = "invalid-uuid";
@@ -144,7 +184,7 @@ class CartServiceImplTest {
 	}
 
 	@Test
-	@DisplayName("실패_장바구니 없음")
+	@DisplayName("실패_장바구니 상품 추가에서 장바구니 없음")
 	void addItem_throwException_whenCartNotExists() {
 		String cartCode = UUID.randomUUID().toString();
 		String productCode = UUID.randomUUID().toString();
@@ -162,7 +202,7 @@ class CartServiceImplTest {
 	}
 
 	@Test
-	@DisplayName("실패_장바구니에 상품 이미 존재")
+	@DisplayName("실패_장바구니 상품 추가에서 상품 이미 존재")
 	void addItem_thrownException_whenCartItemAlreadyExists() {
 		String userCode = UUID.randomUUID().toString();
 		String productCode = UUID.randomUUID().toString();
@@ -180,6 +220,31 @@ class CartServiceImplTest {
 			.satisfies(ex -> {
 				ServiceException se = (ServiceException) ex;
 				assertThat(se.getErrorCode()).isEqualTo(ErrorCode.CART_ITEM_ALREADY_EXIST);
+			});
+	}
+
+	@Test
+	@DisplayName("실패_장바구니 상품 추가에서 상품 이미 판매됨")
+	void addItem_thrownException_whenCartItemAlreadySold() {
+		String userCode = UUID.randomUUID().toString();
+		String productCode = UUID.randomUUID().toString();
+
+		Cart cart = Cart.builder().userCode(userCode).build();
+
+		given(cartRepository.findByCode(cart.getCode())).willReturn(Optional.of(cart));
+
+		given(cartItemRepository.existsByCartAndProductCode(cart, productCode)).willReturn(false);
+
+		AddCartItemRequest request = new AddCartItemRequest(productCode);
+
+		given(productFeignClient.getProductDetail(productCode))
+			.willReturn(soldResponse);
+
+		assertThatThrownBy(() -> cartService.addItem(cart.getCode(), request))
+			.isInstanceOf(ServiceException.class)
+			.satisfies(ex -> {
+				ServiceException se = (ServiceException) ex;
+				assertThat(se.getErrorCode()).isEqualTo(ErrorCode.SOLD_PRODUCT_CANNOT_PURCHASE);
 			});
 	}
 
@@ -206,18 +271,29 @@ class CartServiceImplTest {
 
 		given(cartRepository.findByCode(cart.getCode())).willReturn(Optional.of(cart));
 
+		given(productFeignClient.getProductDetail(productCode1))
+			.willReturn(onSaleResponse);
+
 		cartService.addItem(cart.getCode(), request);
+
+		given(productFeignClient.getProductDetail(productCode2))
+			.willReturn(onSaleResponse);
+
 		cartService.addItem(cart.getCode(), request2);
 
 		given(cartRepository.findByCode(cart.getCode())).willReturn(Optional.of(cart));
 		given(cartItemRepository.findByCart(cart)).willReturn(List.of(item1, item2));
 
-		CartProductListResponse p1 = new CartProductListResponse(productCode1, productSaleCode1, sellerCode,
+		CartProductsResponse p1 = new CartProductsResponse(productCode1, productSaleCode1, sellerCode,
 			"아이폰 프로 17", 1500000L);
-		CartProductListResponse p2 = new CartProductListResponse(productCode2, productSaleCode2, sellerCode, "맥북3 프로",
+		CartProductsResponse p2 = new CartProductsResponse(productCode2, productSaleCode2, sellerCode, "맥북3 프로",
 			3500000L);
 
-		given(productFeignClient.productListByCodes(List.of(productCode1, productCode2))).willReturn(List.of(p1, p2));
+		BaseResponse<List<CartProductsResponse>> response = BaseResponse.success(200, List.of(p1, p2));
+
+		given(productFeignClient
+			.getCartProducts(new CartProductsRequest(List.of(productCode1, productCode2))))
+			.willReturn(response);
 
 		GetItemsByCartResponse result = cartService.getItemsByCart(cart.getCode());
 
@@ -246,17 +322,29 @@ class CartServiceImplTest {
 		given(cartRepository.findByCode(cart.getCode())).willReturn(Optional.of(cart));
 		given(cartItemRepository.existsByCartAndProductCode(cart, productCode)).willReturn(false);
 
+		given(productFeignClient.getProductDetail(productCode))
+			.willReturn(onSaleResponse);
+
 		cartService.addItem(cart.getCode(), request);
+
+		given(productFeignClient.getProductDetail(productCode))
+			.willReturn(onSaleResponse);
+
 		cartService.addItem(cart.getCode(), request);
 
 		given(cartRepository.findByCode(cart.getCode())).willReturn(Optional.of(cart));
 
 		given(cartItemRepository.findByCart(cart)).willReturn(List.of(item1, item2));
 
-		CartProductListResponse p1 = new CartProductListResponse(productCode, productSaleCode, sellerCode, "아이폰 프로 17",
+		CartProductsResponse p1 = new CartProductsResponse(productCode, productSaleCode, sellerCode, "아이폰 프로 17",
 			1500000L);
 
-		given(productFeignClient.productListByCodes(List.of(productCode))).willReturn(List.of(p1));
+		BaseResponse<List<CartProductsResponse>> response =
+			BaseResponse.success(200, List.of(p1));
+
+		given(productFeignClient
+			.getCartProducts(new CartProductsRequest(List.of(productCode))))
+			.willReturn(response);
 
 		GetItemsByCartResponse result = cartService.getItemsByCart(cart.getCode());
 
@@ -289,14 +377,23 @@ class CartServiceImplTest {
 
 		given(cartRepository.findByCode(cart.getCode())).willReturn(Optional.of(cart));
 
+		given(productFeignClient.getProductDetail(productCode))
+			.willReturn(onSaleResponse);
+
 		cartService.addItem(cart.getCode(), request);
 
 		given(cartRepository.findByCode(cart.getCode())).willReturn(Optional.of(cart));
 		given(cartItemRepository.findByCart(cart)).willReturn(List.of(item));
 
-		CartProductListResponse p1 = new CartProductListResponse(productCode, productSaleCode, sellerCode, "아이폰 프로 17",
+		CartProductsResponse p1 = new CartProductsResponse(productCode, productSaleCode, sellerCode, "아이폰 프로 17",
 			1500000L);
-		given(productFeignClient.productListByCodes(List.of(productCode))).willReturn(List.of(p1));
+
+		BaseResponse<List<CartProductsResponse>> response =
+			BaseResponse.success(200, List.of(p1));
+
+		given(productFeignClient
+			.getCartProducts(new CartProductsRequest(List.of(productCode))))
+			.willReturn(response);
 
 		GetItemsByCartResponse result = cartService.getItemsByCart(cart.getCode());
 
