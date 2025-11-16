@@ -3,6 +3,7 @@ package io.devground.dbay.domain.product.product.service;
 import static io.devground.dbay.domain.product.product.vo.ProductStatus.*;
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.BDDMockito.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,6 +13,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.test.context.ActiveProfiles;
@@ -19,10 +21,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 import io.devground.core.model.exception.ServiceException;
 import io.devground.core.model.vo.DeleteStatus;
+import io.devground.core.model.web.BaseResponse;
 import io.devground.core.model.web.PageDto;
 import io.devground.dbay.domain.product.category.dto.AdminCategoryResponse;
 import io.devground.dbay.domain.product.category.dto.RegistCategoryRequest;
 import io.devground.dbay.domain.product.category.service.CategoryService;
+import io.devground.dbay.domain.product.product.client.ImageClient;
 import io.devground.dbay.domain.product.product.dto.CartProductsRequest;
 import io.devground.dbay.domain.product.product.dto.CartProductsResponse;
 import io.devground.dbay.domain.product.product.dto.GetAllProductsResponse;
@@ -49,10 +53,17 @@ class ProductServiceTest {
 	ProductSaleRepository productSaleRepository;
 	@Autowired    // 카테고리 Init 용, 이외 사용 금지
 	CategoryService categoryService;
+	@Autowired
+	@MockBean
+	ImageClient imageClient;
 
 	List<String> productCodes = new ArrayList<>();
 	List<String> productSaleCodes = new ArrayList<>();
+	List<String> tempSellerProductCodes = new ArrayList<>();
 	List<Long> categoryIds = new ArrayList<>();
+
+	String tempSellerCode = "tempSellerCode";
+	String otherSellerCode = "otherSellerCode";
 
 	@BeforeEach
 	void init() {
@@ -72,24 +83,23 @@ class ProductServiceTest {
 
 		categoryIds.addAll(List.of(responseDepth1.id(), responseDepth2.id(), responseDepth3.id()));
 
-		String tempCode1 = "tempSellerCode";
 		RegistProductRequest request1 = new RegistProductRequest
 			(responseDepth3.id(), "갤럭시 팔아요", "이런 갤럭시입니다.", 600000L, null);
 
 		RegistProductRequest request2 = new RegistProductRequest
 			(responseDepth3.id(), "맥북 팔아요", "이런 맥북입니다.", 500000L, null);
 
-		String otherCode = "otherSellerCode";
 		RegistProductRequest request3 = new RegistProductRequest
 			(responseDepth3.id(), "에어팟 팔아요", "이런 에어팟입니다.", 300000L, null);
 
-		RegistProductResponse response1 = productService.registProduct(tempCode1, request1);
-		RegistProductResponse response2 = productService.registProduct(tempCode1, request2);
-		RegistProductResponse response3 = productService.registProduct(otherCode, request3);
+		RegistProductResponse response1 = productService.registProduct(tempSellerCode, request1);
+		RegistProductResponse response2 = productService.registProduct(tempSellerCode, request2);
+		RegistProductResponse response3 = productService.registProduct(otherSellerCode, request3);
 
 		productCodes.addAll(List.of(response1.productCode(), response2.productCode(), response3.productCode()));
 		productSaleCodes.addAll(
 			List.of(response1.productSaleCode(), response2.productSaleCode(), response3.productSaleCode()));
+		tempSellerProductCodes.addAll(List.of(response1.productCode(), response2.productCode()));
 	}
 
 	@Test
@@ -261,6 +271,9 @@ class ProductServiceTest {
 		String sellerCode = "tempSellerCode";
 
 		// when
+		given(imageClient.getImages(anyString(), any()))
+			.willReturn(BaseResponse.success(200, List.of("")));
+
 		ProductDetailResponse product = productService.getProductDetail(productCodes.getFirst());
 
 		// then
@@ -403,11 +416,11 @@ class ProductServiceTest {
 	void success_products_to_sold() throws Exception {
 
 		// given
-		CartProductsRequest request = new CartProductsRequest(productCodes);
+		CartProductsRequest request = new CartProductsRequest(tempSellerProductCodes);
 
 		// when
-		productService.updateStatusToSold(request);
-		List<Product> products = productRepository.findAllByCodeIn(productCodes);
+		productService.updateStatusToSold(tempSellerCode, request);
+		List<Product> products = productRepository.findAllByCodeIn(tempSellerProductCodes);
 
 		for (Product p : products) {
 			assertEquals(SOLD, p.getProductSale().getProductStatus());
@@ -415,43 +428,31 @@ class ProductServiceTest {
 	}
 
 	@Test
-	@DisplayName("실패_주문된 상품 목록 중 이미 판매된 상품 존재")
+	@DisplayName("실패_주문된 상품 목록 판매 처리 중 이미 판매된 상품 존재")
 	void fail_products_to_sold_already_sold() throws Exception {
 
 		// given
-		String firstCode = productCodes.getFirst();
+		String firstCode = tempSellerProductCodes.getFirst();
 		Product beforeProduct = productRepository.findByCode(firstCode).get();
 		beforeProduct.getProductSale().changeAsSold();
 
-		CartProductsRequest request = new CartProductsRequest(productCodes);
+		CartProductsRequest request = new CartProductsRequest(tempSellerProductCodes);
 
 		// when, then
 		assertThrows(ServiceException.class,
-			() -> productService.updateStatusToSold(request));
+			() -> productService.updateStatusToSold(tempSellerCode, request));
 	}
 
 	@Test
-	@DisplayName("실퍠_주문된 상품 목록 조회 시 잘못된 상품 코드 포함")
+	@DisplayName("실퍠_주문된 상품 목록 판매 처리 조회 시 잘못된 상품 코드 포함")
 	void fail_products_to_sold_wrong_product_code() throws Exception {
 
 		// given
-		productCodes.add("wrongCode");
-		CartProductsRequest request = new CartProductsRequest(productCodes);
+		tempSellerProductCodes.add("wrongCode");
+		CartProductsRequest request = new CartProductsRequest(tempSellerProductCodes);
 
 		// when, then
 		assertThrows(ServiceException.class,
-			() -> productService.updateStatusToSold(request));
-	}
-
-	@Test
-	@DisplayName("실퍠_주문된 상품 목록 조회 시 상품 코드 미존재")
-	void fail_products_to_sold_non_product_code() throws Exception {
-
-		// given
-		CartProductsRequest request = new CartProductsRequest(List.of());
-
-		// when, then
-		assertThrows(ServiceException.class,
-			() -> productService.updateStatusToSold(request));
+			() -> productService.updateStatusToSold(tempSellerCode, request));
 	}
 }
