@@ -141,9 +141,12 @@ services:
       - "5044:5044"
       - "9600:9600"
     volumes:
-      - ./lib/pipeline:/usr/share/logstash/pipeline
+      - ./logstash/logstash.conf:/usr/share/logstash/pipeline/logstash.conf
+      - ../logs:/usr/share/logstash/logs:ro
     depends_on:
       - elasticsearch
+      - mysql
+    restart: unless-stopped
 
   kibana:
     image: kibana:9.1.3
