@@ -145,9 +145,10 @@ public class ProductController {
 	@ResponseStatus(NO_CONTENT)
 	@Operation(summary = "상품 판매 처리", description = "상품의 상태를 판매된 상태로 변경합니다.")
 	public void updateStatusToSold(
+		@RequestHeader("X-CODE") String sellerCode,
 		@RequestBody CartProductsRequest request
 	) {
 
-		productService.updateStatusToSold(request);
+		productService.updateStatusToSold(sellerCode, request);
 	}
 }

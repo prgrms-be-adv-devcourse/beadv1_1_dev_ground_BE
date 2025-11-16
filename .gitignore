@@ -43,3 +43,4 @@ dbay-db.trace.db
 env.properties
 docker/maria-data
 docker/mysql-data
+spy.log

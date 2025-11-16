@@ -79,11 +79,11 @@ public class ImageServiceImpl implements ImageService {
 
 	@Override
 	@Transactional(readOnly = true)
-	public String getImageByCode(ImageType imageType, String referenceCode) {
+	public List<String> getImagesByCode(ImageType imageType, String referenceCode) {
 
-		Image image = imageRepository.findByImageTypeAndReferenceCode(imageType, referenceCode);
-
-		return image != null ? image.getImageUrl() : "";
+		return imageRepository.findAllByImageTypeAndReferenceCode(imageType, referenceCode).stream()
+			.map(Image::getImageUrl)
+			.toList();
 	}
 
 	@Override

@@ -18,7 +18,7 @@ public interface ImageService {
 		ImageType imageType, String referenceCode, List<String> deleteUrls, List<String> newImageExtensions
 	);
 
-	String getImageByCode(ImageType imageType, String referenceCode);
+	List<String> getImagesByCode(ImageType imageType, String referenceCode);
 
 	void deleteImageByReferences(ImageType imageType, String referenceCode);
 
