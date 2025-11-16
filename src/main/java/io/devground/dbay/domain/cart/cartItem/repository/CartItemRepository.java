@@ -17,9 +17,7 @@ public interface CartItemRepository extends JpaRepository<CartItem, Long> {
 
 	@Modifying
 	@Query("""
-		UPDATE CartItem ci
-		SET ci.deleteStatus = 'Y',
-			ci.updatedAt = CURRENT_TIMESTAMP
+		DELETE FROM CartItem ci
 		WHERE ci.cart = :cart
 			AND ci.deleteStatus = 'N'
 			AND ci.productCode IN :cartProductCodes
@@ -29,10 +27,8 @@ public interface CartItemRepository extends JpaRepository<CartItem, Long> {
 
 	@Modifying
 	@Query("""
-		UPDATE CartItem ci
-			SET ci.deleteStatus = 'Y',
-				ci.updatedAt = CURRENT_TIMESTAMP
-			WHERE ci.cart = :cart
+		DELETE FROM CartItem ci
+		WHERE ci.cart = :cart
 		""")
 	void deleteCartItemByCartCode(@Param("cart") Cart cart);
 
