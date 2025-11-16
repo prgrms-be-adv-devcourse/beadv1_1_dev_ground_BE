@@ -22,14 +22,19 @@ public class SagaService {
 
 	public String startSaga(String referenceCode, SagaType sagaType) {
 
-		Saga saga = Saga.builder()
-			.sagaType(sagaType)
-			.referenceCode(referenceCode)
-			.sagaStatus(SagaStatus.IN_PROCESS)
-			.currentStep(SagaStep.INIT)
-			.build();
+		return sagaRepository.findFirstByReferenceCodeAndSagaTypeAndSagaStatusOrderByStartedAtDesc(
+				referenceCode, sagaType, SagaStatus.IN_PROCESS
+			).map(Saga::getSagaId)
+			.orElseGet(() -> {
+				Saga saga = Saga.builder()
+					.sagaType(sagaType)
+					.referenceCode(referenceCode)
+					.sagaStatus(SagaStatus.IN_PROCESS)
+					.currentStep(SagaStep.INIT)
+					.build();
 
-		return sagaRepository.save(saga).getSagaId();
+				return sagaRepository.save(saga).getSagaId();
+			});
 	}
 
 	public void updateStep(String sagaId, SagaStep step) {
