@@ -41,15 +41,18 @@ dependencies {
     //implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.13'
     implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.5.0'
 
-    // check param binding
     implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.6.0'
+
+    // check param binding
     implementation 'com.github.gavlyukovskiy:p6spy-spring-boot-starter:1.12.0'
 
     // mysql
     implementation 'com.mysql:mysql-connector-j'
     implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
     implementation 'org.springframework.kafka:spring-kafka'
-    testImplementation 'org.springframework.kafka:spring-kafka-test'
+
+    // elasticsearch
+    implementation 'org.springframework.boot:spring-boot-starter-data-elasticsearch'
 
     // h2
     runtimeOnly 'com.h2database:h2'
@@ -63,6 +66,7 @@ dependencies {
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.security:spring-security-test'
     testImplementation 'org.springframework.batch:spring-batch-test'
+    testImplementation 'org.springframework.kafka:spring-kafka-test'
 
     testCompileOnly 'org.projectlombok:lombok'
     testAnnotationProcessor 'org.projectlombok:lombok'
