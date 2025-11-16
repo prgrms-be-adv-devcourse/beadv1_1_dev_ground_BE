@@ -5,16 +5,16 @@ import java.util.List;
 import org.springframework.data.domain.Pageable;
 
 import io.devground.core.model.web.PageDto;
-import io.devground.dbay.domain.product.product.dto.CartProductsRequest;
-import io.devground.dbay.domain.product.product.dto.CartProductsResponse;
-import io.devground.dbay.domain.product.product.dto.GetAllProductsResponse;
-import io.devground.dbay.domain.product.product.dto.ProductDetailResponse;
-import io.devground.dbay.domain.product.product.dto.ProductImageUrlsRequest;
-import io.devground.dbay.domain.product.product.dto.RegistProductRequest;
-import io.devground.dbay.domain.product.product.dto.RegistProductResponse;
-import io.devground.dbay.domain.product.product.dto.UpdateProductRequest;
-import io.devground.dbay.domain.product.product.dto.UpdateProductResponse;
-import io.devground.dbay.domain.product.product.entity.Product;
+import io.devground.dbay.domain.product.product.model.dto.CartProductsRequest;
+import io.devground.dbay.domain.product.product.model.dto.CartProductsResponse;
+import io.devground.dbay.domain.product.product.model.dto.GetAllProductsResponse;
+import io.devground.dbay.domain.product.product.model.dto.ProductDetailResponse;
+import io.devground.dbay.domain.product.product.model.dto.ProductImageUrlsRequest;
+import io.devground.dbay.domain.product.product.model.dto.RegistProductRequest;
+import io.devground.dbay.domain.product.product.model.dto.RegistProductResponse;
+import io.devground.dbay.domain.product.product.model.dto.UpdateProductRequest;
+import io.devground.dbay.domain.product.product.model.dto.UpdateProductResponse;
+import io.devground.dbay.domain.product.product.model.entity.Product;
 
 public interface ProductService {
 

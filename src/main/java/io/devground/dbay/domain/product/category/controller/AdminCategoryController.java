@@ -11,9 +11,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.devground.core.model.web.BaseResponse;
-import io.devground.dbay.domain.product.category.dto.AdminCategoryResponse;
-import io.devground.dbay.domain.product.category.dto.CategoryTreeResponse;
-import io.devground.dbay.domain.product.category.dto.RegistCategoryRequest;
+import io.devground.dbay.domain.product.category.model.dto.AdminCategoryResponse;
+import io.devground.dbay.domain.product.category.model.dto.CategoryTreeResponse;
+import io.devground.dbay.domain.product.category.model.dto.RegistCategoryRequest;
 import io.devground.dbay.domain.product.category.service.CategoryService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;

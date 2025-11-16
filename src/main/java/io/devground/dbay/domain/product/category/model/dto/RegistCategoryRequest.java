@@ -1,4 +1,4 @@
-package io.devground.dbay.domain.product.category.dto;
+package io.devground.dbay.domain.product.category.model.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;

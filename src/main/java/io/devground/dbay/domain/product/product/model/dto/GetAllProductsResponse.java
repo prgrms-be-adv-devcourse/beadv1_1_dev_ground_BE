@@ -1,4 +1,4 @@
-package io.devground.dbay.domain.product.product.dto;
+package io.devground.dbay.domain.product.product.model.dto;
 
 import lombok.Builder;
 import lombok.NonNull;

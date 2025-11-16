@@ -1,12 +1,13 @@
-package io.devground.dbay.domain.product.product.dto;
+package io.devground.dbay.domain.product.product.model.dto;
 
+import java.net.URL;
 import java.util.List;
 
 import lombok.Builder;
 import lombok.NonNull;
 
 @Builder
-public record ProductDetailResponse(
+public record RegistProductResponse(
 
 	@NonNull
 	String productCode,
@@ -23,14 +24,8 @@ public record ProductDetailResponse(
 	@NonNull
 	String description,
 
-	@NonNull
-	String categoryPath,
-
 	long price,
 
-	@NonNull
-	String productStatus,
-
-	List<String> imageUrls
+	List<URL> presignedUrls
 ) {
 }
