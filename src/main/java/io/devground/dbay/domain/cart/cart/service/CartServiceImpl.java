@@ -9,9 +9,11 @@ import io.devground.core.model.vo.ErrorCode;
 import io.devground.core.util.Validators;
 import io.devground.dbay.domain.cart.cart.model.entity.Cart;
 import io.devground.dbay.domain.cart.cart.model.vo.AddCartItemRequest;
-import io.devground.dbay.domain.cart.cart.model.vo.CartProductListResponse;
+import io.devground.dbay.domain.cart.cart.model.vo.CartProductsRequest;
+import io.devground.dbay.domain.cart.cart.model.vo.CartProductsResponse;
 import io.devground.dbay.domain.cart.cart.model.vo.DeleteItemsByCartRequest;
 import io.devground.dbay.domain.cart.cart.model.vo.GetItemsByCartResponse;
+import io.devground.dbay.domain.cart.cart.model.vo.ProductDetailResponse;
 import io.devground.dbay.domain.cart.cart.repository.CartRepository;
 import io.devground.dbay.domain.cart.cartItem.model.entity.CartItem;
 import io.devground.dbay.domain.cart.cartItem.repository.CartItemRepository;
@@ -59,10 +61,13 @@ public class CartServiceImpl implements CartService {
 			throw ErrorCode.CART_ITEM_ALREADY_EXIST.throwServiceException();
 		}
 
-		// 상품 상세 API 구현 후 주석 해제
-		// if (!Objects.equals(productFeignClient.productInfoByCode(request.productCode()).productStatus(), "ON_SALE")) {
-		// 	throw ErrorCode.SOLD_PRODUCT_CANNOT_PURCHASE.throwServiceException();
-		// }
+		ProductDetailResponse productDetail = productFeignClient.getProductDetail(request.productCode())
+			.throwIfNotSuccess()
+			.data();
+
+		if (productDetail.productStatus().equals("SOLD")) {
+			throw ErrorCode.SOLD_PRODUCT_CANNOT_PURCHASE.throwServiceException();
+		}
 
 		CartItem cartItem = CartItem.builder()
 			.cart(cart)
@@ -92,10 +97,11 @@ public class CartServiceImpl implements CartService {
 			.distinct()
 			.toList();
 
-		List<CartProductListResponse> cartProducts = productFeignClient.productListByCodes(productCodes);
+		List<CartProductsResponse> cartProducts = productFeignClient.getCartProducts(new CartProductsRequest(productCodes))
+			.throwIfNotSuccess().data();
 
 		long totalAmount = cartProducts.stream()
-			.mapToLong(CartProductListResponse::price)
+			.mapToLong(CartProductsResponse::price)
 			.sum();
 
 		return new GetItemsByCartResponse(totalAmount, cartProducts);
