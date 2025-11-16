@@ -1,5 +1,7 @@
 package io.devground.dbay.domain.product.product.dto;
 
+import java.util.List;
+
 import lombok.Builder;
 import lombok.NonNull;
 
@@ -27,9 +29,8 @@ public record ProductDetailResponse(
 	long price,
 
 	@NonNull
-	String productStatus
+	String productStatus,
 
-	// TODO: 상품 이미지들 추가
-
+	List<String> imageUrls
 ) {
 }

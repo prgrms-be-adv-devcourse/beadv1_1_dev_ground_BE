@@ -11,10 +11,12 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import io.devground.core.model.vo.ErrorCode;
+import io.devground.core.model.vo.ImageType;
 import io.devground.core.model.web.PageDto;
 import io.devground.core.util.PageUtils;
 import io.devground.dbay.domain.product.category.entity.Category;
 import io.devground.dbay.domain.product.category.repository.CategoryRepository;
+import io.devground.dbay.domain.product.product.client.ImageClient;
 import io.devground.dbay.domain.product.product.dto.CartProductsRequest;
 import io.devground.dbay.domain.product.product.dto.CartProductsResponse;
 import io.devground.dbay.domain.product.product.dto.GetAllProductsResponse;
@@ -38,6 +40,7 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 public class ProductServiceImpl implements ProductService {
 
+	private final ImageClient imageClient;
 	private final ProductRepository productRepository;
 	private final ProductSaleRepository productSaleRepository;
 	private final CategoryRepository categoryRepository;
@@ -99,12 +102,13 @@ public class ProductServiceImpl implements ProductService {
 
 		Product product = this.getProductByCode(productCode);
 
-		// TODO: 상품 이미지 가져오기 OpenFeign
+		List<String> imageUrls = imageClient.getImages(product.getCode(), ImageType.PRODUCT)
+			.throwIfNotSuccess()
+			.data();
 
-		return ProductMapper.detailFromProduct(product);
+		return ProductMapper.detailFromProductAndUrls(product, imageUrls);
 	}
 
-	// TODO: sellerCode 관련 검증 필요
 	@Override
 	public UpdateProductResponse updateProduct(
 		String sellerCode, String productCode, UpdateProductRequest request
@@ -140,7 +144,6 @@ public class ProductServiceImpl implements ProductService {
 		return responses;
 	}
 
-	// TODO: sellerCode 관련 검증 필요
 	@Override
 	public Void deleteProduct(String sellerCode, String productCode) {
 
@@ -158,9 +161,14 @@ public class ProductServiceImpl implements ProductService {
 	}
 
 	@Override
-	public void updateStatusToSold(CartProductsRequest request) {
+	public void updateStatusToSold(String sellerCode, CartProductsRequest request) {
 
 		List<Product> products = productRepository.findAllByCodeIn(request.productCodes());
+
+		// TODO: 인가 더 좋은 방법 생각해보기. 모든 상품 코드 검증이 필요한지 확인
+		if (!products.getFirst().getProductSale().getSellerCode().equals(sellerCode)) {
+			ErrorCode.IS_NOT_PRODUCT_OWNER.throwServiceException();
+		}
 
 		if (request.productCodes().size() != products.size() || products.isEmpty()) {
 			ErrorCode.PRODUCT_NOT_FOUND.throwServiceException();

@@ -41,7 +41,7 @@ public abstract class ProductMapper {
 			.build();
 	}
 
-	public static ProductDetailResponse detailFromProduct(Product product) {
+	public static ProductDetailResponse detailFromProductAndUrls(Product product, List<String> imageUrls) {
 
 		ProductSale productSale = product.getProductSale();
 
@@ -54,6 +54,7 @@ public abstract class ProductMapper {
 			.categoryPath(product.getCategory().getFullPath())
 			.price(productSale.getPrice())
 			.productStatus(productSale.getProductStatus().getValue())
+			.imageUrls(imageUrls)
 			.build();
 	}
 
