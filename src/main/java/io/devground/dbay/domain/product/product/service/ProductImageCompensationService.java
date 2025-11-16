@@ -17,7 +17,7 @@ import io.devground.dbay.domain.product.product.mapper.ProductMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-@Slf4j
+@Slf4j(topic = "saga")
 @Service
 @RequiredArgsConstructor
 public class ProductImageCompensationService {

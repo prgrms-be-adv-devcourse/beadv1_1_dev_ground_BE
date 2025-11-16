@@ -7,9 +7,6 @@ import io.devground.core.model.vo.ImageType;
 
 public interface ImageService {
 
-	// TODO: 사용하지 않을 시 삭제
-	// Void saveImages(UploadImagesRequest request, MultipartFile[] files);
-
 	List<URL> generatePresignedUrls(ImageType imageType, String referenceCode, List<String> fileExtensions);
 
 	String saveImages(ImageType imageType, String referenceCode, List<String> imageUrls);
