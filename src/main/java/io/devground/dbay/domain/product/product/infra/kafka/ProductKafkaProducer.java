@@ -7,10 +7,7 @@ import io.devground.core.event.product.ProductImagesDeleteEvent;
 import io.devground.core.event.product.ProductImagesPushEvent;
 import io.devground.dbay.domain.product.product.config.ProductTopicProperties;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
-// TODO: 추후 LogUtil 사용 가능
-@Slf4j
 @Component
 @RequiredArgsConstructor
 public class ProductKafkaProducer {

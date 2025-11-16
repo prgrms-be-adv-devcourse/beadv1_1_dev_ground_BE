@@ -32,7 +32,7 @@ import lombok.extern.slf4j.Slf4j;
  * 4. Saga 상태 관리 총괄
  * 5. 보상 트랜잭션은 새로운 트랜잭션에서 실행되어야 함
  */
-@Slf4j
+@Slf4j(topic = "saga")
 @Component
 @Transactional
 @RequiredArgsConstructor
