@@ -16,7 +16,7 @@ public interface ImageRepository extends JpaRepository<Image, Long> {
 		ImageType imageType, String referenceCode, List<String> imageUrls
 	);
 
-	Image findByImageTypeAndReferenceCode(ImageType imageType, String referenceCode);
+	List<Image> findAllByImageTypeAndReferenceCode(ImageType imageType, String referenceCode);
 
 	long deleteByImageTypeAndReferenceCode(ImageType imageType, String referenceCode);
 
@@ -32,6 +32,4 @@ public interface ImageRepository extends JpaRepository<Image, Long> {
 		@Param("referenceCode") String referenceCode,
 		@Param("imageUrls") List<String> imageUrls
 	);
-
-	List<Image> findAllByImageTypeAndReferenceCode(ImageType imageType, String referenceCode);
 }

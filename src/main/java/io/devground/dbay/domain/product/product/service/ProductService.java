@@ -30,7 +30,7 @@ public interface ProductService {
 
 	Void deleteProduct(String sellerCode, String productCode);
 
-	void updateStatusToSold(CartProductsRequest request);
+	void updateStatusToSold(String sellerCode, CartProductsRequest request);
 
 	Void saveImageUrls(String sellerCode, String productCode, ProductImageUrlsRequest request);
 
