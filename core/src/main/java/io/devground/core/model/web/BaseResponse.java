@@ -36,12 +36,12 @@ public record BaseResponse<T>(
 
 	public BaseResponse<T> throwIfNotSuccess() {
 
-		ErrorCode errorCode = ErrorCode.fromHttpStatus(resultCode, msg);
-
-		if (!isSuccess()) {
-			throw new ServiceException(errorCode);
+		if (isSuccess()) {
+			return this;
 		}
 
-		return this;
+		ErrorCode errorCode = ErrorCode.fromHttpStatus(resultCode, msg);
+
+		throw new ServiceException(errorCode);
 	}
 }
