@@ -13,6 +13,9 @@ import io.devground.core.event.product.ProductImagesDeleteEvent;
 import io.devground.core.event.product.ProductImagesPushEvent;
 import io.devground.core.event.vo.EventType;
 import io.devground.core.model.vo.ImageType;
+import io.devground.dbay.common.saga.entity.Saga;
+import io.devground.dbay.common.saga.service.SagaService;
+import io.devground.dbay.common.saga.vo.SagaStep;
 import io.devground.dbay.domain.image.service.ImageService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -31,6 +34,7 @@ public class ImageKafkaListener {
 
 	private final ImageService imageService;
 	private final ImageKafkaProducer imageKafkaProducer;
+	private final SagaService sagaService;
 
 	@KafkaHandler
 	public void handleProductImagePush(ProductImagesPushEvent event) {
@@ -39,22 +43,22 @@ public class ImageKafkaListener {
 		String referenceCode = event.referenceCode();
 		ImageType imageType = event.imageType();
 
-		try {
-			String thumbnailUrl = imageService.saveImages(event.imageType(), event.referenceCode(), event.imageUrls());
+		Saga saga = sagaService.getSaga(sagaId);
+		SagaStep step = saga.getCurrentStep();
 
-			log.error("상품 이미지 등록 성공 - SagaId: {}, ProductCode: {}", event.sagaId(), event.referenceCode());
+		if (step.ordinal() >= SagaStep.IMAGE_DB_SAVE.ordinal()) {
+			log.warn("이미 종료된 이미지 등록 Saga - SagaId: {}, ProductCode: {}, Step: {}",
+				sagaId, referenceCode, step);
 
-			imageKafkaProducer.publishImageProcessed(
-				new ImageProcessedEvent(sagaId, imageType, referenceCode, EventType.PUSH, thumbnailUrl, true, null));
-
-		} catch (Exception e) {
-			log.error(
-				"상품 이미지 등록 실패 - SagaId: {}, ProductCode: {}, Exception: ", event.sagaId(), event.referenceCode(), e
-			);
-
-			imageKafkaProducer.publishImageProcessed(
-				new ImageProcessedEvent(sagaId, imageType, referenceCode, EventType.PUSH, null, false, e.getMessage()));
+			return;
 		}
+
+		String thumbnailUrl = imageService.saveImages(imageType, referenceCode, event.imageUrls());
+
+		log.info("상품 이미지 등록 성공 - SagaId: {}, ProductCode: {}", sagaId, referenceCode);
+
+		imageKafkaProducer.publishImageProcessed(
+			new ImageProcessedEvent(sagaId, imageType, referenceCode, EventType.PUSH, thumbnailUrl, true, null));
 	}
 
 	@KafkaHandler
@@ -65,27 +69,30 @@ public class ImageKafkaListener {
 		ImageType imageType = event.imageType();
 		List<String> deleteUrls = event.deleteUrls();
 
-		try {
-			if (CollectionUtils.isEmpty(deleteUrls)) {
-				imageService.deleteImageByReferences(imageType, referenceCode);
+		Saga saga = sagaService.getSaga(sagaId);
+		SagaStep step = saga.getCurrentStep();
 
-				log.info("상품 전체 이미지 삭제 완료 - SagaId: {}, ProductCode: {}", sagaId, referenceCode);
-			} else {
-				imageService.deleteImagesByReferencesAndUrls(
-					imageType, referenceCode, deleteUrls
-				);
+		if (step.ordinal() >= SagaStep.IMAGE_DELETED.ordinal()) {
+			log.warn("이미 종료된 이미지 삭제 Saga - SagaId: {}, ProductCode: {}, Step: {}",
+				sagaId, referenceCode, step);
 
-				log.info("선택된 상품 이미지 삭제 완료 - SagaId: {}, ProductCode: {}, size: {}",
-					sagaId, referenceCode, deleteUrls.size());
-			}
-
-			imageKafkaProducer.publishImageProcessed(
-				new ImageProcessedEvent(sagaId, imageType, referenceCode, EventType.DELETE, null, true, null));
-		} catch (Exception e) {
-			log.error("상품 이미지 삭제 실패 - SagaId: {}, ProductCode: {}, Exception: ", sagaId, referenceCode, e);
-
-			imageKafkaProducer.publishImageProcessed(
-				new ImageProcessedEvent(sagaId, imageType, referenceCode, EventType.DELETE, null, false, e.getMessage()));
+			return;
 		}
+
+		if (CollectionUtils.isEmpty(deleteUrls)) {
+			imageService.deleteImageByReferences(imageType, referenceCode);
+
+			log.info("상품 전체 이미지 삭제 완료 - SagaId: {}, ProductCode: {}", sagaId, referenceCode);
+		} else {
+			imageService.deleteImagesByReferencesAndUrls(
+				imageType, referenceCode, deleteUrls
+			);
+
+			log.info("선택된 상품 이미지 삭제 완료 - SagaId: {}, ProductCode: {}, size: {}",
+				sagaId, referenceCode, deleteUrls.size());
+		}
+
+		imageKafkaProducer.publishImageProcessed(
+			new ImageProcessedEvent(sagaId, imageType, referenceCode, EventType.DELETE, null, true, null));
 	}
 }

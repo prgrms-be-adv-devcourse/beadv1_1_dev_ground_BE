@@ -19,8 +19,6 @@ public class KafkaProductTopicConfig {
 	@Value("${custom.kafka.config.topic-replications}")
 	private int replicas;
 
-	private static final String DLT = ".DLT";
-
 	private final ProductTopicProperties productTopicProperties;
 
 	@Bean
@@ -44,7 +42,7 @@ public class KafkaProductTopicConfig {
 	@Bean
 	public NewTopic productsImagePushDltTopic() {
 
-		return TopicBuilder.name(productTopicProperties.getImage().getPush() + DLT)
+		return TopicBuilder.name(productTopicProperties.getImage().getPushDlt())
 			.partitions(partitions)
 			.replicas(replicas)
 			.build();
@@ -53,7 +51,7 @@ public class KafkaProductTopicConfig {
 	@Bean
 	public NewTopic productsImageDeleteDltTopic() {
 
-		return TopicBuilder.name(productTopicProperties.getImage().getDelete() + DLT)
+		return TopicBuilder.name(productTopicProperties.getImage().getDeleteDlt())
 			.partitions(partitions)
 			.replicas(replicas)
 			.build();
