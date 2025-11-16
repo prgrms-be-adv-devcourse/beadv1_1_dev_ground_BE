@@ -1,4 +1,4 @@
-package io.devground.dbay.domain.product.product.vo;
+package io.devground.dbay.domain.product.product.model.vo;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

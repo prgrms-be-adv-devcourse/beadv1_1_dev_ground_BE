@@ -6,11 +6,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import io.devground.core.model.vo.ErrorCode;
-import io.devground.dbay.domain.product.category.dto.AdminCategoryResponse;
-import io.devground.dbay.domain.product.category.dto.CategoryResponse;
-import io.devground.dbay.domain.product.category.dto.CategoryTreeResponse;
-import io.devground.dbay.domain.product.category.dto.RegistCategoryRequest;
-import io.devground.dbay.domain.product.category.entity.Category;
+import io.devground.dbay.domain.product.category.model.dto.AdminCategoryResponse;
+import io.devground.dbay.domain.product.category.model.dto.CategoryResponse;
+import io.devground.dbay.domain.product.category.model.dto.CategoryTreeResponse;
+import io.devground.dbay.domain.product.category.model.dto.RegistCategoryRequest;
+import io.devground.dbay.domain.product.category.model.entity.Category;
 import io.devground.dbay.domain.product.category.mapper.CategoryMapper;
 import io.devground.dbay.domain.product.category.repository.CategoryRepository;
 import io.devground.dbay.domain.product.category.service.CategoryService;

@@ -6,7 +6,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.WebRequest;
 
-import io.devground.dbay.domain.product.category.dto.RegistCategoryRequest;
+import io.devground.dbay.domain.product.category.model.dto.RegistCategoryRequest;
 import io.devground.dbay.domain.product.category.repository.CategoryRepository;
 import io.devground.dbay.domain.product.category.service.CategoryService;
 import lombok.RequiredArgsConstructor;

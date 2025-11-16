@@ -1,4 +1,4 @@
-package io.devground.dbay.domain.product.category.entity;
+package io.devground.dbay.domain.product.category.model.entity;
 
 import java.util.ArrayList;
 import java.util.List;
