@@ -8,8 +8,10 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import io.devground.core.model.web.BaseResponse;
+import io.devground.dbay.domain.cart.cart.model.vo.CartProductsRequest;
 import io.devground.dbay.domain.cart.cart.model.vo.ProductDetailResponse;
-import io.devground.dbay.domain.cart.cart.model.vo.CartProductListResponse;
+import io.devground.dbay.domain.cart.cart.model.vo.CartProductsResponse;
 
 @FeignClient(
 	name = "product",
@@ -17,9 +19,9 @@ import io.devground.dbay.domain.cart.cart.model.vo.CartProductListResponse;
 	path = "/api/products"
 )
 public interface ProductFeignClient {
-	@GetMapping("/{code}")
-	ProductDetailResponse productInfoByCode(@PathVariable("code") String code);
+	@GetMapping("/{productCode}")
+	BaseResponse<ProductDetailResponse> getProductDetail(@PathVariable("productCode") String productCode);
 
 	@PostMapping("/carts")
-	List<CartProductListResponse> productListByCodes(@RequestBody List<String> codes);
+	BaseResponse<List<CartProductsResponse>> getCartProducts(@RequestBody CartProductsRequest request);
 }

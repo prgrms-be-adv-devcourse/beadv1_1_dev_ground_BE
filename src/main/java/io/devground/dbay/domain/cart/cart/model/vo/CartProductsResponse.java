@@ -2,15 +2,19 @@ package io.devground.dbay.domain.cart.cart.model.vo;
 
 import lombok.NonNull;
 
-public record CartProductListResponse(
+public record CartProductsResponse(
+	@NonNull
 	String productCode,
 
+	@NonNull
 	String productSaleCode,
 
+	@NonNull
 	String sellerCode,
 
+	@NonNull
 	String title,
 
-	Long price
+	long price
 ) {
 }
