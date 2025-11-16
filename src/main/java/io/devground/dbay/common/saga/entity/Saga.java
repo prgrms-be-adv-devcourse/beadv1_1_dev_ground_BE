@@ -13,6 +13,7 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Index;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
@@ -27,6 +28,11 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(
+	indexes = {
+		@Index(name = "idx_step_started_status", columnList = "currentStep, startedAt, sagaStatus"),
+		@Index(name = "idx_status_updated", columnList = "sagaStatus, updatedAt"),
+		@Index(name = "idx_reference_code_type_status", columnList = "referenceCode, sagaType, sagaStatus")
+	},
 	uniqueConstraints = {
 		@UniqueConstraint(
 			name = "uk_saga_reference_code_type_status",

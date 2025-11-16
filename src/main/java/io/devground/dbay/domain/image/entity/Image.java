@@ -23,7 +23,7 @@ import lombok.NoArgsConstructor;
 @Table(
 	name = "image",
 	indexes = {
-		@Index(name = "idx_image_reference_code_image_type", columnList = "referenceCode, imageType")
+		@Index(name = "idx_image_type_reference_code_url", columnList = "imageType, referenceCode, imageUrl")
 	},
 	uniqueConstraints = {
 		@UniqueConstraint(

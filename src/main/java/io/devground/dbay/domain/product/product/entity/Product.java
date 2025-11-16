@@ -26,10 +26,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(
 	indexes = {
-		@Index(
-			name = "idx_product_delete_status_created",
-			columnList = "deleteStatus, createdAt"
-		)
+		@Index(name = "idx_product_delete_status_created", columnList = "deleteStatus, createdAt"),
+		@Index(name = "idx_product_code_deleted", columnList = "code, deleteStatus")
 	}
 )
 public class Product extends BaseEntity {
