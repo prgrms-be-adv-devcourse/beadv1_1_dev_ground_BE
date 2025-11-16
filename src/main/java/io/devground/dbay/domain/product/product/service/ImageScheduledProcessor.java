@@ -12,7 +12,6 @@ import io.devground.dbay.common.saga.repository.SagaRepository;
 import io.devground.dbay.common.saga.service.SagaService;
 import io.devground.dbay.common.saga.vo.SagaStatus;
 import io.devground.dbay.common.saga.vo.SagaStep;
-import io.devground.dbay.domain.product.product.infra.kafka.ProductImageSagaOrchestrator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -23,9 +22,9 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class ImageScheduledProcessor {
 
-	private final ProductImageSagaOrchestrator productOrchestrator;
-	private final SagaRepository sagaRepository;
 	private final SagaService sagaService;
+	private final SagaRepository sagaRepository;
+	private final ProductImageCompensationService compensationService;
 
 	/**
 	 * Timeout된 Saga 보상 처리
@@ -50,7 +49,7 @@ public class ImageScheduledProcessor {
 				log.warn("Timeout된 Saga 처리 시작 - SagaId: {}, ProductCode: {}, Step: {}",
 					timeoutSaga.getSagaId(), timeoutSaga.getReferenceCode(), timeoutSaga.getCurrentStep());
 
-				productOrchestrator.compensateProductImageUploadFailure(
+				compensationService.compensateProductImageUploadFailure(
 					timeoutSaga.getSagaId(), timeoutSaga.getReferenceCode(), "Saga Timeout"
 				);
 			} catch (Exception e) {
