@@ -201,7 +201,13 @@ class CartServiceImplTest {
 		CartItem item1 = CartItem.builder().cart(cart).productCode(productCode1).build();
 		CartItem item2 = CartItem.builder().cart(cart).productCode(productCode2).build();
 
-		cart.setCartItems(List.of(item1, item2));
+		AddCartItemRequest request = new AddCartItemRequest(productCode1);
+		AddCartItemRequest request2 = new AddCartItemRequest(productCode2);
+
+		given(cartRepository.findByCode(cart.getCode())).willReturn(Optional.of(cart));
+
+		cartService.addItem(cart.getCode(), request);
+		cartService.addItem(cart.getCode(), request2);
 
 		given(cartRepository.findByCode(cart.getCode())).willReturn(Optional.of(cart));
 		given(cartItemRepository.findByCart(cart)).willReturn(List.of(item1, item2));
@@ -235,7 +241,13 @@ class CartServiceImplTest {
 		CartItem item1 = CartItem.builder().cart(cart).productCode(productCode).build();
 		CartItem item2 = CartItem.builder().cart(cart).productCode(productCode).build();
 
-		cart.setCartItems(List.of(item1, item2));
+		AddCartItemRequest request = new AddCartItemRequest(productCode);
+
+		given(cartRepository.findByCode(cart.getCode())).willReturn(Optional.of(cart));
+		given(cartItemRepository.existsByCartAndProductCode(cart, productCode)).willReturn(false);
+
+		cartService.addItem(cart.getCode(), request);
+		cartService.addItem(cart.getCode(), request);
 
 		given(cartRepository.findByCode(cart.getCode())).willReturn(Optional.of(cart));
 
@@ -273,7 +285,11 @@ class CartServiceImplTest {
 			.productCode(productCode)
 			.build();
 
-		cart.setCartItems(List.of(item));
+		AddCartItemRequest request = new AddCartItemRequest(productCode);
+
+		given(cartRepository.findByCode(cart.getCode())).willReturn(Optional.of(cart));
+
+		cartService.addItem(cart.getCode(), request);
 
 		given(cartRepository.findByCode(cart.getCode())).willReturn(Optional.of(cart));
 		given(cartItemRepository.findByCart(cart)).willReturn(List.of(item));

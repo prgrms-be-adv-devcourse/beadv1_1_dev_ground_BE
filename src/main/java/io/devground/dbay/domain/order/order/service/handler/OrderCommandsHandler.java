@@ -30,7 +30,7 @@ public class OrderCommandsHandler {
 	// 롤백
 	@KafkaHandler
 	public void handle(@Payload NotifyOrderCreateFailedAlertCommand command) {
-		orderService.cancelOrder(command.userCode(), command.orderCode());
+		orderService.cancelOrder(command.userCode() ,command.orderCode());
 	}
 
 	// 예치금 성공했을때 주문 상태 변경
