@@ -1,8 +1,8 @@
-package io.devground.dbay.domain.product.product.entity;
+package io.devground.dbay.domain.product.product.model.entity;
 
 import io.devground.core.model.entity.BaseEntity;
 import io.devground.core.model.vo.ErrorCode;
-import io.devground.dbay.domain.product.category.entity.Category;
+import io.devground.dbay.domain.product.category.model.entity.Category;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

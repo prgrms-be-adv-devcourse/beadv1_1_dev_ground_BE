@@ -5,7 +5,7 @@ import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
-import io.devground.dbay.domain.product.category.entity.Category;
+import io.devground.dbay.domain.product.category.model.entity.Category;
 
 public interface CategoryRepository extends JpaRepository<Category, Long> {
 

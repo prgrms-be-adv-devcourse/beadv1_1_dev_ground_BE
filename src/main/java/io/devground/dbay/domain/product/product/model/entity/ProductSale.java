@@ -1,10 +1,10 @@
-package io.devground.dbay.domain.product.product.entity;
+package io.devground.dbay.domain.product.product.model.entity;
 
 import java.time.LocalDateTime;
 
 import io.devground.core.model.entity.BaseEntity;
 import io.devground.core.model.vo.ErrorCode;
-import io.devground.dbay.domain.product.product.vo.ProductStatus;
+import io.devground.dbay.domain.product.product.model.vo.ProductStatus;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;

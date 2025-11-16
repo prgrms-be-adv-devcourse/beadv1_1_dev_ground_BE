@@ -12,11 +12,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
 import io.devground.core.model.exception.ServiceException;
-import io.devground.dbay.domain.product.category.dto.AdminCategoryResponse;
-import io.devground.dbay.domain.product.category.dto.CategoryResponse;
-import io.devground.dbay.domain.product.category.dto.CategoryTreeResponse;
-import io.devground.dbay.domain.product.category.dto.RegistCategoryRequest;
-import io.devground.dbay.domain.product.category.entity.Category;
+import io.devground.dbay.domain.product.category.model.dto.AdminCategoryResponse;
+import io.devground.dbay.domain.product.category.model.dto.CategoryResponse;
+import io.devground.dbay.domain.product.category.model.dto.CategoryTreeResponse;
+import io.devground.dbay.domain.product.category.model.dto.RegistCategoryRequest;
+import io.devground.dbay.domain.product.category.model.entity.Category;
 import io.devground.dbay.domain.product.category.repository.CategoryRepository;
 import jakarta.transaction.Transactional;
 

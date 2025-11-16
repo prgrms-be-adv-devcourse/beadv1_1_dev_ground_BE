@@ -9,8 +9,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import io.devground.dbay.domain.product.product.dto.CartProductsResponse;
-import io.devground.dbay.domain.product.product.entity.Product;
+import io.devground.dbay.domain.product.product.model.dto.CartProductsResponse;
+import io.devground.dbay.domain.product.product.model.entity.Product;
 
 public interface ProductRepository extends JpaRepository<Product, Long> {
 
