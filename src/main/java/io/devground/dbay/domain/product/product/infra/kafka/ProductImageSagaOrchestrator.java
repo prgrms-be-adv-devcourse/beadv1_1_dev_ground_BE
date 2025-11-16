@@ -6,9 +6,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
@@ -22,6 +20,7 @@ import io.devground.dbay.common.saga.vo.SagaStep;
 import io.devground.dbay.common.saga.vo.SagaType;
 import io.devground.dbay.domain.product.product.client.ImageClient;
 import io.devground.dbay.domain.product.product.mapper.ProductMapper;
+import io.devground.dbay.domain.product.product.service.ProductImageCompensationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -42,7 +41,7 @@ public class ProductImageSagaOrchestrator {
 	private final ImageClient imageClient;
 	private final SagaService sagaService;
 	private final ProductKafkaProducer productKafkaProducer;
-	private final ObjectProvider<ProductImageSagaOrchestrator> orchestratorProvider;
+	private final ProductImageCompensationService compensationService;
 
 	public List<URL> startGetPresignedUrlsSaga(String productCode, List<String> imageExtensions) {
 
@@ -90,7 +89,7 @@ public class ProductImageSagaOrchestrator {
 		} catch (Exception e) {
 			log.error("이미지 등록 이벤트 발행 실패 - SagaId: {}, ProductCode: {}, Exception: ", sagaId, productCode, e);
 
-			this.getSelf().compensateProductImageUploadFailure(sagaId, productCode, "이벤트 발행 실패: " + e.getMessage());
+			compensationService.compensateProductImageUploadFailure(sagaId, productCode, "이벤트 발행 실패: " + e.getMessage());
 
 			throw e;
 		}
@@ -124,7 +123,7 @@ public class ProductImageSagaOrchestrator {
 		} catch (Exception e) {
 			log.error("상품 이미지 수정 실패 - SagaId: {}, ProductCode: {}, Exception: ", sagaId, productCode, e);
 
-			this.getSelf().compensateProductImageUpdateFailure(sagaId, productCode, deleteUrls, e.getMessage());
+			compensationService.compensateProductImageUpdateFailure(sagaId, productCode, deleteUrls, e.getMessage());
 
 			throw e;
 		}
@@ -155,178 +154,53 @@ public class ProductImageSagaOrchestrator {
 
 	public void handleImageProcessSuccess(String sagaId, ImageProcessedEvent event) {
 
-		try {
-			Saga saga = sagaService.getSaga(sagaId);
+		Saga saga = sagaService.getSaga(sagaId);
 
-			if (saga.getSagaStatus().isTerminal()) {
-				log.info("이미 처리된 성공 Saga - SagaId: {}, ProductCode: {}", sagaId, event.referenceCode());
+		if (saga.getSagaStatus().isTerminal()) {
+			log.info("이미 처리된 성공 Saga - SagaId: {}, ProductCode: {}", sagaId, event.referenceCode());
 
-				return;
-			}
-
-			switch (event.eventType()) {
-				case PUSH -> sagaService.updateStep(sagaId, SagaStep.IMAGE_DB_SAVE);
-				case DELETE -> sagaService.updateStep(sagaId, SagaStep.IMAGE_DELETED);
-			}
-
-			sagaService.updateToSuccess(sagaId);
-
-			log.info("Saga 완료 - SagaId: {}, ProductCode: {}", sagaId, event.referenceCode());
-		} catch (Exception e) {
-			log.error("Saga 성공 처리 중 오류 발생/보상 필요 - SagaId: {}, Exception: ", sagaId, e);
-
-			sagaService.updateToFail(sagaId, "Saga 성공 처리 중 오류 발생/보상 필요: " + e.getMessage());
+			return;
 		}
+
+		switch (event.eventType()) {
+			case PUSH -> sagaService.updateStep(sagaId, SagaStep.IMAGE_DB_SAVE);
+			case DELETE -> sagaService.updateStep(sagaId, SagaStep.IMAGE_DELETED);
+		}
+
+		sagaService.updateToSuccess(sagaId);
+
+		log.info("Saga 완료 - SagaId: {}, ProductCode: {}", sagaId, event.referenceCode());
 	}
 
 	public void handleImageProcessFailure(String sagaId, ImageProcessedEvent event) {
 
-		try {
-			Saga saga = sagaService.getSaga(sagaId);
-
-			if (saga.getSagaStatus().isTerminal()) {
-				log.info("이미 처리된 실패 Saga - SagaId: {}, ProductCode: {}", sagaId, event.referenceCode());
-
-				return;
-			}
-
-			switch (event.eventType()) {
-				case PUSH -> {
-					log.error("이미지 업로드 실패/수동 보상 필요 - SagaId: {}, ProductCode: {}, ErrorMessage: {}",
-						sagaId, event.referenceCode(), event.errorMsg());
-
-					this.getSelf().compensateProductImageUploadFailure(sagaId, event.referenceCode(), event.errorMsg());
-				}
-				case DELETE -> {
-					log.error("이미지 삭제 실패 - SagaId: {}, ProductCode: {}, ErrorMessage: {}",
-						sagaId, event.referenceCode(), event.errorMsg());
-
-					sagaService.updateToFail(sagaId, "이미지 삭제 실패 (재시도, DLT 확인) : " + event.errorMsg());
-				}
-				default -> {
-					log.error("미지원 이벤트 실패 - SagaId: {}, ProductCode: {}, ErrorMessage: {}",
-						sagaId, event.referenceCode(), event.errorMsg());
-
-					sagaService.updateToFail(sagaId, "미지원 이벤트 실패: " + event.eventType());
-				}
-			}
-		} catch (Exception e) {
-			log.error("Saga 실패 처리 중 오류 발생/보상 필요 - SagaId: {}, Exception: ", sagaId, e);
-
-			sagaService.updateToFail(sagaId, "Saga 실패 처리 중 오류 발생/보상 필요" + e.getMessage());
-		}
-	}
-
-	@Transactional(propagation = Propagation.REQUIRES_NEW)
-	public void compensateProductImageUploadFailure(
-		String sagaId, String productCode, String errorMsg
-	) {
-
 		Saga saga = sagaService.getSaga(sagaId);
-		SagaStep step = saga.getCurrentStep();
-
-		log.info("이미지 등록 보상 트랜잭션 시작 - SagaId: {}, ProductCode: {}, Step: {}", sagaId, productCode, step);
 
 		if (saga.getSagaStatus().isTerminal()) {
-			log.warn("이미 종료된 Saga/업로드 보상 중지 - SagaId: {}, Status: {}, Step: {}", sagaId, saga.getSagaStatus(), step);
+			log.info("이미 처리된 실패 Saga - SagaId: {}, ProductCode: {}", sagaId, event.referenceCode());
 
 			return;
 		}
 
-		if (saga.getSagaStatus().isCompensating()) {
-			log.warn("이미 보상 중인 Saga/업로드 보상 중지 - SagaId: {}, Status: {}, Step: {}", sagaId, saga.getSagaStatus(), step);
+		switch (event.eventType()) {
+			case PUSH -> {
+				log.error("이미지 업로드 실패/수동 보상 필요 - SagaId: {}, ProductCode: {}, ErrorMessage: {}",
+					sagaId, event.referenceCode(), event.errorMsg());
 
-			return;
-		}
-
-		sagaService.updateToCompensating(sagaId);
-
-		boolean isCompensated = false;
-		String compensateErrorMsg = null;
-
-		try {
-			switch (step) {
-				case WAITING_S3_UPLOAD, IMAGE_KAFKA_PUBLISHED -> {
-					log.info("S3 저장 실패 보상 - SagaId: {}, ProductCode: {}", sagaId, productCode);
-
-					imageClient.compensateUpload(ProductMapper.toDeleteImagesRequest(PRODUCT, productCode))
-						.throwIfNotSuccess();
-				}
-				case IMAGE_DB_SAVE -> {
-					log.info("이미지 DB 저장 실패 보상 - SagaId: {}, ProductCode: {}", sagaId, productCode);
-
-					imageClient.compensateUpload(ProductMapper.toDeleteImagesRequest(PRODUCT, productCode))
-						.throwIfNotSuccess();
-				}
-				case PENDING_S3_UPLOAD ->
-					log.info("PresignedURL 발급/보상 불필요 - SagaId: {}, ProductCode: {}", sagaId, productCode);
-				default -> log.error("보상 불가능한 Step - SagaId: {}, ProductCode: {}, Step: {}, ErrorMessage: {}",
-					sagaId, productCode, step, errorMsg);
+				compensationService.compensateProductImageUploadFailure(sagaId, event.referenceCode(), event.errorMsg());
 			}
+			case DELETE -> {
+				log.error("이미지 삭제 실패 - SagaId: {}, ProductCode: {}, ErrorMessage: {}",
+					sagaId, event.referenceCode(), event.errorMsg());
 
-			isCompensated = true;
-		} catch (Exception e) {
-			compensateErrorMsg = e.getMessage();
+				sagaService.updateToFail(sagaId, "이미지 삭제 실패 (재시도, DLT 확인) : " + event.errorMsg());
+			}
+			default -> {
+				log.error("미지원 이벤트 실패 - SagaId: {}, ProductCode: {}, ErrorMessage: {}",
+					sagaId, event.referenceCode(), event.errorMsg());
+
+				sagaService.updateToFail(sagaId, "미지원 이벤트 실패: " + event.eventType());
+			}
 		}
-
-		if (isCompensated) {
-			sagaService.updateToCompensated(
-				sagaId,
-				String.format("이미지 등록 보상 완료 - SagaId: %s, ProductCode: %s, Exception: %s",
-					sagaId, productCode, errorMsg
-				)
-			);
-
-			log.info("이미지 등록 보상 완료 - SagaId: {}, ProductCode: {}", sagaId, productCode);
-		} else {
-			log.error(
-				"이미지 등록 보상 트랜잭션 실패 - SagaId: {}, productCode: {}, Exception: {}",
-				sagaId, productCode, compensateErrorMsg
-			);
-
-			sagaService.updateToFail(
-				sagaId,
-				String.format("이미지 등록 보상 트랜잭션 실패 - SagaId: %s, ProductCode: %s, Exception: %s",
-					sagaId, productCode, compensateErrorMsg
-				)
-			);
-		}
-	}
-
-	@Transactional(propagation = Propagation.REQUIRES_NEW)
-	public void compensateProductImageUpdateFailure(
-		String sagaId, String productCode, List<String> deleteUrls, String errorMsg
-	) {
-
-		log.error("이미지 업데이트 실패/삭제된 이미지는 복구 불가능 - SagaId: {}, ProductCode: {}, deleteUrls: {}",
-			sagaId, productCode, deleteUrls
-		);
-
-		Saga saga = sagaService.getSaga(sagaId);
-		if (saga.getSagaStatus().isTerminal()) {
-			log.warn("이미 종료된 Saga/업데이트 보상 중지 - SagaId: {}, Status: {}, Step: {}",
-				sagaId, saga.getSagaStatus(), saga.getCurrentStep()
-			);
-
-			return;
-		}
-
-		if (saga.getSagaStatus().isCompensating()) {
-			log.warn("이미 보상 중인 Saga/업데이트 보상 중지 - SagaId: {}, Status: {}, Step: {}",
-				sagaId, saga.getSagaStatus(), saga.getCurrentStep()
-			);
-
-			return;
-		}
-
-		sagaService.updateToFail(
-			sagaId,
-			String.format("이미지 업데이트 실패/수동 복구 필요 - ProductCode: %s, deleteUrls: %s, Exception: %s",
-				productCode, deleteUrls, errorMsg)
-		);
-	}
-
-	private ProductImageSagaOrchestrator getSelf() {
-		return orchestratorProvider.getObject();
 	}
 }
