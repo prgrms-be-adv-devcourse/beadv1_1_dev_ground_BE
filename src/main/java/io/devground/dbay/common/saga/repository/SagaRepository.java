@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import io.devground.dbay.common.saga.entity.Saga;
 import io.devground.dbay.common.saga.vo.SagaStatus;
 import io.devground.dbay.common.saga.vo.SagaStep;
+import io.devground.dbay.common.saga.vo.SagaType;
 
 public interface SagaRepository extends JpaRepository<Saga, Long> {
 
@@ -18,6 +19,12 @@ public interface SagaRepository extends JpaRepository<Saga, Long> {
 
 	Optional<Saga> findFirstByReferenceCodeAndSagaStatusOrderByStartedAtDesc(
 		String referenceCode,
+		SagaStatus sagaStatus
+	);
+
+	Optional<Saga> findFirstByReferenceCodeAndSagaTypeAndSagaStatusOrderByStartedAtDesc(
+		String referenceCode,
+		SagaType sagaType,
 		SagaStatus sagaStatus
 	);
 
