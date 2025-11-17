@@ -4,7 +4,6 @@ import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
-import org.springframework.web.context.request.WebRequest;
 
 import io.devground.dbay.domain.product.category.model.dto.RegistCategoryRequest;
 import io.devground.dbay.domain.product.category.repository.CategoryRepository;
@@ -18,7 +17,6 @@ public class CategoryInit implements ApplicationRunner {
 
 	private final CategoryService categoryService;
 	private final CategoryRepository categoryRepository;
-	private final WebRequest webRequest;
 
 	@Override
 	public void run(ApplicationArguments args) throws Exception {
