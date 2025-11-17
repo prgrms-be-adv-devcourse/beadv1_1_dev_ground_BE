@@ -9,15 +9,12 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
-import org.springframework.util.ObjectUtils;
-import org.springframework.web.multipart.MultipartFile;
 
 import io.devground.core.model.exception.ServiceException;
 import io.devground.core.model.vo.ErrorCode;
 import io.devground.core.model.vo.ImageType;
 import lombok.RequiredArgsConstructor;
 import software.amazon.awssdk.core.exception.SdkException;
-import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
 import software.amazon.awssdk.services.s3.model.DeleteObjectsRequest;
@@ -41,7 +38,9 @@ public class S3Service {
 	@Value("${spring.cloud.aws.region.static}")
 	private String region;
 
+	// TODO: 미사용 시 삭제
 	// MultipartFile[]을 서버에서 S3에 바로 업로드
+/*
 	public List<String> uploadFiles(ImageType imageType, String referenceCode, MultipartFile[] files) {
 
 		if (ObjectUtils.isEmpty(files)) {
@@ -84,6 +83,7 @@ public class S3Service {
 			throw new ServiceException(ErrorCode.S3_UPLOAD_FAILED);
 		}
 	}
+*/
 
 	// PresignedURLs 생성
 	public List<URL> generatePresignedUrls(ImageType imageType, String referenceCode, List<String> fileExtensions) {
@@ -110,7 +110,7 @@ public class S3Service {
 			// PresignedURL
 			return s3Presigner.presignPutObject(builder -> builder
 					.putObjectRequest(this.buildPutObjectRequest(imageType, referenceCode, fileExtension))
-					.signatureDuration(Duration.ofMinutes(5)))
+					.signatureDuration(Duration.ofMinutes(30)))
 				.url();
 		} catch (SdkException e) {
 			throw new ServiceException(ErrorCode.S3_PRESIGNED_URL_GENERATION_FAILED);

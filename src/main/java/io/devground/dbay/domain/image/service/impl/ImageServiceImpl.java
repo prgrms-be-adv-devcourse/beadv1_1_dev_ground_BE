@@ -14,7 +14,9 @@ import io.devground.dbay.domain.image.mapper.ImageMapper;
 import io.devground.dbay.domain.image.repository.ImageRepository;
 import io.devground.dbay.domain.image.service.ImageService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j(topic = "saga")
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -63,11 +65,16 @@ public class ImageServiceImpl implements ImageService {
 		ImageType imageType, String referenceCode, List<String> deleteUrls, List<String> newImageExtensions
 	) {
 
+		log.info("업데이트 시도");
+
 		if (!CollectionUtils.isEmpty(deleteUrls)) {
+			log.info("업데이트 진행");
+
 			List<Image> imagesToDelete =
 				imageRepository.findAllByImageTypeAndReferenceCodeAndImageUrlIn(imageType, referenceCode, deleteUrls);
 
 			if (!imagesToDelete.isEmpty()) {
+				log.info("업데이트 할 이미지들 존재");
 				s3Service.deleteObjectsByUrls(deleteUrls);
 
 				imageRepository.deleteAllInBatch(imagesToDelete);
