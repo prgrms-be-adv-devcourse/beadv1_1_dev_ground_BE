@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 public record PaymentRequest(
 	String userCode,
 	String orderCode,
+	String paymentKey,
 	Long totalAmount
 ) {
 }
