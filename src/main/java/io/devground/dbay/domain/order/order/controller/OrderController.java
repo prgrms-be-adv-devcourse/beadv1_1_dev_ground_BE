@@ -1,9 +1,9 @@
 package io.devground.dbay.domain.order.order.controller;
 
+import java.util.List;
+
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -12,8 +12,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import io.devground.core.model.entity.RoleType;
 import io.devground.core.model.web.BaseResponse;
 import io.devground.dbay.domain.order.order.model.vo.CancelOrderResponse;
 import io.devground.dbay.domain.order.order.model.vo.ConfirmOrderResponse;
@@ -21,7 +23,7 @@ import io.devground.dbay.domain.order.order.model.vo.CreateOrderRequest;
 import io.devground.dbay.domain.order.order.model.vo.CreateOrderResponse;
 import io.devground.dbay.domain.order.order.model.vo.GetOrderDetailResponse;
 import io.devground.dbay.domain.order.order.model.vo.GetOrdersResponse;
-import io.devground.core.model.entity.RoleType;
+import io.devground.dbay.domain.order.order.model.vo.UnsettledOrderItemResponse;
 import io.devground.dbay.domain.order.order.service.OrderService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -80,5 +82,14 @@ public class OrderController {
 		@PathVariable String orderCode
 	) {
 		return BaseResponse.success(200, orderService.confirmOrder(userCode, orderCode), "구매 확정 완료");
+	}
+
+	@GetMapping("/unsettled-items")
+	@Operation(summary = "정산위한 주문 정보 조회", description = "주문 완료된 주문 상품들에 대해 정산처리하기 위함")
+	BaseResponse<List<UnsettledOrderItemResponse>> getUnsettledOrderItems(
+		@RequestParam(defaultValue = "0") int page,
+		@RequestParam(defaultValue = "1000") int size
+	) {
+		return BaseResponse.success(200, orderService.getUnsettledOrderItems(page, size), "정산 처리를 위한 주문 정보 조회 완료");
 	}
 }

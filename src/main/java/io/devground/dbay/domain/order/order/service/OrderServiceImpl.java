@@ -1,10 +1,11 @@
 package io.devground.dbay.domain.order.order.service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
@@ -12,8 +13,8 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.validation.Validator;
 
+import io.devground.core.model.entity.RoleType;
 import io.devground.core.model.vo.DeleteStatus;
 import io.devground.core.model.vo.ErrorCode;
 import io.devground.core.util.Validators;
@@ -23,15 +24,15 @@ import io.devground.dbay.domain.order.order.mapper.OrderMapper;
 import io.devground.dbay.domain.order.order.model.entity.Order;
 import io.devground.dbay.domain.order.order.model.vo.CancelOrderResponse;
 import io.devground.dbay.domain.order.order.model.vo.ConfirmOrderResponse;
+import io.devground.dbay.domain.order.order.model.vo.CreateOrderRequest;
 import io.devground.dbay.domain.order.order.model.vo.CreateOrderResponse;
 import io.devground.dbay.domain.order.order.model.vo.GetOrderDetailResponse;
 import io.devground.dbay.domain.order.order.model.vo.GetOrdersResponse;
 import io.devground.dbay.domain.order.order.model.vo.OrderItemInfo;
 import io.devground.dbay.domain.order.order.model.vo.OrderProductListResponse;
-import io.devground.dbay.domain.order.order.model.vo.CreateOrderRequest;
-import io.devground.dbay.domain.order.order.model.vo.OrderStatus;
 import io.devground.dbay.domain.order.order.model.vo.PaidOrderResponse;
-import io.devground.core.model.entity.RoleType;
+import io.devground.dbay.domain.order.order.model.vo.UnsettledOrderItemInfo;
+import io.devground.dbay.domain.order.order.model.vo.UnsettledOrderItemResponse;
 import io.devground.dbay.domain.order.order.repository.OrderRepository;
 import io.devground.dbay.domain.order.orderItem.model.entity.OrderItem;
 import io.devground.dbay.domain.order.orderItem.repository.OrderItemRepository;
@@ -189,12 +190,56 @@ public class OrderServiceImpl implements OrderService {
 	}
 
 	@Override
+	@Transactional
 	public ConfirmOrderResponse confirmOrder(String userCode, String orderCode) {
 		Order order = checkOrder(userCode, orderCode);
 
 		order.confirm();
 
 		return OrderMapper.toConfirmOrderResponse(order);
+	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public List<UnsettledOrderItemResponse> getUnsettledOrderItems(int page, int size) {
+		if (page < 0) {
+			throw ErrorCode.PAGE_MUST_BE_POSITIVE.throwServiceException();
+		}
+
+		if (size < 0) {
+			throw ErrorCode.PAGE_SIZE_MUST_BE_POSITIVE.throwServiceException();
+		}
+
+		LocalDate today = LocalDate.now().minusDays(1);
+		LocalDate twoWeeksAgo = today.minusWeeks(2);
+
+		LocalDateTime start = twoWeeksAgo.atStartOfDay();
+		LocalDateTime end = today.atTime(LocalTime.MAX);
+
+		List<Order> orders = orderRepository.findOrderBeforeConfirmed(start, end);
+
+		List<OrderItem> orderItems = orderItemRepository.findByOrderIn(orders);
+
+		Map<Long, List<OrderItem>> itemsByOrderId = orderItems.stream()
+			.collect(Collectors.groupingBy(oi -> oi.getOrder().getId()));
+
+		return orders.stream()
+			.map(o -> {
+				List<OrderItem> items = itemsByOrderId.getOrDefault(o.getId(), List.of());
+
+				List<UnsettledOrderItemInfo> itemInfos = items.stream()
+					.map(oi -> new UnsettledOrderItemInfo(
+						oi.getCode(),
+						oi.getSellerCode(),
+						oi.getProductPrice()
+					)).toList();
+
+				return new UnsettledOrderItemResponse(
+					o.getCode(),
+					o.getUserCode(),
+					itemInfos
+				);
+			}).toList();
 	}
 
 	private Order checkOrder(String userCode, String orderCode) {

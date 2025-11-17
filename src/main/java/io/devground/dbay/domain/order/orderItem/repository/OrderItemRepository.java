@@ -13,4 +13,5 @@ import io.devground.dbay.domain.order.orderItem.model.entity.OrderItem;
 public interface OrderItemRepository extends JpaRepository<OrderItem, Long> {
 	List<OrderItem> findByOrderInAndDeleteStatus(List<Order> orders, DeleteStatus deleteStatus);
 	List<OrderItem> findByOrder(Order order);
+	List<OrderItem> findByOrderIn(List<Order> orders);
 }
