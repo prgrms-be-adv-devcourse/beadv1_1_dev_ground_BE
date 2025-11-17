@@ -9,5 +9,5 @@ import io.devground.dbay.domain.payment.model.entity.Payment;
 @Repository
 public interface PaymentRepository extends JpaRepository<Payment, Integer> {
 
-	PaymentResponse findByUserCode(String userCode);
+	Payment findByOrderCode(String orderCode);
 }

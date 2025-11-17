@@ -1,9 +1,8 @@
 package io.devground.dbay.domain.payment.model.dto.request;
 
-public record TossPayRequest(
-	String userCode,
+public record PaymentConfirmRequest(
 	String orderCode,
 	String paymentKey,
-	Long chargeAmount
+	Long amount
 ) {
 }

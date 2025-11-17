@@ -1,20 +1,28 @@
 package io.devground.dbay.domain.payment.service;
 
 import io.devground.dbay.domain.payment.model.dto.request.PaymentRequest;
+import io.devground.dbay.domain.payment.model.dto.request.TossPayRequest;
 import io.devground.dbay.domain.payment.model.dto.response.TossPayResponse;
 import io.devground.dbay.domain.payment.model.entity.Payment;
 
 public interface PaymentService {
 
 	//결제
-	Payment pay(PaymentRequest payRequest);
+	boolean pay(String userCode, String orderCode, Long totalAmount, String paymentKey);
 
 	//환불
-	Payment refund(String userCode, PaymentRequest payRequest);
+	Payment refund(String userCode, Long amount);
 
 	//Toss결제 승인
-	Payment confirmPayment(PaymentRequest payRequest) throws Exception;
+	String confirmTossPayment(TossPayRequest tossPayRequest) throws Exception;
+
+	//예치금 결제 성공
+	void applyDepositPayment(String orderCode);
+
+	void canceledDepositPayment(String orderCode);
 
 	//Toss결제 요청
 	TossPayResponse payToss(PaymentRequest payRequest, Long balance);
+
+	Payment getByOrderCode(String orderCode);
 }
