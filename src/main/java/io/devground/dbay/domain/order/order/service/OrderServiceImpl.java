@@ -226,6 +226,12 @@ public class OrderServiceImpl implements OrderService {
 		return PageDto.from(pageResult);
 	}
 
+	@Override
+	@Transactional
+	public void confirmOrders(List<String> orderCodes) {
+		orderRepository.DeleteByOrderCodes(orderCodes);
+	}
+
 	private Order checkOrder(String userCode, String orderCode) {
 		if (!Validators.isValidUuid(userCode)) {
 			throw ErrorCode.CODE_INVALID.throwServiceException();
