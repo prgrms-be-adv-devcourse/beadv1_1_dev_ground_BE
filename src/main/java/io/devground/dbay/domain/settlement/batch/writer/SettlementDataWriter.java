@@ -1,5 +1,7 @@
 package io.devground.dbay.domain.settlement.batch.writer;
 
+import java.util.List;
+
 import org.springframework.batch.item.Chunk;
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.beans.factory.annotation.Value;
@@ -39,27 +41,29 @@ public class SettlementDataWriter implements ItemWriter<Settlement> {
 		log.info("Settlement 저장 완료: {} 건", chunk.size());
 
 		// orderCode 기준으로 중복 제거 후 이벤트 발행
-		chunk.getItems().stream()
+		List<String> orderCodes = chunk.getItems().stream()
 			.map(Settlement::getOrderCode)
 			.distinct()
-			.forEach(this::publishSettlementCreatedEvent);
+			.toList();
+
+		publishSettlementCreatedEvent(orderCodes);
 	}
 
 	/**
 	 * Settlement 생성 성공 이벤트를 Kafka로 발행
-	 * orderCode별로 한 번만 발행
+	 * orderCode 리스트를 한 번에 발행
 	 */
-	private void publishSettlementCreatedEvent(String orderCode) {
+	private void publishSettlementCreatedEvent(List<String> orderCodes) {
 		try {
 			SettlementCreatedSuccess event = SettlementCreatedSuccess.builder()
-				.orderCode(orderCode)
+				.orderCodes(orderCodes)
 				.build();
 
 			kafkaTemplate.send(settlementsEventTopicName, event);
-			log.info("Settlement 생성 이벤트 발행 완료: orderCode={}", orderCode);
+			log.info("Settlement 생성 이벤트 발행 완료: orderCodes={}", orderCodes);
 
 		} catch (Exception e) {
-			log.error("Settlement 생성 이벤트 발행 실패: orderCode={}", orderCode, e);
+			log.error("Settlement 생성 이벤트 발행 실패: orderCodes={}", orderCodes, e);
 			// todo: 이벤트 발행 실패시 정산 롤백 이벤트 처리필요.
 		}
 	}
