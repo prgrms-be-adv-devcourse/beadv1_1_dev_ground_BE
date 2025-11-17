@@ -33,8 +33,8 @@ public class ImageKafkaDltListener {
 
 		imageKafkaProducer.publishImageProcessed(
 			new ImageProcessedEvent(
-				event.sagaId(), event.imageType(), event.referenceCode(), EventType.PUSH, null, false,
-				"상품 이미지 등록 재시도 모두 실패"
+				event.sagaId(), event.imageType(), event.referenceCode(), EventType.PUSH, event.imageUrls(),
+				null, false, "상품 이미지 등록 재시도 모두 실패"
 			)
 		);
 	}
@@ -46,7 +46,7 @@ public class ImageKafkaDltListener {
 
 		imageKafkaProducer.publishImageProcessed(
 			new ImageProcessedEvent(
-				event.sagaId(), event.imageType(), event.referenceCode(), EventType.PUSH, null, false,
+				event.sagaId(), event.imageType(), event.referenceCode(), EventType.PUSH, null, null, false,
 				"상품 이미지 삭제 재시도 모두 실패"
 			)
 		);

@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.springframework.kafka.annotation.KafkaHandler;
 import org.springframework.kafka.annotation.KafkaListener;
-import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
@@ -36,30 +35,46 @@ public class ImageKafkaListener {
 	private final SagaService sagaService;
 
 	@KafkaHandler
-	public void handleProductImagePush(@Payload ProductImagesPushEvent event) {
+	public void handleProductImagePush(ProductImagesPushEvent event) {
 
 		String sagaId = event.sagaId();
 		String referenceCode = event.referenceCode();
 		ImageType imageType = event.imageType();
 
-		Saga saga = sagaService.getSaga(sagaId);
-		SagaStep step = saga.getCurrentStep();
+		try {
+			Saga saga = sagaService.getSaga(sagaId);
+			SagaStep step = saga.getCurrentStep();
 
-		log.info("상품 이미지 등록 시도 - SagaId: {}, ProductCode: {}, Step: {}", sagaId, referenceCode, step);
+			log.info("상품 이미지 등록 시도 - SagaId: {}, ProductCode: {}, Step: {}", sagaId, referenceCode, step);
 
-		if (step.ordinal() >= SagaStep.IMAGE_DB_SAVE.ordinal()) {
-			log.warn("이미 종료된 이미지 등록 Saga - SagaId: {}, ProductCode: {}, Step: {}",
-				sagaId, referenceCode, step);
+			if (step.ordinal() >= SagaStep.IMAGE_DB_SAVE.ordinal()) {
+				log.warn("이미 종료된 이미지 등록 Saga - SagaId: {}, ProductCode: {}, Step: {}",
+					sagaId, referenceCode, step);
 
-			return;
+				return;
+			}
+
+			String thumbnailUrl = imageService.saveImages(imageType, referenceCode, event.imageUrls());
+
+			log.info("상품 이미지 등록 성공 - SagaId: {}, ProductCode: {}", sagaId, referenceCode);
+
+			imageKafkaProducer.publishImageProcessed(
+				new ImageProcessedEvent(
+					sagaId, imageType, referenceCode, EventType.PUSH, event.imageUrls(), thumbnailUrl, true, null
+				)
+			);
+		} catch (Exception e) {
+			log.error("상품 이미지 등록 실패 - SagaId: {}, ProductCode: {}, Exception: {}",
+				sagaId, referenceCode, e.getMessage(), e);
+
+			imageKafkaProducer.publishImageProcessed(
+				new ImageProcessedEvent(sagaId, imageType, referenceCode, EventType.PUSH, event.imageUrls(), null,
+					false, e.getMessage()
+				)
+			);
+
+			throw e;
 		}
-
-		String thumbnailUrl = imageService.saveImages(imageType, referenceCode, event.imageUrls());
-
-		log.info("상품 이미지 등록 성공 - SagaId: {}, ProductCode: {}", sagaId, referenceCode);
-
-		imageKafkaProducer.publishImageProcessed(
-			new ImageProcessedEvent(sagaId, imageType, referenceCode, EventType.PUSH, thumbnailUrl, true, null));
 	}
 
 	@KafkaHandler
@@ -94,6 +109,9 @@ public class ImageKafkaListener {
 		}
 
 		imageKafkaProducer.publishImageProcessed(
-			new ImageProcessedEvent(sagaId, imageType, referenceCode, EventType.DELETE, null, true, null));
+			new ImageProcessedEvent(
+				sagaId, imageType, referenceCode, EventType.DELETE, event.deleteUrls(), null, true, null
+			)
+		);
 	}
 }

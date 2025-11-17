@@ -29,6 +29,9 @@ public interface ImageClient {
 	@PostMapping(value = "/update")
 	BaseResponse<List<URL>> updateImages(@RequestBody UpdateImagesRequest request);
 
+	@DeleteMapping(value = "compensate-s3")
+	BaseResponse<String> compensateS3Upload(@RequestBody DeleteImagesRequest request);
+
 	@DeleteMapping(value = "/compensate-upload")
-	BaseResponse<Void> compensateUpload(@RequestBody DeleteImagesRequest request);
+	BaseResponse<String> compensateDbUpload(@RequestBody DeleteImagesRequest request);
 }
