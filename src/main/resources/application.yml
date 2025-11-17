@@ -96,6 +96,14 @@ deposits:
     topic:
       name: deposits-commands
 
+settlements:
+  event:
+    topic:
+      name: settlements-events
+  command:
+    topic:
+      name: settlements-commands
+
 products:
   topic:
     image:
@@ -115,6 +123,15 @@ custom:
     config:
       topic-partitions: 1
       topic-replications: 1
+  batch:
+    chunk:
+      size: 100
+    skip:
+      limit: 10
+    retry:
+      limit: 3
+  settlement:
+    rate: 0.95
 
 images:
   topic:
