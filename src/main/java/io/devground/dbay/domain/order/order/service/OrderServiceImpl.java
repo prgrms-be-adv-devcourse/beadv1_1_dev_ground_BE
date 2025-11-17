@@ -204,7 +204,6 @@ public class OrderServiceImpl implements OrderService {
 	}
 
 	@Override
-	@Transactional
 	public ConfirmOrderResponse confirmOrder(String userCode, String orderCode) {
 		Order order = checkOrder(userCode, orderCode);
 
@@ -242,6 +241,31 @@ public class OrderServiceImpl implements OrderService {
 	@Transactional
 	public void confirmOrders(List<String> orderCodes) {
 		orderRepository.DeleteByOrderCodes(orderCodes);
+	}
+
+	@Override
+	@Transactional
+	public int autoUpdateOrderStatus() {
+		LocalDateTime now = LocalDateTime.now();
+
+		LocalDateTime oneDayAgo = now.minusDays(1);
+		LocalDateTime threeDaysAgo = now.minusDays(3);
+
+		// 1) PAID → DELIVERED_START
+		List<Long> toDelivery = orderRepository.findOrdersToStartDelivery(oneDayAgo);
+		int progress1 = 0;
+		if (!toDelivery.isEmpty()) {
+			progress1 = orderRepository.changePaidToDelivery(toDelivery);
+		}
+
+		// 배송 시작 → 배송 완료
+		List<Long> toDelivered = orderRepository.findOrdersToCompleteDelivery(threeDaysAgo);
+		int progress2 = 0;
+		if (!toDelivered.isEmpty()) {
+			progress2 = orderRepository.changeDeliveryToDelivered(toDelivered);
+		}
+
+		return progress1 + progress2;
 	}
 
 	private Order checkOrder(String userCode, String orderCode) {

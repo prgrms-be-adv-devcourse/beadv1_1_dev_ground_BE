@@ -32,4 +32,6 @@ public interface OrderService {
 	PageDto<UnsettledOrderItemResponse> getUnsettledOrderItems(int page, int size);
 
 	void confirmOrders(List<String> orderCodes);
+
+	int autoUpdateOrderStatus();
 }
