@@ -16,7 +16,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 // TODO: 실행 Term 전략 세우기
-@Slf4j(topic = "saga")
+@Slf4j(topic = "sagaTimeout")
 @Component
 @Transactional
 @RequiredArgsConstructor
