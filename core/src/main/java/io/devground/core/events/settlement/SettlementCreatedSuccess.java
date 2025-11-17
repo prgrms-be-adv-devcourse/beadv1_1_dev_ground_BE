@@ -1,5 +1,7 @@
 package io.devground.core.events.settlement;
 
+import java.util.List;
+
 import lombok.Builder;
 
 /**
@@ -9,6 +11,6 @@ import lombok.Builder;
  */
 @Builder
 public record SettlementCreatedSuccess(
-	String orderCode
+	List<String> orderCodes
 ) {
 }
