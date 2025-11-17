@@ -1,0 +1,142 @@
+{
+  "analysis": {
+    "char_filter": {
+      "special_char_filter": {
+        "type": "mapping",
+        "mappings": [
+          "& => and",
+          "@ => at"
+        ]
+      }
+    },
+    "tokenizer": {
+      "nori_tokenizer": {
+        "type": "nori_tokenizer",
+        "decompound_mode": "mixed",
+        "discard_punctuation": true,
+        "user_dictionary_rules": [
+          "갤럭시",
+          "아이폰",
+          "맥북"
+        ]
+      },
+      "edge_ngram_tokenizer": {
+        "type": "edge_ngram",
+        "min_gram": 2,
+        "max_gram": 10,
+        "token_chars": [
+          "letter",
+          "digit"
+        ]
+      }
+    },
+    "filter": {
+      "synonym_filter": {
+        "type": "synonym_graph",
+        "synonyms": [
+          "노트북, 랩탑, laptop, 트북, 놋북, 노트북, 랩톱, 놋트북",
+          "핸드폰, 휴대폰, 스마트폰, 폰, 셀폰, smartphone, phone, cell phone, cellular phone, cellphone",
+          "삼성, 샘숭, 삼송, 쌤성, 쌈썽, samsung",
+          "애플, 애아폴, 애아플, 에플, 아이폰, apple, iphone",
+          "앨지, 엘지, 엘쥐, 앨쥐, lg",
+          "갤럭시, 겔럭시, galaxy",
+          "프로, 푸로, pro",
+          "울트라, 얼트라, 얼트, 울트, ultra",
+          "맥북, 맥북프로, 맥, mac북, 맥book, macbook, makbook, mackbook",
+          "아이패드, i패드, 아이pad, ipad",
+          "갤럭시탭, 겔럭시탭, 갤럭시텝, 겔럭시텝, 갤탭, 갤텝, 겔탭, 겔텝, galaxytab, galtab",
+          "에어팟, 에어팟프로, airpod, airpods, 에어팟pro",
+          "버즈, 갤럭시버즈, 갤럭시 버즈, buds, buzz, 갤럭시buds, 갤럭시buzz"
+        ],
+        "lenient": true
+      },
+      "nori_posfilter": {
+        "type": "nori_part_of_speech",
+        "stoptags": [
+          "E",
+          "IC",
+          "J",
+          "MAG",
+          "MAJ",
+          "MM",
+          "SP",
+          "SSC",
+          "SSO",
+          "SC",
+          "SE",
+          "XPN",
+          "XSA",
+          "XSN",
+          "XSV",
+          "UNA",
+          "NA",
+          "VSV"
+        ]
+      },
+      "korean_stop": {
+        "type": "stop",
+        "stopwords": [
+          "_korean_"
+        ]
+      },
+      "shingle_filter": {
+        "type": "shingle",
+        "min_shingle_size": 2,
+        "max_shingle_size": 3,
+        "output_unigrams": true
+      }
+    },
+    "normalizer": {
+      "lowercase_normalizer": {
+        "type": "custom",
+        "filter": [
+          "lowercase",
+          "asciifolding"
+        ]
+      }
+    },
+    "analyzer": {
+      "nori_analyzer": {
+        "type": "custom",
+        "char_filter": [
+          "special_char_filter"
+        ],
+        "tokenizer": "nori_tokenizer",
+        "filter": [
+          "lowercase",
+          "nori_posfilter",
+          "korean_stop"
+        ]
+      },
+      "nori_synonym_analyzer": {
+        "type": "custom",
+        "char_filter": [
+          "special_char_filter"
+        ],
+        "tokenizer": "nori_tokenizer",
+        "filter": [
+          "lowercase",
+          "nori_posfilter",
+          "synonym_filter"
+        ]
+      },
+      "edge_ngram_analyzer": {
+        "type": "custom",
+        "tokenizer": "edge_ngram_tokenizer",
+        "filter": [
+          "lowercase"
+        ]
+      },
+      "shingle_analyzer": {
+        "type": "custom",
+        "tokenizer": "nori_tokenizer",
+        "filter": [
+          "lowercase",
+          "nori_posfilter",
+          "shingle_filter",
+          "synonym_filter"
+        ]
+      }
+    }
+  }
+}

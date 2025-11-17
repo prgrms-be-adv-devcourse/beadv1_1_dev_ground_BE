@@ -13,10 +13,12 @@ import io.devground.dbay.domain.product.product.model.dto.RegistProductResponse;
 import io.devground.dbay.domain.product.product.model.dto.UpdateProductResponse;
 import io.devground.dbay.domain.product.product.model.entity.Product;
 import io.devground.dbay.domain.product.product.model.entity.ProductSale;
+import lombok.experimental.UtilityClass;
 
-public abstract class ProductMapper {
+@UtilityClass
+public class ProductMapper {
 
-	public static GetAllProductsResponse getProductsFromProductInfo(Product product, ProductSale productSale) {
+	public GetAllProductsResponse getProductsFromProductInfo(Product product, ProductSale productSale) {
 
 		return GetAllProductsResponse.builder()
 			.productCode(product.getCode())
@@ -26,7 +28,7 @@ public abstract class ProductMapper {
 			.build();
 	}
 
-	public static RegistProductResponse registResponseFromProductInfo(
+	public RegistProductResponse registResponseFromProductInfo(
 		Product product, ProductSale productSale, List<URL> presignedUrls
 	) {
 
@@ -41,7 +43,7 @@ public abstract class ProductMapper {
 			.build();
 	}
 
-	public static ProductDetailResponse detailFromProductAndUrls(Product product, List<String> imageUrls) {
+	public ProductDetailResponse detailFromProductAndUrls(Product product, List<String> imageUrls) {
 
 		ProductSale productSale = product.getProductSale();
 
@@ -58,7 +60,7 @@ public abstract class ProductMapper {
 			.build();
 	}
 
-	public static UpdateProductResponse updateResponseFromProductInfo(
+	public UpdateProductResponse updateResponseFromProductInfo(
 		Product product, ProductSale productSale, List<URL> newPresignedUrls
 	) {
 
@@ -73,7 +75,7 @@ public abstract class ProductMapper {
 			.build();
 	}
 
-	public static GeneratePresignedRequest toGeneratePresignedRequest(
+	public GeneratePresignedRequest toGeneratePresignedRequest(
 		ImageType imageType,
 		String referenceCode,
 		List<String> fileExtensions
@@ -86,7 +88,7 @@ public abstract class ProductMapper {
 			.build();
 	}
 
-	public static UpdateImagesRequest toUpdateImagesRequest(
+	public UpdateImagesRequest toUpdateImagesRequest(
 		ImageType imageType,
 		String referenceCode,
 		List<String> deleteUrls,
@@ -101,7 +103,7 @@ public abstract class ProductMapper {
 			.build();
 	}
 
-	public static DeleteImagesRequest toDeleteImagesRequest(
+	public DeleteImagesRequest toDeleteImagesRequest(
 		ImageType imageType,
 		String referenceCode,
 		List<String> deleteUrls
