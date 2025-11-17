@@ -26,13 +26,13 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
 	Optional<Order> findByCode(String orderCode);
 
 	@Query(
-	"""
-		SELECT
-		o
-		FROM Order o
-		WHERE o.orderStatus = "DELIVERED"
-		AND o.updatedAt BETWEEN :start AND :end
-	"""
+		"""
+			SELECT
+			o
+			FROM Order o
+			WHERE o.orderStatus = io.devground.dbay.domain.order.order.model.vo.OrderStatus.DELIVERED
+			AND o.updatedAt BETWEEN :start AND :end
+		"""
 	)
 	List<Order> findOrderBeforeConfirmed(@Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
 }
