@@ -16,7 +16,7 @@ public enum SagaStatus {
 	}
 
 	public boolean isTerminal() {
-		return !isProcess();
+		return this == SUCCESS || this == FAILED || this == COMPENSATED;
 	}
 
 	public boolean isCompensating() {
