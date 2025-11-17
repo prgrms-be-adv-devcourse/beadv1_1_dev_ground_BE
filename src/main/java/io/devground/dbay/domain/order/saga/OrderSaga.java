@@ -6,8 +6,6 @@ import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.event.TransactionPhase;
-import org.springframework.transaction.event.TransactionalEventListener;
 
 import io.devground.core.commands.cart.DeleteCartItemsCommand;
 import io.devground.core.commands.deposit.WithdrawDeposit;
@@ -50,7 +48,7 @@ public class OrderSaga {
 	private String cartsCommandTopicName;
 
 	// 이벤트 시작점 주문 -> 결제
-	@TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+	@KafkaHandler
 	public void handleEvent(@Payload OrderCreatedEvent event) {
 		PaymentCreateCommand paymentCreatedCommand = new PaymentCreateCommand(
 			event.userCode(),
