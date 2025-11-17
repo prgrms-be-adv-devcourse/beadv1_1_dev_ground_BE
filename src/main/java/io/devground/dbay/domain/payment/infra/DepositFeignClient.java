@@ -13,6 +13,7 @@ import io.devground.dbay.domain.deposit.dto.response.DepositBalanceResponse;
 	path = "/api/deposits"
 )
 public interface DepositFeignClient {
+
 	@GetMapping("/balance")
 	BaseResponse<DepositBalanceResponse> getBalance(@RequestHeader("X-CODE") String userCode);
 }

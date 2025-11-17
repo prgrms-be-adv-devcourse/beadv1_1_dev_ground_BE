@@ -12,16 +12,15 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
-import io.devground.core.event.order.Temp.event.PaymentCreatedEvent;
+import io.devground.core.commands.payment.PaymentChargeDepositCommand;
 import io.devground.core.event.order.Temp.event.PaymentCreatedFailed;
 import io.devground.core.model.vo.DepositHistoryType;
 import io.devground.core.model.vo.ErrorCode;
-import io.devground.core.model.web.BaseResponse;
-import io.devground.dbay.domain.deposit.dto.response.DepositBalanceResponse;
 import io.devground.dbay.domain.payment.infra.DepositFeignClient;
 import io.devground.dbay.domain.payment.mapper.PaymentMapper;
 import io.devground.dbay.domain.payment.model.dto.request.PaymentRequest;
 import io.devground.dbay.domain.payment.model.dto.request.TossPayRequest;
+import io.devground.dbay.domain.payment.model.dto.response.PaymentResponse;
 import io.devground.dbay.domain.payment.model.dto.response.TossPayResponse;
 import io.devground.dbay.domain.payment.model.entity.Payment;
 
@@ -30,6 +29,8 @@ import org.springframework.transaction.annotation.Transactional;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import io.devground.dbay.domain.payment.model.vo.PaymentStatus;
+import io.devground.dbay.domain.payment.model.vo.PaymentType;
 import io.devground.dbay.domain.payment.repository.PaymentRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -44,11 +45,8 @@ public class PaymentServiceImpl implements PaymentService {
 	private final DepositFeignClient depositFeignClient;
 	private final PaymentRepository paymentRepository;
 
-	@Value("${payments.command.topic.name}")
-	private String paymentsCommandTopicName;
-
-	@Value("${deposits.command.topic.name}")
-	private String depositsCommandTopicName;
+	@Value("${payments.event.topic.name}")
+	private String paymentsEventTopicName;
 
 	@Value("${custom.payments.toss.secretKey}")
 	private String tossPaySecretKey;
@@ -58,60 +56,70 @@ public class PaymentServiceImpl implements PaymentService {
 
 	@Override
 	@Transactional
-	public Payment pay(PaymentRequest paymentRequest) {
+	public boolean pay(String userCode, String orderCode, Long totalAmount, String paymentKey) {
 		//잔액 확인
 		//opneFeign으로 받아오기
-		BaseResponse<DepositBalanceResponse> response = depositFeignClient.getBalance(paymentRequest.userCode());
-		Long balance = response.data().balance();
+		Long balance = depositFeignClient.getBalance(userCode).throwIfNotSuccess().data().balance();
 
-		if (paymentRequest.totalAmount() >= balance) {
-			//잔액 충분함 -> 예치금 결제
-			payByDeposit(paymentRequest, balance);
-		} else {
-			//잔액 불충분함 -> 결제 실패 카프카
-			PaymentCreatedFailed paymentCreatedFailed = new PaymentCreatedFailed(paymentRequest.orderCode(),
-				paymentRequest.userCode(), "예치금이 부족하여 결제에 실패하였습니다.");
-			kafkaTemplate.send(depositsCommandTopicName, paymentCreatedFailed);
-		}
-		return null;
-	}
-
-	private Payment payByDeposit(PaymentRequest paymentRequest, Long balance) {
-		//결제 성공으로 예치금 인출 카프카
-		PaymentCreatedEvent paymentCreatedEvent = new PaymentCreatedEvent(paymentRequest.userCode(),
-			paymentRequest.totalAmount(),
-			DepositHistoryType.PAYMENT_INTERNAL, paymentRequest.orderCode());
-
-		//order카프카로 결제 성공 카프카 전송
-		kafkaTemplate.send(paymentsCommandTopicName, paymentCreatedEvent);
-		return null;
-	}
-
-	@Override
-	public Payment refund(String userCode, PaymentRequest paymentRequest) {
-		return null;
-	}
-
-	@Override
-	public Payment confirmPayment(PaymentRequest paymentRequest) {
-		//토스 결제 성공 시 예치금 충전 카프카 커맨드(ChargeDeposit)
-
-		//결제 내역 저장
-		//payment 저장
+		PaymentRequest paymentRequest = new PaymentRequest(userCode, orderCode, paymentKey, totalAmount,
+			PaymentStatus.PENDING);
 		Payment payment = PaymentMapper.toEntity(paymentRequest);
-		return paymentRepository.save(payment);
+		paymentRepository.save(payment);
+
+		if (balance < totalAmount) {
+			payment.setPaymentStatus(PaymentStatus.FAILED);
+			paymentRepository.save(payment);  // 상태 업데이트 반영
+			return false;
+		}
+
+		return balance >= totalAmount;
+	}
+
+	@Override
+	public Payment refund(String orderCode, Long amount) {
+		Payment payment = getByOrderCode(orderCode);
+
+		return null;
+	}
+
+	@Override
+	@Transactional
+	public void applyDepositPayment(String orderCode) {
+		Payment payment = getByOrderCode(orderCode);
+		payment.setPaymentStatus(PaymentStatus.COMPLETED);
+	}
+
+	@Override
+	public void canceledDepositPayment(String orderCode) {
+		Payment payment = getByOrderCode(orderCode);
+		payment.setPaymentStatus(PaymentStatus.CANCELLED);
+
+	}
+
+	@Override
+	public String confirmTossPayment(TossPayRequest tossPayRequest) {
+		PaymentChargeDepositCommand paymentChargeDepositCommand = new PaymentChargeDepositCommand(
+			tossPayRequest.userCode(), tossPayRequest.chargeAmount(), tossPayRequest.orderCode(),
+			DepositHistoryType.CHARGE_TOSS);
+		//토스 결제 성공 시 예치금 충전 카프카 커맨드(ChargeDeposit)
+		kafkaTemplate.send(paymentsEventTopicName, paymentChargeDepositCommand);
+
+		Payment payment = getByOrderCode(tossPayRequest.orderCode());
+		payment.setPaymentStatus(PaymentStatus.COMPLETED);
+		payment.setPaymentType(PaymentType.TOSS);
+		return payment.getCode();
 	}
 
 	@Override
 	public TossPayResponse payToss(PaymentRequest paymentRequest, Long balance) {
 		//토스페이로 결제 시도
-		TossPayRequest tosspayRequest = new TossPayRequest(paymentRequest.orderCode(), paymentRequest.paymentKey(),
-			paymentRequest.totalAmount() - balance);
+		TossPayRequest tosspayRequest = new TossPayRequest(paymentRequest.userCode(), paymentRequest.orderCode(),
+			paymentRequest.paymentKey(), paymentRequest.totalAmount() - balance);
 		boolean result = processTossPayment(tosspayRequest);
 
 		if (result) {
 			//토스페이 결제 성공
-			String paymentCode = confirmPayment(paymentRequest).getCode();
+			String paymentCode = confirmTossPayment(tosspayRequest);
 			TossPayResponse response = new TossPayResponse(paymentCode, paymentRequest.paymentKey());
 
 			return response;
@@ -154,5 +162,10 @@ public class PaymentServiceImpl implements PaymentService {
 			return false;
 		}
 
+	}
+
+	@Override
+	public Payment getByOrderCode(String orderCode) {
+		return paymentRepository.findByOrderCode(orderCode);
 	}
 }
