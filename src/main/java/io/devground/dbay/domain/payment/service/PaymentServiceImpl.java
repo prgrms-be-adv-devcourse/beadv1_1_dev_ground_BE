@@ -22,6 +22,7 @@ import io.devground.dbay.domain.payment.infra.DepositFeignClient;
 import io.devground.dbay.domain.payment.mapper.PaymentMapper;
 import io.devground.dbay.domain.payment.model.dto.request.PaymentRequest;
 import io.devground.dbay.domain.payment.model.dto.request.TossPayRequest;
+import io.devground.dbay.domain.payment.model.dto.response.TossPayResponse;
 import io.devground.dbay.domain.payment.model.entity.Payment;
 
 import org.springframework.transaction.annotation.Transactional;
@@ -57,10 +58,10 @@ public class PaymentServiceImpl implements PaymentService {
 
 	@Override
 	@Transactional
-	public Payment pay(String userCode, PaymentRequest paymentRequest) {
+	public Payment pay(PaymentRequest paymentRequest) {
 		//잔액 확인
 		//opneFeign으로 받아오기
-		BaseResponse<DepositBalanceResponse> response = depositFeignClient.getBalance(userCode);
+		BaseResponse<DepositBalanceResponse> response = depositFeignClient.getBalance(paymentRequest.userCode());
 		Long balance = response.data().balance();
 
 		if (paymentRequest.totalAmount() >= balance) {
@@ -72,6 +73,17 @@ public class PaymentServiceImpl implements PaymentService {
 				paymentRequest.userCode(), "예치금이 부족하여 결제에 실패하였습니다.");
 			kafkaTemplate.send(depositsCommandTopicName, paymentCreatedFailed);
 		}
+		return null;
+	}
+
+	private Payment payByDeposit(PaymentRequest paymentRequest, Long balance) {
+		//결제 성공으로 예치금 인출 카프카
+		PaymentCreatedEvent paymentCreatedEvent = new PaymentCreatedEvent(paymentRequest.userCode(),
+			paymentRequest.totalAmount(),
+			DepositHistoryType.PAYMENT_INTERNAL, paymentRequest.orderCode());
+
+		//order카프카로 결제 성공 카프카 전송
+		kafkaTemplate.send(paymentsCommandTopicName, paymentCreatedEvent);
 		return null;
 	}
 
@@ -90,30 +102,24 @@ public class PaymentServiceImpl implements PaymentService {
 		return paymentRepository.save(payment);
 	}
 
-	private Payment payByDeposit(PaymentRequest paymentRequest, Long balance) {
-		//결제 성공으로 예치금 인출 카프카
-		PaymentCreatedEvent paymentCreatedEvent = new PaymentCreatedEvent(paymentRequest.userCode(),
-			paymentRequest.totalAmount(),
-			DepositHistoryType.PAYMENT_INTERNAL, paymentRequest.orderCode());
-
-		kafkaTemplate.send(paymentsCommandTopicName, paymentCreatedEvent);
-		return null;
-	}
-
 	@Override
-	public void payToss(PaymentRequest paymentRequest, Long balance) {
+	public TossPayResponse payToss(PaymentRequest paymentRequest, Long balance) {
 		//토스페이로 결제 시도
-		TossPayRequest tosspayRequest = new TossPayRequest(paymentRequest.orderCode(),
+		TossPayRequest tosspayRequest = new TossPayRequest(paymentRequest.orderCode(), paymentRequest.paymentKey(),
 			paymentRequest.totalAmount() - balance);
 		boolean result = processTossPayment(tosspayRequest);
 
 		if (result) {
 			//토스페이 결제 성공
-			confirmPayment(paymentRequest);
+			String paymentCode = confirmPayment(paymentRequest).getCode();
+			TossPayResponse response = new TossPayResponse(paymentCode, paymentRequest.paymentKey());
+
+			return response;
 		} else {
 			//토스페이 결제 실패
 			throw ErrorCode.TOSS_PAY_FAILED.throwServiceException();
 		}
+
 	}
 
 	private boolean processTossPayment(TossPayRequest tossPayRequest) {

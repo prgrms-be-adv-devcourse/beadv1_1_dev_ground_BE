@@ -12,6 +12,7 @@ public class PaymentMapper {
 		return Payment.builder()
 			.amount(paymentRequest.totalAmount())
 			.orderCode(paymentRequest.orderCode())
+			.paymentKey(paymentRequest.paymentKey())
 			.paidAt(LocalDateTime.now())
 			.paymentStatus(PaymentStatus.PENDING)
 			.paymentType(PaymentType.DEPOSIT)

@@ -1,12 +1,13 @@
 package io.devground.dbay.domain.payment.service;
 
 import io.devground.dbay.domain.payment.model.dto.request.PaymentRequest;
+import io.devground.dbay.domain.payment.model.dto.response.TossPayResponse;
 import io.devground.dbay.domain.payment.model.entity.Payment;
 
 public interface PaymentService {
 
 	//결제
-	Payment pay(String userCode, PaymentRequest payRequest);
+	Payment pay(PaymentRequest payRequest);
 
 	//환불
 	Payment refund(String userCode, PaymentRequest payRequest);
@@ -15,5 +16,5 @@ public interface PaymentService {
 	Payment confirmPayment(PaymentRequest payRequest) throws Exception;
 
 	//Toss결제 요청
-	void payToss(PaymentRequest payRequest, Long balance);
+	TossPayResponse payToss(PaymentRequest payRequest, Long balance);
 }
