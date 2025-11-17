@@ -75,8 +75,9 @@ public class ImageController {
 	) {
 
 		return BaseResponse.success(
-			NO_CONTENT.value(),
-			imageService.compensateUpload(request.imageType(), request.referenceCode())
+			OK.value(),
+			imageService.compensateUpload(request.imageType(), request.referenceCode()),
+			"보상 처리가 완료되었습니다."
 		);
 	}
 }

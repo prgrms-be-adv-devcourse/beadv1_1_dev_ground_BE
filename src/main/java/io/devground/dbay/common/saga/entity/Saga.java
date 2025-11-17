@@ -62,6 +62,7 @@ public class Saga {
 	private SagaStatus sagaStatus;
 
 	@Enumerated(EnumType.STRING)
+	@Column(length = 100)
 	private SagaStep currentStep;
 
 	@Column(length = 1000)
