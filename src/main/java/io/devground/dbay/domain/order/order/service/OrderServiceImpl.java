@@ -10,13 +10,16 @@ import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import io.devground.core.model.entity.RoleType;
 import io.devground.core.model.vo.DeleteStatus;
 import io.devground.core.model.vo.ErrorCode;
+import io.devground.core.model.web.PageDto;
 import io.devground.core.util.Validators;
 import io.devground.dbay.domain.order.infra.client.ProductFeignClient;
 import io.devground.dbay.domain.order.infra.client.UserFeignClient;
@@ -201,7 +204,7 @@ public class OrderServiceImpl implements OrderService {
 
 	@Override
 	@Transactional(readOnly = true)
-	public List<UnsettledOrderItemResponse> getUnsettledOrderItems(int page, int size) {
+	public PageDto<UnsettledOrderItemResponse> getUnsettledOrderItems(int page, int size) {
 		if (page < 0) {
 			throw ErrorCode.PAGE_MUST_BE_POSITIVE.throwServiceException();
 		}
@@ -216,14 +219,27 @@ public class OrderServiceImpl implements OrderService {
 		LocalDateTime start = twoWeeksAgo.atStartOfDay();
 		LocalDateTime end = today.atTime(LocalTime.MAX);
 
-		List<Order> orders = orderRepository.findOrderBeforeConfirmed(start, end);
+		Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"));
+
+		Page<Order> orderPage = orderRepository.findOrderBeforeConfirmed(start, end, pageable);
+		List<Order> orders = orderPage.getContent();
+
+		if (orders.isEmpty()) {
+			return new PageDto<>(
+				page + 1,    // 0-based → 1-based
+				size,
+				0,
+				0,
+				List.of()
+			);
+		}
 
 		List<OrderItem> orderItems = orderItemRepository.findByOrderIn(orders);
 
 		Map<Long, List<OrderItem>> itemsByOrderId = orderItems.stream()
 			.collect(Collectors.groupingBy(oi -> oi.getOrder().getId()));
 
-		return orders.stream()
+		List<UnsettledOrderItemResponse> response = orders.stream()
 			.map(o -> {
 				List<OrderItem> items = itemsByOrderId.getOrDefault(o.getId(), List.of());
 
@@ -232,7 +248,8 @@ public class OrderServiceImpl implements OrderService {
 						oi.getCode(),
 						oi.getSellerCode(),
 						oi.getProductPrice()
-					)).toList();
+					))
+					.toList();
 
 				return new UnsettledOrderItemResponse(
 					o.getCode(),
@@ -240,6 +257,14 @@ public class OrderServiceImpl implements OrderService {
 					itemInfos
 				);
 			}).toList();
+
+		return new PageDto<>(
+			orderPage.getNumber() + 1,
+			orderPage.getSize(),
+			orderPage.getTotalElements(),
+			orderPage.getTotalPages(),
+			response
+		);
 	}
 
 	private Order checkOrder(String userCode, String orderCode) {

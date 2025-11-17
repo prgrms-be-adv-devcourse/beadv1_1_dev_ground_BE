@@ -1,7 +1,5 @@
 package io.devground.dbay.domain.order.order.controller;
 
-import java.util.List;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -17,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import io.devground.core.model.entity.RoleType;
 import io.devground.core.model.web.BaseResponse;
+import io.devground.core.model.web.PageDto;
 import io.devground.dbay.domain.order.order.model.vo.CancelOrderResponse;
 import io.devground.dbay.domain.order.order.model.vo.ConfirmOrderResponse;
 import io.devground.dbay.domain.order.order.model.vo.CreateOrderRequest;
@@ -86,7 +85,7 @@ public class OrderController {
 
 	@GetMapping("/unsettled-items")
 	@Operation(summary = "정산위한 주문 정보 조회", description = "주문 완료된 주문 상품들에 대해 정산처리하기 위함")
-	BaseResponse<List<UnsettledOrderItemResponse>> getUnsettledOrderItems(
+	BaseResponse<PageDto<UnsettledOrderItemResponse>> getUnsettledOrderItems(
 		@RequestParam(defaultValue = "0") int page,
 		@RequestParam(defaultValue = "1000") int size
 	) {
