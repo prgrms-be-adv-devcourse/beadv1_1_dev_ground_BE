@@ -23,7 +23,7 @@ public class UnsettledOrderItemReader implements ItemReader<UnsettledOrderItemRe
 
 	private List<UnsettledOrderItemResponse> unsettledItems;
 	private int currentIndex = 0;
-	private int currentPage = 0;
+	private int currentPage = 1;
 	private static final int PAGE_SIZE = 100;
 
 	/**
@@ -67,22 +67,22 @@ public class UnsettledOrderItemReader implements ItemReader<UnsettledOrderItemRe
 			// PageDto에서 데이터 추출
 			PageDto<UnsettledOrderItemResponse> pageDto = response.data();
 
-			if (pageDto == null || pageDto.items() == null || pageDto.items().isEmpty()) {
+			if (pageDto == null || pageDto.items().isEmpty()) {
 				// 더 이상 조회할 데이터가 없음
 				unsettledItems = new ArrayList<>();
 				log.info("정산 대상 OrderItem이 더 이상 없습니다 (page={})", currentPage);
 				return;
 			}
 
-			// PageDto의 items를 그대로 사용
-			unsettledItems = new ArrayList<>(pageDto.items());
+			unsettledItems = pageDto.items();
 
 			log.info("정산 대상 OrderItem {} 건 조회됨 (page={}/{}, totalItems={})",
 				unsettledItems.size(), pageDto.currentPageNumber(), pageDto.totalPages(),
 				pageDto.totalItems());
 
-			// 다음 페이지 준비
-			currentPage++;
+			// PageDto의 currentPageNumber를 사용하여 다음 페이지 설정
+			// PageDto.currentPageNumber는 1부터 시작하므로, 다음 페이지는 currentPageNumber
+			currentPage = pageDto.currentPageNumber();
 
 		} catch (Exception e) {
 			log.error("Order 도메인에서 정산 대상 OrderItem 조회 실패: page={}", currentPage, e);
@@ -90,13 +90,4 @@ public class UnsettledOrderItemReader implements ItemReader<UnsettledOrderItemRe
 		}
 	}
 
-	/**
-	 * Reader 상태 초기화 (배치 재실행 시 사용)
-	 */
-	public void reset() {
-		unsettledItems = null;
-		currentIndex = 0;
-		currentPage = 0;
-		log.info("UnsettledOrderItemReader 상태 초기화됨");
-	}
 }
