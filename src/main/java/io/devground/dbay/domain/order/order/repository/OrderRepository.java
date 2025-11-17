@@ -6,6 +6,7 @@ import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
@@ -23,6 +24,7 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
 
 	Optional<Order> findByCode(String orderCode);
 
+	@Modifying
 	@Query("""
 		UPDATE Order o
 		SET o.deleteStatus = io.devground.core.model.vo.DeleteStatus.Y,
