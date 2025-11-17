@@ -33,8 +33,10 @@ public class Payment extends BaseEntity {
 
 	private Long amount;
 
+	@Setter
 	private PaymentType paymentType;
 
+	@Setter
 	private PaymentStatus paymentStatus;
 
 	@Setter
@@ -43,13 +45,12 @@ public class Payment extends BaseEntity {
 	private LocalDateTime paidAt;
 
 	@Builder
-	public Payment(Long amount, String orderCode, String paymentKey, LocalDateTime paidAt, PaymentType paymentType,
-		PaymentStatus paymentStatus) {
+	public Payment(Long amount, String orderCode, String paymentKey, LocalDateTime paidAt, PaymentStatus paymentStatus) {
 		this.amount = amount;
 		this.orderCode = orderCode;
 		this.paymentKey = paymentKey;
 		this.paidAt = paidAt;
-		this.paymentType = paymentType;
-		this.paymentStatus = paymentStatus;
+		this.paymentType = PaymentType.DEPOSIT;
+		this.paymentStatus = PaymentStatus.PENDING;
 	}
 }
