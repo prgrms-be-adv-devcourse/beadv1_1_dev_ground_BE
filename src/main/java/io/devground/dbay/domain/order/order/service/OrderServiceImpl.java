@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -16,13 +18,13 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import io.devground.core.event.order.OrderCreatedEvent;
 import io.devground.core.model.entity.RoleType;
 import io.devground.core.model.vo.DeleteStatus;
 import io.devground.core.model.vo.ErrorCode;
 import io.devground.core.model.web.PageDto;
 import io.devground.core.util.Validators;
 import io.devground.dbay.domain.order.infra.client.ProductFeignClient;
-import io.devground.dbay.domain.order.infra.client.UserFeignClient;
 import io.devground.dbay.domain.order.order.mapper.OrderMapper;
 import io.devground.dbay.domain.order.order.model.entity.Order;
 import io.devground.dbay.domain.order.order.model.vo.CancelOrderResponse;
@@ -44,15 +46,18 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class OrderServiceImpl implements OrderService {
 
+	@Value("${orders.event.topic.order}")
+	private String ordersEventTopicName;
+
 	private final OrderRepository orderRepository;
 	private final OrderItemRepository orderItemRepository;
 	private final ProductFeignClient productFeignClient;
-	private final UserFeignClient userFeignClient;
+
+	private final ApplicationEventPublisher eventPublisher;
 
 	@Override
 	@Transactional
 	public CreateOrderResponse createOrder(String userCode, CreateOrderRequest request) {
-		// 코드 유효성 검증
 		if (!Validators.isValidUuid(userCode)) {
 			throw ErrorCode.CODE_INVALID.throwServiceException();
 		}
@@ -96,7 +101,14 @@ public class OrderServiceImpl implements OrderService {
 
 		orderItemRepository.saveAll(items);
 
-		// payment kafka 이벤트 전송
+		OrderCreatedEvent event = new OrderCreatedEvent(
+			userCode,
+			savedOrder.getCode(),
+			totalAmount,
+			items.stream().map(OrderItem::getProductCode).toList()
+		);
+
+		eventPublisher.publishEvent(event);
 
 		return OrderMapper.toCreateOrderResponse(savedOrder);
 	}
@@ -230,6 +242,12 @@ public class OrderServiceImpl implements OrderService {
 	@Transactional
 	public void confirmOrders(List<String> orderCodes) {
 		orderRepository.DeleteByOrderCodes(orderCodes);
+	}
+
+	@Override
+	@Transactional
+	public void deleteOrder() {
+		orderRepository.
 	}
 
 	private Order checkOrder(String userCode, String orderCode) {
