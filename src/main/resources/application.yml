@@ -52,11 +52,11 @@ carts:
   event:
     topic:
       user: carts-user-events
-      name: carts-events
+      order: carts-order-events
   command:
     topic:
       user: carts-user-commands
-      name: carts-commands
+      order: carts-order-commands
 
 orders:
   event:

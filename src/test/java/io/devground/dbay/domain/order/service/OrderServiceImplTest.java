@@ -8,11 +8,9 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Stream;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
@@ -22,6 +20,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
+import io.devground.core.model.entity.RoleType;
 import io.devground.core.model.exception.ServiceException;
 import io.devground.core.model.vo.DeleteStatus;
 import io.devground.core.model.vo.ErrorCode;
@@ -33,7 +32,6 @@ import io.devground.dbay.domain.order.order.model.vo.GetOrderDetailResponse;
 import io.devground.dbay.domain.order.order.model.vo.GetOrdersResponse;
 import io.devground.dbay.domain.order.order.model.vo.OrderItemInfo;
 import io.devground.dbay.domain.order.order.model.vo.OrderProductListResponse;
-import io.devground.core.model.entity.RoleType;
 import io.devground.dbay.domain.order.order.model.vo.OrderStatus;
 import io.devground.dbay.domain.order.order.repository.OrderRepository;
 import io.devground.dbay.domain.order.order.service.OrderServiceImpl;
@@ -730,7 +728,7 @@ public class OrderServiceImplTest {
 			.isInstanceOf(ServiceException.class)
 			.satisfies(ex -> {
 				ServiceException se = (ServiceException) ex;
-				assertThat(se.getErrorCode()).isEqualTo(ErrorCode.ORDER_CONFIRM_NOT_ALLOWED);
+				assertThat(se.getErrorCode()).isEqualTo(ErrorCode.ORDER_CONFIRM_NOT_ALLOWED_BEFORE_DELIVERED);
 			});
 	}
 
@@ -755,7 +753,7 @@ public class OrderServiceImplTest {
 			.isInstanceOf(ServiceException.class)
 			.satisfies(ex -> {
 				ServiceException se = (ServiceException) ex;
-				assertThat(se.getErrorCode()).isEqualTo(ErrorCode.ORDER_CONFIRM_NOT_ALLOWED);
+				assertThat(se.getErrorCode()).isEqualTo(ErrorCode.ORDER_CONFIRM_NOT_ALLOWED_BEFORE_DELIVERED);
 			});
 	}
 
@@ -780,7 +778,7 @@ public class OrderServiceImplTest {
 			.isInstanceOf(ServiceException.class)
 			.satisfies(ex -> {
 				ServiceException se = (ServiceException) ex;
-				assertThat(se.getErrorCode()).isEqualTo(ErrorCode.ORDER_CONFIRM_NOT_ALLOWED);
+				assertThat(se.getErrorCode()).isEqualTo(ErrorCode.ORDER_CONFIRM_NOT_ALLOWED_BEFORE_DELIVERED);
 			});
 	}
 
@@ -805,7 +803,7 @@ public class OrderServiceImplTest {
 			.isInstanceOf(ServiceException.class)
 			.satisfies(ex -> {
 				ServiceException se = (ServiceException) ex;
-				assertThat(se.getErrorCode()).isEqualTo(ErrorCode.ORDER_CONFIRM_NOT_ALLOWED);
+				assertThat(se.getErrorCode()).isEqualTo(ErrorCode.ORDER_CONFIRM_NOT_ALLOWED_BEFORE_DELIVERED);
 			});
 	}
 
