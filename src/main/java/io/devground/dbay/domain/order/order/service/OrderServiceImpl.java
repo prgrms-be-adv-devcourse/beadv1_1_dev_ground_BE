@@ -34,7 +34,6 @@ import io.devground.dbay.domain.order.order.model.vo.GetOrdersResponse;
 import io.devground.dbay.domain.order.order.model.vo.OrderItemInfo;
 import io.devground.dbay.domain.order.order.model.vo.OrderProductListResponse;
 import io.devground.dbay.domain.order.order.model.vo.PaidOrderResponse;
-import io.devground.dbay.domain.order.order.model.vo.UnsettledOrderItemInfo;
 import io.devground.dbay.domain.order.order.model.vo.UnsettledOrderItemResponse;
 import io.devground.dbay.domain.order.order.repository.OrderRepository;
 import io.devground.dbay.domain.order.orderItem.model.entity.OrderItem;
@@ -221,50 +220,10 @@ public class OrderServiceImpl implements OrderService {
 
 		Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"));
 
-		Page<Order> orderPage = orderRepository.findOrderBeforeConfirmed(start, end, pageable);
-		List<Order> orders = orderPage.getContent();
+		Page<UnsettledOrderItemResponse> pageResult =
+			orderItemRepository.findOrderItemsDelivered(start, end, pageable);
 
-		if (orders.isEmpty()) {
-			return new PageDto<>(
-				page + 1,    // 0-based → 1-based
-				size,
-				0,
-				0,
-				List.of()
-			);
-		}
-
-		List<OrderItem> orderItems = orderItemRepository.findByOrderIn(orders);
-
-		Map<Long, List<OrderItem>> itemsByOrderId = orderItems.stream()
-			.collect(Collectors.groupingBy(oi -> oi.getOrder().getId()));
-
-		List<UnsettledOrderItemResponse> response = orders.stream()
-			.map(o -> {
-				List<OrderItem> items = itemsByOrderId.getOrDefault(o.getId(), List.of());
-
-				List<UnsettledOrderItemInfo> itemInfos = items.stream()
-					.map(oi -> new UnsettledOrderItemInfo(
-						oi.getCode(),
-						oi.getSellerCode(),
-						oi.getProductPrice()
-					))
-					.toList();
-
-				return new UnsettledOrderItemResponse(
-					o.getCode(),
-					o.getUserCode(),
-					itemInfos
-				);
-			}).toList();
-
-		return new PageDto<>(
-			orderPage.getNumber() + 1,
-			orderPage.getSize(),
-			orderPage.getTotalElements(),
-			orderPage.getTotalPages(),
-			response
-		);
+		return PageDto.from(pageResult);
 	}
 
 	private Order checkOrder(String userCode, String orderCode) {
