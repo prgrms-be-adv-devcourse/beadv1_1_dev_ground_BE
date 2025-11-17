@@ -41,9 +41,10 @@ public class Payment {
 	private LocalDateTime paidAt;
 
 	@Builder
-	public Payment(Long amount, String accountHistoryCode, LocalDateTime paidAt, PaymentType paymentType, PaymentStatus paymentStatus) {
+	public Payment(Long amount, String orderCode, LocalDateTime paidAt, PaymentType paymentType,
+		PaymentStatus paymentStatus) {
 		this.amount = amount;
-		this.accountHistoryCode = accountHistoryCode;
+		this.orderCode = orderCode;
 		this.paidAt = paidAt;
 		this.paymentType = paymentType;
 		this.paymentStatus = paymentStatus;

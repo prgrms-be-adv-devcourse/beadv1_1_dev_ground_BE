@@ -1,6 +1,3 @@
-server:
-  port: 8080
-
 spring:
   application:
     name: dbay
@@ -47,10 +44,12 @@ spring:
       region:
         static: ${S3_REGION}
 
+
   elasticsearch:
     uris: http://localhost:9200
     connection-timeout: 10s
     socket-timeout: 60s
+
 
 eureka:
   client:
@@ -64,6 +63,12 @@ eureka:
     non-secure-port: 8081
     metadata-map:
       port: 8081
+
+  payments:
+    toss:
+      secretKey: ${TOSS_TEST_SECRET_KEY}
+      confirm-url: "https://api.tosspayments.com/v1/payments/confirm"
+
 
 carts:
   event:
