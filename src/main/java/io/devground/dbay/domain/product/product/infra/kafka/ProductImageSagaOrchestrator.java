@@ -63,7 +63,7 @@ public class ProductImageSagaOrchestrator {
 
 			return presignedUrlsResponse.data();
 		} catch (Exception e) {
-			log.error("이미지 PresignedUrl 발급 실패 - SagaId: {}, ProductCode: {}, Exception: ", sagaId, productCode, e);
+			log.error("이미지 PresignedUrl 발급 실패 - SagaId: {}, ProductCode: {}, Exception: {}", sagaId, productCode, e.getMessage());
 
 			sagaService.updateToFail(sagaId, "이미지 PresignedUrl 발급 실패: " + e.getMessage());
 
@@ -87,7 +87,7 @@ public class ProductImageSagaOrchestrator {
 
 			log.info("이미지 등록 이벤트 발행 완료 - SagaId: {}, ProductCode: {}", sagaId, productCode);
 		} catch (Exception e) {
-			log.error("이미지 등록 이벤트 발행 실패 - SagaId: {}, ProductCode: {}, Exception: ", sagaId, productCode, e);
+			log.error("이미지 등록 이벤트 발행 실패 - SagaId: {}, ProductCode: {}, Exception: {}", sagaId, productCode, e.getMessage());
 
 			compensationService.compensateProductImageUploadFailure(sagaId, productCode, "이벤트 발행 실패: " + e.getMessage());
 
@@ -121,7 +121,7 @@ public class ProductImageSagaOrchestrator {
 
 			return updatedPresignedUrls;
 		} catch (Exception e) {
-			log.error("상품 이미지 수정 실패 - SagaId: {}, ProductCode: {}, Exception: ", sagaId, productCode, e);
+			log.error("상품 이미지 수정 실패 - SagaId: {}, ProductCode: {}, Exception: {}", sagaId, productCode, e.getMessage());
 
 			compensationService.compensateProductImageUpdateFailure(sagaId, productCode, deleteUrls, e.getMessage());
 
@@ -144,7 +144,7 @@ public class ProductImageSagaOrchestrator {
 
 			log.info("이미지 삭제 이벤트 발행 완료 - SagaId: {}, ProductCode: {}", sagaId, productCode);
 		} catch (Exception e) {
-			log.error("이미지 삭제 이벤트 발행 실패 - SagaId: {}, ProductCode: {}, Exception: ", sagaId, productCode, e);
+			log.error("이미지 삭제 이벤트 발행 실패 - SagaId: {}, ProductCode: {}, Exception: {}", sagaId, productCode, e.getMessage());
 
 			sagaService.updateToFail(sagaId, "이미지 삭제 이벤트 발행 실패" + e.getMessage());
 

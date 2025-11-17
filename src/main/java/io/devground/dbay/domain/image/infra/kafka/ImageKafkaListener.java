@@ -4,8 +4,8 @@ import java.util.List;
 
 import org.springframework.kafka.annotation.KafkaHandler;
 import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import io.devground.core.event.image.ImageProcessedEvent;
@@ -22,7 +22,6 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j(topic = "saga")
 @Component
-@Transactional
 @RequiredArgsConstructor
 @KafkaListener(
 	topics = {
@@ -37,7 +36,7 @@ public class ImageKafkaListener {
 	private final SagaService sagaService;
 
 	@KafkaHandler
-	public void handleProductImagePush(ProductImagesPushEvent event) {
+	public void handleProductImagePush(@Payload ProductImagesPushEvent event) {
 
 		String sagaId = event.sagaId();
 		String referenceCode = event.referenceCode();
@@ -45,6 +44,8 @@ public class ImageKafkaListener {
 
 		Saga saga = sagaService.getSaga(sagaId);
 		SagaStep step = saga.getCurrentStep();
+
+		log.info("상품 이미지 등록 시도 - SagaId: {}, ProductCode: {}, Step: {}", sagaId, referenceCode, step);
 
 		if (step.ordinal() >= SagaStep.IMAGE_DB_SAVE.ordinal()) {
 			log.warn("이미 종료된 이미지 등록 Saga - SagaId: {}, ProductCode: {}, Step: {}",
