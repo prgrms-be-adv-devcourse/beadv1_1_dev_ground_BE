@@ -50,7 +50,6 @@ public class OrderSaga {
 	private String cartsCommandTopicName;
 
 	// 이벤트 시작점 주문 -> 결제
-	@KafkaHandler
 	@TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
 	public void handleEvent(@Payload OrderCreatedEvent event) {
 		PaymentCreateCommand paymentCreatedCommand = new PaymentCreateCommand(
