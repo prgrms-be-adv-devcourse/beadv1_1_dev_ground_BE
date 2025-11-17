@@ -31,5 +31,5 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
 		o.updatedAt = TIMESTAMP
 		WHERE o.code IN :orderCodes
 		""")
-	int DeleteByOrderCodes(List<String> orderCodes);
+	void DeleteByOrderCodes(List<String> orderCodes);
 }
