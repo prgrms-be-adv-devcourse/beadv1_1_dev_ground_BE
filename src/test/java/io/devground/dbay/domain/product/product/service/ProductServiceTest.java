@@ -1,5 +1,6 @@
 package io.devground.dbay.domain.product.product.service;
 
+import static io.devground.dbay.domain.product.product.model.vo.ProductStatus.*;
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.BDDMockito.*;

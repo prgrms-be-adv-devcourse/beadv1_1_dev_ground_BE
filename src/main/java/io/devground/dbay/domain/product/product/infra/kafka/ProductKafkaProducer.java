@@ -7,7 +7,9 @@ import io.devground.core.event.product.ProductImagesDeleteEvent;
 import io.devground.core.event.product.ProductImagesPushEvent;
 import io.devground.dbay.domain.product.product.config.ProductTopicProperties;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j(topic = "saga")
 @Component
 @RequiredArgsConstructor
 public class ProductKafkaProducer {
