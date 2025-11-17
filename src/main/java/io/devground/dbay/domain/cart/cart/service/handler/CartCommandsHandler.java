@@ -7,15 +7,17 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Component;
 
-import io.devground.core.commands.cart.CompleteCartCommand;
 import io.devground.core.commands.cart.CreateCartCommand;
 import io.devground.core.commands.cart.DeleteCartCommand;
+import io.devground.core.commands.cart.DeleteCartItemsCommand;
 import io.devground.core.event.cart.CartCreatedEvent;
 import io.devground.core.event.cart.CartCreatedFailedEvent;
 import io.devground.core.event.cart.CartDeletedEvent;
 import io.devground.core.event.cart.CartDeletedFailedEvent;
+import io.devground.core.model.vo.ErrorCode;
 import io.devground.dbay.domain.cart.cart.model.entity.Cart;
 import io.devground.dbay.domain.cart.cart.model.vo.DeleteItemsByCartRequest;
+import io.devground.dbay.domain.cart.cart.repository.CartRepository;
 import io.devground.dbay.domain.cart.cart.service.CartService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -30,6 +32,8 @@ import lombok.extern.slf4j.Slf4j;
 public class CartCommandsHandler {
 
 	private final CartService cartService;
+
+	private final CartRepository cartRepository;
 
 	private final KafkaTemplate<String, Object> kafkaTemplate;
 
@@ -74,8 +78,12 @@ public class CartCommandsHandler {
 	}
 
 	@KafkaHandler
-	public void handlerOrderComplete(@Payload CompleteCartCommand command) {
+	public void handlerOrderComplete(@Payload DeleteCartItemsCommand command) {
+		Cart cart = cartRepository.findByUserCode(command.userCode())
+			.orElseThrow(ErrorCode.CART_NOT_FOUND::throwServiceException);
+
 		DeleteItemsByCartRequest request = new DeleteItemsByCartRequest(command.productCodes());
-		cartService.deleteItemsByCart(command.cartCode(), request);
+
+		cartService.deleteItemsByCart(cart.getCode(), request);
 	}
 }
