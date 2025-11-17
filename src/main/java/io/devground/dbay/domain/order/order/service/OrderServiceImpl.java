@@ -244,12 +244,6 @@ public class OrderServiceImpl implements OrderService {
 		orderRepository.DeleteByOrderCodes(orderCodes);
 	}
 
-	@Override
-	@Transactional
-	public void deleteOrder() {
-		orderRepository.
-	}
-
 	private Order checkOrder(String userCode, String orderCode) {
 		if (!Validators.isValidUuid(userCode)) {
 			throw ErrorCode.CODE_INVALID.throwServiceException();
