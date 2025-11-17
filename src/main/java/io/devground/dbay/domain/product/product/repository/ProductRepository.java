@@ -17,7 +17,7 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
 	Optional<Product> findByCode(String productCode);
 
 	@Query("""
-		SELECT new io.devground.dbay.domain.product.product.dto.CartProductsResponse
+		SELECT new io.devground.dbay.domain.product.product.model.dto.CartProductsResponse
 		(
 			p.code,
 			ps.code,
