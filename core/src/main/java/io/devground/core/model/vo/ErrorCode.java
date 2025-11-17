@@ -44,8 +44,9 @@ public enum ErrorCode {
 	ORDER_ALREADY_DELIVERED(400, "이미 배송완료된 주문입니다."),
 	ORDER_CANCELLED_NOT_ALLOWED_WHEN_DELIVERED(400, "배송완료된 상품에 대해선 주문 취소를 할 수 없습니다."),
 	ORDER_CANCELLED_NOT_ALLOWED_WHEN_CONFIRMED(400, "구매확정된 상품에 대해선 주문 취소를 할 수 없습니다."),
-	ORDER_CONFIRM_NOT_ALLOWED(400, "배송완료 전에는 구매확정을 할 수 없습니다."),
+	ORDER_CONFIRM_NOT_ALLOWED_BEFORE_DELIVERED(400, "배송완료 전에는 구매확정을 할 수 없습니다."),
 	ORDER_ALREADY_CONFIRMED(400, "이미 구매확정된 주문입니다."),
+	ORDER_CONFIRM_NOT_ALLOWED_BEFORE_TWO_WEEKS(400, "배송완료 후 2주가 지나 자동 구매확정 처리된 주문입니다."),
 
 	// product
 	ONLY_ON_SALE_PRODUCT_CHANGEABLE(400, "판매 중인 상품만 판매 완료 처리할 수 있습니다."),
