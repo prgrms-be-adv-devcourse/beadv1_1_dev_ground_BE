@@ -62,14 +62,8 @@ public class ProductImageCompensationService {
 			String compensatedThumbnailUrl = "";
 
 			switch (step) {
-				case WAITING_S3_UPLOAD -> {
-					log.info("S3 저장 실패 보상 - SagaId: {}, ProductCode: {}", sagaId, productCode);
-
-					compensatedThumbnailUrl = imageClient.compensateS3Upload(
-							ProductMapper.toDeleteImagesRequest(PRODUCT, productCode, urls))
-						.throwIfNotSuccess()
-						.data();
-				}
+				case WAITING_S3_UPLOAD ->
+					log.info("S3 저장 실패/보상 없이 실패 처리- SagaId: {}, ProductCode: {}", sagaId, productCode);
 				case IMAGE_KAFKA_PUBLISHED -> {
 					log.info("Kafka 발행 후 실패 보상 - SagaId: {}, ProductCode: {}", sagaId, productCode);
 
