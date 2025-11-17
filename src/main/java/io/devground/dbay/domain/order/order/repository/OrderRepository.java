@@ -30,7 +30,7 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
 	@Query("""
 		UPDATE Order o
 		SET o.deleteStatus = io.devground.core.model.vo.DeleteStatus.Y,
-		o.updatedAt = TIMESTAMP
+		o.updatedAt = CURRENT_TIMESTAMP
 		WHERE o.code IN :orderCodes
 		""")
 	void DeleteByOrderCodes(List<String> orderCodes);
