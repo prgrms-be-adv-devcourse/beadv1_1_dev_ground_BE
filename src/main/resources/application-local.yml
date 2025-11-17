@@ -22,6 +22,10 @@ spring:
         default_batch_fetch_size: 500
         format_sql: true
 
+  batch:
+    jdbc:
+      initialize-schema: always
+
   kafka:
     bootstrap-servers:
       - localhost:9092 #인텔리제이에서 실행할 때
