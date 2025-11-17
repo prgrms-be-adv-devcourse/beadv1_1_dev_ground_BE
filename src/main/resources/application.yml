@@ -61,17 +61,19 @@ carts:
 orders:
   event:
     topic:
-      name: orders-events
+      order: orders-order-events
   command:
     topic:
-      name: orders-commands
+      order: orders-order-commands
 
 payments:
   event:
     topic:
+      order: payments-order-events
       name: payments-events
   command:
     topic:
+      order: payments-order-events
       name: payments-commands
 
 eureka:
@@ -91,9 +93,11 @@ eureka:
 deposits:
   event:
     topic:
+      order: deposits-order-events
       name: deposits-events
   command:
     topic:
+      order: deposits-order-commands
       name: deposits-commands
 
 products:
