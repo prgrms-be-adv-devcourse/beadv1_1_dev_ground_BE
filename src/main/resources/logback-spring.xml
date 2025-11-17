@@ -198,6 +198,10 @@
         <logger name="saga" level="INFO" additivity="false">
             <appender-ref ref="SAGA_INFO_FILE"/>
             <appender-ref ref="SAGA_ERROR_FILE"/>
+            <appender-ref ref="CONSOLE"/>
+        </logger>
+
+        <logger name="sagaTimeout" level="INFO" additivity="false">
             <appender-ref ref="SAGA_TIMEOUT_FILE"/>
             <appender-ref ref="CONSOLE"/>
         </logger>
