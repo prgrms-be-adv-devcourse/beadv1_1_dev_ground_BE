@@ -103,12 +103,14 @@ public abstract class ProductMapper {
 
 	public static DeleteImagesRequest toDeleteImagesRequest(
 		ImageType imageType,
-		String referenceCode
+		String referenceCode,
+		List<String> deleteUrls
 	) {
 
 		return DeleteImagesRequest.builder()
 			.imageType(imageType)
 			.referenceCode(referenceCode)
+			.deleteUrls(deleteUrls)
 			.build();
 	}
 }

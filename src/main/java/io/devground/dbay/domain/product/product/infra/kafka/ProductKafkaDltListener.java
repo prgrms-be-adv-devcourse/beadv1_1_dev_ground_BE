@@ -37,7 +37,8 @@ public class ProductKafkaDltListener {
 		log.error("이미지 처리 결과 수신 재시도 모두 실패 - SagaId: {}, ProductCode: {}: ", sagaId, event.referenceCode());
 
 		ImageProcessedEvent failureEvent = new ImageProcessedEvent(
-			sagaId, event.imageType(), event.referenceCode(), event.eventType(), null, false, "이미지 처리 결과 수신 재시도 모두 실패"
+			sagaId, event.imageType(), event.referenceCode(), event.eventType(), event.urls(), event.thumbnailUrl(),
+			false, "이미지 처리 결과 수신 재시도 모두 실패"
 		);
 
 		orchestrator.handleImageProcessFailure(sagaId, failureEvent);

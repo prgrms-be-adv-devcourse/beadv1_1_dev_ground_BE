@@ -63,7 +63,9 @@ public class ProductImageSagaOrchestrator {
 
 			return presignedUrlsResponse.data();
 		} catch (Exception e) {
-			log.error("이미지 PresignedUrl 발급 실패 - SagaId: {}, ProductCode: {}, Exception: {}", sagaId, productCode, e.getMessage());
+			log.error("이미지 PresignedUrl 발급 실패 - SagaId: {}, ProductCode: {}, Exception: {}",
+				sagaId, productCode, e.getMessage()
+			);
 
 			sagaService.updateToFail(sagaId, "이미지 PresignedUrl 발급 실패: " + e.getMessage());
 
@@ -87,9 +89,12 @@ public class ProductImageSagaOrchestrator {
 
 			log.info("이미지 등록 이벤트 발행 완료 - SagaId: {}, ProductCode: {}", sagaId, productCode);
 		} catch (Exception e) {
-			log.error("이미지 등록 이벤트 발행 실패 - SagaId: {}, ProductCode: {}, Exception: {}", sagaId, productCode, e.getMessage());
+			log.error("이미지 등록 이벤트 발행 실패 - SagaId: {}, ProductCode: {}, Exception: {}", sagaId, productCode,
+				e.getMessage());
 
-			compensationService.compensateProductImageUploadFailure(sagaId, productCode, "이벤트 발행 실패: " + e.getMessage());
+			compensationService.compensateProductImageUploadFailure(
+				sagaId, productCode, "이벤트 발행 실패: " + e.getMessage(), urls
+			);
 
 			throw e;
 		}
@@ -144,7 +149,8 @@ public class ProductImageSagaOrchestrator {
 
 			log.info("이미지 삭제 이벤트 발행 완료 - SagaId: {}, ProductCode: {}", sagaId, productCode);
 		} catch (Exception e) {
-			log.error("이미지 삭제 이벤트 발행 실패 - SagaId: {}, ProductCode: {}, Exception: {}", sagaId, productCode, e.getMessage());
+			log.error("이미지 삭제 이벤트 발행 실패 - SagaId: {}, ProductCode: {}, Exception: {}", sagaId, productCode,
+				e.getMessage());
 
 			sagaService.updateToFail(sagaId, "이미지 삭제 이벤트 발행 실패" + e.getMessage());
 
@@ -187,7 +193,8 @@ public class ProductImageSagaOrchestrator {
 				log.error("이미지 업로드 실패/수동 보상 필요 - SagaId: {}, ProductCode: {}, ErrorMessage: {}",
 					sagaId, event.referenceCode(), event.errorMsg());
 
-				compensationService.compensateProductImageUploadFailure(sagaId, event.referenceCode(), event.errorMsg());
+				compensationService.compensateProductImageUploadFailure(sagaId, event.referenceCode(), event.errorMsg(),
+					event.urls());
 			}
 			case DELETE -> {
 				log.error("이미지 삭제 실패 - SagaId: {}, ProductCode: {}, ErrorMessage: {}",
