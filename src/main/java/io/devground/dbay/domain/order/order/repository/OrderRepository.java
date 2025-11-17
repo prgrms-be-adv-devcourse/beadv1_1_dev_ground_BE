@@ -1,7 +1,6 @@
 package io.devground.dbay.domain.order.order.repository;
 
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.domain.Page;
@@ -27,12 +26,13 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
 
 	@Query(
 		"""
-			SELECT
-			o
-			FROM Order o
-			WHERE o.orderStatus = io.devground.dbay.domain.order.order.model.vo.OrderStatus.DELIVERED
-			AND o.updatedAt BETWEEN :start AND :end
-		"""
+				SELECT
+				o
+				FROM Order o
+				WHERE o.orderStatus = io.devground.dbay.domain.order.order.model.vo.OrderStatus.DELIVERED
+				AND o.updatedAt BETWEEN :start AND :end
+			"""
 	)
-	List<Order> findOrderBeforeConfirmed(@Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
+	Page<Order> findOrderBeforeConfirmed(@Param("start") LocalDateTime start, @Param("end") LocalDateTime end,
+		Pageable pageable);
 }
