@@ -14,6 +14,8 @@ public enum ErrorCode {
 	// common
 	CODE_INVALID(400, "잘못된 코드 형식입니다."),
 	METHOD_NOT_ALLOWED(400, "잘못된 Http Method 입니다."),
+	PAGE_MUST_BE_POSITIVE(400, "페이지 번호는 0보다 커야합니다."),
+	PAGE_SIZE_MUST_BE_POSITIVE(400, "페이지 사이즈는 0보다 커야합니다."),
 
 	// user/auth
 	UNAUTHORIZED(401, "로그인이 필요합니다."),
