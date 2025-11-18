@@ -5,7 +5,6 @@ import java.time.LocalDateTime;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.elasticsearch.annotations.CompletionContext;
 import org.springframework.data.elasticsearch.annotations.CompletionField;
-import org.springframework.data.elasticsearch.annotations.DateFormat;
 import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
@@ -81,10 +80,10 @@ public class ProductDocument {
 	@Field(type = FieldType.Keyword)
 	private String productStatus;
 
-	@Field(type = FieldType.Date, format = DateFormat.date_time, pattern = "uuuu-MM-dd'T'HH:mm:ss")
+	@Field(type = FieldType.Date)
 	private LocalDateTime createdAt;
 
-	@Field(type = FieldType.Date, format = DateFormat.date_time, pattern = "uuuu-MM-dd'T'HH:mm:ss")
+	@Field(type = FieldType.Date)
 	private LocalDateTime updatedAt;
 
 	@Field(type = FieldType.Boolean)
