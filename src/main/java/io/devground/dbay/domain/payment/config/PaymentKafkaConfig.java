@@ -15,10 +15,10 @@ public class PaymentKafkaConfig {
 	@Value("${custom.kafka.config.topic-replications}")
 	private int topic_replications;
 
-	@Value("${payments.event.topic.order}")
+	@Value("${payments.event.topic.purchase}")
 	private String paymentOrderEventTopicName;
 
-	@Value("${payments.command.topic.order}")
+	@Value("${payments.command.topic.purchase}")
 	private String paymentOrderCommandTopicName;
 
 	@Bean
