@@ -6,10 +6,10 @@ on:
 
 jobs:
   build_and_deploy:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
 
     steps:
-      # 1) 코드 체크아웃
+      # 1) 소스 코드 체크아웃
       - name: Checkout Repository
         uses: actions/checkout@v3
 
@@ -20,7 +20,7 @@ jobs:
           java-version: '21'
           distribution: 'temurin'
 
-      # 3) Gradle로 jar 빌드
+      # 3) Gradle JAR 빌드
       - name: Build JAR with Gradle
         run: |
           chmod +x gradlew
@@ -33,30 +33,36 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      # 5) 각 서비스 이미지 빌드 & 푸시
+      # 5) 이미지 빌드 & 푸시
       - name: Build & Push Docker Images
         run: |
-          docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/eureka:latest ./eureka
+          echo "=== Build & Push Eureka ==="
+          docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/eureka:latest ./eureka-server
           docker push ${{ secrets.DOCKERHUB_USERNAME }}/eureka:latest
 
+          echo "=== Build & Push Gateway ==="
           docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/gateway:latest ./gateway
           docker push ${{ secrets.DOCKERHUB_USERNAME }}/gateway:latest
 
+          echo "=== Build & Push User ==="
           docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/user:latest ./user
           docker push ${{ secrets.DOCKERHUB_USERNAME }}/user:latest
 
-          docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/dbay:latest ./dbay
+          echo "=== Build & Push DBAY ==="
+          docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/dbay:latest .
           docker push ${{ secrets.DOCKERHUB_USERNAME }}/dbay:latest
 
-      # 6) EC2 접속하여 배포
-      - name: Deploy to EC2
-        uses: appleboy/ssh-action@v0.1.7
-        with:
-          host: ${{ secrets.HOST }}
-          username: ${{ secrets.EC2_USER }}
-          key: ${{ secrets.EC2_SSH_KEY }}
-          script: |
-            cd /home/ubuntu
-            docker compose pull
-            docker compose up -d
-            docker image prune -f
+      # 6) EC2 내부에서 직접 실행 (SSH 불필요)
+      - name: Deploy on EC2 (Self-hosted Runner)
+        run: |
+          echo "=== Move to project directory ==="
+          cd /home/ubuntu
+
+          echo "=== Pull updated images ==="
+          docker compose pull
+
+          echo "=== Restart services ==="
+          docker compose up -d --build
+
+          echo "=== Clean old images ==="
+          docker image prune -f

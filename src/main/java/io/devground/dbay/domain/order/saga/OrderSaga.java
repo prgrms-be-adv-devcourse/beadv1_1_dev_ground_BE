@@ -7,9 +7,10 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Component;
 
+import io.devground.core.commands.cart.DeleteCartItemsCommand;
+import io.devground.core.commands.deposit.WithdrawDeposit;
 import io.devground.core.commands.order.CompleteOrderCommand;
 import io.devground.core.commands.order.NotifyOrderCreateFailedAlertCommand;
-import io.devground.core.commands.deposit.WithdrawDeposit;
 import io.devground.core.event.order.OrderCreatedEvent;
 import io.devground.core.event.order.Temp.command.CancelCreatePaymentCommand;
 import io.devground.core.event.order.Temp.command.CompletePaymentCommand;
@@ -19,38 +20,42 @@ import io.devground.core.event.order.Temp.event.PaymentCreatedEvent;
 import io.devground.core.event.order.Temp.event.PaymentCreatedFailed;
 import io.devground.core.events.deposit.DepositWithdrawFailed;
 import io.devground.core.events.deposit.DepositWithdrawnSuccess;
-import io.devground.dbay.domain.order.order.service.OrderService;
 import lombok.RequiredArgsConstructor;
 
 @Component
 @KafkaListener(
 	topics = {
-		"${orders.event.topic.name}",
-		"${payments.command.topic.name}",
-		"${deposits.command.topic.name}",
+		"${orders.event.topic.order}",
+		"${payments.command.topic.order}",
+		"${deposits.command.topic.order}",
 	}
 )
 @RequiredArgsConstructor
 public class OrderSaga {
 
-	private final OrderService orderService;
-
 	private final KafkaTemplate<String, Object> kafkaTemplate;
 
-	@Value("${orders.command.topic.name}")
+	@Value("${orders.command.topic.order}")
 	private String ordersCommandTopicName;
 
-	@Value("${payments.command.topic.name}")
+	@Value("${payments.command.topic.order}")
 	private String paymentsCommandTopicName;
 
-	@Value("${deposits.command.topic.name}")
+	@Value("${deposits.command.topic.order}")
 	private String depositsCommandTopicName;
+
+	@Value("${carts.command.topic.order}")
+	private String cartsCommandTopicName;
 
 	// 이벤트 시작점 주문 -> 결제
 	@KafkaHandler
 	public void handleEvent(@Payload OrderCreatedEvent event) {
-		PaymentCreateCommand paymentCreatedCommand = new PaymentCreateCommand(event.userCode(), event.orderCode(),
-			event.totalAmount());
+		PaymentCreateCommand paymentCreatedCommand = new PaymentCreateCommand(
+			event.userCode(),
+			event.orderCode(),
+			event.totalAmount(),
+			event.productCodes()
+		);
 
 		kafkaTemplate.send(paymentsCommandTopicName, event.orderCode(), paymentCreatedCommand);
 	}
@@ -68,7 +73,7 @@ public class OrderSaga {
 	@KafkaHandler
 	public void handleEvent(@Payload PaymentCreatedEvent event) {
 		WithdrawDeposit withdrawDepositCommand = new WithdrawDeposit(event.userCode(), event.amount(), event.type(),
-			event.orderCode());
+			event.orderCode(), event.productCodes());
 
 		kafkaTemplate.send(depositsCommandTopicName, event.orderCode(), withdrawDepositCommand);
 	}
@@ -103,5 +108,11 @@ public class OrderSaga {
 		CompleteOrderCommand completeOrderCommand = new CompleteOrderCommand(event.userCode(), event.orderCode());
 
 		kafkaTemplate.send(ordersCommandTopicName, event.orderCode(), completeOrderCommand);
+
+		// 장바구니 삭제 이벤트 전송
+		DeleteCartItemsCommand deleteCartItemsCommand = new DeleteCartItemsCommand(event.userCode(),
+			event.productCodes());
+
+		kafkaTemplate.send(cartsCommandTopicName, event.orderCode(), deleteCartItemsCommand);
 	}
 }

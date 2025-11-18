@@ -9,8 +9,7 @@ import io.devground.dbay.domain.product.product.config.ProductTopicProperties;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-// TODO: 추후 LogUtil 사용 가능
-@Slf4j
+@Slf4j(topic = "saga")
 @Component
 @RequiredArgsConstructor
 public class ProductKafkaProducer {

@@ -6,7 +6,6 @@ import java.util.List;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -27,9 +26,12 @@ public interface ImageClient {
 	@PostMapping(value = "/upload")
 	BaseResponse<List<URL>> generatePresignedUrls(@RequestBody GeneratePresignedRequest request);
 
-	@PatchMapping(value = "/update")
+	@PostMapping(value = "/update")
 	BaseResponse<List<URL>> updateImages(@RequestBody UpdateImagesRequest request);
 
+	@DeleteMapping(value = "compensate-s3")
+	BaseResponse<String> compensateS3Upload(@RequestBody DeleteImagesRequest request);
+
 	@DeleteMapping(value = "/compensate-upload")
-	BaseResponse<Void> compensateUpload(@RequestBody DeleteImagesRequest request);
+	BaseResponse<String> compensateDbUpload(@RequestBody DeleteImagesRequest request);
 }

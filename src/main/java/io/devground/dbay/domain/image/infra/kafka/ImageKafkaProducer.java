@@ -6,9 +6,7 @@ import org.springframework.stereotype.Component;
 import io.devground.core.event.image.ImageProcessedEvent;
 import io.devground.dbay.domain.image.config.ImageTopicProperties;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
-@Slf4j
 @Component
 @RequiredArgsConstructor
 public class ImageKafkaProducer {

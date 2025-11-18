@@ -8,7 +8,9 @@ public enum SagaStep {
 	// common
 	INIT,
 	COMPLETE,
+	FAILED,
 	COMPENSATING,
+	COMPENSATED,
 
 	// productImageSaga
 	PENDING_S3_UPLOAD,

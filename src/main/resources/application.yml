@@ -17,8 +17,7 @@ spring:
         physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
 
   kafka:
-    bootstrap-servers:
-      - localhost:9092
+    bootstrap-servers: localhost:9092
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
@@ -48,30 +47,37 @@ spring:
       region:
         static: ${S3_REGION}
 
+  elasticsearch:
+    uris: http://localhost:9200
+    connection-timeout: 10s
+    socket-timeout: 60s
+
 carts:
   event:
     topic:
       user: carts-user-events
-      name: carts-events
+      order: carts-order-events
   command:
     topic:
       user: carts-user-commands
-      name: carts-commands
+      order: carts-order-commands
 
 orders:
   event:
     topic:
-      name: orders-events
+      order: orders-order-events
   command:
     topic:
-      name: orders-commands
+      order: orders-order-commands
 
 payments:
   event:
     topic:
+      order: payments-order-events
       name: payments-events
   command:
     topic:
+      order: payments-order-events
       name: payments-commands
 
 eureka:
@@ -91,9 +97,11 @@ eureka:
 deposits:
   event:
     topic:
+      order: deposits-order-events
       name: deposits-events
   command:
     topic:
+      order: deposits-order-commands
       name: deposits-commands
 
 settlements:
@@ -143,6 +151,6 @@ images:
 logging:
   level:
     org.hibernate.SQL: debug
-    org.hibernate.orm.jdbc.bind: TRACE
-    org.hibernate.orm.jdbc.extract: TRACE
+    org.hibernate.orm.jdbc.bind: INFO
+    org.hibernate.orm.jdbc.extract: INFO
     org.springframework.batch: INFO

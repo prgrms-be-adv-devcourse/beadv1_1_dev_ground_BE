@@ -2,10 +2,10 @@ package io.devground.dbay.domain.product.category.mapper;
 
 import java.util.List;
 
-import io.devground.dbay.domain.product.category.dto.AdminCategoryResponse;
-import io.devground.dbay.domain.product.category.dto.CategoryResponse;
-import io.devground.dbay.domain.product.category.dto.CategoryTreeResponse;
-import io.devground.dbay.domain.product.category.entity.Category;
+import io.devground.dbay.domain.product.category.model.dto.AdminCategoryResponse;
+import io.devground.dbay.domain.product.category.model.dto.CategoryResponse;
+import io.devground.dbay.domain.product.category.model.dto.CategoryTreeResponse;
+import io.devground.dbay.domain.product.category.model.entity.Category;
 
 public abstract class CategoryMapper {
 

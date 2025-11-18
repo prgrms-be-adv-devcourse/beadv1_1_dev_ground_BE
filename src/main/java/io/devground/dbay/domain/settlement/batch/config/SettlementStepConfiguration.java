@@ -9,7 +9,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.KafkaException;
 import org.springframework.transaction.PlatformTransactionManager;
 
-import io.devground.core.commands.deposit.SettlementChargeDeposit;
+import io.devground.core.commands.deposit.ChargeDeposit;
 import io.devground.dbay.domain.settlement.batch.listener.SettlementStepListener;
 import io.devground.dbay.domain.settlement.batch.processor.SettleConvertProcessor;
 import io.devground.dbay.domain.settlement.batch.processor.SettlementDepositProcessor;
@@ -82,8 +82,8 @@ public class SettlementStepConfiguration {
 	 * 입금 처리 Step
 	 * - 청크 크기: 100건씩 처리
 	 * - Reader: SETTLEMENT_CREATED 상태의 Settlement 조회
-	 * - Processor: Settlement를 SettlementChargeDeposit 커맨드로 변환
-	 * - Writer: Saga Orchestrator를 통해 정산 입금 Saga 시작
+	 * - Processor: Settlement를 ChargeDeposit 커맨드로 변환
+	 * - Writer: Kafka로 ChargeDeposit 커맨드 전송
 	 * - Retry 정책: Kafka 전송 실패 시 재시도
 	 */
 	@Bean
@@ -97,7 +97,7 @@ public class SettlementStepConfiguration {
 		log.info("입금 Step 생성 - retryLimit={}", retryLimit);
 
 		return new StepBuilder("depositStep", jobRepository)
-			.<Settlement, SettlementChargeDeposit>chunk(batchSize, ptManager)
+			.<Settlement, ChargeDeposit>chunk(batchSize, ptManager)
 			.reader(settlementDepositReader)
 			.processor(settlementDepositProcessor)
 			.writer(settlementDepositWriter)

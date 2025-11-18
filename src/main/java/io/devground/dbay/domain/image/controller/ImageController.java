@@ -7,7 +7,6 @@ import java.util.List;
 
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -57,7 +56,7 @@ public class ImageController {
 		);
 	}
 
-	@PatchMapping(value = "/update")
+	@PostMapping(value = "/update")
 	public BaseResponse<List<URL>> updateImages(
 		@RequestBody UpdateImagesRequest request
 	) {
@@ -70,14 +69,27 @@ public class ImageController {
 		);
 	}
 
-	@DeleteMapping(value = "/compensate-upload")
-	public BaseResponse<Void> compensateUpload(
+	@DeleteMapping(value = "compensate-s3")
+	public BaseResponse<String> compensateS3Upload(
 		@RequestBody DeleteImagesRequest request
 	) {
 
 		return BaseResponse.success(
-			NO_CONTENT.value(),
-			imageService.compensateUpload(request.imageType(), request.referenceCode())
+			OK.value(),
+			imageService.compensateToS3Upload(request.imageType(), request.referenceCode(), request.deleteUrls()),
+			"보상 처리가 완료되었습니다."
+		);
+	}
+
+	@DeleteMapping(value = "/compensate-upload")
+	public BaseResponse<String> compensateDbUpload(
+		@RequestBody DeleteImagesRequest request
+	) {
+
+		return BaseResponse.success(
+			OK.value(),
+			imageService.compensateUpload(request.imageType(), request.referenceCode(), request.deleteUrls()),
+			"보상 처리가 완료되었습니다."
 		);
 	}
 }

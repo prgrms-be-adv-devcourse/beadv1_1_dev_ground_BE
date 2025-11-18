@@ -6,6 +6,7 @@ import org.aspectj.lang.annotation.Aspect;
 import org.springframework.stereotype.Component;
 
 import io.devground.core.model.web.BaseResponse;
+import io.devground.dbay.common.util.LogUtil;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 
@@ -18,9 +19,16 @@ public class BaseResponseAspect {
 
 	@Around("within(@org.springframework.web.bind.annotation.RestController *)")
 	public Object updateHttpStatus(ProceedingJoinPoint joinPoint) throws Throwable {
+		String className = joinPoint.getSignature().getDeclaringType().getSimpleName();
+		String methodName = joinPoint.getSignature().getName();
+
+		LogUtil.logControllerRequest(className, methodName);
+
 		Object proceed = joinPoint.proceed();
 
 		if (proceed instanceof BaseResponse<?> baseResponse) {
+			LogUtil.logControllerResponse(className, methodName, baseResponse);
+
 			response.setStatus(baseResponse.resultCode());
 		}
 
