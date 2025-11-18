@@ -33,11 +33,11 @@ public class UserServiceImpl implements UserService {
 	private final UserRepository userRepository;
 	private final KafkaTemplate<String, Object> kafkaTemplate;
 
-	@Value("${users.events.topic.name}")
-	private String userEventsTopicName;
+	@Value("${users.events.topic.join}")
+	private String userJoinEventsTopicName;
 
-	@Value("${users.commands.topic.name}")
-	private String userCommandTopicName;
+	@Value("${users.commands.topic.join}")
+	private String userJoinCommandTopicName;
 
 	@Override
 	public void sendCertificateEmail(String email) {
@@ -84,7 +84,7 @@ public class UserServiceImpl implements UserService {
 		String userCode = savedUser.getCode();
 		UserCreatedEvent event = new UserCreatedEvent(userCode);
 		log.info("Sending event: {}", event);
-		kafkaTemplate.send(userEventsTopicName, event);
+		kafkaTemplate.send(userJoinEventsTopicName, event);
 
 		//웰컴 쿠폰 발급
 
@@ -120,7 +120,7 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public void requestDeleteUser(String userCode) {
 		UserDeletedEvent event = new UserDeletedEvent(userCode);
-		kafkaTemplate.send(userCommandTopicName, event);
+		kafkaTemplate.send(userJoinCommandTopicName, event);
 	}
 
 }

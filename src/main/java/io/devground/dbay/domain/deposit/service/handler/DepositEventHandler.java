@@ -33,19 +33,23 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Component
 @KafkaListener(topics = {
-	"${deposits.command.topic.name}"
+	"${deposits.command.topic.name}",
+	"${deposits.command.topic.join}"
 })
 public class DepositEventHandler {
 
 	private final DepositService depositService;
 	private final KafkaTemplate<String, Object> kafkaTemplate;
 	private final String depositsEventTopicName;
+	private final String depositsJoinEventTopicName;
 
 	public DepositEventHandler(DepositService depositService, KafkaTemplate<String, Object> kafkaTemplate,
-		@Value("${deposits.event.topic.name}") String depositsEventTopicName) {
+		@Value("${deposits.event.topic.name}") String depositsEventTopicName,
+		@Value("${deposits.event.topic.join}") String depositsJoinEventTopicName) {
 		this.depositService = depositService;
 		this.kafkaTemplate = kafkaTemplate;
 		this.depositsEventTopicName = depositsEventTopicName;
+		this.depositsJoinEventTopicName = depositsJoinEventTopicName;
 	}
 
 	/**
@@ -63,7 +67,7 @@ public class DepositEventHandler {
 				response.depositCode()
 			);
 
-			kafkaTemplate.send(depositsEventTopicName, depositCreatedEvent);
+			kafkaTemplate.send(depositsJoinEventTopicName, response.userCode(), depositCreatedEvent);
 
 		} catch (Exception e) {
 
@@ -74,7 +78,7 @@ public class DepositEventHandler {
 				"예치금 생성에 실패했어요"
 			);
 
-			kafkaTemplate.send(depositsEventTopicName, depositCreateFailed);
+			kafkaTemplate.send(depositsJoinEventTopicName, depositCreateFailed);
 		}
 
 	}
