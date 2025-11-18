@@ -16,13 +16,13 @@ public class ViewController {
 
 	private final PaymentService paymentService;
 
-	@GetMapping("/payments/checkout")
-	public String viewCheckoutPage(
-		@RequestHeader("X-CODE") String userCode,
-		Model model
-	) {
-		ChargePaymentRequest description = new ChargePaymentRequest(userCode, 10000L);
-		model.addAttribute("description", description);
-		return "payment/checkout";
-	}
+	// @GetMapping("/payments/checkout")
+	// public String viewCheckoutPage(
+	// 	@RequestHeader("X-CODE") String userCode,
+	// 	Model model
+	// ) {
+	// 	ChargePaymentRequest description = new ChargePaymentRequest(userCode, 10000L);
+	// 	model.addAttribute("description", description);
+	// 	return "payment/checkout";
+	// }
 }
