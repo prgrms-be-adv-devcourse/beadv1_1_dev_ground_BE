@@ -58,18 +58,3 @@ custom:
       topic-partitions: 1
       topic-replications: 1
 
-orders:
-  event:
-    topic:
-      name: orders-events
-  command:
-    topic:
-      name: orders-commands
-
-payments:
-  event:
-    topic:
-      name: payments-events
-  command:
-    topic:
-      name: payments-commands

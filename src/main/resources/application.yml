@@ -82,31 +82,31 @@ carts:
 orders:
   event:
     topic:
-      order: orders-order-events
+      purchase: orders-purchase-events
   command:
     topic:
-      order: orders-order-commands
+      purchase: orders-purchase-commands
 
 payments:
   event:
     topic:
-      order: payments-order-events
+      purchase: payments-purchase-events
       name: payments-events
   command:
     topic:
-      order: payments-order-events
+      purchase: payments-purchase-events
       name: payments-commands
 
 deposits:
   event:
     topic:
       join: deposits-join-events
-      order: deposits-order-events
+      purchase: deposits-purchase-events
       name: deposits-events
   command:
     topic:
       join: deposits-join-commands
-      order: deposits-order-commands
+      purchase: deposits-purchase-commands
       name: deposits-commands
 
 settlements:
