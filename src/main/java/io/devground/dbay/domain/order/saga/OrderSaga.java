@@ -25,9 +25,9 @@ import lombok.RequiredArgsConstructor;
 @Component
 @KafkaListener(
 	topics = {
-		"${orders.event.topic.order}",
-		"${payments.command.topic.order}",
-		"${deposits.command.topic.order}",
+		"${orders.event.topic.purchase}",
+		"${payments.event.topic.purchase}",
+		"${deposits.event.topic.purchase}",
 	}
 )
 @RequiredArgsConstructor
@@ -35,13 +35,13 @@ public class OrderSaga {
 
 	private final KafkaTemplate<String, Object> kafkaTemplate;
 
-	@Value("${orders.command.topic.order}")
+	@Value("${orders.command.topic.purchase}")
 	private String ordersCommandTopicName;
 
-	@Value("${payments.command.topic.order}")
+	@Value("${payments.command.topic.purchase}")
 	private String paymentsCommandTopicName;
 
-	@Value("${deposits.command.topic.order}")
+	@Value("${deposits.command.topic.purchase}")
 	private String depositsCommandTopicName;
 
 	@Value("${carts.command.topic.purchase}")
