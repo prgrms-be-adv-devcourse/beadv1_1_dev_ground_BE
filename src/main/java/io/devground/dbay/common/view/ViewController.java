@@ -11,7 +11,7 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/view")
 public class ViewController {
 
-	private final PaymentService paymentService;
+	//private final PaymentService paymentService;
 
 	// @GetMapping("/payments/checkout")
 	// public String viewCheckoutPage(
