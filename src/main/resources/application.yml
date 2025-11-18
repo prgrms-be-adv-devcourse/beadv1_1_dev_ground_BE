@@ -130,6 +130,7 @@ springdoc:
     enabled: true
   swagger-ui:
     enabled: true
+    config-url: /dbay/v3/api-docs/swagger-config
 
 custom:
   kafka:
