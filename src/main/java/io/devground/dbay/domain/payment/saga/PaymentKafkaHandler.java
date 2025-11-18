@@ -43,7 +43,7 @@ public class PaymentKafkaHandler {
 
 	private final KafkaTemplate<String, Object> kafkaTemplate;
 
-	@Value("${payment.command.topic.order}")
+	@Value("${payments.command.topic.order}")
 	private String paymentOrderCommandTopic;
 
 	@Value("${deposits.command.topic.name}")
@@ -62,7 +62,7 @@ public class PaymentKafkaHandler {
 
 		if (canPay) {
 			PaymentCreatedEvent paymentCreatedEvent = new PaymentCreatedEvent(command.userCode(), command.totalAmount(),
-				DepositHistoryType.PAYMENT_INTERNAL, command.orderCode());
+				DepositHistoryType.PAYMENT_INTERNAL, command.orderCode(), command.productCodes());
 			kafkaTemplate.send(paymentOrderCommandTopic, paymentCreatedEvent);
 		} else {
 			log.error("결제에 실패했습니다.");

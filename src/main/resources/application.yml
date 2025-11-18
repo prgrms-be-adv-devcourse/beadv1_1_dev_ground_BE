@@ -13,6 +13,10 @@ spring:
       naming:
         physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
 
+  batch:
+    jdbc:
+      initialize-schema: always
+
   kafka:
     bootstrap-servers: localhost:9092
     producer:
@@ -64,21 +68,16 @@ eureka:
     metadata-map:
       port: 8081
 
-  payments:
-    toss:
-      secretKey: ${TOSS_TEST_SECRET_KEY}
-      confirm-url: "https://api.tosspayments.com/v1/payments/confirm"
-
 
 carts:
   event:
     topic:
       join: carts-join-events
-      order: carts-order-events
+      purchase: carts-purchase-events
   command:
     topic:
       join: carts-join-commands
-      order: carts-order-commands
+      purchase: carts-purchase-commands
 
 orders:
   event:
@@ -146,6 +145,11 @@ custom:
       limit: 3
   settlement:
     rate: 0.95
+
+  payments:
+    toss:
+      secretKey: ${TOSS_TEST_SECRET_KEY}
+      confirm-url: "https://api.tosspayments.com/v1/payments/confirm"
 
 images:
   topic:

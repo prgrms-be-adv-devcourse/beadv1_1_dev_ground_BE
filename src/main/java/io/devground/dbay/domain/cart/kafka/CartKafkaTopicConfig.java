@@ -18,13 +18,13 @@ public class CartKafkaTopicConfig {
 	@Value("${carts.event.topic.join}")
 	private String cartsJoinEventTopicName;
 
-	@Value("${carts.event.topic.order}")
+	@Value("${carts.event.topic.purchase}")
 	private String cartOrderEventTopicName;
 
 	@Value("${carts.command.topic.join}")
 	private String cartsJoinCommandTopicName;
 
-	@Value("${carts.command.topic.order}")
+	@Value("${carts.command.topic.purchase}")
 	private String cartOrderCommandTopicName;
 
 	private static final String DLT = ".DLT";
