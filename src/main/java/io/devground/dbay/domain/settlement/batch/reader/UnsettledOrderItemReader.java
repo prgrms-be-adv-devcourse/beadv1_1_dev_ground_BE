@@ -23,7 +23,7 @@ public class UnsettledOrderItemReader implements ItemReader<UnsettledOrderItemRe
 
 	private List<UnsettledOrderItemResponse> unsettledItems;
 	private int currentIndex = 0;
-	private int currentPage = 1;
+	private int currentPage = 0;
 	private static final int PAGE_SIZE = 100;
 
 	/**
@@ -61,11 +61,10 @@ public class UnsettledOrderItemReader implements ItemReader<UnsettledOrderItemRe
 		try {
 			log.info("Order 도메인에서 정산 대상 OrderItem 조회 중... page={}, size={}", currentPage, PAGE_SIZE);
 
-			BaseResponse<PageDto<UnsettledOrderItemResponse>> response =
-				orderFeignClient.getUnsettledOrderItems(currentPage, PAGE_SIZE);
-
-			// PageDto에서 데이터 추출
-			PageDto<UnsettledOrderItemResponse> pageDto = response.data();
+			PageDto<UnsettledOrderItemResponse> pageDto =
+				orderFeignClient.getUnsettledOrderItems(currentPage, PAGE_SIZE)
+					.throwIfNotSuccess()
+					.data();
 
 			if (pageDto == null || pageDto.items().isEmpty()) {
 				// 더 이상 조회할 데이터가 없음
