@@ -94,7 +94,7 @@ payments:
       name: payments-events
   command:
     topic:
-      purchase: payments-purchase-events
+      purchase: payments-purchase-commands
       name: payments-commands
 
 deposits:

@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import io.devground.core.commands.deposit.SettlementChargeDeposit;
-import io.devground.core.events.deposit.SettlementDepositChargedSuccess;
+import io.devground.core.event.deposit.SettlementDepositChargedSuccess;
 import io.devground.core.events.settlement.SettlementCreatedSuccess;
 import io.devground.dbay.common.saga.entity.Saga;
 import io.devground.dbay.common.saga.service.SagaService;

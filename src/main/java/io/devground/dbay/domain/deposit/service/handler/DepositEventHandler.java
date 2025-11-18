@@ -13,17 +13,17 @@ import io.devground.core.commands.deposit.DeleteDeposit;
 import io.devground.core.commands.deposit.RefundDeposit;
 import io.devground.core.commands.deposit.SettlementChargeDeposit;
 import io.devground.core.commands.deposit.WithdrawDeposit;
-import io.devground.core.events.deposit.DepositChargeFailed;
-import io.devground.core.events.deposit.DepositChargedSuccess;
-import io.devground.core.events.deposit.DepositCreateFailed;
-import io.devground.core.events.deposit.DepositCreatedSuccess;
-import io.devground.core.events.deposit.DepositDeleteFailed;
-import io.devground.core.events.deposit.DepositDeletedSuccess;
-import io.devground.core.events.deposit.DepositRefundFailed;
-import io.devground.core.events.deposit.DepositRefundedSuccess;
-import io.devground.core.events.deposit.DepositWithdrawFailed;
-import io.devground.core.events.deposit.DepositWithdrawnSuccess;
-import io.devground.core.events.deposit.SettlementDepositChargedSuccess;
+import io.devground.core.event.deposit.DepositChargeFailed;
+import io.devground.core.event.deposit.DepositChargedSuccess;
+import io.devground.core.event.deposit.DepositCreateFailed;
+import io.devground.core.event.deposit.DepositCreatedSuccess;
+import io.devground.core.event.deposit.DepositDeleteFailed;
+import io.devground.core.event.deposit.DepositDeletedSuccess;
+import io.devground.core.event.deposit.DepositRefundFailed;
+import io.devground.core.event.deposit.DepositRefundedSuccess;
+import io.devground.core.event.deposit.DepositWithdrawFailed;
+import io.devground.core.event.deposit.DepositWithdrawnSuccess;
+import io.devground.core.event.deposit.SettlementDepositChargedSuccess;
 import io.devground.dbay.domain.deposit.dto.response.DepositHistoryResponse;
 import io.devground.dbay.domain.deposit.dto.response.DepositResponse;
 import io.devground.dbay.domain.deposit.entity.vo.DepositHistoryType;
@@ -34,7 +34,8 @@ import lombok.extern.slf4j.Slf4j;
 @Component
 @KafkaListener(topics = {
 	"${deposits.command.topic.name}",
-	"${deposits.command.topic.join}"
+	"${deposits.command.topic.join}",
+	"${deposits.command.topic.purchase}"
 })
 public class DepositEventHandler {
 
@@ -42,14 +43,18 @@ public class DepositEventHandler {
 	private final KafkaTemplate<String, Object> kafkaTemplate;
 	private final String depositsEventTopicName;
 	private final String depositsJoinEventTopicName;
+	private final String depositsPurchaseEventTopicName;
 
 	public DepositEventHandler(DepositService depositService, KafkaTemplate<String, Object> kafkaTemplate,
 		@Value("${deposits.event.topic.name}") String depositsEventTopicName,
-		@Value("${deposits.event.topic.join}") String depositsJoinEventTopicName) {
+		@Value("${deposits.event.topic.join}") String depositsJoinEventTopicName,
+		@Value("${deposits.event.topic.purchase}") String depositsPurchaseEventTopicName
+		) {
 		this.depositService = depositService;
 		this.kafkaTemplate = kafkaTemplate;
 		this.depositsEventTopicName = depositsEventTopicName;
 		this.depositsJoinEventTopicName = depositsJoinEventTopicName;
+		this.depositsPurchaseEventTopicName = depositsPurchaseEventTopicName;
 	}
 
 	/**
@@ -148,7 +153,7 @@ public class DepositEventHandler {
 				command.productCodes()
 			);
 
-			kafkaTemplate.send(depositsEventTopicName, depositWithdrawnSuccessEvent);
+			kafkaTemplate.send(depositsPurchaseEventTopicName, command.orderCode(), depositWithdrawnSuccessEvent);
 
 			log.info("예치금 인출 완료: userCode={}, amount={}", command.userCode(), command.amount());
 
@@ -163,7 +168,7 @@ public class DepositEventHandler {
 				command.orderCode()
 			);
 
-			kafkaTemplate.send(depositsEventTopicName, depositWithdrawFailed);
+			kafkaTemplate.send(depositsPurchaseEventTopicName, command.orderCode(), depositWithdrawFailed);
 		}
 
 	}

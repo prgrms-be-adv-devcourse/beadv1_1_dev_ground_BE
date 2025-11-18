@@ -1,4 +1,4 @@
-package io.devground.core.events.deposit;
+package io.devground.core.event.deposit;
 
 /**
  * 정산 예치금 충전 성공 이벤트

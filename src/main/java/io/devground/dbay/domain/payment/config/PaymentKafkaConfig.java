@@ -22,7 +22,7 @@ public class PaymentKafkaConfig {
 	private String paymentOrderCommandTopicName;
 
 	@Bean
-	public NewTopic createPaymentOrderEventTopic() {
+	public NewTopic createPaymentPurchaseEventTopic() {
 		return TopicBuilder.name(paymentOrderEventTopicName)
 			.partitions(topic_partitions)
 			.replicas(topic_replications)
@@ -30,7 +30,7 @@ public class PaymentKafkaConfig {
 	}
 
 	@Bean
-	public NewTopic createPaymentCommandTopic() {
+	public NewTopic createPaymentPurchaseCommandTopic() {
 		return TopicBuilder.name(paymentOrderCommandTopicName)
 			.partitions(topic_partitions)
 			.replicas(topic_replications)
