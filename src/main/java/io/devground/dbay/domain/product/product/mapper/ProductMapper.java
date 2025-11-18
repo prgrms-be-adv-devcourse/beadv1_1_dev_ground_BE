@@ -7,12 +7,12 @@ import io.devground.core.dto.image.DeleteImagesRequest;
 import io.devground.core.dto.image.GeneratePresignedRequest;
 import io.devground.core.dto.image.UpdateImagesRequest;
 import io.devground.core.model.vo.ImageType;
-import io.devground.dbay.domain.product.product.dto.GetAllProductsResponse;
-import io.devground.dbay.domain.product.product.dto.ProductDetailResponse;
-import io.devground.dbay.domain.product.product.dto.RegistProductResponse;
-import io.devground.dbay.domain.product.product.dto.UpdateProductResponse;
-import io.devground.dbay.domain.product.product.entity.Product;
-import io.devground.dbay.domain.product.product.entity.ProductSale;
+import io.devground.dbay.domain.product.product.model.dto.GetAllProductsResponse;
+import io.devground.dbay.domain.product.product.model.dto.ProductDetailResponse;
+import io.devground.dbay.domain.product.product.model.dto.RegistProductResponse;
+import io.devground.dbay.domain.product.product.model.dto.UpdateProductResponse;
+import io.devground.dbay.domain.product.product.model.entity.Product;
+import io.devground.dbay.domain.product.product.model.entity.ProductSale;
 
 public abstract class ProductMapper {
 
@@ -103,12 +103,14 @@ public abstract class ProductMapper {
 
 	public static DeleteImagesRequest toDeleteImagesRequest(
 		ImageType imageType,
-		String referenceCode
+		String referenceCode,
+		List<String> deleteUrls
 	) {
 
 		return DeleteImagesRequest.builder()
 			.imageType(imageType)
 			.referenceCode(referenceCode)
+			.deleteUrls(deleteUrls)
 			.build();
 	}
 }

@@ -1,5 +1,8 @@
 package io.devground.dbay.domain.order.order.model.entity;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -88,12 +91,22 @@ public class Order extends BaseEntity {
 	}
 
 	public void confirm() {
+		LocalDate today = LocalDate.now().minusDays(1);
+		LocalDate twoWeeksAgo = today.minusWeeks(2);
+
+		LocalDateTime start = twoWeeksAgo.atStartOfDay();
+		LocalDateTime end = today.atTime(LocalTime.MAX);
+
 		if (this.orderStatus == OrderStatus.CONFIRMED) {
 			throw ErrorCode.ORDER_ALREADY_CONFIRMED.throwServiceException();
 		}
 
 		if (this.orderStatus != OrderStatus.DELIVERED) {
-			throw ErrorCode.ORDER_CONFIRM_NOT_ALLOWED.throwServiceException();
+			throw ErrorCode.ORDER_CONFIRM_NOT_ALLOWED_BEFORE_DELIVERED.throwServiceException();
+		}
+
+		if (this.getUpdatedAt().isAfter(end)) {
+			throw ErrorCode.ORDER_CONFIRM_NOT_ALLOWED_BEFORE_TWO_WEEKS.throwServiceException();
 		}
 
 		this.orderStatus = OrderStatus.CONFIRMED;

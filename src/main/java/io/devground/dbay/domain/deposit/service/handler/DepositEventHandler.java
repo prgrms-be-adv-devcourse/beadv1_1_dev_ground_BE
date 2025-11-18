@@ -140,7 +140,8 @@ public class DepositEventHandler {
 				response.code(),
 				response.amount(),
 				response.balanceAfter(),
-				command.orderCode()
+				command.orderCode(),
+				command.productCodes()
 			);
 
 			kafkaTemplate.send(depositsEventTopicName, depositWithdrawnSuccessEvent);

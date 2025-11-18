@@ -62,8 +62,10 @@ public class Saga {
 	private SagaStatus sagaStatus;
 
 	@Enumerated(EnumType.STRING)
+	@Column(length = 100)
 	private SagaStep currentStep;
 
+	@Column(length = 1000)
 	private String lastErrorMessage;
 
 	private LocalDateTime startedAt;
@@ -105,13 +107,14 @@ public class Saga {
 	}
 
 	public void updateToFail(String message) {
+		this.currentStep = SagaStep.FAILED;
 		this.sagaStatus = SagaStatus.FAILED;
 		this.lastErrorMessage = message;
 	}
 
 	public void updateToCompensated(String message) {
 		this.sagaStatus = SagaStatus.COMPENSATED;
-		this.currentStep = SagaStep.COMPLETE;
+		this.currentStep = SagaStep.COMPENSATED;
 		this.lastErrorMessage = message;
 	}
 }

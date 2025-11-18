@@ -1,5 +1,7 @@
 package io.devground.dbay.domain.product.product.service;
 
+import static io.devground.dbay.common.saga.vo.SagaStep.*;
+
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -16,7 +18,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 // TODO: 실행 Term 전략 세우기
-@Slf4j
+
+@Slf4j(topic = "sagaTimeout")
 @Component
 @Transactional
 @RequiredArgsConstructor
@@ -24,7 +27,6 @@ public class ImageScheduledProcessor {
 
 	private final SagaService sagaService;
 	private final SagaRepository sagaRepository;
-	private final ProductImageCompensationService compensationService;
 
 	/**
 	 * Timeout된 Saga 보상 처리
@@ -38,7 +40,7 @@ public class ImageScheduledProcessor {
 		LocalDateTime deadline = LocalDateTime.now().minusMinutes(10);
 
 		List<Saga> timeoutSagas = sagaRepository.findSagaByCurrentStepInAndStartedAtBefore(
-			List.of(SagaStep.WAITING_S3_UPLOAD, SagaStep.IMAGE_KAFKA_PUBLISHED),
+			List.of(WAITING_S3_UPLOAD, IMAGE_KAFKA_PUBLISHED, IMAGE_DB_SAVE),
 			deadline
 		);
 
@@ -47,21 +49,38 @@ public class ImageScheduledProcessor {
 		}
 
 		for (Saga timeoutSaga : timeoutSagas) {
-			try {
-				log.error("Timeout된 Saga 보상 시작 - SagaId: {}, ProductCode: {}, Step: {}, Exception: {}",
-					timeoutSaga.getSagaId(), timeoutSaga.getReferenceCode(),
-					timeoutSaga.getCurrentStep(), timeoutSaga.getLastErrorMessage()
+			String sagaId = timeoutSaga.getSagaId();
+			String productCode = timeoutSaga.getReferenceCode();
+			SagaStep step = timeoutSaga.getCurrentStep();
+			String errorMsg = timeoutSaga.getLastErrorMessage();
+
+			if (step.equals(WAITING_S3_UPLOAD) || step.equals(IMAGE_KAFKA_PUBLISHED)) {
+
+				log.error("Timeout된 Saga 실패 처리 - SagaId: {}, ProductCode: {}, Step: {}, Exception: {}",
+					sagaId, productCode,
+					step, errorMsg
 				);
 
-				compensationService.compensateProductImageUploadFailure(
-					timeoutSaga.getSagaId(), timeoutSaga.getReferenceCode(), "Saga Timeout"
+				sagaService.updateToFail(
+					sagaId,
+					String.format("Timeout된 Saga 실패 처리 - SagaId: %s, ProductCode: %s", sagaId, productCode)
 				);
 
-				log.error("Timeout된 Saga 보상 완료 - SagaId: {}, ProductCode: {}, Exception: {}",
-					timeoutSaga.getSagaId(), timeoutSaga.getReferenceCode(), timeoutSaga.getLastErrorMessage());
-			} catch (Exception e) {
-				log.error("Timeout된 Saga 보상 실패 - SagaId: {}, ProductCode: {}, Exception: {}",
-					timeoutSaga.getSagaId(), timeoutSaga.getReferenceCode(), e.getMessage());
+				log.error("Timeout된 Saga 실패 처리 완료 - SagaId: {}, ProductCode: {}, Exception: {}",
+					sagaId, productCode, errorMsg);
+			} else {
+
+				log.error(
+					"Timeout된 Saga 보상 처리 수동 필요/S3-DB 정합성 문제 발생 - SagaId: {}, ProductCode: {}, Step: {}, Exception: {}",
+					sagaId, productCode, step, errorMsg
+				);
+
+				sagaService.updateToFail(
+					sagaId,
+					String.format("Timeout된 Saga 보상 처리 수동 필요/S3-DB 정합성 문제 발생 - SagaId: %s, ProductCode: %s",
+						sagaId, productCode
+					)
+				);
 			}
 		}
 	}

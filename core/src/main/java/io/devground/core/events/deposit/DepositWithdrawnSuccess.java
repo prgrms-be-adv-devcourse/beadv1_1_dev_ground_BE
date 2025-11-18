@@ -1,10 +1,13 @@
 package io.devground.core.events.deposit;
 
+import java.util.List;
+
 public record DepositWithdrawnSuccess(
 	String userCode,
 	String depositHistoryCode,
 	Long amount,
 	Long balanceAfter,
-	String orderCode
+	String orderCode,
+	List<String> productCodes
 ) {
 }
