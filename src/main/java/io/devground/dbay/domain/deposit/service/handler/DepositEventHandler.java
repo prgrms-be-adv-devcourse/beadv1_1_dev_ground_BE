@@ -11,6 +11,7 @@ import io.devground.core.commands.deposit.ChargeDeposit;
 import io.devground.core.commands.deposit.CreateDeposit;
 import io.devground.core.commands.deposit.DeleteDeposit;
 import io.devground.core.commands.deposit.RefundDeposit;
+import io.devground.core.commands.deposit.SettlementChargeDeposit;
 import io.devground.core.commands.deposit.WithdrawDeposit;
 import io.devground.core.events.deposit.DepositChargeFailed;
 import io.devground.core.events.deposit.DepositChargedSuccess;
@@ -22,6 +23,7 @@ import io.devground.core.events.deposit.DepositRefundFailed;
 import io.devground.core.events.deposit.DepositRefundedSuccess;
 import io.devground.core.events.deposit.DepositWithdrawFailed;
 import io.devground.core.events.deposit.DepositWithdrawnSuccess;
+import io.devground.core.events.deposit.SettlementDepositChargedSuccess;
 import io.devground.dbay.domain.deposit.dto.response.DepositHistoryResponse;
 import io.devground.dbay.domain.deposit.dto.response.DepositResponse;
 import io.devground.dbay.domain.deposit.entity.vo.DepositHistoryType;
@@ -225,6 +227,50 @@ public class DepositEventHandler {
 			);
 
 			kafkaTemplate.send(depositsEventTopicName, depositDeleteFailed);
+		}
+
+	}
+
+	/**
+	 * 정산 예치금 충전
+	 * Settlement에서 판매자에게 정산금을 입금
+	 */
+	@KafkaHandler
+	public void handleCommand(@Payload SettlementChargeDeposit command) {
+
+		try {
+
+			DepositHistoryResponse response = depositService.charge(
+				command.userCode(),
+				DepositHistoryType.SETTLEMENT,
+				command.amount()
+			);
+
+			SettlementDepositChargedSuccess event = new SettlementDepositChargedSuccess(
+				response.userCode(),
+				response.code(),
+				response.amount(),
+				response.balanceAfter(),
+				command.orderCode()
+			);
+
+			kafkaTemplate.send(depositsEventTopicName, event);
+
+			log.info("정산 예치금 충전 완료: userCode={}, amount={}, orderCode={}",
+				command.userCode(), command.amount(), command.orderCode());
+
+		} catch (Exception e) {
+
+			log.error("정산 예치금을 충전하는데 오류가 발생했습니다!", e);
+
+			// TODO: SettlementDepositChargeFailed 이벤트 생성 필요
+			DepositChargeFailed depositChargeFailed = new DepositChargeFailed(
+				command.userCode(),
+				command.amount(),
+				"정산 예치금 충전에 실패했어요"
+			);
+
+			kafkaTemplate.send(depositsEventTopicName, depositChargeFailed);
 		}
 
 	}
