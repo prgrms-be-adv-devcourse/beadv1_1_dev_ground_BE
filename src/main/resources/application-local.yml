@@ -58,14 +58,6 @@ custom:
       topic-partitions: 1
       topic-replications: 1
 
-carts:
-  event:
-    topic:
-      name: carts-events
-  command:
-    topic:
-      name: carts-commands
-
 orders:
   event:
     topic:
@@ -81,11 +73,3 @@ payments:
   command:
     topic:
       name: payments-commands
-
-deposits:
-  event:
-    topic:
-      name: deposits-events
-  command:
-    topic:
-      name: deposits-commands

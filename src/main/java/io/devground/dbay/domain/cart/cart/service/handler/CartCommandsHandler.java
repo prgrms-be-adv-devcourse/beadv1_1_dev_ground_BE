@@ -25,7 +25,7 @@ import lombok.extern.slf4j.Slf4j;
 @Component
 @Slf4j
 @KafkaListener(topics = {
-	"${carts.command.topic.user}",
+	"${carts.command.topic.join}",
 	"${carts.command.topic.order}"
 })
 @RequiredArgsConstructor
@@ -37,48 +37,48 @@ public class CartCommandsHandler {
 
 	private final KafkaTemplate<String, Object> kafkaTemplate;
 
-	@Value("${carts.event.topic.user}")
-	private String cartsUserEventTopicName;
+	@Value("${carts.event.topic.join}")
+	private String cartsJoinUserEventTopicName;
 
 	@Value("${carts.event.topic.order}")
 	private String cartsOrderEventTopicName;
 
 	@KafkaHandler
-	public void handleCreateCart(@Payload CreateCartCommand command) {
+	public void handleCreateCart(@Payload CreateCartCommand createCartCommand) {
 		try {
-			Cart savedCart = cartService.createCart(command.userCode());
+			Cart savedCart = cartService.createCart(createCartCommand.userCode());
 
 			CartCreatedEvent event = new CartCreatedEvent(savedCart.getUserCode(), savedCart.getCode());
 
-			kafkaTemplate.send(cartsUserEventTopicName, savedCart.getUserCode(), event);
+			kafkaTemplate.send(cartsJoinUserEventTopicName, savedCart.getUserCode(), event);
 		} catch (Exception e) {
 			log.error("장바구니 생성에서 오류가 발생하였습니다. ", e);
 
-			CartCreatedFailedEvent event = new CartCreatedFailedEvent(command.userCode());
+			CartCreatedFailedEvent event = new CartCreatedFailedEvent(createCartCommand.userCode());
 
-			kafkaTemplate.send(cartsUserEventTopicName, command.userCode(), event);
+			kafkaTemplate.send(cartsJoinUserEventTopicName, createCartCommand.userCode(), event);
 		}
 	}
 
 	@KafkaHandler
-	public void handlerDeleteCart(@Payload DeleteCartCommand command) {
+	public void handleDeleteCart(@Payload DeleteCartCommand command) {
 		try {
 			Cart deleteCart = cartService.deleteCart(command.userCode());
 
 			CartDeletedEvent event = new CartDeletedEvent(deleteCart.getUserCode());
 
-			kafkaTemplate.send(cartsUserEventTopicName, deleteCart.getUserCode(), event);
+			kafkaTemplate.send(cartsJoinUserEventTopicName, deleteCart.getUserCode(), event);
 		} catch (Exception e) {
 			log.error("장바구니 삭제에서 오류가 발생하였습니다. ", e);
 
 			CartDeletedFailedEvent event = new CartDeletedFailedEvent(command.userCode(), "장바구니 삭제 실패");
 
-			kafkaTemplate.send(cartsUserEventTopicName, event.userCode(), event);
+			kafkaTemplate.send(cartsJoinUserEventTopicName, event.userCode(), event);
 		}
 	}
 
 	@KafkaHandler
-	public void handlerOrderComplete(@Payload DeleteCartItemsCommand command) {
+	public void handleOrderComplete(@Payload DeleteCartItemsCommand command) {
 		Cart cart = cartRepository.findByUserCode(command.userCode())
 			.orElseThrow(ErrorCode.CART_NOT_FOUND::throwServiceException);
 

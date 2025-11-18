@@ -52,14 +52,27 @@ spring:
     connection-timeout: 10s
     socket-timeout: 60s
 
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://eureka:8761/eureka/
+  instance:
+    prefer-ip-address: true
+    ip-address: dbay
+    non-secure-port: 8081
+    metadata-map:
+      port: 8081
+
 carts:
   event:
     topic:
-      user: carts-user-events
+      join: carts-join-events
       order: carts-order-events
   command:
     topic:
-      user: carts-user-commands
+      join: carts-join-commands
       order: carts-order-commands
 
 orders:
@@ -80,27 +93,15 @@ payments:
       order: payments-order-events
       name: payments-commands
 
-eureka:
-  client:
-    register-with-eureka: true
-    fetch-registry: true
-    service-url:
-      defaultZone: http://eureka:8761/eureka/
-  instance:
-    prefer-ip-address: true
-    ip-address: dbay
-    non-secure-port: 8080
-    metadata-map:
-      port: 8080
-
-
 deposits:
   event:
     topic:
+      join: deposits-join-events
       order: deposits-order-events
       name: deposits-events
   command:
     topic:
+      join: deposits-join-commands
       order: deposits-order-commands
       name: deposits-commands
 
