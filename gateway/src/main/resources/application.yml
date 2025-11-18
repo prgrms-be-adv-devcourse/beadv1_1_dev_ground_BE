@@ -11,14 +11,14 @@ eureka:
     register-with-eureka: true
     fetch-registry: true
     service-url:
-      defaultZone: http://eureka:8761/eureka/
+      defaultZone: http://localhost:8761/eureka/
 
 spring:
   application:
     name: api-gateway
 
   profiles:
-    active: deploy
+    active: stage
 
   config:
     import: optional:classpath:env.properties
@@ -28,21 +28,21 @@ spring:
       routes:
         # 1) Swagger UI
         - id: user-swagger-ui
-          uri: http://localhost:8082
+          uri: http://host.docker.internal:8082
           predicates:
             - Path=/user/swagger-ui/**
           filters:
             - StripPrefix=1
 
         - id: user-api-docs
-          uri: http://localhost:8082
+          uri: http://host.docker.internal:8082
           predicates:
             - Path=/user/v3/api-docs/**
           filters:
             - StripPrefix=1
 
         - id: user-swagger-config
-          uri: http://localhost:8082
+          uri: http://host.docker.internal:8082
           predicates:
             - Path=/user/v3/api-docs/swagger-config/**
           filters:
@@ -50,21 +50,21 @@ spring:
 
         # 1) Swagger UI
         - id: dbay-swagger-ui
-          uri: http://localhost:8080
+          uri: http://host.docker.internal:8080
           predicates:
             - Path=/dbay/swagger-ui/**
           filters:
             - StripPrefix=1
 
         - id: dbay-api-docs
-          uri: http://localhost:8080
+          uri: http://host.docker.internal:8080
           predicates:
             - Path=/dbay/v3/api-docs/**
           filters:
             - StripPrefix=1
 
         - id: dbay-swagger-config
-          uri: http://localhost:8080
+          uri: http://host.docker.internal:8080
           predicates:
             - Path=/dbay/v3/api-docs/swagger-config/**
           filters:
