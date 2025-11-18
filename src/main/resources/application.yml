@@ -6,7 +6,7 @@ spring:
     name: dbay
 
   profiles:
-    active: stage
+    active: deploy
 
   config:
     import: optional:classpath:env.properties
