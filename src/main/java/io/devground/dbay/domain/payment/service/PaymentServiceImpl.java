@@ -176,10 +176,8 @@ public class PaymentServiceImpl implements PaymentService {
 	@Transactional
 	public Payment refund(String userCode, PaymentRequest request) {
 
-		Payment payment = paymentRepository.findByOrderCode(request.getOrderCode())
+		return paymentRepository.findByOrderCode(request.getOrderCode())
 			.orElseThrow(() -> new IllegalArgumentException("결제 내역을 찾을 수 없습니다."));
-
-		return payment;
 	}
 
 	@Override
