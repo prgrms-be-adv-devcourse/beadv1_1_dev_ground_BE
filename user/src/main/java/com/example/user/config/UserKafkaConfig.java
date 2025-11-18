@@ -18,23 +18,23 @@ public class UserKafkaConfig {
 	@Value("${users.config.topic-replications}")
 	private int topic_replications;
 
-	@Value("${users.events.topic.name}")
-	private String usersEventsTopicName;
+	@Value("${users.events.topic.join}")
+	private String usersJoinEventsTopicName;
 
-	@Value("${carts.events.topic.name}")
-	private String cartsUserEventsTopicName;
+	@Value("${carts.events.topic.join}")
+	private String cartsJoinUserEventsTopicName;
 
-	@Value("${deposits.events.topic.name}")
-	private String depositsUserEventsTopicName;
+	@Value("${deposits.events.topic.join}")
+	private String depositsJoinUserEventsTopicName;
 
-	@Value("${carts.commands.topic.name}")
-	private String cartsUserCommandsTopicName;
+	@Value("${carts.commands.topic.join}")
+	private String cartsJoinUserCommandsTopicName;
 
-	@Value("${deposits.commands.topic.name}")
-	private String depositsUserCommandTopicName;
+	@Value("${deposits.commands.topic.join}")
+	private String depositsJoinUserCommandTopicName;
 
-	@Value("${users.commands.topic.name}")
-	private String usersUserCommandTopicName;
+	@Value("${users.commands.topic.join}")
+	private String usersJoinCommandTopicName;
 
 	@Bean
 	public KafkaTemplate<String, Object> kafkaTemplate(
@@ -45,7 +45,7 @@ public class UserKafkaConfig {
 
 	@Bean
 	public NewTopic createUsersEventTopic() {
-		return TopicBuilder.name(usersEventsTopicName)
+		return TopicBuilder.name(usersJoinEventsTopicName)
 			.partitions(topic_partitions)
 			.replicas(topic_replications)
 			.build();
@@ -53,7 +53,7 @@ public class UserKafkaConfig {
 
 	@Bean
 	public NewTopic createCartsUserEventTopic() {
-		return TopicBuilder.name(cartsUserEventsTopicName)
+		return TopicBuilder.name(cartsJoinUserEventsTopicName)
 			.partitions(topic_partitions)
 			.replicas(topic_replications)
 			.build();
@@ -61,7 +61,7 @@ public class UserKafkaConfig {
 
 	@Bean
 	public NewTopic createDepositsEventTopic() {
-		return TopicBuilder.name(depositsUserEventsTopicName)
+		return TopicBuilder.name(depositsJoinUserEventsTopicName)
 			.partitions(topic_partitions)
 			.replicas(topic_replications)
 			.build();
@@ -69,7 +69,7 @@ public class UserKafkaConfig {
 
 	@Bean
 	public NewTopic createCartsCommandsTopic() {
-		return TopicBuilder.name(cartsUserCommandsTopicName)
+		return TopicBuilder.name(cartsJoinUserCommandsTopicName)
 			.partitions(topic_partitions)
 			.replicas(topic_replications)
 			.build();
@@ -78,7 +78,7 @@ public class UserKafkaConfig {
 	@Bean
 	public NewTopic createDepositsCommandsTopic() {
 		return TopicBuilder
-			.name(depositsUserCommandTopicName)
+			.name(depositsJoinUserCommandTopicName)
 			.partitions(topic_partitions)
 			.replicas(topic_replications)
 			.build();
@@ -87,10 +87,9 @@ public class UserKafkaConfig {
 	@Bean
 	public NewTopic createUsersCommandsTopic() {
 		return TopicBuilder
-			.name(usersUserCommandTopicName)
+			.name(usersJoinCommandTopicName)
 			.partitions(topic_partitions)
 			.replicas(topic_replications)
 			.build();
 	}
-
 }
