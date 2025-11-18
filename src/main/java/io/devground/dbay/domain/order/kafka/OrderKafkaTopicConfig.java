@@ -15,10 +15,10 @@ public class OrderKafkaTopicConfig {
 	@Value("${custom.kafka.config.topic-replications}")
 	private int topic_replications;
 
-	@Value("${orders.event.topic.name}")
+	@Value("${orders.event.topic.order}")
 	private String orderEventTopicName;
 
-	@Value("${orders.command.topic.name}")
+	@Value("${orders.command.topic.order}")
 	private String orderCommandTopicName;
 
 	@Bean
