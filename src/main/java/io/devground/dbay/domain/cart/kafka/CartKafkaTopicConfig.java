@@ -15,20 +15,14 @@ public class CartKafkaTopicConfig {
 	@Value("${custom.kafka.config.topic-replications}")
 	private int topic_replications;
 
-	@Value("${carts.event.topic.name}")
-	private String cartEventTopicName;
-
-	@Value("${carts.event.topic.user}")
-	private String cartUserEventTopicName;
+	@Value("${carts.event.topic.join}")
+	private String cartsJoinEventTopicName;
 
 	@Value("${carts.event.topic.order}")
 	private String cartOrderEventTopicName;
 
-	@Value("${carts.command.topic.name}")
-	private String cartCommandTopicName;
-
-	@Value("${carts.command.topic.user}")
-	private String cartUserCommandTopicName;
+	@Value("${carts.command.topic.join}")
+	private String cartsJoinCommandTopicName;
 
 	@Value("${carts.command.topic.order}")
 	private String cartOrderCommandTopicName;
@@ -36,32 +30,16 @@ public class CartKafkaTopicConfig {
 	private static final String DLT = ".DLT";
 
 	@Bean
-	public NewTopic createCartEventTopic() {
-		return TopicBuilder.name(cartEventTopicName)
+	public NewTopic createCartJoinEventTopic() {
+		return TopicBuilder.name(cartsJoinEventTopicName)
 			.partitions(topic_partitions)
 			.replicas(topic_replications)
 			.build();
 	}
 
 	@Bean
-	public NewTopic creatCartCommandTopic() {
-		return TopicBuilder.name(cartCommandTopicName)
-			.partitions(topic_partitions)
-			.replicas(topic_replications)
-			.build();
-	}
-
-	@Bean
-	public NewTopic cartsUserEventTopic() {
-		return TopicBuilder.name(cartUserEventTopicName)
-			.partitions(topic_partitions)
-			.replicas(topic_replications)
-			.build();
-	}
-
-	@Bean
-	public NewTopic cartsUserCommandTopic() {
-		return TopicBuilder.name(cartUserCommandTopicName)
+	public NewTopic creatCartJoinCommandTopic() {
+		return TopicBuilder.name(cartsJoinCommandTopicName)
 			.partitions(topic_partitions)
 			.replicas(topic_replications)
 			.build();
@@ -85,7 +63,7 @@ public class CartKafkaTopicConfig {
 
 	@Bean
 	public NewTopic createCartEventDltTopic() {
-		return TopicBuilder.name(cartEventTopicName + DLT)
+		return TopicBuilder.name(cartsJoinEventTopicName + DLT)
 			.partitions(topic_partitions)
 			.replicas(topic_replications)
 			.build();
@@ -93,23 +71,7 @@ public class CartKafkaTopicConfig {
 
 	@Bean
 	public NewTopic creatCartCommandDltTopic() {
-		return TopicBuilder.name(cartCommandTopicName + DLT)
-			.partitions(topic_partitions)
-			.replicas(topic_replications)
-			.build();
-	}
-
-	@Bean
-	public NewTopic cartsUserEventDltTopic() {
-		return TopicBuilder.name(cartUserEventTopicName + DLT)
-			.partitions(topic_partitions)
-			.replicas(topic_replications)
-			.build();
-	}
-
-	@Bean
-	public NewTopic cartsUserCommandDltTopic() {
-		return TopicBuilder.name(cartUserCommandTopicName + DLT)
+		return TopicBuilder.name(cartsJoinCommandTopicName + DLT)
 			.partitions(topic_partitions)
 			.replicas(topic_replications)
 			.build();
