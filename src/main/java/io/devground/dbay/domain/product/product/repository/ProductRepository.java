@@ -49,4 +49,18 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
 			"""
 	)
 	Page<Product> findAllWithSale(Pageable pageable);
+
+	@Query(
+		value = """
+			SELECT p
+			FROM Product p
+			JOIN FETCH p.category c
+			JOIN FETCH p.productSale ps
+			""",
+		countQuery = """
+			SELECT count(p)
+			FROM Product p
+			"""
+	)
+	Page<Product> findAllWithCategories(Pageable pageable);
 }

@@ -44,12 +44,16 @@ public class Category extends BaseEntity {
 	@Column(nullable = false)
 	private Integer depth = 1;
 
+	@Column(nullable = false)
+	private String fullPath;
+
 	@Builder
 	public Category(Category parent, String name, Integer depth) {
 		this.validateDepth(parent, depth);
 		this.parent = parent;
 		this.name = name;
 		this.depth = depth;
+		this.fullPath = calculateFullPath(parent, name);
 	}
 
 	public void addChildren(Category children) {
@@ -78,7 +82,7 @@ public class Category extends BaseEntity {
 		}
 	}
 
-	public String getFullPath() {
+	private String calculateFullPath(Category parent, String name) {
 		if (parent == null) {
 			return name;
 		}

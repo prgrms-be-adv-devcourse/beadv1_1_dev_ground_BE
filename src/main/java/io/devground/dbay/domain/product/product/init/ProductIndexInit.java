@@ -2,7 +2,6 @@ package io.devground.dbay.domain.product.product.init;
 
 import java.time.Duration;
 import java.util.Collections;
-import java.util.Objects;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.springframework.boot.ApplicationArguments;
@@ -85,22 +84,7 @@ public class ProductIndexInit implements ApplicationRunner {
 		AtomicLong totalFailed = new AtomicLong(0);
 		AtomicLong batchCount = new AtomicLong(0);
 
-		return getAllProductsFlux()
-			.parallel()
-			.runOn(Schedulers.parallel())
-			.map(product -> {
-				try {
-					return ProductESUtil.toProductDocument(product);
-				} catch (Exception e) {
-					totalFailed.incrementAndGet();
-					log.error("Product -> Document 변환 실패 - ProductCode: {}, Exception: {}",
-						product.getCode(), e.getMessage());
-
-					return null;
-				}
-			})
-			.filter(Objects::nonNull)
-			.sequential()
+		return getAllProductDocumentsFlux(totalFailed)
 			.buffer(BATCH_SIZE)
 			.doOnNext(batch -> {
 				long curBatch = batchCount.incrementAndGet();
@@ -140,21 +124,35 @@ public class ProductIndexInit implements ApplicationRunner {
 			});
 	}
 
-	private Flux<Product> getAllProductsFlux() {
+	private Flux<ProductDocument> getAllProductDocumentsFlux(AtomicLong totalFailed) {
 
-		return Flux.<Product>create(sink -> {
+		return Flux.<ProductDocument>create(sink -> {
 				int pageNumber = 0;
 
 				while (true) {
 					try {
-						Page<Product> page = productRepository.findAll(PageRequest.of(pageNumber, PAGE_SIZE));
+						Page<Product> page = productRepository.findAllWithCategories(PageRequest.of(pageNumber, PAGE_SIZE));
 
 						if (page.isEmpty()) {
 							sink.complete();
 							break;
 						}
 
-						page.getContent().forEach(sink::next);
+						for (Product product : page.getContent()) {
+							try {
+								ProductDocument document = ProductESUtil.toProductDocument(product);
+
+								if (document == null) {
+									totalFailed.incrementAndGet();
+									continue;
+								}
+
+								sink.next(document);
+							} catch (Exception e) {
+								log.error("Product -> Document 변환 실패 - ProductCode: {}, Exception: {}",
+									product.getCode(), e.getMessage());
+							}
+						}
 
 						log.info("Product 페이지 호출 및 FLUX 변환 성공 - Page: {}, Products: {}",
 							pageNumber + 1, page.getNumberOfElements());
