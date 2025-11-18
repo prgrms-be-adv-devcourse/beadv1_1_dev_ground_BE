@@ -8,6 +8,7 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Stream;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -15,6 +16,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -24,8 +26,10 @@ import io.devground.core.model.entity.RoleType;
 import io.devground.core.model.exception.ServiceException;
 import io.devground.core.model.vo.DeleteStatus;
 import io.devground.core.model.vo.ErrorCode;
+import io.devground.core.model.web.BaseResponse;
 import io.devground.dbay.domain.order.infra.client.ProductFeignClient;
 import io.devground.dbay.domain.order.order.model.entity.Order;
+import io.devground.dbay.domain.order.order.model.vo.CartProductsRequest;
 import io.devground.dbay.domain.order.order.model.vo.CreateOrderRequest;
 import io.devground.dbay.domain.order.order.model.vo.CreateOrderResponse;
 import io.devground.dbay.domain.order.order.model.vo.GetOrderDetailResponse;
@@ -52,9 +56,27 @@ public class OrderServiceImplTest {
 	@Mock
 	private ProductFeignClient productFeignClient;
 
+	@Mock
+	private ApplicationEventPublisher eventPublisher;
+
+	private BaseResponse<List<OrderProductListResponse>> orderProducts;
+
 	@InjectMocks
 	@Spy
 	private OrderServiceImpl orderService;
+
+	@BeforeEach
+	void setUp() {
+		OrderProductListResponse orderProductListResponse = new OrderProductListResponse(
+			null,
+			null,
+			null,
+			null,
+			0L
+		);
+
+		orderProducts = BaseResponse.success(200, List.of(orderProductListResponse));
+	}
 
 	@Test
 	@DisplayName("성공_주문 생성")
@@ -92,8 +114,9 @@ public class OrderServiceImplTest {
 			2500000L
 		);
 
-		given(productFeignClient.productListByCodes(request.cartProductCodes()))
-			.willReturn(List.of(response1, response2));
+		BaseResponse<List<OrderProductListResponse>> orderProducts2 = BaseResponse.success(200, List.of(response1, response2));
+
+		given(productFeignClient.getCartProducts(new CartProductsRequest(request.cartProductCodes()))).willReturn(orderProducts2);
 
 		long totalAmount = 4000000L;
 
@@ -109,7 +132,7 @@ public class OrderServiceImplTest {
 		assertThat(result.nickName()).isEqualTo("테스트");
 		assertThat(result.address()).isEqualTo("서울");
 
-		verify(productFeignClient).productListByCodes(request.cartProductCodes());
+		verify(productFeignClient).getCartProducts(new CartProductsRequest(request.cartProductCodes()));
 		verify(orderRepository).save(any(Order.class));
 		verify(orderItemRepository).saveAll(anyList());
 	}
@@ -183,10 +206,8 @@ public class OrderServiceImplTest {
 			List.of(productCode1, productCode2)
 		);
 
-		OrderProductListResponse response = mock(OrderProductListResponse.class);
-
-		given(productFeignClient.productListByCodes(request.cartProductCodes()))
-			.willReturn(List.of(response));
+		given(productFeignClient.getCartProducts(new CartProductsRequest(request.cartProductCodes())))
+			.willReturn(orderProducts);
 
 		assertThatThrownBy(() -> orderService.createOrder(userCode, request))
 			.isInstanceOf(ServiceException.class)

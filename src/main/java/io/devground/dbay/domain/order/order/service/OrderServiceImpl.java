@@ -27,6 +27,7 @@ import io.devground.dbay.domain.order.infra.client.ProductFeignClient;
 import io.devground.dbay.domain.order.order.mapper.OrderMapper;
 import io.devground.dbay.domain.order.order.model.entity.Order;
 import io.devground.dbay.domain.order.order.model.vo.CancelOrderResponse;
+import io.devground.dbay.domain.order.order.model.vo.CartProductsRequest;
 import io.devground.dbay.domain.order.order.model.vo.ConfirmOrderResponse;
 import io.devground.dbay.domain.order.order.model.vo.CreateOrderRequest;
 import io.devground.dbay.domain.order.order.model.vo.CreateOrderResponse;
@@ -62,8 +63,9 @@ public class OrderServiceImpl implements OrderService {
 			throw ErrorCode.ORDER_ITEM_NOT_SELECTED.throwServiceException();
 		}
 
-		List<OrderProductListResponse> orderProducts = productFeignClient.productListByCodes(
-			request.cartProductCodes());
+		List<OrderProductListResponse> orderProducts = productFeignClient.getCartProducts(
+				new CartProductsRequest(request.cartProductCodes()))
+			.throwIfNotSuccess().data();
 
 		if (orderProducts.isEmpty() || orderProducts.size() != request.cartProductCodes().size()) {
 			throw ErrorCode.ORDER_ITEM_ALREADY_SOLD.throwServiceException();
