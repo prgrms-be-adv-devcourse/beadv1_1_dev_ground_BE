@@ -15,7 +15,7 @@ public class OrderCreatedEventPublisher {
 
 	private final KafkaTemplate<String, Object> kafkaTemplate;
 
-	@Value("${orders.event.topic.order}")
+	@Value("${orders.event.topic.purchase}")
 	private String orderEventTopicName;
 
 	@TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)

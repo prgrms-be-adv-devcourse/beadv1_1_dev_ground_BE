@@ -15,7 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 @Component
 @Slf4j
 @KafkaListener(topics = {
-	"${orders.command.topic.order}"
+	"${orders.command.topic.purchase}"
 })
 @RequiredArgsConstructor
 public class OrderCommandsHandler {
