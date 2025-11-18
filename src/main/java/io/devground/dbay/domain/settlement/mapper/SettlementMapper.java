@@ -11,7 +11,6 @@ public class SettlementMapper {
 			settlement.getCode(),
 			settlement.getOrderItemCode(),
 			settlement.getSettlementStatus(),
-			settlement.getDepositHistoryCode(),
 			settlement.getBuyerCode(),
 			settlement.getSellerCode(),
 			settlement.getSettlementDate(),
