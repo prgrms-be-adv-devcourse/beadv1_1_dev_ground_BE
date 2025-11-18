@@ -1,6 +1,3 @@
-server:
-  port: 8080
-
 spring:
   application:
     name: dbay
@@ -15,6 +12,10 @@ spring:
     hibernate:
       naming:
         physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+
+  batch:
+    jdbc:
+      initialize-schema: always
 
   kafka:
     bootstrap-servers: localhost:9092
@@ -47,10 +48,12 @@ spring:
       region:
         static: ${S3_REGION}
 
+
   elasticsearch:
     uris: http://localhost:9200
     connection-timeout: 10s
     socket-timeout: 60s
+
 
 eureka:
   client:
@@ -64,6 +67,7 @@ eureka:
     non-secure-port: 8081
     metadata-map:
       port: 8081
+
 
 carts:
   event:
@@ -141,6 +145,11 @@ custom:
       limit: 3
   settlement:
     rate: 0.95
+
+  payments:
+    toss:
+      secretKey: ${TOSS_TEST_SECRET_KEY}
+      confirm-url: "https://api.tosspayments.com/v1/payments/confirm"
 
 images:
   topic:

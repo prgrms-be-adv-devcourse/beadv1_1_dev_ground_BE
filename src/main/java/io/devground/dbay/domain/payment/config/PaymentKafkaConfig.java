@@ -1,4 +1,4 @@
-package io.devground.dbay.domain.payment.kafka.config;
+package io.devground.dbay.domain.payment.config;
 
 import org.apache.kafka.clients.admin.NewTopic;
 import org.springframework.beans.factory.annotation.Value;
@@ -15,23 +15,23 @@ public class PaymentKafkaConfig {
 	@Value("${custom.kafka.config.topic-replications}")
 	private int topic_replications;
 
-	@Value("${payments.event.topic.name}")
-	private String paymentEventTopicName;
+	@Value("${payments.event.topic.order}")
+	private String paymentOrderEventTopicName;
 
-	@Value("${payments.command.topic.name}")
-	private String paymentCommandTopicName;
+	@Value("${payments.command.topic.order}")
+	private String paymentOrderCommandTopicName;
 
 	@Bean
-	public NewTopic createPaymentEventTopic() {
-		return TopicBuilder.name(paymentEventTopicName)
+	public NewTopic createPaymentOrderEventTopic() {
+		return TopicBuilder.name(paymentOrderEventTopicName)
 			.partitions(topic_partitions)
 			.replicas(topic_replications)
 			.build();
 	}
 
 	@Bean
-	public NewTopic creatPaymentCommandTopic() {
-		return TopicBuilder.name(paymentCommandTopicName)
+	public NewTopic createPaymentCommandTopic() {
+		return TopicBuilder.name(paymentOrderCommandTopicName)
 			.partitions(topic_partitions)
 			.replicas(topic_replications)
 			.build();

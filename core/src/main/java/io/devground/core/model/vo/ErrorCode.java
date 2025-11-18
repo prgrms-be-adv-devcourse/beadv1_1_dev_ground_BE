@@ -78,6 +78,9 @@ public enum ErrorCode {
 	AMOUNT_MUST_BE_POSITIVE(400, "금액은 0보다 커야 합니다."),
 	INSUFFICIENT_BALANCE(400, "잔액이 부족합니다."),
 
+	// payment
+	TOSS_PAY_FAILED(500, "토스 결제에 실패했습니다."),
+
 	// saga
 	SAGA_NOT_FOUND(404, "사가 정보를 찾을 수 없습니다.");
 

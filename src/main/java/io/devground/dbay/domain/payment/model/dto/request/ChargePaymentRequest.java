@@ -1,8 +1,7 @@
 package io.devground.dbay.domain.payment.model.dto.request;
 
-public record PayRequest(
+public record ChargePaymentRequest(
 	String userCode,
-	String orderCode,
-	Long totalAmount
+	Long amount
 ) {
 }

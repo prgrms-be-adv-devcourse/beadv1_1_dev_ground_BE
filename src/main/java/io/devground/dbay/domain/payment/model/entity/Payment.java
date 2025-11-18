@@ -2,6 +2,7 @@ package io.devground.dbay.domain.payment.model.entity;
 
 import java.time.LocalDateTime;
 
+import io.devground.core.model.entity.BaseEntity;
 import io.devground.dbay.domain.payment.model.vo.PaymentStatus;
 import io.devground.dbay.domain.payment.model.vo.PaymentType;
 import jakarta.persistence.Column;
@@ -18,7 +19,7 @@ import lombok.Setter;
 @Getter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Payment {
+public class Payment extends BaseEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long id;
@@ -32,20 +33,24 @@ public class Payment {
 
 	private Long amount;
 
+	@Setter
 	private PaymentType paymentType;
 
+	@Setter
 	private PaymentStatus paymentStatus;
 
-	private String accountHistoryCode;
+	@Setter
+	private String paymentKey;
 
 	private LocalDateTime paidAt;
 
 	@Builder
-	public Payment(Long amount, String accountHistoryCode, LocalDateTime paidAt, PaymentType paymentType, PaymentStatus paymentStatus) {
+	public Payment(Long amount, String orderCode, String paymentKey, LocalDateTime paidAt, PaymentStatus paymentStatus) {
 		this.amount = amount;
-		this.accountHistoryCode = accountHistoryCode;
+		this.orderCode = orderCode;
+		this.paymentKey = paymentKey;
 		this.paidAt = paidAt;
-		this.paymentType = paymentType;
-		this.paymentStatus = paymentStatus;
+		this.paymentType = PaymentType.DEPOSIT;
+		this.paymentStatus = PaymentStatus.PENDING;
 	}
 }
