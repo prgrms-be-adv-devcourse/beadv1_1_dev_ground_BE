@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 
 import io.devground.dbay.domain.payment.model.dto.request.PaymentRequest;
 import io.devground.dbay.domain.payment.model.entity.Payment;
+import io.devground.dbay.domain.payment.model.vo.PaymentDescription;
 import io.devground.dbay.domain.payment.model.vo.PaymentStatus;
 import io.devground.dbay.domain.payment.model.vo.PaymentType;
 
@@ -16,5 +17,12 @@ public class PaymentMapper {
 			.paidAt(LocalDateTime.now())
 			.paymentStatus(paymentRequest.status())
 			.build();
+	}
+
+	public static PaymentDescription toDescription(Payment payment) {
+		return new PaymentDescription(
+			payment.getOrderCode(),
+			payment.getCode()
+		);
 	}
 }

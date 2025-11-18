@@ -1,7 +1,9 @@
 package io.devground.dbay.domain.payment.service;
 
+import io.devground.dbay.domain.payment.model.dto.request.ChargePaymentRequest;
 import io.devground.dbay.domain.payment.model.dto.request.PaymentRequest;
 import io.devground.dbay.domain.payment.model.dto.request.TossPayRequest;
+import io.devground.dbay.domain.payment.model.dto.response.PaymentResponse;
 import io.devground.dbay.domain.payment.model.dto.response.TossPayResponse;
 import io.devground.dbay.domain.payment.model.entity.Payment;
 
@@ -25,4 +27,6 @@ public interface PaymentService {
 	TossPayResponse payToss(PaymentRequest payRequest, Long balance);
 
 	Payment getByOrderCode(String orderCode);
+
+	String getOrderCode(String userCode, Long totalAmount);
 }
