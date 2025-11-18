@@ -26,7 +26,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @KafkaListener(topics = {
 	"${carts.command.topic.join}",
-	"${carts.command.topic.order}"
+	"${carts.command.topic.purchase}"
 })
 @RequiredArgsConstructor
 public class CartCommandsHandler {
@@ -40,7 +40,7 @@ public class CartCommandsHandler {
 	@Value("${carts.event.topic.join}")
 	private String cartsJoinUserEventTopicName;
 
-	@Value("${carts.event.topic.order}")
+	@Value("${carts.event.topic.purchase}")
 	private String cartsOrderEventTopicName;
 
 	@KafkaHandler

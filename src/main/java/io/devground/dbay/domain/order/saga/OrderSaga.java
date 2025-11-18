@@ -44,7 +44,7 @@ public class OrderSaga {
 	@Value("${deposits.command.topic.order}")
 	private String depositsCommandTopicName;
 
-	@Value("${carts.command.topic.order}")
+	@Value("${carts.command.topic.purchase}")
 	private String cartsCommandTopicName;
 
 	// 이벤트 시작점 주문 -> 결제
