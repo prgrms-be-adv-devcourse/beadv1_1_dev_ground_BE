@@ -58,6 +58,9 @@ dependencies {
     implementation 'net.logstash.logback:logstash-logback-encoder:7.4'
     implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
 
+    // reactive web
+    implementation 'org.springframework.boot:spring-boot-starter-webflux'
+
     // h2
     runtimeOnly 'com.h2database:h2'
 
@@ -71,6 +74,7 @@ dependencies {
     testImplementation 'org.springframework.security:spring-security-test'
     testImplementation 'org.springframework.batch:spring-batch-test'
     testImplementation 'org.springframework.kafka:spring-kafka-test'
+    testImplementation 'io.projectreactor:reactor-test'
 
     testCompileOnly 'org.projectlombok:lombok'
     testAnnotationProcessor 'org.projectlombok:lombok'
