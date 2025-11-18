@@ -25,7 +25,7 @@ services:
     volumes:
       - ./gateway-0.0.1-SNAPSHOT.jar:/app/app.jar
     environment:
-      SPRING_PROFILES_ACTIVE: local
+      SPRING_PROFILES_ACTIVE: stage
     command: [ "java", "-jar", "app.jar" ]
     ports:
       - "8000:8000"
@@ -35,6 +35,7 @@ services:
     container_name: mysql
     restart: always
     environment:
+      SPRING_PROFILES_ACTIVE: stage
       MYSQL_ROOT_PASSWORD: root1234
       MYSQL_DATABASE: dbay_user
       TZ: Asia/Seoul
@@ -48,6 +49,7 @@ services:
     container_name: mariadb
     restart: always
     environment:
+      SPRING_PROFILES_ACTIVE: stage
       MARIADB_ROOT_PASSWORD: root1234
       MARIADB_DATABASE: dbay_user
       TZ: Asia/Seoul
@@ -74,7 +76,7 @@ services:
       SPRING_DATASOURCE_USERNAME: root
       SPRING_DATASOURCE_PASSWORD: root1234
       SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
-      SPRING_PROFILES_ACTIVE: local
+      SPRING_PROFILES_ACTIVE: stage
       SPRING_JPA_HIBERNATE_DDL_AUTO: update
       SPRING_DATA_REDIS_HOST: redis
       SPRING_DATA_REDIS_PORT: 6379
@@ -96,7 +98,7 @@ services:
     volumes:
       - ./user-0.0.1-SNAPSHOT.jar:/app/app.jar
     environment:
-      SPRING_PROFILES_ACTIVE: local
+      SPRING_PROFILES_ACTIVE: stage
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/dbay_user?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
       SPRING_DATASOURCE_USERNAME: root
       SPRING_DATASOURCE_PASSWORD: root1234
@@ -116,11 +118,11 @@ services:
       - KAFKA_NODE_ID=1
       - CLUSTER_ID=ZWU1Y2JiNDctNDg3ZC4tNGY2Ny1iNzJh
       - KAFKA_PROCESS_ROLES=broker,controller
-      - KAFKA_LISTENERS=PLAINTEXT://:29092,CONTROLLER://:29093,EXTERNAL://:9092
-      - KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://kafka:29092,EXTERNAL://localhost:9092
+      - KAFKA_LISTENERS=PLAINTEXT://:9090,CONTROLLER://:9091,EXTERNAL://:9092
+      - KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://kafka:9090,EXTERNAL://localhost:9092
       - KAFKA_LISTENER_SECURITY_PROTOCOL_MAP=PLAINTEXT:PLAINTEXT,EXTERNAL:PLAINTEXT,CONTROLLER:PLAINTEXT
       - KAFKA_CONTROLLER_LISTENER_NAMES=CONTROLLER
-      - KAFKA_CONTROLLER_QUORUM_VOTERS=1@kafka:29093
+      - KAFKA_CONTROLLER_QUORUM_VOTERS=1@kafka:9091
       - KAFKA_INTER_BROKER_LISTENER_NAME=PLAINTEXT
       - KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR=1
 
