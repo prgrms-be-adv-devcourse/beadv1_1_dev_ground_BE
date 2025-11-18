@@ -17,6 +17,11 @@ import org.springframework.transaction.annotation.Transactional;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import io.devground.core.commands.deposit.ChargeDeposit;
+import io.devground.core.event.payment.PaymentCreatedEvent;
+import io.devground.core.event.payment.PaymentCreatedFailed;
+import io.devground.core.model.vo.DepositHistoryType;
+import io.devground.core.model.vo.ErrorCode;
 import io.devground.dbay.domain.payment.infra.DepositFeignClient;
 import io.devground.dbay.domain.payment.model.dto.request.PaymentRequest;
 import io.devground.dbay.domain.payment.model.entity.Payment;
@@ -38,8 +43,12 @@ public class PaymentServiceImpl implements PaymentService {
 	private final DepositFeignClient depositFeignClient;
 	private final PaymentRepository paymentRepository;
 
-	@Value("${payments.event.topic.name}")
-	private String paymentsEventTopicName;
+
+	@Value("${payments.command.topic.purchase}")
+	private String paymentOrderCommandTopic;
+
+	@Value("${deposits.command.topic.name}")
+	private String depositsCommandTopic;
 
 	@Value("${custom.payments.toss.secretKey}")
 	private String tossPaySecretKey;
@@ -52,20 +61,32 @@ public class PaymentServiceImpl implements PaymentService {
 	public Payment process(String userCode, PaymentConfirmRequest request) {
 		Long balance = depositFeignClient.getBalance(userCode).data().balance();
 
-		// 예치금 우선 사용
-		if (balance > request.amount()) {
+		if (balance >= request.amount()) {
 
 			Payment depositPayment = pay(getPaymentRequest(userCode, PaymentType.DEPOSIT, request));
 
-			if (request.amount() > 0) {
-				return pay(getPaymentRequest(userCode, PaymentType.TOSS_PAYMENT, request));
-			}
+			//결제 성공 이벤트 발행
+			PaymentCreatedEvent event = new PaymentCreatedEvent(
+				userCode,
+				request.amount(),
+				DepositHistoryType.PAYMENT_INTERNAL,
+				request.orderCode(),
+				request.productCodes()
+			);
 
+			kafkaTemplate.send(paymentOrderCommandTopic, event);
 			return depositPayment;
 
 		}
 
-		return pay(getPaymentRequest(userCode, PaymentType.TOSS_PAYMENT, request));
+		PaymentCreatedFailed event = new PaymentCreatedFailed(
+			request.orderCode(),
+			userCode,
+			"예치금 부족으로 결제에 실패했습니다."
+		);
+		kafkaTemplate.send(paymentOrderCommandTopic, event);
+		throw new IllegalStateException("예치금 부족하여 결제를 진행할 수 없습니다.");
+		// return pay(getPaymentRequest(userCode, PaymentType.TOSS_PAYMENT, request));
 
 	}
 
@@ -86,6 +107,7 @@ public class PaymentServiceImpl implements PaymentService {
 
 		return paymentRepository.save(payment);
 
+		//예치금 사용한다고 카프카 전송
 	}
 
 	@Override
@@ -115,17 +137,25 @@ public class PaymentServiceImpl implements PaymentService {
 		if (!result)
 			throw new IllegalStateException("토스페이먼츠 결제에 실패하였습니다.");
 
-		// 결제 성공시 예치금 처리
+		// 결제 성공시 예치금 충전 처리
 		//카프카 전송
+		ChargeDeposit command = new ChargeDeposit(
+			userCode,
+			amount,
+			DepositHistoryType.CHARGE_TOSS
+		);
+
+		kafkaTemplate.send(depositsCommandTopic, command);
 
 		// 결제 내역 저장
 		Payment payment = Payment.builder()
 			.userCode(userCode)
 			.orderCode(orderCode)
 			.amount(amount)
+			.paymentKey(paymentKey)
 			.build();
 
-		payment.setPaymentStatus(PaymentStatus.PAYMENT_COMPLETED);
+		payment.setPaymentStatus(PaymentStatus.PAYMENT_PENDING);
 
 
 		return paymentRepository.save(payment);
@@ -184,5 +214,22 @@ public class PaymentServiceImpl implements PaymentService {
 	@Transactional
 	public Payment confirmPayment(PaymentRequest request) {
 		throw new UnsupportedOperationException("");
+	}
+
+	@Override
+	public void applyDepositPayment(String orderCode) {
+		Payment payment = getByOrderCode(orderCode);
+		payment.setPaymentStatus(PaymentStatus.PAYMENT_COMPLETED);
+	}
+
+	@Override
+	public void cancelDepositPayment(String orderCode) {
+		Payment payment = getByOrderCode(orderCode);
+		payment.setPaymentStatus(PaymentStatus.PAYMENT_CANCELLED);
+	}
+
+	private Payment getByOrderCode(String orderCode) {
+		return paymentRepository.findByOrderCode(orderCode)
+			.orElseThrow(ErrorCode.PAYMENT_NOT_FOUND::throwServiceException);
 	}
 }
