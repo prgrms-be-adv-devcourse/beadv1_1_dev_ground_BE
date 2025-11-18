@@ -14,8 +14,8 @@ public class AsyncConfig {
 	public Executor esTaskExecutor() {
 
 		int coreSize = Runtime.getRuntime().availableProcessors();
-		// TODO: CPU-Bound 작업이 많을 것으로 예상. 모니터링 후 개선
-		int maxPollSize = coreSize * 2;
+		// TODO: 우선 20개로 처리 (인덱스 추가 작업이 많지는 않을 것으로 예상). 모니터링 후 개선
+		int maxPollSize = coreSize * 20;
 
 		ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
 		executor.setCorePoolSize(coreSize);
