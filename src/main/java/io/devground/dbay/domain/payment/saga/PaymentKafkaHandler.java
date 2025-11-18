@@ -43,7 +43,7 @@ public class PaymentKafkaHandler {
 
 	private final KafkaTemplate<String, Object> kafkaTemplate;
 
-	@Value("${payments.command.topic.order}")
+	@Value("${payments.command.topic.purchase}")
 	private String paymentOrderCommandTopic;
 
 	@Value("${deposits.command.topic.name}")
