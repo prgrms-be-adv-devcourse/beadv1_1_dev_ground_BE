@@ -7,6 +7,7 @@ import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.Map;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -18,6 +19,8 @@ import io.devground.core.model.vo.DepositHistoryType;
 import io.devground.core.model.vo.ErrorCode;
 import io.devground.dbay.domain.payment.infra.DepositFeignClient;
 import io.devground.dbay.domain.payment.mapper.PaymentMapper;
+import io.devground.dbay.domain.payment.model.dto.request.ChargePaymentRequest;
+import io.devground.dbay.domain.payment.model.dto.request.PaymentConfirmRequest;
 import io.devground.dbay.domain.payment.model.dto.request.PaymentRequest;
 import io.devground.dbay.domain.payment.model.dto.request.TossPayRequest;
 import io.devground.dbay.domain.payment.model.dto.response.PaymentResponse;
@@ -74,6 +77,19 @@ public class PaymentServiceImpl implements PaymentService {
 
 		return balance >= totalAmount;
 	}
+
+	@Override
+	public String getOrderCode(String userCode, Long totalAmount) {
+		String orderCode = UUID.randomUUID().toString();
+
+		PaymentRequest paymentRequest = new PaymentRequest(userCode, orderCode, "", totalAmount,
+			PaymentStatus.PENDING);
+		Payment payment = PaymentMapper.toEntity(paymentRequest);
+		Payment response = paymentRepository.save(payment);
+
+		return response.getOrderCode();
+	}
+
 
 	@Override
 	public Payment refund(String orderCode, Long amount) {
