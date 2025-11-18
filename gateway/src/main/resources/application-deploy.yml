@@ -1,48 +1,24 @@
-server:
-  port: 8000
-
-logging:
-  level:
-    org.springframework.cloud.gateway: TRACE
-    org.springframework.cloud.gateway.filter: TRACE
-
-eureka:
-  client:
-    register-with-eureka: true
-    fetch-registry: true
-    service-url:
-      defaultZone: http://eureka:8761/eureka/
-
 spring:
-  application:
-    name: api-gateway
-
-  profiles:
-    active: deploy
-
-  config:
-    import: optional:classpath:env.properties
-
   cloud:
     gateway:
       routes:
         # 1) Swagger UI
         - id: user-swagger-ui
-          uri: http://localhost:8082
+          uri: http://user:8082
           predicates:
             - Path=/user/swagger-ui/**
           filters:
             - StripPrefix=1
 
         - id: user-api-docs
-          uri: http://localhost:8082
+          uri: http://user:8082
           predicates:
             - Path=/user/v3/api-docs/**
           filters:
             - StripPrefix=1
 
         - id: user-swagger-config
-          uri: http://localhost:8082
+          uri: http://user:8082
           predicates:
             - Path=/user/v3/api-docs/swagger-config/**
           filters:
@@ -50,21 +26,21 @@ spring:
 
         # 1) Swagger UI
         - id: dbay-swagger-ui
-          uri: http://localhost:8080
+          uri: http://dbay:8080
           predicates:
             - Path=/dbay/swagger-ui/**
           filters:
             - StripPrefix=1
 
         - id: dbay-api-docs
-          uri: http://localhost:8080
+          uri: http://dbay:8080
           predicates:
             - Path=/dbay/v3/api-docs/**
           filters:
             - StripPrefix=1
 
         - id: dbay-swagger-config
-          uri: http://localhost:8080
+          uri: http://dbay:8080
           predicates:
             - Path=/dbay/v3/api-docs/swagger-config/**
           filters:
@@ -111,14 +87,3 @@ spring:
             - Path=/api/settlements/**
           filters:
             - CustomAuthFilter
-
-management:
-  endpoints:
-    web:
-      exposure:
-        include: "*"
-
-custom:
-  jwt:
-    secrets:
-      app-key: ${JWT_SECRET_KEY}
