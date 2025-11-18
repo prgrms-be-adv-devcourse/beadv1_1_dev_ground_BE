@@ -1,4 +1,4 @@
-package io.devground.dbay.domain.product.category.config;
+package io.devground.dbay.domain.product.category.init;
 
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
