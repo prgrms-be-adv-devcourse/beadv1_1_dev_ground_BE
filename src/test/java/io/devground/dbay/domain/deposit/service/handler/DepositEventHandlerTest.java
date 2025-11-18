@@ -1,10 +1,12 @@
 package io.devground.dbay.domain.deposit.service.handler;
 
+import static java.util.Collections.*;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -208,7 +210,7 @@ class DepositEventHandlerTest {
 		io.devground.core.model.vo.DepositHistoryType type = io.devground.core.model.vo.DepositHistoryType.PAYMENT_TOSS;
 		String orderCode = "ORDER_CODE";
 
-		WithdrawDeposit command = new WithdrawDeposit(userCode, amount, type, orderCode, java.util.Collections.emptyList());
+		WithdrawDeposit command = new WithdrawDeposit(userCode, amount, type, orderCode, List.of());
 		DepositHistoryResponse historyResponse = new DepositHistoryResponse(
 			2L,
 			depositCode,
@@ -249,7 +251,7 @@ class DepositEventHandlerTest {
 		io.devground.core.model.vo.DepositHistoryType type = io.devground.core.model.vo.DepositHistoryType.PAYMENT_TOSS;
 		String orderCode = "ORDER_CODE";
 
-		WithdrawDeposit command = new WithdrawDeposit(userCode, amount, type, orderCode, java.util.Collections.emptyList());
+		WithdrawDeposit command = new WithdrawDeposit(userCode, amount, type, orderCode, List.of());
 
 		given(depositService.withdraw(userCode, DepositHistoryType.PAYMENT_TOSS, amount))
 			.willThrow(new RuntimeException("인출 실패"));
