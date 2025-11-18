@@ -12,7 +12,6 @@ public record SettlementResponse(
 	String code,
 	String orderItemCode,
 	SettlementStatus settlementStatus,
-	String depositHistoryCode,
 	String buyerCode,
 	String sellerCode,
 	LocalDateTime settlementDate,

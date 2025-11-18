@@ -26,7 +26,7 @@ public class SettlementStepListener implements SkipListener<UnsettledOrderItemRe
 	@Override
 	public void onSkipInProcess(UnsettledOrderItemResponse item, Throwable t) {
 		log.error("정산 Processor에서 Skip 발생: orderItemCode={}",
-			item != null ? item.orderItemCode() : "null", t);
+			item.orderItemCode(), t);
 
 		// TODO: 실패한 항목을 별도 테이블에 저장하여 추후 재처리
 	}
@@ -37,13 +37,11 @@ public class SettlementStepListener implements SkipListener<UnsettledOrderItemRe
 	@Override
 	public void onSkipInWrite(Settlement item, Throwable t) {
 		log.error("정산 Writer에서 Skip 발생: orderItemCode={}",
-			item != null ? item.getOrderItemCode() : "null", t);
+			item.getOrderItemCode(), t);
 
 		// 정산 실패 상태로 변경
-		if (item != null) {
-			item.fail();
-			log.warn("정산 실패 처리: orderItemCode={}", item.getOrderItemCode());
-		}
+		item.fail();
+		log.warn("정산 실패 처리: orderItemCode={}", item.getOrderItemCode());
 
 		// TODO: 실패한 항목을 별도 테이블에 저장하여 추후 재처리
 	}

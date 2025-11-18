@@ -2,48 +2,44 @@ package io.devground.dbay.domain.settlement.batch.writer;
 
 import org.springframework.batch.item.Chunk;
 import org.springframework.batch.item.ItemWriter;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 
-import io.devground.core.commands.deposit.ChargeDeposit;
+import io.devground.core.commands.deposit.SettlementChargeDeposit;
+import io.devground.dbay.domain.settlement.saga.SettlementSagaOrchestrator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class SettlementDepositWriter implements ItemWriter<ChargeDeposit> {
+public class SettlementDepositWriter implements ItemWriter<SettlementChargeDeposit> {
 
-	private final KafkaTemplate<String, Object> kafkaTemplate;
-
-	@Value("${deposits.command.topic.name}")
-	private String depositsCommandTopicName;
-
+	private final SettlementSagaOrchestrator sagaOrchestrator;
 
 	@Override
-	public void write(Chunk<? extends ChargeDeposit> chunk) {
-		log.info("입금 커맨드 전송 시작: {} 건", chunk.size());
+	public void write(Chunk<? extends SettlementChargeDeposit> chunk) {
+		log.info("정산 입금 Saga 시작: {} 건", chunk.size());
 
-		chunk.getItems().forEach(this::sendChargeDepositCommand);
+		chunk.getItems().forEach(this::startSettlementDepositChargeSaga);
 
-		log.info("입금 커맨드 전송 완료: {} 건", chunk.size());
+		log.info("정산 입금 Saga 시작 완료: {} 건", chunk.size());
 	}
 
 	/**
-	 * ChargeDeposit 커맨드를 Kafka로 전송
+	 * SettlementChargeDeposit 커맨드를 Saga Orchestrator를 통해 발행
 	 */
-	private void sendChargeDepositCommand(ChargeDeposit command) {
+	private void startSettlementDepositChargeSaga(SettlementChargeDeposit command) {
 		try {
-			kafkaTemplate.send(depositsCommandTopicName, command);
-			log.info("입금 커맨드 전송 성공: userCode={}, amount={}, type={}",
-				command.userCode(), command.amount(), command.type());
+			sagaOrchestrator.startSettlementDepositChargeSaga(command);
+
+			log.info("정산 입금 Saga 시작 성공: userCode={}, amount={}, orderCode={}",
+				command.userCode(), command.amount(), command.orderCode());
 
 		} catch (Exception e) {
+			log.error("정산 입금 Saga 시작 실패: userCode={}, amount={}, orderCode={}",
+				command.userCode(), command.amount(), command.orderCode(), e);
 
-			//todo : 입금 커맨트 전송실패 처리
-			log.error("입금 커맨드 전송 실패: userCode={}, amount={}",
-				command.userCode(), command.amount(), e);
+			// todo: Saga 시작 실패 시 보상 처리 (2차 고도화)
 		}
 	}
 }
