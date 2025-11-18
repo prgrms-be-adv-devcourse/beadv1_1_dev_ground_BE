@@ -1,9 +1,0 @@
-package io.devground.dbay.domain.payment.model.dto.request;
-
-public record TossPayRequest(
-	String userCode,
-	String orderCode,
-	String paymentKey,
-	Long chargeAmount
-) {
-}
