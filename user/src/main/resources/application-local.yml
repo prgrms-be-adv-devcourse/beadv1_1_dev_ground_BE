@@ -16,11 +16,16 @@ spring:
       naming:
         physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
 
+#  datasource:
+#    driver-class-name: org.mariadb.jdbc.Driver
+#    url: ${MARIA_DB_URL}
+#    username: ${MARIA_DB_USERNAME}
+#    password: ${MAIRA_DB_PASSWORD}
   datasource:
-    driver-class-name: org.mariadb.jdbc.Driver
-    url: ${MARIA_DB_URL}
-    username: ${MARIA_DB_USERNAME}
-    password: ${MAIRA_DB_PASSWORD}
+    url: jdbc:h2:./dbay-user;MODE=MYSQL;
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
 
   data:
     redis:
@@ -75,29 +80,29 @@ users:
 
   commands:
     topic:
-      name: users-commands
+      join: users-join-commands
 
   events:
     topic:
-      name: users-events
+      join: users-join-events
 
 deposits:
   commands:
     topic:
-      name: deposits-user-commands
+      join: deposits-join-commands
 
   events:
     topic:
-      name: deposit-user-events
+      join: deposits-join-events
 
 carts:
   commands:
     topic:
-      name: carts-user-commands
+      join: carts-join-commands
 
   events:
     topic:
-      name: carts-user-events
+      join: carts-join-events
 
 logging:
   level:

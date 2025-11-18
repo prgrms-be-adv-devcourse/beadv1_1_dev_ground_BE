@@ -48,7 +48,7 @@ public class CartCommandsHandler {
 		try {
 			Cart savedCart = cartService.createCart(command.userCode());
 
-			CartCreatedEvent event = new CartCreatedEvent(savedCart.getUserCode());
+			CartCreatedEvent event = new CartCreatedEvent(savedCart.getUserCode(), savedCart.getCode());
 
 			kafkaTemplate.send(cartsUserEventTopicName, savedCart.getUserCode(), event);
 		} catch (Exception e) {
