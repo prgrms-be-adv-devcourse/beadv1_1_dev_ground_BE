@@ -45,12 +45,13 @@ public class Payment extends BaseEntity {
 	private LocalDateTime paidAt;
 
 	@Builder
-	public Payment(Long amount, String orderCode, String paymentKey, LocalDateTime paidAt, PaymentStatus paymentStatus) {
+	public Payment(String userCode, Long amount, String orderCode, String paymentKey, PaymentStatus paymentStatus) {
+		this.userCode = userCode;
 		this.amount = amount;
 		this.orderCode = orderCode;
 		this.paymentKey = paymentKey;
-		this.paidAt = paidAt;
+		this.paidAt = LocalDateTime.now();
 		this.paymentType = PaymentType.DEPOSIT;
-		this.paymentStatus = PaymentStatus.PENDING;
+		this.paymentStatus = PaymentStatus.PAYMENT_PENDING;
 	}
 }

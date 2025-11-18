@@ -7,9 +7,9 @@ import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.Map;
-import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,17 +17,13 @@ import org.springframework.transaction.annotation.Transactional;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import io.devground.core.commands.payment.PaymentChargeDepositCommand;
-import io.devground.core.model.vo.DepositHistoryType;
-import io.devground.core.model.vo.ErrorCode;
 import io.devground.dbay.domain.payment.infra.DepositFeignClient;
-import io.devground.dbay.domain.payment.mapper.PaymentMapper;
 import io.devground.dbay.domain.payment.model.dto.request.PaymentRequest;
-import io.devground.dbay.domain.payment.model.dto.request.TossPayRequest;
-import io.devground.dbay.domain.payment.model.dto.response.TossPayResponse;
 import io.devground.dbay.domain.payment.model.entity.Payment;
+import io.devground.dbay.domain.payment.model.vo.PaymentConfirmRequest;
 import io.devground.dbay.domain.payment.model.vo.PaymentStatus;
 import io.devground.dbay.domain.payment.model.vo.PaymentType;
+import io.devground.dbay.domain.payment.model.vo.TossPaymentsRequest;
 import io.devground.dbay.domain.payment.repository.PaymentRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -53,101 +49,101 @@ public class PaymentServiceImpl implements PaymentService {
 
 	@Override
 	@Transactional
-	public boolean pay(String userCode, String orderCode, Long totalAmount, String paymentKey) {
-		//잔액 확인
-		//opneFeign으로 받아오기
-		Long balance = depositFeignClient.getBalance(userCode).throwIfNotSuccess().data().balance();
+	public Payment process(String userCode, PaymentConfirmRequest request) {
+		Long balance = depositFeignClient.getBalance(userCode).data().balance();
 
-		PaymentRequest paymentRequest = new PaymentRequest(userCode, orderCode, paymentKey, totalAmount,
-			PaymentStatus.PENDING);
-		Payment payment = PaymentMapper.toEntity(paymentRequest);
-		paymentRepository.save(payment);
+		// 예치금 우선 사용
+		if (balance > request.amount()) {
 
-		if (balance < totalAmount) {
-			payment.setPaymentStatus(PaymentStatus.FAILED);
-			paymentRepository.save(payment);  // 상태 업데이트 반영
-			return false;
+			Payment depositPayment = pay(getPaymentRequest(userCode, PaymentType.DEPOSIT, request));
+
+			if (request.amount() > 0) {
+				return pay(getPaymentRequest(userCode, PaymentType.TOSS_PAYMENT, request));
+			}
+
+			return depositPayment;
+
 		}
 
-		return balance >= totalAmount;
+		return pay(getPaymentRequest(userCode, PaymentType.TOSS_PAYMENT, request));
+
 	}
 
-	@Override
-	public String getOrderCode(String userCode, Long totalAmount) {
-		String orderCode = UUID.randomUUID().toString();
-
-		PaymentRequest paymentRequest = new PaymentRequest(userCode, orderCode, "", totalAmount,
-			PaymentStatus.PENDING);
-		Payment payment = PaymentMapper.toEntity(paymentRequest);
-		Payment response = paymentRepository.save(payment);
-
-		return response.getOrderCode();
+	private PaymentRequest getPaymentRequest(String userCode, PaymentType type, PaymentConfirmRequest request) {
+		return new PaymentRequest(userCode, type, request.paymentKey(), request.orderCode(), request.amount());
 	}
 
 
-	@Override
-	public Payment refund(String orderCode, Long amount) {
-		Payment payment = getByOrderCode(orderCode);
+	private Payment handleDepositPayment(String userCode, String orderCode, Long amount) {
 
-		return null;
+		Payment payment = Payment.builder()
+			.userCode(userCode)
+			.orderCode(orderCode)
+			.amount(amount)
+			.build();
+
+		payment.setPaymentStatus(PaymentStatus.PAYMENT_COMPLETED);
+
+		return paymentRepository.save(payment);
+
 	}
 
 	@Override
 	@Transactional
-	public void applyDepositPayment(String orderCode) {
-		Payment payment = getByOrderCode(orderCode);
-		payment.setPaymentStatus(PaymentStatus.COMPLETED);
-	}
+	public Payment pay(PaymentRequest request) {
 
-	@Override
-	public void canceledDepositPayment(String orderCode) {
-		Payment payment = getByOrderCode(orderCode);
-		payment.setPaymentStatus(PaymentStatus.CANCELLED);
+		Payment payment;
 
-	}
-
-	@Override
-	public String confirmTossPayment(TossPayRequest tossPayRequest) {
-		PaymentChargeDepositCommand paymentChargeDepositCommand = new PaymentChargeDepositCommand(
-			tossPayRequest.userCode(), tossPayRequest.chargeAmount(), tossPayRequest.orderCode(),
-			DepositHistoryType.CHARGE_TOSS);
-		//토스 결제 성공 시 예치금 충전 카프카 커맨드(ChargeDeposit)
-		kafkaTemplate.send(paymentsEventTopicName, paymentChargeDepositCommand);
-
-		Payment payment = getByOrderCode(tossPayRequest.orderCode());
-		payment.setPaymentStatus(PaymentStatus.COMPLETED);
-		payment.setPaymentType(PaymentType.TOSS);
-		return payment.getCode();
-	}
-
-	@Override
-	public TossPayResponse payToss(PaymentRequest paymentRequest, Long balance) {
-		//토스페이로 결제 시도
-		TossPayRequest tosspayRequest = new TossPayRequest(paymentRequest.userCode(), paymentRequest.orderCode(),
-			paymentRequest.paymentKey(), paymentRequest.totalAmount() - balance);
-		boolean result = processTossPayment(tosspayRequest);
-
-		if (result) {
-			//토스페이 결제 성공
-			String paymentCode = confirmTossPayment(tosspayRequest);
-			TossPayResponse response = new TossPayResponse(paymentCode, paymentRequest.paymentKey());
-
-			return response;
+		if (request.getPaymentType() == PaymentType.DEPOSIT) {
+			payment = handleDepositPayment(request.getUserCode(), request.getOrderCode(), request.getAmount());
+		} else if (request.getPaymentType() == PaymentType.TOSS_PAYMENT) {
+			payment = handleTossPayment(request.getUserCode(), request.getOrderCode(), request.getPaymentKey(), request.getAmount());
 		} else {
-			//토스페이 결제 실패
-			throw ErrorCode.TOSS_PAY_FAILED.throwServiceException();
+			throw new UnsupportedOperationException("결제 형식이 잘못되었습니다.");
 		}
 
+		return payment;
+
 	}
 
-	private boolean processTossPayment(TossPayRequest tossPayRequest) {
-		try {
-			String authorization = "Basic " + Base64.getEncoder().encodeToString((tossPaySecretKey + ":").getBytes(
-				StandardCharsets.UTF_8));
 
-			Map<String, Object> requestMap = objectMapper.convertValue(tossPayRequest, new TypeReference<>() {
+	private Payment handleTossPayment(String userCode, String orderCode, String paymentKey, Long amount) {
+
+		// 토스페이먼츠 결제 시도
+		boolean result = processTossPayment(new TossPaymentsRequest(paymentKey, orderCode, amount.toString()));
+
+		if (!result)
+			throw new IllegalStateException("토스페이먼츠 결제에 실패하였습니다.");
+
+		// 결제 성공시 예치금 처리
+		//카프카 전송
+
+		// 결제 내역 저장
+		Payment payment = Payment.builder()
+			.userCode(userCode)
+			.orderCode(orderCode)
+			.amount(amount)
+			.build();
+
+		payment.setPaymentStatus(PaymentStatus.PAYMENT_COMPLETED);
+
+
+		return paymentRepository.save(payment);
+
+	}
+
+	private boolean processTossPayment(TossPaymentsRequest request) {
+
+		try {
+			// 1. Authorization Header 생성
+			String authorization = "Basic " + Base64.getEncoder()
+				.encodeToString((tossPaySecretKey + ":").getBytes(StandardCharsets.UTF_8));
+
+			// 2. 요청 데이터 구성
+			Map<String, Object> requestMap = objectMapper.convertValue(request, new TypeReference<>() {
 			});
 
+			// 3. HTTP 요청 구성
 			HttpClient client = HttpClient.newHttpClient();
 
 			HttpRequest httpRequest = HttpRequest.newBuilder()
@@ -157,25 +153,38 @@ public class PaymentServiceImpl implements PaymentService {
 				.POST(HttpRequest.BodyPublishers.ofByteArray(objectMapper.writeValueAsBytes(requestMap)))
 				.build();
 
+			// 4. HTTP 요청 수행
 			HttpResponse<String> response = client.send(httpRequest, HttpResponse.BodyHandlers.ofString());
 
-			if (response.statusCode() == 200) {
+			// 5. 응답 처리
+			if (response.statusCode() == HttpStatus.OK.value()) {
 				return true;
 			} else {
-				log.error("토스 페이먼츠 결제 중 오류 발생 : {}", response.statusCode());
-				log.info("response body = {}", response.body());
+				log.error("토스페이먼츠 결제 수행 과정에서 오류가 발생하였습니다. 다시 시도하여 주시기 바랍니다. 응답코드 : {}", response.statusCode());
+				log.info("response.body() = {}", response.body());
 				return false;
 			}
-
 		} catch (Exception e) {
-			log.error("토스 결제 과정 중 오류 발생");
+			log.error("토스페이먼츠 결제 수행 과정에서 오류가 발생하였습니다.");
 			return false;
 		}
+
 
 	}
 
 	@Override
-	public Payment getByOrderCode(String orderCode) {
-		return paymentRepository.findByOrderCode(orderCode);
+	@Transactional
+	public Payment refund(String userCode, PaymentRequest request) {
+
+		Payment payment = paymentRepository.findByOrderCode(request.getOrderCode())
+			.orElseThrow(() -> new IllegalArgumentException("결제 내역을 찾을 수 없습니다."));
+
+		return payment;
+	}
+
+	@Override
+	@Transactional
+	public Payment confirmPayment(PaymentRequest request) {
+		throw new UnsupportedOperationException("");
 	}
 }
