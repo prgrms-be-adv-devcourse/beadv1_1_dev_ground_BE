@@ -8,7 +8,6 @@ import org.springframework.kafka.config.TopicBuilder;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.core.ProducerFactory;
 
-
 @Configuration
 public class UserKafkaConfig {
 
