@@ -24,7 +24,7 @@ jobs:
       - name: Build JAR with Gradle
         run: |
           chmod +x gradlew
-          ./gradlew clean build -x test
+          ./gradlew clean build
 
       # 4) DockerHub 로그인
       - name: Login to DockerHub
