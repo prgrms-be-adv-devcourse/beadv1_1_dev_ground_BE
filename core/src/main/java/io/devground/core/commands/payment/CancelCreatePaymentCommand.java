@@ -1,4 +1,4 @@
-package io.devground.core.event.order.Temp.command;
+package io.devground.core.commands.payment;
 
 public record CancelCreatePaymentCommand(
 	String userCode,

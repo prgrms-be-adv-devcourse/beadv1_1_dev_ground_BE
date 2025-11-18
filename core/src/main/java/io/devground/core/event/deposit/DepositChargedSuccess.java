@@ -1,6 +1,6 @@
-package io.devground.core.events.deposit;
+package io.devground.core.event.deposit;
 
-public record DepositRefundedSuccess(
+public record DepositChargedSuccess(
 	String userCode,
 	String depositHistoryCode,
 	Long amount,
