@@ -1,6 +1,8 @@
 name: Deploy to EC2 (DEV)
 
 on:
+  pull_request:
+    branches: ["dev"]
   push:
     branches: ["dev"]
 
@@ -35,6 +37,7 @@ jobs:
 
       # 5) 이미지 빌드 & 푸시
       - name: Build & Push Docker Images
+        if: github.event_name == 'push'
         run: |
           echo "=== Build & Push Eureka ==="
           docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/eureka:latest ./eureka-server
@@ -52,8 +55,9 @@ jobs:
           docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/dbay:latest .
           docker push ${{ secrets.DOCKERHUB_USERNAME }}/dbay:latest
 
-      # 6) EC2 내부에서 직접 실행 (SSH 불필요)
+      # 6) EC2 내부 배포 (push 일 때만)
       - name: Deploy on EC2 (Self-hosted Runner)
+        if: github.event_name == 'push'
         run: |
           echo "=== Move to project directory ==="
           cd /home/ubuntu
