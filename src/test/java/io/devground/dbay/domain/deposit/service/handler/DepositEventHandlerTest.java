@@ -208,7 +208,7 @@ class DepositEventHandlerTest {
 		io.devground.core.model.vo.DepositHistoryType type = io.devground.core.model.vo.DepositHistoryType.PAYMENT_TOSS;
 		String orderCode = "ORDER_CODE";
 
-		WithdrawDeposit command = new WithdrawDeposit(userCode, amount, type, orderCode);
+		WithdrawDeposit command = new WithdrawDeposit(userCode, amount, type, orderCode, java.util.Collections.emptyList());
 		DepositHistoryResponse historyResponse = new DepositHistoryResponse(
 			2L,
 			depositCode,
@@ -249,7 +249,7 @@ class DepositEventHandlerTest {
 		io.devground.core.model.vo.DepositHistoryType type = io.devground.core.model.vo.DepositHistoryType.PAYMENT_TOSS;
 		String orderCode = "ORDER_CODE";
 
-		WithdrawDeposit command = new WithdrawDeposit(userCode, amount, type, orderCode);
+		WithdrawDeposit command = new WithdrawDeposit(userCode, amount, type, orderCode, java.util.Collections.emptyList());
 
 		given(depositService.withdraw(userCode, DepositHistoryType.PAYMENT_TOSS, amount))
 			.willThrow(new RuntimeException("인출 실패"));
