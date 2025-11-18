@@ -20,8 +20,6 @@ import io.devground.core.event.order.Temp.event.PaymentCreatedFailed;
 import io.devground.core.events.deposit.DepositChargeFailed;
 import io.devground.core.events.deposit.DepositChargedSuccess;
 import io.devground.core.model.vo.DepositHistoryType;
-import io.devground.dbay.domain.payment.model.dto.response.PaymentResponse;
-import io.devground.dbay.domain.payment.model.vo.PaymentStatus;
 import io.devground.dbay.domain.payment.service.PaymentService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
