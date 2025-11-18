@@ -1,4 +1,4 @@
-package io.devground.core.events.deposit;
+package io.devground.core.event.deposit;
 
 import java.util.List;
 

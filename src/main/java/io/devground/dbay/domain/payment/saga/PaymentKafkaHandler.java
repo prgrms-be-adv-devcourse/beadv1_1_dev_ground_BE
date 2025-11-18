@@ -11,14 +11,14 @@ import io.devground.core.commands.deposit.ChargeDeposit;
 import io.devground.core.commands.payment.NotifyDepositChargeFailedAlertCommand;
 import io.devground.core.commands.payment.NotifyDepositChargeSuccessAlertCommand;
 import io.devground.core.commands.payment.PaymentChargeDepositCommand;
-import io.devground.core.event.order.Temp.command.CancelCreatePaymentCommand;
-import io.devground.core.event.order.Temp.command.CompletePaymentCommand;
-import io.devground.core.event.order.Temp.command.PaymentCreateCommand;
-import io.devground.core.event.order.Temp.event.CancelCreatePaymentEvent;
-import io.devground.core.event.order.Temp.event.PaymentCreatedEvent;
-import io.devground.core.event.order.Temp.event.PaymentCreatedFailed;
-import io.devground.core.events.deposit.DepositChargeFailed;
-import io.devground.core.events.deposit.DepositChargedSuccess;
+import io.devground.core.commands.payment.CancelCreatePaymentCommand;
+import io.devground.core.commands.payment.CompletePaymentCommand;
+import io.devground.core.commands.payment.PaymentCreateCommand;
+import io.devground.core.event.payment.CancelCreatePaymentEvent;
+import io.devground.core.event.payment.PaymentCreatedEvent;
+import io.devground.core.event.payment.PaymentCreatedFailed;
+import io.devground.core.event.deposit.DepositChargeFailed;
+import io.devground.core.event.deposit.DepositChargedSuccess;
 import io.devground.core.model.vo.DepositHistoryType;
 import io.devground.dbay.domain.payment.service.PaymentService;
 import lombok.RequiredArgsConstructor;
@@ -28,8 +28,7 @@ import lombok.extern.slf4j.Slf4j;
 @Component
 @KafkaListener(
 	topics = {
-
-		"${payments.command.topic.name}",
+		"${payments.command.topic.purchase}",
 		"${payments.event.topic.name}",
 		"${deposits.event.topic.name}"
 	}
@@ -47,6 +46,9 @@ public class PaymentKafkaHandler {
 	@Value("${deposits.command.topic.name}")
 	private String depositsCommandTopic;
 
+	@Value("${payments.event.topic.purchase}")
+	private String paymentPurchaseEventTopic;
+
 	//결제 가능 -> 주문으로 결제 성공으로 이벤트
 	@KafkaHandler
 	public void handleEvent(@Payload PaymentCreateCommand command) {
@@ -61,12 +63,12 @@ public class PaymentKafkaHandler {
 		if (canPay) {
 			PaymentCreatedEvent paymentCreatedEvent = new PaymentCreatedEvent(command.userCode(), command.totalAmount(),
 				DepositHistoryType.PAYMENT_INTERNAL, command.orderCode(), command.productCodes());
-			kafkaTemplate.send(paymentOrderCommandTopic, paymentCreatedEvent);
+			kafkaTemplate.send(paymentPurchaseEventTopic, command.orderCode(), paymentCreatedEvent);
 		} else {
 			log.error("결제에 실패했습니다.");
 			PaymentCreatedFailed paymentCreatedFailed = new PaymentCreatedFailed(command.orderCode(),
 				command.userCode(), "결제에 실패했습니다.");
-			kafkaTemplate.send(paymentOrderCommandTopic, paymentCreatedFailed);
+			kafkaTemplate.send(paymentPurchaseEventTopic, command.orderCode(), paymentCreatedFailed);
 		}
 
 	}
@@ -85,7 +87,7 @@ public class PaymentKafkaHandler {
 
 		paymentService.canceledDepositPayment(command.orderCode());
 
-		kafkaTemplate.send(paymentOrderCommandTopic, cancelCreatePaymentEvent);
+		kafkaTemplate.send(paymentPurchaseEventTopic, cancelCreatePaymentEvent);
 	}
 
 	//예치금 충전

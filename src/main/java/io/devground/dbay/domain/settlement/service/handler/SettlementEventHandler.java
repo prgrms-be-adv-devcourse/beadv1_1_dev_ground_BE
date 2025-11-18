@@ -5,7 +5,7 @@ import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Component;
 
-import io.devground.core.events.deposit.SettlementDepositChargedSuccess;
+import io.devground.core.event.deposit.SettlementDepositChargedSuccess;
 import io.devground.dbay.domain.settlement.saga.SettlementSagaOrchestrator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
