@@ -7,19 +7,12 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Component;
 
-import io.devground.core.commands.deposit.ChargeDeposit;
-import io.devground.core.commands.payment.NotifyDepositChargeFailedAlertCommand;
-import io.devground.core.commands.payment.NotifyDepositChargeSuccessAlertCommand;
 import io.devground.core.commands.payment.PaymentChargeDepositCommand;
 import io.devground.core.commands.payment.CancelCreatePaymentCommand;
 import io.devground.core.commands.payment.CompletePaymentCommand;
 import io.devground.core.commands.payment.PaymentCreateCommand;
-import io.devground.core.event.payment.CancelCreatePaymentEvent;
-import io.devground.core.event.payment.PaymentCreatedEvent;
-import io.devground.core.event.payment.PaymentCreatedFailed;
 import io.devground.core.event.deposit.DepositChargeFailed;
 import io.devground.core.event.deposit.DepositChargedSuccess;
-import io.devground.core.model.vo.DepositHistoryType;
 import io.devground.dbay.domain.payment.service.PaymentService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -52,74 +45,35 @@ public class PaymentKafkaHandler {
 	//결제 가능 -> 주문으로 결제 성공으로 이벤트
 	@KafkaHandler
 	public void handleEvent(@Payload PaymentCreateCommand command) {
-		String paymentKey = "";
-		boolean canPay = paymentService.pay(
-			command.userCode(),
-			command.orderCode(),
-			command.totalAmount(),
-			paymentKey
-		);
-
-		if (canPay) {
-			PaymentCreatedEvent paymentCreatedEvent = new PaymentCreatedEvent(command.userCode(), command.totalAmount(),
-				DepositHistoryType.PAYMENT_INTERNAL, command.orderCode(), command.productCodes());
-			kafkaTemplate.send(paymentPurchaseEventTopic, command.orderCode(), paymentCreatedEvent);
-		} else {
-			log.error("결제에 실패했습니다.");
-			PaymentCreatedFailed paymentCreatedFailed = new PaymentCreatedFailed(command.orderCode(),
-				command.userCode(), "결제에 실패했습니다.");
-			kafkaTemplate.send(paymentPurchaseEventTopic, command.orderCode(), paymentCreatedFailed);
-		}
 
 	}
 
 	//결제 최종 성공
 	@KafkaHandler
 	public void handleEvent(@Payload CompletePaymentCommand completePaymentCommand) {
-		paymentService.applyDepositPayment(completePaymentCommand.orderCode());
 	}
 
 	//결제 취소
 	@KafkaHandler
 	public void handleEvent(@Payload CancelCreatePaymentCommand command) {
-		CancelCreatePaymentEvent cancelCreatePaymentEvent = new CancelCreatePaymentEvent(command.userCode(),
-			command.orderCode(), "결제가 취소되었습니다.");
 
-		paymentService.canceledDepositPayment(command.orderCode());
-
-		kafkaTemplate.send(paymentPurchaseEventTopic, cancelCreatePaymentEvent);
 	}
 
 	//예치금 충전
 	@KafkaHandler
 	public void handleEvent(@Payload PaymentChargeDepositCommand command) {
-		ChargeDeposit chargeDeposit = new ChargeDeposit(command.userCode(), command.totalAmount(),
-			DepositHistoryType.CHARGE_TOSS);
 
-		kafkaTemplate.send(depositsCommandTopic, chargeDeposit);
 	}
 
 	//예치금 충전 성공
 	@KafkaHandler
 	public void handleEvent(@Payload DepositChargedSuccess depositChargedSuccessEvent) {
-		log.info("예치금 충전 성공: userCode={}, amount={}", depositChargedSuccessEvent.userCode(),
-			depositChargedSuccessEvent.amount());
-		NotifyDepositChargeSuccessAlertCommand command = new NotifyDepositChargeSuccessAlertCommand(
-			depositChargedSuccessEvent.userCode(), depositChargedSuccessEvent.amount());
 
-		kafkaTemplate.send(paymentOrderCommandTopic, command);
 	}
 
 	//예치금 충전 실패
 	@KafkaHandler
 	public void handleEvent(@Payload DepositChargeFailed depositChargeFailed) {
-		paymentService.refund(depositChargeFailed.userCode(), depositChargeFailed.amount());
 
-		log.info("예치금 충전 실패: userCode={}, amount={}", depositChargeFailed.userCode(), depositChargeFailed.amount());
-
-		NotifyDepositChargeFailedAlertCommand command = new NotifyDepositChargeFailedAlertCommand(
-			depositChargeFailed.userCode(), "예치금 충전에 실패했습니다.");
-
-		kafkaTemplate.send(paymentOrderCommandTopic, command);
 	}
 }
