@@ -13,6 +13,10 @@ import io.devground.core.commands.payment.CompletePaymentCommand;
 import io.devground.core.commands.payment.PaymentCreateCommand;
 import io.devground.core.event.deposit.DepositChargeFailed;
 import io.devground.core.event.deposit.DepositChargedSuccess;
+import io.devground.core.event.payment.PaymentCreatedEvent;
+import io.devground.core.model.vo.DepositHistoryType;
+import io.devground.dbay.domain.deposit.entity.Deposit;
+import io.devground.dbay.domain.payment.model.vo.PaymentConfirmRequest;
 import io.devground.dbay.domain.payment.service.PaymentService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -45,24 +49,21 @@ public class PaymentKafkaHandler {
 	//결제 가능 -> 주문으로 결제 성공으로 이벤트
 	@KafkaHandler
 	public void handleEvent(@Payload PaymentCreateCommand command) {
+		PaymentConfirmRequest request = new PaymentConfirmRequest(command.orderCode(), true, command.totalAmount(), null, command.productCodes());
+		paymentService.process(command.userCode(), request);
 
 	}
 
 	//결제 최종 성공
 	@KafkaHandler
 	public void handleEvent(@Payload CompletePaymentCommand completePaymentCommand) {
+		paymentService.applyDepositPayment(completePaymentCommand.orderCode());
 	}
 
 	//결제 취소
 	@KafkaHandler
 	public void handleEvent(@Payload CancelCreatePaymentCommand command) {
-
-	}
-
-	//예치금 충전
-	@KafkaHandler
-	public void handleEvent(@Payload PaymentChargeDepositCommand command) {
-
+		paymentService.cancelDepositPayment(command.orderCode());
 	}
 
 	//예치금 충전 성공
