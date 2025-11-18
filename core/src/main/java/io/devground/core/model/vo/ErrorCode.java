@@ -80,6 +80,7 @@ public enum ErrorCode {
 
 	// payment
 	TOSS_PAY_FAILED(500, "토스 결제에 실패했습니다."),
+	PAYMENT_NOT_FOUND(400, "결제 내역을 찾을 수 없습니다."),
 
 	// saga
 	SAGA_NOT_FOUND(404, "사가 정보를 찾을 수 없습니다.");
