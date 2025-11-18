@@ -51,7 +51,6 @@ import lombok.extern.slf4j.Slf4j;
 public class ProductSearchService {
 
 	private final ElasticsearchOperations operations;
-	private final ElasticsearchOperations elasticsearchOperations;
 
 	public PageDto<ProductSearchResponse> searchProducts(ProductSearchRequest request) {
 
@@ -264,7 +263,7 @@ public class ProductSearchService {
 			.withMaxResults(request.size())
 			.build();
 
-		SearchHits<ProductDocument> searchHits = elasticsearchOperations.search(query, ProductDocument.class);
+		SearchHits<ProductDocument> searchHits = operations.search(query, ProductDocument.class);
 
 		Set<String> uniqueTitles = new LinkedHashSet<>();
 		List<SuggestOption> suggestOptions = new ArrayList<>();
@@ -322,7 +321,7 @@ public class ProductSearchService {
 			.withSuggester(suggester)
 			.build();
 
-		SearchHits<ProductDocument> searchHits = elasticsearchOperations.search(query, ProductDocument.class);
+		SearchHits<ProductDocument> searchHits = operations.search(query, ProductDocument.class);
 
 		List<SuggestOption> suggestOptions = new ArrayList<>();
 
@@ -378,7 +377,7 @@ public class ProductSearchService {
 			.withMaxResults(request.size())
 			.build();
 
-		SearchHits<ProductDocument> searchHits = elasticsearchOperations.search(query, ProductDocument.class);
+		SearchHits<ProductDocument> searchHits = operations.search(query, ProductDocument.class);
 
 		Map<String, Long> termFrequency = new HashMap<>();
 
