@@ -67,7 +67,7 @@ public class DepositEventHandler {
 				response.depositCode()
 			);
 
-			kafkaTemplate.send(depositsJoinEventTopicName, response.userCode(), depositCreatedEvent);
+			kafkaTemplate.send(depositsJoinEventTopicName, command.userCode(), depositCreatedEvent);
 
 		} catch (Exception e) {
 
@@ -78,7 +78,7 @@ public class DepositEventHandler {
 				"예치금 생성에 실패했어요"
 			);
 
-			kafkaTemplate.send(depositsJoinEventTopicName, depositCreateFailed);
+			kafkaTemplate.send(depositsJoinEventTopicName, command.userCode(), depositCreateFailed);
 		}
 
 	}
@@ -219,7 +219,7 @@ public class DepositEventHandler {
 
 			depositService.deleteDeposit(command.userCode());
 
-			kafkaTemplate.send(depositsEventTopicName, new DepositDeletedSuccess(command.userCode(), "예치금 삭제 완료"));
+			kafkaTemplate.send(depositsJoinEventTopicName, command.userCode(), new DepositDeletedSuccess(command.userCode(), "예치금 삭제 완료"));
 
 			log.info("예치금 삭제 완료: userCode={}", command.userCode());
 
@@ -231,7 +231,7 @@ public class DepositEventHandler {
 				"예치금 삭제에 실패했어요"
 			);
 
-			kafkaTemplate.send(depositsEventTopicName, depositDeleteFailed);
+			kafkaTemplate.send(depositsJoinEventTopicName, command.userCode(), depositDeleteFailed);
 		}
 
 	}

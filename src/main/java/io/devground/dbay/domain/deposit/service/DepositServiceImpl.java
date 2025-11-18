@@ -102,6 +102,7 @@ public class DepositServiceImpl implements DepositService {
 	}
 
 	@Override
+	@Transactional
 	public void deleteDeposit(String userCode) {
 		Deposit deposit = getDepositByUserCode(userCode);
 

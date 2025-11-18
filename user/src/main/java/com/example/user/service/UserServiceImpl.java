@@ -84,7 +84,7 @@ public class UserServiceImpl implements UserService {
 		String userCode = savedUser.getCode();
 		UserCreatedEvent event = new UserCreatedEvent(userCode);
 		log.info("Sending event: {}", event);
-		kafkaTemplate.send(userJoinEventsTopicName, event);
+		kafkaTemplate.send(userJoinEventsTopicName, event.userCode(), event);
 
 		//웰컴 쿠폰 발급
 
@@ -120,7 +120,7 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public void requestDeleteUser(String userCode) {
 		UserDeletedEvent event = new UserDeletedEvent(userCode);
-		kafkaTemplate.send(userJoinCommandTopicName, event);
+		kafkaTemplate.send(userJoinEventsTopicName, event.userCode(), event);
 	}
 
 }

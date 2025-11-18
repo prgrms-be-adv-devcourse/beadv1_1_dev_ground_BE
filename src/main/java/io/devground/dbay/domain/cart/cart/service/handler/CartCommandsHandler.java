@@ -44,9 +44,9 @@ public class CartCommandsHandler {
 	private String cartsOrderEventTopicName;
 
 	@KafkaHandler
-	public void handleCreateCart(@Payload CreateCartCommand createCartCommand) {
+	public void handleCreateCart(@Payload CreateCartCommand command) {
 		try {
-			Cart savedCart = cartService.createCart(createCartCommand.userCode());
+			Cart savedCart = cartService.createCart(command.userCode());
 
 			CartCreatedEvent event = new CartCreatedEvent(savedCart.getUserCode(), savedCart.getCode());
 
@@ -54,9 +54,9 @@ public class CartCommandsHandler {
 		} catch (Exception e) {
 			log.error("장바구니 생성에서 오류가 발생하였습니다. ", e);
 
-			CartCreatedFailedEvent event = new CartCreatedFailedEvent(createCartCommand.userCode());
+			CartCreatedFailedEvent event = new CartCreatedFailedEvent(command.userCode());
 
-			kafkaTemplate.send(cartsJoinUserEventTopicName, createCartCommand.userCode(), event);
+			kafkaTemplate.send(cartsJoinUserEventTopicName, command.userCode(), event);
 		}
 	}
 
@@ -67,13 +67,13 @@ public class CartCommandsHandler {
 
 			CartDeletedEvent event = new CartDeletedEvent(deleteCart.getUserCode());
 
-			kafkaTemplate.send(cartsJoinUserEventTopicName, deleteCart.getUserCode(), event);
+			kafkaTemplate.send(cartsJoinUserEventTopicName, command.userCode(), event);
 		} catch (Exception e) {
 			log.error("장바구니 삭제에서 오류가 발생하였습니다. ", e);
 
 			CartDeletedFailedEvent event = new CartDeletedFailedEvent(command.userCode(), "장바구니 삭제 실패");
 
-			kafkaTemplate.send(cartsJoinUserEventTopicName, event.userCode(), event);
+			kafkaTemplate.send(cartsJoinUserEventTopicName, command.userCode(), event);
 		}
 	}
 

@@ -96,7 +96,7 @@ public class UserSaga {
 		DeleteDeposit DeleteDeposit = new DeleteDeposit(event.userCode());
 		log.info("장바구니 생성에 실패해 예치금을 삭제하였습니다.");
 
-		kafkaTemplate.send(depositsJoinUserCommandTopicName, DeleteDeposit);
+		kafkaTemplate.send(depositsJoinUserCommandTopicName, event.userCode(), DeleteDeposit);
 	}
 
 	//예치금 생성 실패 -> user 삭제
@@ -119,7 +119,7 @@ public class UserSaga {
 			event.userCode());
 
 		log.info("예치금이 삭제되어 user를 삭제했습니다.");
-		kafkaTemplate.send(userJoinCommandTopicName, notifyUserCreateFailedAlertCommand);
+		kafkaTemplate.send(userJoinCommandTopicName, event.userCode(), notifyUserCreateFailedAlertCommand);
 
 	}
 
@@ -138,7 +138,7 @@ public class UserSaga {
 		DeleteDeposit deleteDeposit = new DeleteDeposit(event.userCode());
 		log.info("user 삭제 요청으로 cart 삭제 후 deposit을 삭제합니다.");
 
-		kafkaTemplate.send(depositsJoinUserCommandTopicName, deleteDeposit);
+		kafkaTemplate.send(depositsJoinUserCommandTopicName, event.userCode(), deleteDeposit);
 	}
 
 	//장바구니 삭제 실패
@@ -148,7 +148,7 @@ public class UserSaga {
 			event.userCode(), "장바구니 삭제에 실패했습니다.");
 		log.info("장바구니 삭제에 실패했습니다.");
 
-		kafkaTemplate.send(userJoinCommandTopicName, notifyUserCreateFailedAlertCommand);
+		kafkaTemplate.send(userJoinCommandTopicName, event.userCode(), notifyUserCreateFailedAlertCommand);
 	}
 
 	//예치금 삭제 실패
@@ -158,6 +158,6 @@ public class UserSaga {
 			event.userCode(), "예치금 삭제에 실패했습니다.");
 		log.info("예치금 삭제에 실패했습니다.");
 
-		kafkaTemplate.send(userJoinCommandTopicName, notifyUserCreateFailedAlertCommand);
+		kafkaTemplate.send(userJoinCommandTopicName, event.userCode(), notifyUserCreateFailedAlertCommand);
 	}
 }
