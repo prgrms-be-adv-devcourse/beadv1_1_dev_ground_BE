@@ -50,27 +50,28 @@
         ],
         "lenient": true
       },
-      "nori_posfilter": {
+      "nori_pos_filter": {
         "type": "nori_part_of_speech",
         "stoptags": [
-          "E",
-          "IC",
-          "J",
+          "VV",
+          "VA",
+          "VX",
+          "VCP",
+          "VCN",
+          "MM",
           "MAG",
           "MAJ",
-          "MM",
+          "XSV",
+          "XSA",
+          "XSN",
+          "XR",
+          "SF",
           "SP",
+          "SS",
           "SSC",
           "SSO",
           "SC",
-          "SE",
-          "XPN",
-          "XSA",
-          "XSN",
-          "XSV",
-          "UNA",
-          "NA",
-          "VSV"
+          "SE"
         ]
       },
       "korean_stop": {
@@ -104,7 +105,7 @@
         "tokenizer": "nori_tokenizer",
         "filter": [
           "lowercase",
-          "nori_posfilter",
+          "nori_pos_filter",
           "korean_stop"
         ]
       },
@@ -116,7 +117,7 @@
         "tokenizer": "nori_tokenizer",
         "filter": [
           "lowercase",
-          "nori_posfilter",
+          "nori_pos_filter",
           "synonym_filter"
         ]
       },
@@ -132,9 +133,8 @@
         "tokenizer": "nori_tokenizer",
         "filter": [
           "lowercase",
-          "nori_posfilter",
-          "shingle_filter",
-          "synonym_filter"
+          "nori_pos_filter",
+          "shingle_filter"
         ]
       }
     }
