@@ -17,6 +17,8 @@ import io.devground.core.util.PageUtils;
 import io.devground.dbay.domain.product.category.model.entity.Category;
 import io.devground.dbay.domain.product.category.repository.CategoryRepository;
 import io.devground.dbay.domain.product.product.client.ImageClient;
+import io.devground.dbay.domain.product.product.infra.kafka.ProductImageSagaOrchestrator;
+import io.devground.dbay.domain.product.product.mapper.ProductMapper;
 import io.devground.dbay.domain.product.product.model.dto.CartProductsRequest;
 import io.devground.dbay.domain.product.product.model.dto.CartProductsResponse;
 import io.devground.dbay.domain.product.product.model.dto.GetAllProductsResponse;
@@ -28,13 +30,13 @@ import io.devground.dbay.domain.product.product.model.dto.UpdateProductRequest;
 import io.devground.dbay.domain.product.product.model.dto.UpdateProductResponse;
 import io.devground.dbay.domain.product.product.model.entity.Product;
 import io.devground.dbay.domain.product.product.model.entity.ProductSale;
-import io.devground.dbay.domain.product.product.infra.kafka.ProductImageSagaOrchestrator;
-import io.devground.dbay.domain.product.product.mapper.ProductMapper;
 import io.devground.dbay.domain.product.product.repository.ProductRepository;
 import io.devground.dbay.domain.product.product.repository.ProductSaleRepository;
+import io.devground.dbay.domain.product.product.service.ProductIndexService;
 import io.devground.dbay.domain.product.product.service.ProductService;
 import lombok.AllArgsConstructor;
 
+// TODO: 추후 Index 작업 Kafka 통신으로 변경. 이후 재시도까지 실패 시 알람,
 @Service
 @Transactional
 @AllArgsConstructor
@@ -45,6 +47,7 @@ public class ProductServiceImpl implements ProductService {
 	private final ProductSaleRepository productSaleRepository;
 	private final CategoryRepository categoryRepository;
 	private final ProductImageSagaOrchestrator productImageSagaOrchestrator;
+	private final ProductIndexService productIndexService;
 
 	@Override
 	@Transactional(readOnly = true)
@@ -64,7 +67,7 @@ public class ProductServiceImpl implements ProductService {
 	@Override
 	public RegistProductResponse registProduct(String sellerCode, RegistProductRequest request) {
 
-		// 유저 관련 검증 필요 시 추가
+		// TODO: 유저 관련 검증 필요 시 추가
 
 		Category category = categoryRepository.findById(request.categoryId())
 			.orElseThrow(ErrorCode.CATEGORY_NOT_FOUND::throwServiceException);
@@ -87,6 +90,8 @@ public class ProductServiceImpl implements ProductService {
 		productSaleRepository.save(productSale);
 
 		List<URL> presignedUrls = new ArrayList<>();
+
+		productIndexService.indexProduct(product);
 
 		if (!CollectionUtils.isEmpty(request.imageExtensions())) {
 			presignedUrls = productImageSagaOrchestrator.startGetPresignedUrlsSaga(product.getCode(),
@@ -124,6 +129,8 @@ public class ProductServiceImpl implements ProductService {
 		product.changeProductMetadata(request.title(), request.description());
 		productSale.changePrice(request.price());
 
+		productIndexService.updateProduct(product);
+
 		List<URL> newPresignedUrls = productImageSagaOrchestrator.startProductImageUpdateSaga(
 			productCode, request.deleteUrls(), request.newImageExtensions()
 		);
@@ -155,6 +162,8 @@ public class ProductServiceImpl implements ProductService {
 
 		product.delete();
 
+		productIndexService.deleteProduct(product);
+
 		productImageSagaOrchestrator.startProductImageAllDeleteSaga(productCode, null);
 
 		return null;
@@ -174,7 +183,11 @@ public class ProductServiceImpl implements ProductService {
 			ErrorCode.PRODUCT_NOT_FOUND.throwServiceException();
 		}
 
-		products.forEach(p -> p.getProductSale().changeAsSold());
+		products.forEach(p -> {
+			p.getProductSale().changeAsSold();
+
+			productIndexService.updateProduct(p);
+		});
 	}
 
 	@Override
