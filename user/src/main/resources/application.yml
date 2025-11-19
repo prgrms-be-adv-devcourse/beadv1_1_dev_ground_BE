@@ -67,7 +67,7 @@ eureka:
       defaultZone: http://eureka:8761/eureka/
   instance:
     prefer-ip-address: true
-    ip-address: user
+    ip-address: user-service
     non-secure-port: 8082
     metadata-map:
       port: 8082
