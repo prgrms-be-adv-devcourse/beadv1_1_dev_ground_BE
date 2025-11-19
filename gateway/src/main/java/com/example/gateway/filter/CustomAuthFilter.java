@@ -79,11 +79,11 @@ public class CustomAuthFilter extends AbstractGatewayFilterFactory<CustomAuthFil
 
 			Jws<Claims> claims = getClaims(token);
 
-			String accountCode = claims.getPayload().get("userCode").toString();
+			String userCode = claims.getPayload().get("userCode").toString();
 			String role = claims.getPayload().get("role").toString();
 
 			ServerHttpRequest mutatedRequest = request.mutate()
-				.header("X-CODE", accountCode)
+				.header("X-CODE", userCode)
 				.header("ROLE", role)
 				.build();
 
