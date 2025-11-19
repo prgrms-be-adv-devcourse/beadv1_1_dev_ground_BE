@@ -21,6 +21,12 @@ public class PaymentKafkaConfig {
 	@Value("${payments.command.topic.purchase}")
 	private String paymentOrderCommandTopicName;
 
+	@Value("${payments.event.topic.name}")
+	private String paymentEventTopicName;
+
+	@Value("${payments.command.topic.name}")
+	private String paymentCommandTopicName;
+
 	@Bean
 	public NewTopic createPaymentPurchaseEventTopic() {
 		return TopicBuilder.name(paymentOrderEventTopicName)
@@ -32,6 +38,22 @@ public class PaymentKafkaConfig {
 	@Bean
 	public NewTopic createPaymentPurchaseCommandTopic() {
 		return TopicBuilder.name(paymentOrderCommandTopicName)
+			.partitions(topic_partitions)
+			.replicas(topic_replications)
+			.build();
+	}
+
+	@Bean
+	public NewTopic createPaymentEventTopic() {
+		return TopicBuilder.name(paymentEventTopicName)
+			.partitions(topic_partitions)
+			.replicas(topic_replications)
+			.build();
+	}
+
+	@Bean
+	public NewTopic createPaymentCommandTopic() {
+		return TopicBuilder.name(paymentCommandTopicName)
 			.partitions(topic_partitions)
 			.replicas(topic_replications)
 			.build();
