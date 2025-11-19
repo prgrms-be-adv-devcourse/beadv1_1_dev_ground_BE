@@ -91,6 +91,13 @@ spring:
           filters:
             - CustomAuthFilter
 
+        - id: categories
+          uri: lb://DBAY
+          predicates:
+            - Path=/api/categories/**
+          filters:
+            - CustomAuthFilter
+
         - id: orders
           uri: lb://DBAY
           predicates:
