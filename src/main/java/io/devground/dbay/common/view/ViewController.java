@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-
+import io.devground.dbay.domain.payment.model.entity.Payment;
 import io.devground.dbay.domain.payment.model.vo.ChargePaymentRequest;
 import io.devground.dbay.domain.payment.service.PaymentService;
 import lombok.RequiredArgsConstructor;
@@ -23,13 +23,14 @@ public class ViewController {
 		@PathVariable String userCode,
 		Model model
 	) {
-		ChargePaymentRequest description = new ChargePaymentRequest(userCode, 10000L);
-		model.addAttribute("description", description);
+		//ChargePaymentRequest description = new ChargePaymentRequest(userCode, 10000L);
+		model.addAttribute("userCode", userCode);
+		model.addAttribute("amount", 10000L);
 		return "payment/checkout";
 	}
 
 
-	@GetMapping("/payment/success")
+	@GetMapping("/payments/success")
 	public String viewSuccessPage() {
 		return "payment/success";
 	}
