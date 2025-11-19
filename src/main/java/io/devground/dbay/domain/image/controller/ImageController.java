@@ -20,6 +20,7 @@ import io.devground.core.dto.image.UpdateImagesRequest;
 import io.devground.core.model.vo.ImageType;
 import io.devground.core.model.web.BaseResponse;
 import io.devground.dbay.domain.image.service.ImageService;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 
@@ -32,6 +33,7 @@ public class ImageController {
 	private final ImageService imageService;
 
 	@PostMapping(value = "/upload")
+	@Operation(summary = "PresignedUrl 발급", description = "클라이언트에게 PresignedUrl을 발급합니다.")
 	public BaseResponse<List<URL>> generatePresignedUrls(
 		@RequestBody GeneratePresignedRequest request
 	) {
@@ -44,6 +46,7 @@ public class ImageController {
 	}
 
 	@GetMapping("/{referenceCode}")
+	@Operation(summary = "상품 이미지 URL 목록 조회", description = "해당 상품의 이미지 URL 목록을 조회합니다.")
 	public BaseResponse<List<String>> getImages(
 		@PathVariable String referenceCode,
 		@RequestParam ImageType imageType
@@ -57,6 +60,7 @@ public class ImageController {
 	}
 
 	@PostMapping(value = "/update")
+	@Operation(summary = "상품 이미지 URL 등록", description = "상품의 이미지 URL을 로컬 DB에 저장합니다.")
 	public BaseResponse<List<URL>> updateImages(
 		@RequestBody UpdateImagesRequest request
 	) {
@@ -70,6 +74,7 @@ public class ImageController {
 	}
 
 	@DeleteMapping(value = "compensate-s3")
+	@Operation(summary = "S3만 업로드될 시 보상", description = "상품의 S3 작업 과정에서 문제가 발생하면 보상으로 해당 S3 이미지를 삭제합니다.")
 	public BaseResponse<String> compensateS3Upload(
 		@RequestBody DeleteImagesRequest request
 	) {
@@ -82,6 +87,10 @@ public class ImageController {
 	}
 
 	@DeleteMapping(value = "/compensate-upload")
+	@Operation(
+		summary = "이미지 업로드 도중 문제 발생 시 보상",
+		description = "상품 이미지 업로드 과정에서 문제가 발생하면 보상으로 S3 및 로컬 DB 이미지를 삭제합니다."
+	)
 	public BaseResponse<String> compensateDbUpload(
 		@RequestBody DeleteImagesRequest request
 	) {
