@@ -15,7 +15,7 @@ import io.devground.dbay.domain.cart.cart.model.vo.CartProductsResponse;
 
 @FeignClient(
 	name = "product",
-	url = "http://localhost:8080",
+	url = "${external.openfeign-url}",
 	path = "/api/products"
 )
 public interface ProductFeignClient {

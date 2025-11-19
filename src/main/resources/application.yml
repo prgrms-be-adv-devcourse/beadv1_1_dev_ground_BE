@@ -165,3 +165,6 @@ logging:
     org.hibernate.orm.jdbc.bind: INFO
     org.hibernate.orm.jdbc.extract: INFO
     org.springframework.batch: INFO
+
+external:
+  openfeign-url: http://localhost:8000
