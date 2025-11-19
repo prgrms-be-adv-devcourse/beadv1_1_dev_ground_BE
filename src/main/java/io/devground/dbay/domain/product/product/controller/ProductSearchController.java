@@ -14,6 +14,7 @@ import io.devground.dbay.domain.product.product.model.dto.ProductSuggestRequest;
 import io.devground.dbay.domain.product.product.model.dto.ProductSuggestResponse;
 import io.devground.dbay.domain.product.product.service.ProductSearchService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 
@@ -48,7 +49,19 @@ public class ProductSearchController {
 			- categoryIds=1,2,3, -> 멀티 카테고리(생략 시 전체 카테고리 검색)
 			- minPrice=10000&maxPrice=50000 -> 가격 범위
 			- sortBy=price&sortDirection=ASC -> 가격 오름차순
-			"""
+			""",
+		parameters = {
+			@Parameter(name = "keyword", description = "검색 키워드", example = "갤럭시"),
+			@Parameter(name = "categoryIds", description = "카테고리 ID 목록(,로 구분)", example = "1,2,3"),
+			@Parameter(name = "minPrice", description = "최소 가격", example = "100000"),
+			@Parameter(name = "maxPrice", description = "최대 가격", example = "500000"),
+			@Parameter(name = "sellerCode", description = "판매자 코드", example = "USER"),
+			@Parameter(name = "productStatus", description = "상품 상태", example = "AVAILABLE"),
+			@Parameter(name = "sortBy", description = "정렬 기준(price/title/createdAt/updatedAt", example = "price"),
+			@Parameter(name = "sortDirection", description = "정렬 방향(ASC/DESC)", example = "ASC"),
+			@Parameter(name = "page", description = "페이지 번호(1부터 시작)", example = "1"),
+			@Parameter(name = "size", description = "페이지 크기(최대 100)", example = "10")
+		}
 	)
 	public BaseResponse<PageDto<ProductSearchResponse>> searchProducts(ProductSearchRequest request) {
 
@@ -79,7 +92,13 @@ public class ProductSearchController {
 			- 추가 상품 발견 유도
 			
 			ex) type=COMPLETION&keyword=갤럭
-			"""
+			""",
+		parameters = {
+			@Parameter(name = "type", description = "추천 타입(COMPLETION, PHRASE, RELATED)", example = "COMPLETION"),
+			@Parameter(name = "keyword", description = "검색 키워드", example = "갤럭시"),
+			@Parameter(name = "categoryId", description = "카테고리 ID", example = "1"),
+			@Parameter(name = "size", description = "추천 결과 개수", example = "10"),
+		}
 	)
 	public BaseResponse<ProductSuggestResponse> suggest(ProductSuggestRequest request) {
 
