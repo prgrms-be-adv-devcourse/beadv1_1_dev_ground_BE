@@ -8,9 +8,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import io.devground.dbay.domain.payment.model.entity.Payment;
-import io.devground.dbay.domain.payment.model.vo.ChargePaymentRequest;
-import io.devground.dbay.domain.payment.service.PaymentService;
 import lombok.RequiredArgsConstructor;
 
 @Controller
