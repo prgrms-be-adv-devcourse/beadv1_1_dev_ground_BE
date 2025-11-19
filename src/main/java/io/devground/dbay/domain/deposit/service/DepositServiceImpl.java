@@ -117,8 +117,6 @@ public class DepositServiceImpl implements DepositService {
 	private DepositHistory applyHistory(String userCode, DepositHistoryType type, Long amount) {
 		Deposit deposit = getDepositByUserCode(userCode);
 
-		type.apply(deposit, amount);
-
 		String description = generateDescription(type, amount);
 
 		DepositHistory history = DepositHistory.builder()
