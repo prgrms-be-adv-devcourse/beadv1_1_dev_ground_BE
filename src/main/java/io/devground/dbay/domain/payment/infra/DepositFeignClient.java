@@ -9,7 +9,7 @@ import io.devground.dbay.domain.deposit.dto.response.DepositBalanceResponse;
 
 @FeignClient(
 	name = "PaymentToDeposit",
-	url = "http://localhost:8000",
+	url = "${external.openfeign-url}",
 	path = "/api/deposits"
 )
 public interface DepositFeignClient {

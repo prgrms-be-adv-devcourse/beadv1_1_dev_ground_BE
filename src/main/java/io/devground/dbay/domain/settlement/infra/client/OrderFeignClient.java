@@ -10,7 +10,7 @@ import io.devground.dbay.domain.settlement.model.dto.UnsettledOrderItemResponse;
 
 @FeignClient(
 	name = "SettlementToOrder",
-	url = "http://localhost:8080",
+	url = "${external.openfeign-url}",
 	path = "/api/orders"
 )
 public interface OrderFeignClient {

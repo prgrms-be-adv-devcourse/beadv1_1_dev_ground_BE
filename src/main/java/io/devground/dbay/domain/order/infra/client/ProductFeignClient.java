@@ -12,7 +12,7 @@ import io.devground.dbay.domain.order.order.model.vo.OrderProductListResponse;
 
 @FeignClient(
 	name = "OrderToProduct",
-	url = "http://localhost:8080",
+	url = "${external.openfeign-url}",
 	path = "/api/products"
 )
 public interface ProductFeignClient {
