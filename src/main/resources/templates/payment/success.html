@@ -14,23 +14,25 @@ Success
 
         const searchParams = new URLSearchParams(window.location.search);
 
+        const userCode = searchParams.get('userCode');
         const orderCode = searchParams.get('orderId');
         const paymentKey = searchParams.get('paymentKey');
         const amount = searchParams.get('amount');
 
-        await fetch('/api/payments/process', {
+        await fetch('/api/payments/toss', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
+                userCode,
                 orderCode,
                 paymentKey,
                 amount
             })
         }).then(response => response.json())
             .then(data => {
-                console.log(data);
+                console.log("log: " + data);
             })
             .catch(error => {
                 console.error('Error:', error);
