@@ -5,5 +5,5 @@ import lombok.Getter;
 @Getter
 public enum SuggestType {
 
-	COMPLETION, PHRASE, RELATED
+	COMPLETION, RELATED
 }

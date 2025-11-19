@@ -60,7 +60,7 @@ public class ProductESUtil {
 
 		String[] words = title.split("\\s+");
 		for (String word : words) {
-			if (word.length() >= 2) {
+			if (!word.isEmpty()) {
 				inputs.add(word);
 			}
 		}
