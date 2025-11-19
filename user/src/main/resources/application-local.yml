@@ -1,5 +1,5 @@
 server:
-  port: 8001
+  port: 8082
 
 spring:
   application:
@@ -80,3 +80,6 @@ eureka:
 
   instance:
     instance-id: "${spring.application.name}:${server.port}:${random.uuid}"
+    prefer-ip-address: false
+    hostname: localhost
+    non-secure-port: ${server.port}
