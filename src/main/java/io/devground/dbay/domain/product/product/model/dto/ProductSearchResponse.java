@@ -1,6 +1,6 @@
 package io.devground.dbay.domain.product.product.model.dto;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 import lombok.Builder;
 import lombok.NonNull;
@@ -33,7 +33,7 @@ public record ProductSearchResponse(
 	String productStatus,
 
 	@NonNull
-	LocalDateTime createdAt,
+	LocalDate createdAt,
 
 	Float score
 ) {
