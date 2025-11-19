@@ -72,6 +72,7 @@ public class ProductSearchController {
 		);
 	}
 
+	// TODO: 추후 API 2개로 분리
 	@GetMapping("/suggest")
 	@Operation(summary = "검색어 추천 By Elasticsearch",
 		description = """
@@ -83,18 +84,14 @@ public class ProductSearchController {
 			- 실시간 타이핑 중 추천
 			- 검색창 자동완성에 사용 가능
 			
-			2. 오타 수정 (PHRASE)
-			- 검색어 오타 자동 수정 제안
-			- 검색 결과가 없을 때, 클라이언트에게 추천 제안
-			
-			3. 연관 검색어 (RELATED)
-			- 관련된 다름 검색어 추천
+			2. 연관 검색어 (RELATED)
+			- 관련된 다른 검색어 추천
 			- 추가 상품 발견 유도
 			
 			ex) type=COMPLETION&keyword=갤럭
 			""",
 		parameters = {
-			@Parameter(name = "type", description = "추천 타입(COMPLETION, PHRASE, RELATED)", example = "COMPLETION"),
+			@Parameter(name = "type", description = "추천 타입(COMPLETION, RELATED)", example = "COMPLETION"),
 			@Parameter(name = "keyword", description = "검색 키워드", example = "갤럭시"),
 			@Parameter(name = "categoryId", description = "카테고리 ID", example = "1"),
 			@Parameter(name = "size", description = "추천 결과 개수", example = "10"),

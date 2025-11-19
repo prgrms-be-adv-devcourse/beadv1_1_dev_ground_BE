@@ -15,7 +15,6 @@ import org.springframework.data.elasticsearch.client.elc.NativeQueryBuilder;
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
 import org.springframework.data.elasticsearch.core.SearchHit;
 import org.springframework.data.elasticsearch.core.SearchHits;
-import org.springframework.data.elasticsearch.core.suggest.response.Suggest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
@@ -24,13 +23,10 @@ import org.springframework.util.StringUtils;
 
 import co.elastic.clients.elasticsearch._types.FieldValue;
 import co.elastic.clients.elasticsearch._types.SortOrder;
-import co.elastic.clients.elasticsearch._types.SuggestMode;
 import co.elastic.clients.elasticsearch._types.query_dsl.BoolQuery;
 import co.elastic.clients.elasticsearch._types.query_dsl.Query;
 import co.elastic.clients.elasticsearch._types.query_dsl.RangeQuery;
 import co.elastic.clients.elasticsearch._types.query_dsl.TextQueryType;
-import co.elastic.clients.elasticsearch.core.search.FieldSuggester;
-import co.elastic.clients.elasticsearch.core.search.Suggester;
 import co.elastic.clients.json.JsonData;
 import io.devground.core.model.web.PageDto;
 import io.devground.dbay.domain.product.product.mapper.ProductSearchMapper;
@@ -98,7 +94,6 @@ public class ProductSearchService {
 
 			return switch (request.type()) {
 				case COMPLETION -> completionSuggest(request);
-				case PHRASE -> phraseSuggest(request);
 				case RELATED -> relatedTermSuggest(request);
 			};
 		} catch (Exception e) {
@@ -122,24 +117,44 @@ public class ProductSearchService {
 		applyExactlyBuilder(boolBuilder, "deleteStatus", FieldValue.of(false));
 
 		// 2. 키워드 검색 (title, description) (가중치 계산)
+		// 2-1. 정확한 매칭 위주 (가중치 높음)
 		if (StringUtils.hasText(request.keyword())) {
-			boolBuilder.must(m -> m
+			String keyword = request.keyword().trim();
+
+			BoolQuery.Builder keywordBuilder = new BoolQuery.Builder();
+
+			keywordBuilder.should(s -> s
 				.multiMatch(mm -> mm
-					.query(request.keyword())
+					.query(keyword)
 					.fields(
-						"title^3",
-						"title.ngram^2",
-						"title.shingle^2",
-						"description",
-						"description.ngram",
-						"categoryName^1.5",
+						"title^4",
+						"description^2",
+						"categoryName^2",
 						"categoryFullPath"
+					)
+					.type(TextQueryType.BestFields)
+				)
+			);
+
+			// 2-2. 오타/부분 검색용 (ngram + fuzziness 사용)
+			keywordBuilder.should(s -> s
+				.multiMatch(mm -> mm
+					.query(keyword)
+					.fields(
+						"title.ngram^3",
+						"title.shingle^2",
+						"description.ngram^2",
+						"categoryFullPath.ngram"
 					)
 					.type(TextQueryType.BestFields)
 					.fuzziness("AUTO")
 					.prefixLength(1)
 				)
 			);
+
+			keywordBuilder.minimumShouldMatch("1");
+
+			boolBuilder.must(m -> m.bool(keywordBuilder.build()));
 		}
 
 		// 3. 카테고리 필터
@@ -232,27 +247,61 @@ public class ProductSearchService {
 		}
 	}
 
-	// 자동 완성
+	// 자동 완성 (Prefix와 정확히 일치)
 	private ProductSuggestResponse completionSuggest(ProductSuggestRequest request) {
 
-		String keyword = request.keyword();
+		String keyword = request.keyword().trim();
 
-		NativeQuery query = NativeQuery.builder()
-			.withQuery(q -> q
-				.multiMatch(m -> m
-					.query(keyword)
-					.type(TextQueryType.BoolPrefix)
-					.fields(
-						"title",
-						"title.ngram",
-						"title.shingle",
-						"description",
-						"description.ngram",
-						"categoryFullPath",
-						"categoryFullPath.ngram"
+		if (keyword.isEmpty()) {
+			return ProductSuggestResponse.builder()
+				.originalKeyword(keyword)
+				.type(SuggestType.COMPLETION)
+				.suggestions(Collections.emptyList())
+				.build();
+		}
+
+		BoolQuery.Builder boolBuilder = new BoolQuery.Builder();
+
+		// 1. 삭제되지 않은 상품
+		applyExactlyBuilder(boolBuilder, "deleteStatus", FieldValue.of(false));
+
+		// 2. 판매 완료 상품 제외
+		if (!Boolean.TRUE.equals(request.includeSold())) {
+			boolBuilder.filter(f -> f
+				.bool(b -> b
+					.mustNot(mn -> mn
+						.term(t -> t
+							.field("productStatus")
+							.value(FieldValue.of("SOLD"))
+						)
 					)
 				)
+			);
+		}
+
+		if (request.categoryId() != null) {
+			applyExactlyBuilder(boolBuilder, "categoryId", FieldValue.of(request.categoryId()));
+		}
+
+		boolBuilder.should(s -> s
+			.prefix(p -> p
+				.field("title.keyword")
+				.value(keyword)
 			)
+		);
+
+		boolBuilder.should(s -> s
+			.prefix(p -> p
+				.field("categoryName")
+				.value(keyword)
+			)
+		);
+
+		boolBuilder.minimumShouldMatch("1");
+
+		NativeQuery query = NativeQuery.builder()
+			.withQuery(Query.of(q -> q.bool(boolBuilder.build())))
+			.withPageable(PageRequest.of(0, request.size() * 3))
 			.build();
 
 		SearchHits<ProductDocument> searchHits = operations.search(query, ProductDocument.class);
@@ -281,88 +330,22 @@ public class ProductSearchService {
 							.score(score)
 							.build());
 
+						if (suggestOptions.size() >= request.size()) {
+							break;
+						}
+
 						log.info("자동 완성 키워드 추가 - Text: {}, Score: {}", suggestedText, score);
 					}
 				}
 			}
 		}
 
-		List<SuggestOption> finalSuggestOptions = suggestOptions.stream()
-			.limit(request.size())
-			.toList();
-
 		log.info("자동 완성 최종 제안 - Keyword: {}, CategoryId: {}, Size: {}개",
-			keyword, request.categoryId(), finalSuggestOptions.size());
+			keyword, request.categoryId(), suggestOptions.size());
 
 		return ProductSuggestResponse.builder()
 			.originalKeyword(keyword)
 			.type(SuggestType.COMPLETION)
-			.suggestions(finalSuggestOptions)
-			.build();
-	}
-
-	// 오타 수정
-	private ProductSuggestResponse phraseSuggest(ProductSuggestRequest request) {
-
-		String keyword = request.keyword();
-
-		FieldSuggester fieldSuggester = FieldSuggester.of(fs -> fs
-			.text(keyword)
-			.phrase(p -> p
-				.field("title")
-				.size(request.size())
-				.gramSize(3)
-				.maxErrors(2.0)
-				.confidence(1.0)
-				.directGenerator(dg -> dg
-					.field("title.shingle")
-					.suggestMode(SuggestMode.Always)
-					.minWordLength(2)
-					.maxEdits(2)
-					.prefixLength(1)
-				)
-			)
-		);
-
-		Suggester suggester = Suggester.of(s -> s.suggesters("phrase-suggest", fieldSuggester));
-
-		NativeQuery query = NativeQuery.builder()
-			.withSuggester(suggester)
-			.build();
-
-		SearchHits<ProductDocument> searchHits = operations.search(query, ProductDocument.class);
-
-		List<SuggestOption> suggestOptions = new ArrayList<>();
-
-		if (searchHits.hasSuggest()) {
-			Suggest suggest = searchHits.getSuggest();
-
-			if (suggest != null) {
-				suggest.getSuggestion("phrase-suggest")
-					.getEntries()
-					.forEach(entry -> entry
-						.getOptions()
-						.forEach(option -> {
-							float score = option.getScore() != null ? option.getScore().floatValue() : 0;
-
-							if (score >= 0.5f) {
-								suggestOptions.add(SuggestOption.builder()
-									.text(option.getText())
-									.score(score)
-									.build());
-
-								log.debug("제안 추가 - text: {}, score: {}", option.getText(), score);
-							}
-						})
-					);
-			}
-		}
-
-		log.info("오타 수정 키워드 제안 - 원본 Keyword: {}, Suggestions: {}", keyword, suggestOptions.size());
-
-		return ProductSuggestResponse.builder()
-			.originalKeyword(keyword)
-			.type(SuggestType.PHRASE)
 			.suggestions(suggestOptions)
 			.build();
 	}
