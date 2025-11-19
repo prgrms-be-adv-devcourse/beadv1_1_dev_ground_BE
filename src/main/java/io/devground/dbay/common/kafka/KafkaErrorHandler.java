@@ -33,9 +33,10 @@ public class KafkaErrorHandler {
 	private Integer topicPartitions;
 
 	private static final String DLT = ".DLT";
+	private final KafkaTemplate<String, Object> kafkaTemplate;
 
 	@Bean
-	public CommonErrorHandler commonErrorHandler(KafkaTemplate<String, Object> kafkaTemplate) {
+	public CommonErrorHandler commonErrorHandler() {
 
 		DeadLetterPublishingRecoverer recover = new DeadLetterPublishingRecoverer(
 			kafkaTemplate,
