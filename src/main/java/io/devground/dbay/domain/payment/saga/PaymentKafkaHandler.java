@@ -7,15 +7,11 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Component;
 
-import io.devground.core.commands.payment.PaymentChargeDepositCommand;
 import io.devground.core.commands.payment.CancelCreatePaymentCommand;
 import io.devground.core.commands.payment.CompletePaymentCommand;
 import io.devground.core.commands.payment.PaymentCreateCommand;
 import io.devground.core.event.deposit.DepositChargeFailed;
 import io.devground.core.event.deposit.DepositChargedSuccess;
-import io.devground.core.event.payment.PaymentCreatedEvent;
-import io.devground.core.model.vo.DepositHistoryType;
-import io.devground.dbay.domain.deposit.entity.Deposit;
 import io.devground.dbay.domain.payment.model.vo.PaymentConfirmRequest;
 import io.devground.dbay.domain.payment.service.PaymentService;
 import lombok.RequiredArgsConstructor;

@@ -164,11 +164,13 @@ public class PaymentServiceImpl implements PaymentService {
 
 	private boolean processTossPayment(TossPaymentsRequest request) {
 
+		log.info("결제 드가자~");
 		try {
 			// 1. Authorization Header 생성
-			String authorization = "Basic " + Base64.getEncoder()
-				.encodeToString((tossPaySecretKey + ":").getBytes(StandardCharsets.UTF_8));
+			String target = tossPaySecretKey + ":";
 
+			Base64.Encoder encoder = Base64.getEncoder();
+			String encryptedSecretKey = "Basic " + encoder.encodeToString(target.getBytes(StandardCharsets.UTF_8));
 			// 2. 요청 데이터 구성
 			Map<String, Object> requestMap = objectMapper.convertValue(request, new TypeReference<>() {
 			});
@@ -178,7 +180,7 @@ public class PaymentServiceImpl implements PaymentService {
 
 			HttpRequest httpRequest = HttpRequest.newBuilder()
 				.uri(URI.create(tossPayConfirmUrl))
-				.header("Authorization", authorization)
+				.header("Authorization", encryptedSecretKey)
 				.header("Content-Type", "application/json")
 				.POST(HttpRequest.BodyPublishers.ofByteArray(objectMapper.writeValueAsBytes(requestMap)))
 				.build();
@@ -188,6 +190,7 @@ public class PaymentServiceImpl implements PaymentService {
 
 			// 5. 응답 처리
 			if (response.statusCode() == HttpStatus.OK.value()) {
+				log.info("결제 성공");
 				return true;
 			} else {
 				log.error("토스페이먼츠 결제 수행 과정에서 오류가 발생하였습니다. 다시 시도하여 주시기 바랍니다. 응답코드 : {}", response.statusCode());

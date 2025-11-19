@@ -14,13 +14,16 @@ import io.devground.dbay.domain.payment.model.vo.DepositPaymentRequest;
 import io.devground.dbay.domain.payment.model.vo.PaymentConfirmRequest;
 import io.devground.dbay.domain.payment.model.vo.PaymentDescription;
 import io.devground.dbay.domain.payment.model.vo.PaymentType;
+import io.devground.dbay.domain.payment.model.vo.TossPaymentConfirmRequest;
 import io.devground.dbay.domain.payment.service.PaymentService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/payments")
+@RequestMapping("/api/payments")
 public class PaymentController {
 
 	private final PaymentService paymentService;
@@ -45,12 +48,11 @@ public class PaymentController {
 	@PostMapping("/toss")
 	public BaseResponse<PaymentDescription> tossPayment(
 		//            @AuthenticationPrincipal(expression = "accountCode") String accountCode,
-		@RequestHeader("X-CODE") String accountCode,
-		@RequestBody @Valid PaymentConfirmRequest request
+		@RequestBody @Valid TossPaymentConfirmRequest request
 	) {
-
+		log.info(request.paymentKey());
 		Payment payment = paymentService.pay(
-			new PaymentRequest(accountCode, PaymentType.TOSS_PAYMENT, request.paymentKey(), request.orderCode(), request.amount())
+			new PaymentRequest(request.userCode(), PaymentType.TOSS_PAYMENT, request.paymentKey(), request.orderCode(), request.amount())
 		);
 
 		return BaseResponse.success(
