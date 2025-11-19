@@ -146,7 +146,7 @@ class CartServiceImplTest {
 
 		ReflectionTestUtils.setField(cart, "code", cart.getCode());
 
-		given(cartRepository.findByCode(cart.getCode())).willReturn(Optional.of(cart));
+		given(cartRepository.findByUserCode(cart.getCode())).willReturn(Optional.of(cart));
 
 		given(cartItemRepository.save(any(CartItem.class)))
 			.willAnswer(i -> i.getArgument(0));
@@ -161,9 +161,9 @@ class CartServiceImplTest {
 		assertThat(result.getCart().getCode()).isEqualTo(cart.getCode());
 		assertThat(result.getProductCode()).isEqualTo(productCode);
 
-		verify(cartRepository).findByCode(cart.getCode());
+		verify(cartRepository).findByUserCode(cart.getCode());
 		verify(cartItemRepository).existsByCartAndProductCode(cart, productCode);
-		verify(cartRepository).findByCode(cart.getCode());
+		verify(cartRepository).findByUserCode(cart.getCode());
 		verify(cartItemRepository).save(any(CartItem.class));
 	}
 
@@ -191,7 +191,7 @@ class CartServiceImplTest {
 
 		AddCartItemRequest request = new AddCartItemRequest(productCode);
 
-		given(cartRepository.findByCode(cartCode)).willReturn(Optional.empty());
+		given(cartRepository.findByUserCode(cartCode)).willReturn(Optional.empty());
 
 		assertThatThrownBy(() -> cartService.addItem(cartCode, request))
 			.isInstanceOf(ServiceException.class)
@@ -209,7 +209,7 @@ class CartServiceImplTest {
 
 		Cart cart = Cart.builder().userCode(userCode).build();
 
-		given(cartRepository.findByCode(cart.getCode())).willReturn(Optional.of(cart));
+		given(cartRepository.findByUserCode(cart.getCode())).willReturn(Optional.of(cart));
 
 		given(cartItemRepository.existsByCartAndProductCode(cart, productCode)).willReturn(true);
 
@@ -231,7 +231,7 @@ class CartServiceImplTest {
 
 		Cart cart = Cart.builder().userCode(userCode).build();
 
-		given(cartRepository.findByCode(cart.getCode())).willReturn(Optional.of(cart));
+		given(cartRepository.findByUserCode(cart.getCode())).willReturn(Optional.of(cart));
 
 		given(cartItemRepository.existsByCartAndProductCode(cart, productCode)).willReturn(false);
 
@@ -269,7 +269,7 @@ class CartServiceImplTest {
 		AddCartItemRequest request = new AddCartItemRequest(productCode1);
 		AddCartItemRequest request2 = new AddCartItemRequest(productCode2);
 
-		given(cartRepository.findByCode(cart.getCode())).willReturn(Optional.of(cart));
+		given(cartRepository.findByUserCode(cart.getCode())).willReturn(Optional.of(cart));
 
 		given(productFeignClient.getProductDetail(productCode1))
 			.willReturn(onSaleResponse);
@@ -281,7 +281,7 @@ class CartServiceImplTest {
 
 		cartService.addItem(cart.getCode(), request2);
 
-		given(cartRepository.findByCode(cart.getCode())).willReturn(Optional.of(cart));
+		given(cartRepository.findByUserCode(cart.getCode())).willReturn(Optional.of(cart));
 		given(cartItemRepository.findByCart(cart)).willReturn(List.of(item1, item2));
 
 		CartProductsResponse p1 = new CartProductsResponse(productCode1, productSaleCode1, sellerCode,
@@ -319,7 +319,7 @@ class CartServiceImplTest {
 
 		AddCartItemRequest request = new AddCartItemRequest(productCode);
 
-		given(cartRepository.findByCode(cart.getCode())).willReturn(Optional.of(cart));
+		given(cartRepository.findByUserCode(cart.getCode())).willReturn(Optional.of(cart));
 		given(cartItemRepository.existsByCartAndProductCode(cart, productCode)).willReturn(false);
 
 		given(productFeignClient.getProductDetail(productCode))
@@ -332,7 +332,7 @@ class CartServiceImplTest {
 
 		cartService.addItem(cart.getCode(), request);
 
-		given(cartRepository.findByCode(cart.getCode())).willReturn(Optional.of(cart));
+		given(cartRepository.findByUserCode(cart.getCode())).willReturn(Optional.of(cart));
 
 		given(cartItemRepository.findByCart(cart)).willReturn(List.of(item1, item2));
 
@@ -375,14 +375,14 @@ class CartServiceImplTest {
 
 		AddCartItemRequest request = new AddCartItemRequest(productCode);
 
-		given(cartRepository.findByCode(cart.getCode())).willReturn(Optional.of(cart));
+		given(cartRepository.findByUserCode(cart.getCode())).willReturn(Optional.of(cart));
 
 		given(productFeignClient.getProductDetail(productCode))
 			.willReturn(onSaleResponse);
 
 		cartService.addItem(cart.getCode(), request);
 
-		given(cartRepository.findByCode(cart.getCode())).willReturn(Optional.of(cart));
+		given(cartRepository.findByUserCode(cart.getCode())).willReturn(Optional.of(cart));
 		given(cartItemRepository.findByCart(cart)).willReturn(List.of(item));
 
 		CartProductsResponse p1 = new CartProductsResponse(productCode, productSaleCode, sellerCode, "아이폰 프로 17",
@@ -409,7 +409,7 @@ class CartServiceImplTest {
 
 		Cart cart = Cart.builder().userCode(userCode).build();
 
-		given(cartRepository.findByCode(cart.getCode())).willReturn(Optional.of(cart));
+		given(cartRepository.findByUserCode(cart.getCode())).willReturn(Optional.of(cart));
 
 		GetItemsByCartResponse result = cartService.getItemsByCart(cart.getCode());
 
@@ -439,7 +439,7 @@ class CartServiceImplTest {
 	void getItemsByCart_throwException_whenCartNotExists() {
 		String cartCode = UUID.randomUUID().toString();
 
-		given(cartRepository.findByCode(cartCode)).willReturn(Optional.empty());
+		given(cartRepository.findByUserCode(cartCode)).willReturn(Optional.empty());
 
 		assertThatThrownBy(() -> cartService.getItemsByCart(cartCode))
 			.isInstanceOf(ServiceException.class)
@@ -460,7 +460,7 @@ class CartServiceImplTest {
 		Cart cart = Cart.builder()
 			.userCode(userCode).build();
 
-		given(cartRepository.findByCode(cart.getCode()))
+		given(cartRepository.findByUserCode(cart.getCode()))
 			.willReturn(Optional.of(cart));
 		given(cartItemRepository.deleteCartItemByProductCodes(cart, cartProductCodes))
 			.willReturn(cartProductCodes.size());
@@ -506,7 +506,7 @@ class CartServiceImplTest {
 	void deleteItemsByCart_thrownException_whenCartNotExists() {
 		String cartCode = UUID.randomUUID().toString();
 
-		given(cartRepository.findByCode(cartCode)).willReturn(Optional.empty());
+		given(cartRepository.findByUserCode(cartCode)).willReturn(Optional.empty());
 
 		assertThatThrownBy(
 			() -> cartService.deleteItemsByCart(cartCode, new DeleteItemsByCartRequest(List.of("p1", "p2"))))
@@ -527,7 +527,7 @@ class CartServiceImplTest {
 
 		Cart cart = Cart.builder().userCode(userCode).build();
 
-		given(cartRepository.findByCode(cart.getCode()))
+		given(cartRepository.findByUserCode(cart.getCode()))
 			.willReturn(Optional.of(cart));
 		given(cartItemRepository.deleteCartItemByProductCodes(cart, request.cartProductCodes()))
 			.willReturn(1);
