@@ -9,7 +9,7 @@ import io.devground.dbay.domain.cart.cartItem.model.entity.CartItem;
 public interface CartService {
 	Cart createCart(String userCode);
 
-	CartItem addItem(String cartCode, AddCartItemRequest request);
+	CartItem addItem(String userCode, AddCartItemRequest request);
 
 	GetItemsByCartResponse getItemsByCart(String cartCode);
 

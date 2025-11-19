@@ -49,13 +49,13 @@ public class CartServiceImpl implements CartService {
 
 	@Override
 	@Transactional
-	public CartItem addItem(String cartCode, AddCartItemRequest request) {
+	public CartItem addItem(String userCode, AddCartItemRequest request) {
 
-		if (!Validators.isValidUuid(cartCode) || !Validators.isValidUuid(request.productCode())) {
+		if (!Validators.isValidUuid(userCode) || !Validators.isValidUuid(request.productCode())) {
 			throw ErrorCode.CODE_INVALID.throwServiceException();
 		}
 
-		Cart cart = cartRepository.findByCode(cartCode).orElseThrow(ErrorCode.CART_NOT_FOUND::throwServiceException);
+		Cart cart = cartRepository.findByUserCode(userCode).orElseThrow(ErrorCode.CART_NOT_FOUND::throwServiceException);
 
 		if (cartItemRepository.existsByCartAndProductCode(cart, request.productCode())) {
 			throw ErrorCode.CART_ITEM_ALREADY_EXIST.throwServiceException();
@@ -79,12 +79,12 @@ public class CartServiceImpl implements CartService {
 
 	@Override
 	@Transactional(readOnly = true)
-	public GetItemsByCartResponse getItemsByCart(String cartCode) {
-		if (!Validators.isValidUuid(cartCode)) {
+	public GetItemsByCartResponse getItemsByCart(String userCode) {
+		if (!Validators.isValidUuid(userCode)) {
 			throw ErrorCode.CODE_INVALID.throwServiceException();
 		}
 
-		Cart cart = cartRepository.findByCode(cartCode).orElseThrow(ErrorCode.CART_NOT_FOUND::throwServiceException);
+		Cart cart = cartRepository.findByUserCode(userCode).orElseThrow(ErrorCode.CART_NOT_FOUND::throwServiceException);
 
 		List<CartItem> cartItems = cartItemRepository.findByCart(cart);
 
@@ -109,8 +109,8 @@ public class CartServiceImpl implements CartService {
 
 	@Override
 	@Transactional
-	public int deleteItemsByCart(String cartCode, DeleteItemsByCartRequest request) {
-		if (!Validators.isValidUuid(cartCode)) {
+	public int deleteItemsByCart(String userCode, DeleteItemsByCartRequest request) {
+		if (!Validators.isValidUuid(userCode)) {
 			throw ErrorCode.CODE_INVALID.throwServiceException();
 		}
 
@@ -118,7 +118,7 @@ public class CartServiceImpl implements CartService {
 			throw ErrorCode.CART_ITEM_DELETE_NOT_SELECTED.throwServiceException();
 		}
 
-		Cart cart = cartRepository.findByCode(cartCode).orElseThrow(ErrorCode.CART_NOT_FOUND::throwServiceException);
+		Cart cart = cartRepository.findByUserCode(userCode).orElseThrow(ErrorCode.CART_NOT_FOUND::throwServiceException);
 
 		int result = cartItemRepository.deleteCartItemByProductCodes(cart, request.cartProductCodes());
 
