@@ -37,10 +37,10 @@ public class OrderController {
 
 	private final OrderService orderService;
 
-	@PostMapping("/{userCode}")
+	@PostMapping
 	@Operation(summary = "주문 생성", description = "상품 주문")
 	public BaseResponse<CreateOrderResponse> createOrder(
-		@PathVariable String userCode,
+		@RequestHeader("X-CODE") String userCode,
 		@RequestBody @Valid CreateOrderRequest request
 	) {
 		return BaseResponse.success(200, orderService.createOrder(userCode, request), "주문 생성이 완료되었습니다.");
