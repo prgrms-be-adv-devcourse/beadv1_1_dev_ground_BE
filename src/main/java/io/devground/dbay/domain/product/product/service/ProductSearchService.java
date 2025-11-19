@@ -94,7 +94,7 @@ public class ProductSearchService {
 		MDC.put("suggestType", request.type().name());
 
 		try {
-			log.info("키워드 제안 - keyword={}, type={}", keyword, request.type());
+			log.info("키워드 제안 - Keyword={}, Type={}", keyword, request.type());
 
 			return switch (request.type()) {
 				case COMPLETION -> completionSuggest(request);
@@ -102,7 +102,7 @@ public class ProductSearchService {
 				case RELATED -> relatedTermSuggest(request);
 			};
 		} catch (Exception e) {
-			log.error("키워드 추천 실패");
+			log.error("키워드 추천 실패 - Keyword={}, Type={}, Exception={}", keyword, request.type(), e.getMessage());
 
 			return ProductSuggestResponse.builder()
 				.originalKeyword(keyword)
@@ -119,12 +119,7 @@ public class ProductSearchService {
 		BoolQuery.Builder boolBuilder = new BoolQuery.Builder();
 
 		// 1. 삭제되지 않은 상품 필터
-		boolBuilder.filter(f -> f
-			.term(t -> t
-				.field("deleteStatus")
-				.value(FieldValue.of(false))
-			)
-		);
+		excludeDeleteProduct(boolBuilder, "deleteStatus", FieldValue.of(false));
 
 		// 2. 키워드 검색 (title, description) (가중치 계산)
 		if (StringUtils.hasText(request.keyword())) {
@@ -182,22 +177,12 @@ public class ProductSearchService {
 
 		// 5. 판매자 필터
 		if (StringUtils.hasText(request.sellerCode())) {
-			boolBuilder.filter(f -> f
-				.term(t -> t
-					.field("sellerCode")
-					.value(FieldValue.of(request.sellerCode()))
-				)
-			);
+			excludeDeleteProduct(boolBuilder, "sellerCode", FieldValue.of(request.sellerCode()));
 		}
 
 		// 6. 상품 상태 필터
 		if (StringUtils.hasText(request.productStatus())) {
-			boolBuilder.filter(f -> f
-				.term(t -> t
-					.field("productStatus")
-					.value(FieldValue.of(request.productStatus()))
-				)
-			);
+			excludeDeleteProduct(boolBuilder, "productStatus", FieldValue.of(request.productStatus()));
 		}
 
 		return Query.of(q -> q.bool(boolBuilder.build()));
@@ -252,15 +237,42 @@ public class ProductSearchService {
 
 		String keyword = request.keyword();
 
-		NativeQuery query = NativeQuery.builder()
-			.withQuery(q -> q
-				.multiMatch(m -> m
-					.query(keyword)
-					.fields("title.completion")
-					.type(TextQueryType.BoolPrefix)
-				)
+		BoolQuery.Builder boolBuilder = new BoolQuery.Builder();
+
+		// 1. 키워드 매치(prefix 방식)
+		boolBuilder.must(m -> m
+			.multiMatch(mm -> mm
+				.query(keyword)
+				.fields("title.completion")
+				.type(TextQueryType.BoolPrefix)
 			)
-			.withMaxResults(request.size())
+		);
+
+		// 2. 삭제된 상품 제외
+		excludeDeleteProduct(boolBuilder, "deleteStatus", FieldValue.of(false));
+
+		// 3. 판매 완료 상품 제외
+		if (!request.includeSold()) {
+			boolBuilder.filter(f -> f
+				.bool(b -> b
+					.mustNot(mn -> mn
+						.term(t -> t
+							.field("productStatus")
+							.value(FieldValue.of("SOLD"))
+						)
+					)
+				)
+			);
+		}
+
+		// 4. 카테고리 필터
+		if (request.categoryId() != null) {
+			excludeDeleteProduct(boolBuilder, "categoryId", FieldValue.of(request.categoryId()));
+		}
+
+		NativeQuery query = NativeQuery.builder()
+			.withQuery(Query.of(q -> q.bool(boolBuilder.build())))
+			.withMaxResults(request.size() * 2)
 			.build();
 
 		SearchHits<ProductDocument> searchHits = operations.search(query, ProductDocument.class);
@@ -305,12 +317,19 @@ public class ProductSearchService {
 				.size(request.size())
 				.gramSize(3)
 				.maxErrors(2.0)
-				.confidence(0.0)
+				.confidence(1.0)
 				.directGenerator(dg -> dg
 					.field("title")
 					.suggestMode(SuggestMode.Always)
 					.minWordLength(2)
 					.maxEdits(2)
+					.prefixLength(1)
+				)
+				.collate(c -> c
+					.query(cq -> cq
+						.source("{\"match\": {\"title\": \"{{suggestion}}\"}}")
+					)
+					.prune(true)
 				)
 			)
 		);
@@ -333,17 +352,23 @@ public class ProductSearchService {
 					.getEntries()
 					.forEach(entry -> entry
 						.getOptions()
-						.forEach(option ->
-							suggestOptions.add(SuggestOption.builder()
-								.text(option.getText())
-								.score(option.getScore() != null ? option.getScore().floatValue() : 0)
-								.build())
-						)
+						.forEach(option -> {
+							float score = option.getScore() != null ? option.getScore().floatValue() : 0;
+
+							if (score >= 0.5f) {
+								suggestOptions.add(SuggestOption.builder()
+									.text(option.getText())
+									.score(score)
+									.build());
+
+								log.debug("제안 추가 - text: {}, score: {}", option.getText(), score);
+							}
+						})
 					);
 			}
 		}
 
-		log.info("오타로 가정 후 키워드 제안 - Suggestions: {}", suggestOptions.size());
+		log.info("오타 수정 키워드 제안 - 원본 Keyword: {}, Suggestions: {}", keyword, suggestOptions.size());
 
 		return ProductSuggestResponse.builder()
 			.originalKeyword(keyword)
@@ -357,44 +382,86 @@ public class ProductSearchService {
 
 		String keyword = request.keyword();
 
-		NativeQuery query = NativeQuery.builder()
-			.withQuery(q -> q
+		BoolQuery.Builder boolBuilder = new BoolQuery.Builder();
+
+		// 1. 키워드 매치(넓은 범위로)
+		boolBuilder.should(s -> s
+			.match(m -> m
+				.field("title")
+				.query(keyword)
+				.boost(3.0f)
+			)
+		);
+
+		boolBuilder.should(s -> s
+			.match(m -> m
+				.field("categoryName")
+				.query(keyword)
+				.boost(2.0f)
+			)
+		);
+
+		boolBuilder.should(s -> s
+			.match(m -> m
+				.field("description")
+				.query(keyword)
+				.boost(1.0f)
+			)
+		);
+
+		boolBuilder.minimumShouldMatch("1");
+
+		// 2. 삭제된 상품 제외
+		excludeDeleteProduct(boolBuilder, "deleteStatus", FieldValue.of(false));
+
+		// 3. 판매 완료 상품 제외
+		if (!request.includeSold()) {
+			boolBuilder.filter(f -> f
 				.bool(b -> b
-					.should(s -> s
-						.match(m -> m
-							.field("title")
-							.query(keyword)
-						)
-					)
-					.should(s -> s
-						.match(m -> m
-							.field("title.ngram")
-							.query(keyword)
+					.mustNot(mn -> mn
+						.term(t -> t
+							.field("productStatus")
+							.value(FieldValue.of("SOLD"))
 						)
 					)
 				)
-			)
-			.withMaxResults(request.size())
+			);
+		}
+
+		NativeQuery query = NativeQuery.builder()
+			.withQuery(Query.of(q -> q.bool(boolBuilder.build())))
+			.withMaxResults(Math.min(request.size() * 10, 100))
 			.build();
 
 		SearchHits<ProductDocument> searchHits = operations.search(query, ProductDocument.class);
 
-		Map<String, Long> termFrequency = new HashMap<>();
+		// 제목에서 키워드 제거 후 나머지 단어들을 연관 검색어로 추출
+		Map<String, RelatedTermInfo> relatedTerms = new HashMap<>();
 
 		for (SearchHit<ProductDocument> searchHit : searchHits.getSearchHits()) {
 			String title = searchHit.getContent().getTitle();
 
-			if (title.toLowerCase().contains(keyword.toLowerCase())) {
-				termFrequency.merge(title, 1L, Long::sum);
-			}
+			extractRelatedTerms(title, keyword, relatedTerms, searchHit.getScore());
 		}
 
-		List<SuggestOption> suggestOptions = termFrequency.entrySet().stream()
-			.sorted(Map.Entry.<String, Long>comparingByValue().reversed())
+		// 점수 -> 빈도수 기반 정렬
+		List<SuggestOption> suggestOptions = relatedTerms.entrySet().stream()
+			.sorted((a, b) -> {
+				// 빈도수 내림차순
+				int countCompare = Long.compare(b.getValue().count, a.getValue().count);
+
+				if (countCompare != 0) {
+					return countCompare;
+				}
+
+				// 평균 점수 내림차순
+				return Float.compare(b.getValue().avgScore, a.getValue().avgScore);
+			})
 			.limit(request.size())
 			.map(entry -> SuggestOption.builder()
 				.text(entry.getKey())
-				.productCount(entry.getValue())
+				.productCount(entry.getValue().count)
+				.score(entry.getValue().avgScore)
 				.build()
 			)
 			.toList();
@@ -406,5 +473,58 @@ public class ProductSearchService {
 			.type(SuggestType.RELATED)
 			.suggestions(suggestOptions)
 			.build();
+	}
+
+	private void extractRelatedTerms(
+		String title, String keyword, Map<String, RelatedTermInfo> relatedTerms, float score
+	) {
+
+		String[] words = title.split("\\s+");
+
+		for (String word : words) {
+			// 1. 키워드와 같으면 제외
+			if (word.equalsIgnoreCase(keyword)) {
+				continue;
+			}
+
+			// 2. 키워드가 포함됐으면 제외
+			if (word.toLowerCase().contains(keyword.toLowerCase())) {
+				continue;
+			}
+
+			// 3. 너무 짧은 단어 제외
+			if (word.length() <= 1) {
+				continue;
+			}
+
+			// 4. 숫자뿐인 단어 제외
+			if (word.matches("\\d+")) {
+				continue;
+			}
+
+			relatedTerms.compute(word, (k, v) -> {
+				if (v == null) {
+					return new RelatedTermInfo(1L, score);
+				} else {
+					return new RelatedTermInfo(v.count + 1, (v.avgScore * v.count + score) / (v.count + 1));
+				}
+			});
+		}
+	}
+
+	// 판매 여부에 따른 상품 제외
+	private void excludeDeleteProduct(BoolQuery.Builder boolBuilder, String deleteStatus, FieldValue of) {
+		boolBuilder.filter(f -> f
+			.term(t -> t
+				.field(deleteStatus)
+				.value(of)
+			)
+		);
+	}
+
+	private record RelatedTermInfo(
+		long count,
+		float avgScore
+	) {
 	}
 }
