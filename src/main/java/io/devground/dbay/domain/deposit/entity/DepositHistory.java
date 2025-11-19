@@ -49,7 +49,7 @@ public class DepositHistory extends BaseEntity {
 	@Enumerated(EnumType.STRING)
 	private DepositHistoryType type;
 
-	@Column(nullable = false)
+	@Column(nullable = true)
 	private String description;
 
 	@Builder
