@@ -112,6 +112,35 @@ spring:
           filters:
             - CustomAuthFilter
 
+        # User Service Routes
+        - id: user-register
+          uri: lb://USER-SERVICE
+          predicates:
+            - Path=/api/users/register
+          filters:
+            - StripPrefix=0
+
+        - id: user-send-email
+          uri: lb://USER-SERVICE
+          predicates:
+            - Path=/api/users/send
+          filters:
+            - StripPrefix=0
+
+        - id: user-check-email
+          uri: lb://USER-SERVICE
+          predicates:
+            - Path=/api/users/check
+          filters:
+            - StripPrefix=0
+
+        - id: user-delete
+          uri: lb://USER-SERVICE
+          predicates:
+            - Path=/api/users/**
+          filters:
+            - CustomAuthFilter
+
 management:
   endpoints:
     web:
