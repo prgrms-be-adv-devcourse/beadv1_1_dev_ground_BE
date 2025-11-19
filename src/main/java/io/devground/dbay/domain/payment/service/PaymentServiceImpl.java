@@ -43,7 +43,6 @@ public class PaymentServiceImpl implements PaymentService {
 	private final DepositFeignClient depositFeignClient;
 	private final PaymentRepository paymentRepository;
 
-
 	@Value("${payments.command.topic.purchase}")
 	private String paymentOrderCommandTopic;
 
@@ -94,7 +93,6 @@ public class PaymentServiceImpl implements PaymentService {
 		return new PaymentRequest(userCode, type, request.paymentKey(), request.orderCode(), request.amount());
 	}
 
-
 	private Payment handleDepositPayment(String userCode, String orderCode, Long amount) {
 
 		Payment payment = Payment.builder()
@@ -119,7 +117,8 @@ public class PaymentServiceImpl implements PaymentService {
 		if (request.getPaymentType() == PaymentType.DEPOSIT) {
 			payment = handleDepositPayment(request.getUserCode(), request.getOrderCode(), request.getAmount());
 		} else if (request.getPaymentType() == PaymentType.TOSS_PAYMENT) {
-			payment = handleTossPayment(request.getUserCode(), request.getOrderCode(), request.getPaymentKey(), request.getAmount());
+			payment = handleTossPayment(request.getUserCode(), request.getOrderCode(), request.getPaymentKey(),
+				request.getAmount());
 		} else {
 			throw new UnsupportedOperationException("결제 형식이 잘못되었습니다.");
 		}
@@ -127,7 +126,6 @@ public class PaymentServiceImpl implements PaymentService {
 		return payment;
 
 	}
-
 
 	private Payment handleTossPayment(String userCode, String orderCode, String paymentKey, Long amount) {
 
@@ -157,14 +155,12 @@ public class PaymentServiceImpl implements PaymentService {
 
 		payment.setPaymentStatus(PaymentStatus.PAYMENT_PENDING);
 
-
 		return paymentRepository.save(payment);
 
 	}
 
 	private boolean processTossPayment(TossPaymentsRequest request) {
 
-		log.info("결제 드가자~");
 		try {
 			// 1. Authorization Header 생성
 			String target = tossPaySecretKey + ":";
@@ -201,7 +197,6 @@ public class PaymentServiceImpl implements PaymentService {
 			log.error("토스페이먼츠 결제 수행 과정에서 오류가 발생하였습니다.");
 			return false;
 		}
-
 
 	}
 
