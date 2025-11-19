@@ -1,15 +1,8 @@
 package io.devground.dbay.domain.product.product.model.dto;
 
-import io.devground.dbay.domain.product.product.model.vo.SuggestType;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 public record ProductSuggestRequest(
-
-	@Schema(
-		description = "제안 타입(COMPLETION: 자동 완성, PHRASE: 오타 수정, RELATED: 연관 검색어",
-		example = "COMPLETION", defaultValue = "COMPLETION"
-	)
-	SuggestType type,
 
 	@Schema(description = "검색 키워드", example = "갤럭")
 	String keyword,
@@ -24,9 +17,6 @@ public record ProductSuggestRequest(
 	Integer size
 ) {
 	public ProductSuggestRequest {
-		if (type == null) {
-			type = SuggestType.COMPLETION;
-		}
 
 		if (includeSold == null) {
 			includeSold = false;

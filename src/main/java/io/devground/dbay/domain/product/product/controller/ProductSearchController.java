@@ -29,7 +29,7 @@ public class ProductSearchController {
 	@GetMapping("/search")
 	@Operation(summary = "상품 검색 By Elasticsearch",
 		description = """
-			Elasticsearch를 활용한 상품 검색입니다.
+			Elasticsearch를 활용한 상품 검색 API입니다.
 			
 			지원하는 기능은 아래와 같습니다.
 			
@@ -72,36 +72,51 @@ public class ProductSearchController {
 		);
 	}
 
-	// TODO: 추후 API 2개로 분리
-	@GetMapping("/suggest")
-	@Operation(summary = "검색어 추천 By Elasticsearch",
+	@GetMapping("/suggest/completion")
+	@Operation(summary = "검색어 자동완성 By Elasticsearch",
 		description = """
-			Elasticsearch Suggest를 이용한 검색어 추천입니다.
+			Elasticsearch Suggest를 이용한 검색어 자동완성 API입니다.
 			
-			지원하는 기능은 아래와 같습니다.
-			
-			1. 자동완성 (COMPLETION)
-			- 실시간 타이핑 중 추천
-			- 검색창 자동완성에 사용 가능
-			
-			2. 연관 검색어 (RELATED)
-			- 관련된 다른 검색어 추천
-			- 추가 상품 발견 유도
-			
-			ex) type=COMPLETION&keyword=갤럭
+			- Title 및 CategoryName 기준 prefix에 따른 자동완성
+			- 삭제된 상품은 제외
+			- 카테고리별 자동완성(CategoryId) 지원
 			""",
 		parameters = {
-			@Parameter(name = "type", description = "추천 타입(COMPLETION, RELATED)", example = "COMPLETION"),
 			@Parameter(name = "keyword", description = "검색 키워드", example = "갤럭시"),
 			@Parameter(name = "categoryId", description = "카테고리 ID", example = "1"),
+			@Parameter(name = "includeSold", description = "판매 완료 상품 포함 여부", example = "false"),
 			@Parameter(name = "size", description = "추천 결과 개수", example = "10"),
 		}
 	)
-	public BaseResponse<ProductSuggestResponse> suggest(ProductSuggestRequest request) {
+	public BaseResponse<ProductSuggestResponse> suggestCompletion(ProductSuggestRequest request) {
 
 		return BaseResponse.success(
 			OK.value(),
-			productSearchService.suggest(request),
+			productSearchService.suggestCompletion(request),
+			"검색어 추천이 성공적으로 완료되었습니다."
+		);
+	}
+
+	@GetMapping("/suggest/related")
+	@Operation(summary = "연관 검색어 추천 By Elasticsearch",
+		description = """
+			Elasticsearch Suggest를 이용한 연관 검색어 추천 API입니다.
+			
+			- Title, CategoryName, Description에서 Keyword와 함께 자주 등장하는 단어 집계
+			- 삭제된 상품 및 기본값 기준 판매 완료 상품 제외
+			""",
+		parameters = {
+			@Parameter(name = "keyword", description = "검색 키워드", example = "갤럭시"),
+			@Parameter(name = "categoryId", description = "카테고리 ID", example = "1"),
+			@Parameter(name = "includeSold", description = "판매 완료 상품 포함 여부", example = "false"),
+			@Parameter(name = "size", description = "추천 결과 개수", example = "10"),
+		}
+	)
+	public BaseResponse<ProductSuggestResponse> suggestRelated(ProductSuggestRequest request) {
+
+		return BaseResponse.success(
+			OK.value(),
+			productSearchService.suggestRelated(request),
 			"검색어 추천이 성공적으로 완료되었습니다."
 		);
 	}
