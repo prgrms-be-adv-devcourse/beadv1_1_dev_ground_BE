@@ -75,33 +75,45 @@ public class ProductSearchService {
 		return new PageDto<>(request.page(), request.size(), totalPages, totalHits, responses);
 	}
 
-	public ProductSuggestResponse suggest(ProductSuggestRequest request) {
+	public ProductSuggestResponse suggestCompletion(ProductSuggestRequest request) {
 
-		if (!StringUtils.hasText(request.keyword())) {
+		return suggest(request, SuggestType.COMPLETION);
+	}
+
+	public ProductSuggestResponse suggestRelated(ProductSuggestRequest request) {
+
+		return suggest(request, SuggestType.RELATED);
+	}
+
+	public ProductSuggestResponse suggest(ProductSuggestRequest request, SuggestType type) {
+
+		String originalKeyword = request.keyword();
+		String normalized = originalKeyword == null ? "" : originalKeyword.trim();
+
+		if (!StringUtils.hasText(normalized)) {
 			return ProductSuggestResponse.builder()
-				.originalKeyword("")
-				.type(request.type())
+				.originalKeyword(normalized)
+				.type(type)
 				.suggestions(Collections.emptyList())
 				.build();
 		}
 
-		String keyword = request.keyword().trim();
-		MDC.put("keyword", keyword);
-		MDC.put("suggestType", request.type().name());
+		MDC.put("keyword", normalized);
+		MDC.put("suggestType", type.name());
 
 		try {
-			log.info("키워드 제안 - Keyword={}, Type={}", keyword, request.type());
+			log.info("키워드 제안 - Keyword={}, Type={}", normalized, type);
 
-			return switch (request.type()) {
-				case COMPLETION -> completionSuggest(request);
-				case RELATED -> relatedTermSuggest(request);
+			return switch (type) {
+				case COMPLETION -> completionSuggest(request, normalized);
+				case RELATED -> relatedTermSuggest(request, normalized);
 			};
 		} catch (Exception e) {
-			log.error("키워드 추천 실패 - Keyword={}, Type={}, Exception={}", keyword, request.type(), e.getMessage());
+			log.error("키워드 추천 실패 - Keyword={}, Type={}, Exception={}", normalized, type, e.getMessage());
 
 			return ProductSuggestResponse.builder()
-				.originalKeyword(keyword)
-				.type(request.type())
+				.originalKeyword(normalized)
+				.type(type)
 				.suggestions(Collections.emptyList())
 				.build();
 		} finally {
@@ -248,11 +260,9 @@ public class ProductSearchService {
 	}
 
 	// 자동 완성 (Prefix와 정확히 일치)
-	private ProductSuggestResponse completionSuggest(ProductSuggestRequest request) {
+	private ProductSuggestResponse completionSuggest(ProductSuggestRequest request, String keyword) {
 
-		String keyword = request.keyword().trim();
-
-		if (keyword.isEmpty()) {
+		if (!StringUtils.hasText(keyword)) {
 			return ProductSuggestResponse.builder()
 				.originalKeyword(keyword)
 				.type(SuggestType.COMPLETION)
@@ -351,9 +361,7 @@ public class ProductSearchService {
 	}
 
 	// 연관 검색어
-	private ProductSuggestResponse relatedTermSuggest(ProductSuggestRequest request) {
-
-		String keyword = request.keyword();
+	private ProductSuggestResponse relatedTermSuggest(ProductSuggestRequest request, String keyword) {
 
 		BoolQuery.Builder boolBuilder = new BoolQuery.Builder();
 
