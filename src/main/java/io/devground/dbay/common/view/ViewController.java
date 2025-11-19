@@ -1,5 +1,7 @@
 package io.devground.dbay.common.view;
 
+import java.util.UUID;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,7 +26,9 @@ public class ViewController {
 		Model model
 	) {
 		//ChargePaymentRequest description = new ChargePaymentRequest(userCode, 10000L);
+		String orderCode = UUID.randomUUID().toString();
 		model.addAttribute("userCode", userCode);
+		model.addAttribute("orderCode", orderCode);
 		model.addAttribute("amount", 10000L);
 		return "payment/checkout";
 	}
