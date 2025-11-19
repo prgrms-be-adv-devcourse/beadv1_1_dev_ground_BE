@@ -29,7 +29,10 @@ import co.elastic.clients.elasticsearch._types.query_dsl.BoolQuery;
 import co.elastic.clients.elasticsearch._types.query_dsl.Query;
 import co.elastic.clients.elasticsearch._types.query_dsl.RangeQuery;
 import co.elastic.clients.elasticsearch._types.query_dsl.TextQueryType;
+import co.elastic.clients.elasticsearch.core.search.CompletionContext;
+import co.elastic.clients.elasticsearch.core.search.CompletionSuggester;
 import co.elastic.clients.elasticsearch.core.search.FieldSuggester;
+import co.elastic.clients.elasticsearch.core.search.FieldSuggesterBuilders;
 import co.elastic.clients.elasticsearch.core.search.Suggester;
 import co.elastic.clients.json.JsonData;
 import io.devground.core.model.web.PageDto;
@@ -119,7 +122,7 @@ public class ProductSearchService {
 		BoolQuery.Builder boolBuilder = new BoolQuery.Builder();
 
 		// 1. 삭제되지 않은 상품 필터
-		excludeDeleteProduct(boolBuilder, "deleteStatus", FieldValue.of(false));
+		applyExactlyBuilder(boolBuilder, "deleteStatus", FieldValue.of(false));
 
 		// 2. 키워드 검색 (title, description) (가중치 계산)
 		if (StringUtils.hasText(request.keyword())) {
@@ -177,12 +180,12 @@ public class ProductSearchService {
 
 		// 5. 판매자 필터
 		if (StringUtils.hasText(request.sellerCode())) {
-			excludeDeleteProduct(boolBuilder, "sellerCode", FieldValue.of(request.sellerCode()));
+			applyExactlyBuilder(boolBuilder, "sellerCode", FieldValue.of(request.sellerCode()));
 		}
 
 		// 6. 상품 상태 필터
 		if (StringUtils.hasText(request.productStatus())) {
-			excludeDeleteProduct(boolBuilder, "productStatus", FieldValue.of(request.productStatus()));
+			applyExactlyBuilder(boolBuilder, "productStatus", FieldValue.of(request.productStatus()));
 		}
 
 		return Query.of(q -> q.bool(boolBuilder.build()));
@@ -237,66 +240,76 @@ public class ProductSearchService {
 
 		String keyword = request.keyword();
 
-		BoolQuery.Builder boolBuilder = new BoolQuery.Builder();
+		CompletionSuggester.Builder completionBuilder = FieldSuggesterBuilders.completion()
+			.field("suggest")
+			.size(request.size() * 3)
+			.skipDuplicates(true);
 
-		// 1. 키워드 매치(prefix 방식)
-		boolBuilder.must(m -> m
-			.multiMatch(mm -> mm
-				.query(keyword)
-				.fields("title.completion")
-				.type(TextQueryType.BoolPrefix)
-			)
-		);
-
-		// 2. 삭제된 상품 제외
-		excludeDeleteProduct(boolBuilder, "deleteStatus", FieldValue.of(false));
-
-		// 3. 판매 완료 상품 제외
-		if (!request.includeSold()) {
-			boolBuilder.filter(f -> f
-				.bool(b -> b
-					.mustNot(mn -> mn
-						.term(t -> t
-							.field("productStatus")
-							.value(FieldValue.of("SOLD"))
+		if (request.categoryId() != null) {
+			completionBuilder.contexts(
+				"categoryId",
+				List.of(
+					CompletionContext.of(cc -> cc
+						.context(ctx -> ctx
+							.category(String.valueOf(request.categoryId()))
 						)
-					)
-				)
+					))
 			);
 		}
 
-		// 4. 카테고리 필터
-		if (request.categoryId() != null) {
-			excludeDeleteProduct(boolBuilder, "categoryId", FieldValue.of(request.categoryId()));
-		}
+		CompletionSuggester completionSuggester = completionBuilder.build();
 
-		NativeQuery query = NativeQuery.builder()
-			.withQuery(Query.of(q -> q.bool(boolBuilder.build())))
-			.withMaxResults(request.size() * 2)
+		FieldSuggester fieldSuggester = new FieldSuggester.Builder()
+			.prefix(keyword)
+			.completion(completionSuggester)
 			.build();
+
+		Suggester suggester = Suggester.of(s -> s.suggesters("completion-suggest", fieldSuggester));
+
+		NativeQuery query = NativeQuery.builder().withSuggester(suggester).build();
 
 		SearchHits<ProductDocument> searchHits = operations.search(query, ProductDocument.class);
 
 		Set<String> uniqueTitles = new LinkedHashSet<>();
 		List<SuggestOption> suggestOptions = new ArrayList<>();
 
-		for (SearchHit<ProductDocument> hit : searchHits.getSearchHits()) {
-			String title = hit.getContent().getTitle();
+		if (searchHits.hasSuggest()) {
+			Suggest suggest = searchHits.getSuggest();
 
-			if (uniqueTitles.add(title)) {
-				suggestOptions.add(SuggestOption.builder()
-					.text(title)
-					.score(hit.getScore())
-					.build()
-				);
-			}
+			if (suggest != null) {
+				suggest.getSuggestion("completion-suggest")
+					.getEntries()
+					.forEach(entry -> {
+						entry.getOptions().forEach(option -> {
+							String suggestedText = option.getText();
 
-			if (suggestOptions.size() >= request.size()) {
-				break;
+							if (!uniqueTitles.add(suggestedText)) {
+								return;
+							}
+
+							if (isValidSuggestion(suggestedText, request)) {
+								float score = option.getScore() != null
+									? option.getScore().floatValue()
+									: 0f;
+
+								suggestOptions.add(SuggestOption.builder()
+									.text(suggestedText)
+									.score(score)
+									.build());
+
+								log.info("자동 완성 키워드 추가 - Text: {}, Score: {}", suggestedText, score);
+							}
+						});
+					});
 			}
 		}
 
-		log.info("자동 완성 키워드 제안 - Suggestions: {}", suggestOptions.size());
+		List<SuggestOption> finalSuggestOptions = suggestOptions.stream()
+			.limit(request.size())
+			.toList();
+
+		log.info("자동 완성 최종 제안 - Keyword: {}, CategoryId: {}, Size: {}개",
+			keyword, request.categoryId(), finalSuggestOptions.size());
 
 		return ProductSuggestResponse.builder()
 			.originalKeyword(keyword)
@@ -412,7 +425,7 @@ public class ProductSearchService {
 		boolBuilder.minimumShouldMatch("1");
 
 		// 2. 삭제된 상품 제외
-		excludeDeleteProduct(boolBuilder, "deleteStatus", FieldValue.of(false));
+		applyExactlyBuilder(boolBuilder, "deleteStatus", FieldValue.of(false));
 
 		// 3. 판매 완료 상품 제외
 		if (!request.includeSold()) {
@@ -512,12 +525,49 @@ public class ProductSearchService {
 		}
 	}
 
+	// 삭제 상품 제외 및 판매완료 상품 제외되었는지 확인
+	private boolean isValidSuggestion(String suggestedText, ProductSuggestRequest request) {
+
+		BoolQuery.Builder boolBuilder = new BoolQuery.Builder();
+
+		boolBuilder.must(m -> m
+			.term(t -> t
+				.field("title.keyword")
+				.value(FieldValue.of(suggestedText))
+			)
+		);
+
+		applyExactlyBuilder(boolBuilder, "deleteStatus", FieldValue.of(false));
+
+		if (!request.includeSold()) {
+			boolBuilder.filter(f -> f
+				.bool(b -> b
+					.mustNot(mn -> mn
+						.term(t -> t
+							.field("productStatus")
+							.value(FieldValue.of("SOLD"))
+						)
+					)
+				)
+			);
+		}
+
+		NativeQuery query = NativeQuery.builder()
+			.withQuery(Query.of(q -> q.bool(boolBuilder.build())))
+			.withMaxResults(1)
+			.build();
+
+		SearchHits<ProductDocument> searchHits = operations.search(query, ProductDocument.class);
+
+		return searchHits.getTotalHits() > 0;
+	}
+
 	// 판매 여부에 따른 상품 제외
-	private void excludeDeleteProduct(BoolQuery.Builder boolBuilder, String deleteStatus, FieldValue of) {
+	private void applyExactlyBuilder(BoolQuery.Builder boolBuilder, String field, FieldValue fieldValue) {
 		boolBuilder.filter(f -> f
 			.term(t -> t
-				.field(deleteStatus)
-				.value(of)
+				.field(field)
+				.value(fieldValue)
 			)
 		);
 	}

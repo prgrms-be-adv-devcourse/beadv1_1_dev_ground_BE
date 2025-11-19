@@ -21,7 +21,7 @@ public record ProductSuggestRequest(
 	Boolean includeSold,
 
 	@Schema(description = "제안 개수", example = "10", defaultValue = "10")
-	int size
+	Integer size
 ) {
 	public ProductSuggestRequest {
 		if (type == null) {
@@ -32,7 +32,7 @@ public record ProductSuggestRequest(
 			includeSold = false;
 		}
 
-		if (size <= 0 || size > 100) {
+		if (size == null || size <= 0 || size > 100) {
 			size = 10;
 		}
 	}
