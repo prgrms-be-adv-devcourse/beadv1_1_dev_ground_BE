@@ -3,7 +3,7 @@ spring:
     name: dbay
 
   profiles:
-    active: local
+    active: stage
 
   config:
     import: optional:classpath:env.properties
@@ -64,9 +64,9 @@ eureka:
   instance:
     prefer-ip-address: true
     ip-address: dbay
-    non-secure-port: 8081
+    non-secure-port: 8080
     metadata-map:
-      port: 8081
+      port: 8080
 
 
 carts:
