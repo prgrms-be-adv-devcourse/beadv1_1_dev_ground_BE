@@ -119,15 +119,30 @@ public class DepositServiceImpl implements DepositService {
 
 		type.apply(deposit, amount);
 
+		String description = generateDescription(type, amount);
+
 		DepositHistory history = DepositHistory.builder()
 			.type(type)
 			.deposit(deposit)
 			.userCode(userCode)
 			.amount(amount)
+			.description(description)
 			.build();
 
 		history = depositHistoryRepository.save(history);
 
 		return history;
+	}
+
+	private String generateDescription(DepositHistoryType type, Long amount) {
+		return switch (type) {
+			case CHARGE_TRANSFER -> String.format("계좌 이체 충전 %,d원", amount);
+			case CHARGE_TOSS -> String.format("토스 결제 충전 %,d원", amount);
+			case PAYMENT_TOSS -> String.format("토스 결제 %,d원", amount);
+			case PAYMENT_INTERNAL -> String.format("예치금 결제 %,d원", amount);
+			case REFUND_INTERNAL -> String.format("예치금 환불 %,d원", amount);
+			case REFUND_TOSS -> String.format("토스 환불 %,d원", amount);
+			case SETTLEMENT -> String.format("정산 입금 %,d원", amount);
+		};
 	}
 }
