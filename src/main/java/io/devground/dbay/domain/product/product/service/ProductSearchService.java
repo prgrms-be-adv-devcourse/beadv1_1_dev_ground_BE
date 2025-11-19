@@ -29,10 +29,7 @@ import co.elastic.clients.elasticsearch._types.query_dsl.BoolQuery;
 import co.elastic.clients.elasticsearch._types.query_dsl.Query;
 import co.elastic.clients.elasticsearch._types.query_dsl.RangeQuery;
 import co.elastic.clients.elasticsearch._types.query_dsl.TextQueryType;
-import co.elastic.clients.elasticsearch.core.search.CompletionContext;
-import co.elastic.clients.elasticsearch.core.search.CompletionSuggester;
 import co.elastic.clients.elasticsearch.core.search.FieldSuggester;
-import co.elastic.clients.elasticsearch.core.search.FieldSuggesterBuilders;
 import co.elastic.clients.elasticsearch.core.search.Suggester;
 import co.elastic.clients.json.JsonData;
 import io.devground.core.model.web.PageDto;
@@ -240,67 +237,53 @@ public class ProductSearchService {
 
 		String keyword = request.keyword();
 
-		CompletionSuggester.Builder completionBuilder = FieldSuggesterBuilders.completion()
-			.field("suggest")
-			.size(request.size() * 3)
-			.skipDuplicates(true);
-
-		if (request.categoryId() != null) {
-			completionBuilder.contexts(
-				"categoryId",
-				List.of(
-					CompletionContext.of(cc -> cc
-						.context(ctx -> ctx
-							.category(String.valueOf(request.categoryId()))
-						)
-					))
-			);
-		}
-
-		CompletionSuggester completionSuggester = completionBuilder.build();
-
-		FieldSuggester fieldSuggester = new FieldSuggester.Builder()
-			.prefix(keyword)
-			.completion(completionSuggester)
+		NativeQuery query = NativeQuery.builder()
+			.withQuery(q -> q
+				.multiMatch(m -> m
+					.query(keyword)
+					.type(TextQueryType.BoolPrefix)
+					.fields(
+						"title",
+						"title.ngram",
+						"title.shingle",
+						"description",
+						"description.ngram",
+						"categoryFullPath",
+						"categoryFullPath.ngram"
+					)
+				)
+			)
 			.build();
-
-		Suggester suggester = Suggester.of(s -> s.suggesters("completion-suggest", fieldSuggester));
-
-		NativeQuery query = NativeQuery.builder().withSuggester(suggester).build();
 
 		SearchHits<ProductDocument> searchHits = operations.search(query, ProductDocument.class);
 
 		Set<String> uniqueTitles = new LinkedHashSet<>();
 		List<SuggestOption> suggestOptions = new ArrayList<>();
 
-		if (searchHits.hasSuggest()) {
-			Suggest suggest = searchHits.getSuggest();
+		if (!searchHits.getSearchHits().isEmpty()) {
+			for (SearchHit<ProductDocument> searchHit : searchHits.getSearchHits()) {
 
-			if (suggest != null) {
-				suggest.getSuggestion("completion-suggest")
-					.getEntries()
-					.forEach(entry -> {
-						entry.getOptions().forEach(option -> {
-							String suggestedText = option.getText();
+				ProductDocument document = searchHit.getContent();
 
-							if (!uniqueTitles.add(suggestedText)) {
-								return;
-							}
+				if (!ObjectUtils.isEmpty(document)) {
 
-							if (isValidSuggestion(suggestedText, request)) {
-								float score = option.getScore() != null
-									? option.getScore().floatValue()
-									: 0f;
+					String suggestedText = document.getTitle();
 
-								suggestOptions.add(SuggestOption.builder()
-									.text(suggestedText)
-									.score(score)
-									.build());
+					if (!uniqueTitles.add(suggestedText)) {
+						continue;
+					}
 
-								log.info("자동 완성 키워드 추가 - Text: {}, Score: {}", suggestedText, score);
-							}
-						});
-					});
+					if (isValidSuggestion(suggestedText, request)) {
+						float score = searchHit.getScore();
+
+						suggestOptions.add(SuggestOption.builder()
+							.text(suggestedText)
+							.score(score)
+							.build());
+
+						log.info("자동 완성 키워드 추가 - Text: {}, Score: {}", suggestedText, score);
+					}
+				}
 			}
 		}
 
@@ -314,7 +297,7 @@ public class ProductSearchService {
 		return ProductSuggestResponse.builder()
 			.originalKeyword(keyword)
 			.type(SuggestType.COMPLETION)
-			.suggestions(suggestOptions)
+			.suggestions(finalSuggestOptions)
 			.build();
 	}
 
@@ -332,17 +315,11 @@ public class ProductSearchService {
 				.maxErrors(2.0)
 				.confidence(1.0)
 				.directGenerator(dg -> dg
-					.field("title")
+					.field("title.shingle")
 					.suggestMode(SuggestMode.Always)
 					.minWordLength(2)
 					.maxEdits(2)
 					.prefixLength(1)
-				)
-				.collate(c -> c
-					.query(cq -> cq
-						.source("{\"match\": {\"title\": \"{{suggestion}}\"}}")
-					)
-					.prune(true)
 				)
 			)
 		);

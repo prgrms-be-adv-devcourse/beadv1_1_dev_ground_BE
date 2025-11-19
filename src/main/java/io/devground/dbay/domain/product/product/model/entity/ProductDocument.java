@@ -1,9 +1,8 @@
 package io.devground.dbay.domain.product.product.model.entity;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 import org.springframework.data.annotation.Id;
-import org.springframework.data.elasticsearch.annotations.CompletionContext;
 import org.springframework.data.elasticsearch.annotations.CompletionField;
 import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;
@@ -81,18 +80,14 @@ public class ProductDocument {
 	private String productStatus;
 
 	@Field(type = FieldType.Date)
-	private LocalDateTime createdAt;
+	private LocalDate createdAt;
 
 	@Field(type = FieldType.Date)
-	private LocalDateTime updatedAt;
+	private LocalDate updatedAt;
 
 	@Field(type = FieldType.Boolean)
 	private Boolean deleteStatus;
 
-	@CompletionField(
-		contexts = {
-			@CompletionContext(name = "categoryId", type = CompletionContext.ContextMappingType.CATEGORY)
-		}
-	)
+	@CompletionField
 	private Completion suggest;
 }

@@ -20,9 +20,9 @@ public record ProductSearchRequest(
 
 	String sortDirection,
 
-	int page,
+	Integer page,
 
-	int size
+	Integer size
 ) {
 	public ProductSearchRequest {
 		if (sortBy == null) {
@@ -33,11 +33,11 @@ public record ProductSearchRequest(
 			sortDirection = "desc";
 		}
 
-		if (page < 1) {
+		if (page == null || page < 1) {
 			page = 1;
 		}
 
-		if (size <= 0 || size > 100) {
+		if (size == null || size <= 0 || size > 100) {
 			size = 10;
 		}
 	}

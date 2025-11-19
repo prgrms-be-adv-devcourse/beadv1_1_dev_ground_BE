@@ -32,12 +32,11 @@ public class ProductIndexService {
 			ProductDocument productDocument = ProductESUtil.toProductDocument(product);
 			productSearchRepository.save(productDocument);
 
-			log.info("Product 인덱싱 성공 - ProductCode: {}, ProductId: {}", productCode, product.getId());
+			log.info("Product 인덱싱 성공");
 
 			return CompletableFuture.completedFuture(null);
 		} catch (Exception e) {
-			log.error("Product 인덱싱 실패 - ProductCode: {}, ProductId: {}, Exception: {}",
-				productCode, product.getId(), e.getMessage());
+			log.error("Product 인덱싱 실패 - Exception: {}", e.getMessage());
 
 			return CompletableFuture.failedFuture(e);
 		} finally {
@@ -59,12 +58,11 @@ public class ProductIndexService {
 		try {
 			indexProduct(product);
 
-			log.info("Product 인덱스 소프트 딜리트 성공 - ProductCode: {}, ProductId: {}", productCode, product.getId());
+			log.info("Product 인덱스 소프트 딜리트 성공");
 
 			return CompletableFuture.completedFuture(null);
 		} catch (Exception e) {
-			log.error("Product 인덱스 소프트 딜리트 실패 - ProductCode: {}, ProductId: {}, Exception: {}",
-				productCode, product.getId(), e.getMessage());
+			log.error("Product 인덱스 소프트 딜리트 실패 - Exception: {}", e.getMessage());
 
 			return CompletableFuture.failedFuture(e);
 		} finally {
@@ -80,11 +78,11 @@ public class ProductIndexService {
 		try {
 			productSearchRepository.deleteById(productId);
 
-			log.info("Product 인덱스 완전 삭제 성공 - ProductId: {}", productId);
+			log.info("Product 인덱스 완전 삭제 성공 - ");
 
 			return CompletableFuture.completedFuture(null);
 		} catch (Exception e) {
-			log.error("Product 인덱스 완전 삭제 실패 - ProductId: {}, Exception: {}", productId, e.getMessage());
+			log.error("Product 인덱스 완전 삭제 실패 - ");
 
 			return CompletableFuture.failedFuture(e);
 		} finally {
