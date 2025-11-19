@@ -44,7 +44,7 @@ public class PaymentServiceImpl implements PaymentService {
 	private final PaymentRepository paymentRepository;
 
 	@Value("${payments.command.topic.purchase}")
-	private String paymentOrderEventTopic;
+	private String paymentOrderCommandTopic;
 
 	@Value("${deposits.command.topic.name}")
 	private String depositsCommandTopic;
@@ -73,7 +73,7 @@ public class PaymentServiceImpl implements PaymentService {
 				request.productCodes()
 			);
 
-			kafkaTemplate.send(paymentOrderEventTopic, event);
+			kafkaTemplate.send(paymentOrderCommandTopic, event);
 			return depositPayment;
 
 		}
@@ -83,7 +83,7 @@ public class PaymentServiceImpl implements PaymentService {
 			userCode,
 			"예치금 부족으로 결제에 실패했습니다."
 		);
-		kafkaTemplate.send(paymentOrderEventTopic, event);
+		kafkaTemplate.send(paymentOrderCommandTopic, event);
 		throw new IllegalStateException("예치금 부족하여 결제를 진행할 수 없습니다.");
 		// return pay(getPaymentRequest(userCode, PaymentType.TOSS_PAYMENT, request));
 
@@ -153,7 +153,7 @@ public class PaymentServiceImpl implements PaymentService {
 			.paymentKey(paymentKey)
 			.build();
 
-		payment.setPaymentStatus(PaymentStatus.PAYMENT_COMPLETED);
+		payment.setPaymentStatus(PaymentStatus.PAYMENT_PENDING);
 
 		return paymentRepository.save(payment);
 
