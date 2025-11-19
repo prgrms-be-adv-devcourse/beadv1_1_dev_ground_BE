@@ -34,7 +34,7 @@ public class ProductDocument {
 	private String productCode;
 
 	@MultiField(
-		mainField = @Field(type = FieldType.Text, analyzer = "nori_analyzer", searchAnalyzer = "nori_synonym_analyzer"),
+		mainField = @Field(type = FieldType.Text, analyzer = "nori_synonym_analyzer", searchAnalyzer = "nori_synonym_analyzer"),
 		otherFields = {
 			@InnerField(suffix = "keyword", type = FieldType.Keyword, normalizer = "lowercase_normalizer"),
 			@InnerField(suffix = "completion", type = FieldType.Search_As_You_Type, maxShingleSize = 3),
