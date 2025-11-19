@@ -70,6 +70,20 @@ spring:
           filters:
             - StripPrefix=1
 
+        - id: admin
+          uri: lb://DBAY
+          predicates:
+            - Path=/api/admin/**
+          filters:
+            - CustomAuthFilter
+
+        - id: image
+          uri: lb://DBAY
+          predicates:
+            - Path=/api/images/**
+          filters:
+            - CustomAuthFilter
+
         - id: deposits
           uri: lb://DBAY
           predicates:
