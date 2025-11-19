@@ -45,7 +45,7 @@ public class ProductDocument {
 	private String title;
 
 	@MultiField(
-		mainField = @Field(type = FieldType.Text, analyzer = "nori_analyzer", searchAnalyzer = "nori_synonym_analyzer"),
+		mainField = @Field(type = FieldType.Text, analyzer = "nori_synonym_analyzer", searchAnalyzer = "nori_synonym_analyzer"),
 		otherFields = {
 			@InnerField(suffix = "keyword", type = FieldType.Keyword, normalizer = "lowercase_normalizer"),
 			@InnerField(suffix = "ngram", type = FieldType.Text, analyzer = "edge_ngram_analyzer", searchAnalyzer = "nori_synonym_analyzer")
@@ -63,7 +63,7 @@ public class ProductDocument {
 	private String categoryName;
 
 	@MultiField(
-		mainField = @Field(type = FieldType.Text, analyzer = "nori_analyzer", searchAnalyzer = "nori_synonym_analyzer"),
+		mainField = @Field(type = FieldType.Text, analyzer = "nori_synonym_analyzer", searchAnalyzer = "nori_synonym_analyzer"),
 		otherFields = {
 			@InnerField(suffix = "keyword", type = FieldType.Keyword),
 			@InnerField(suffix = "ngram", type = FieldType.Text, analyzer = "edge_ngram_analyzer")
