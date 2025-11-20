@@ -161,7 +161,7 @@ images:
 
 logging:
   level:
-    org.hibernate.SQL: debug
+    org.hibernate.SQL: INFO
     org.hibernate.orm.jdbc.bind: INFO
     org.hibernate.orm.jdbc.extract: INFO
     org.springframework.batch: INFO

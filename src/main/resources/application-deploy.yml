@@ -2,41 +2,18 @@ server:
   port: 8080
 
 spring:
-  application:
-    name: dbay
-
-  #  profiles:
-  #    active: stage
-
   config:
     import: optional:classpath:env.properties
 
-  jpa:
-    hibernate:
-      naming:
-        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://dbay:dbay.site3306/dbay_user?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+    username: root
+    password: root1234
 
   kafka:
     bootstrap-servers:
       - kafka:9092
-    producer:
-      key-serializer: org.apache.kafka.common.serialization.StringSerializer
-      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
-      acks: all
-      properties:
-        delivery.timeout.ms: 120000
-        linger.ms: 0
-        request.timeout.ms: 30000
-        enable.idempotence: true
-        allow.auto.create.topics: false
-
-    consumer:
-      group-id: dbay-consumer-group
-      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
-      properties:
-        spring.json.trusted.packages: io.devground.dbay.*, io.devground.core.*
-        allow.auto.create.topics: false
 
   cloud:
     aws:
@@ -47,32 +24,6 @@ spring:
         secret-key: ${S3_SECRET_KEY}
       region:
         static: ${S3_REGION}
-
-carts:
-  event:
-    topic:
-      user: carts-user-events
-      order: carts-order-events
-  command:
-    topic:
-      user: carts-user-commands
-      order: carts-order-commands
-
-orders:
-  event:
-    topic:
-      name: orders-events
-  command:
-    topic:
-      name: orders-commands
-
-payments:
-  event:
-    topic:
-      name: payments-events
-  command:
-    topic:
-      name: payments-commands
 
 eureka:
   client:
@@ -87,48 +38,11 @@ eureka:
     metadata-map:
       port: 8080
 
-
-deposits:
-  event:
-    topic:
-      name: deposits-events
-  command:
-    topic:
-      name: deposits-commands
-
-products:
-  topic:
-    image:
-      push: product-images-push
-      delete: product-images-delete
-      push-dlt: ${products.topic.image.push}.DLT
-      delete-dlt: ${products.topic.image.delete}.DLT
-
 springdoc:
   api-docs:
     enabled: true
   swagger-ui:
     enabled: true
-
-custom:
-  kafka:
-    config:
-      topic-partitions: 1
-      topic-replications: 1
-
-images:
-  topic:
-    push: images-push
-    delete: images-delete
-    processed: images-processed
-    processed-dlt: ${images.topic.processed}.DLT
-
-logging:
-  level:
-    org.hibernate.SQL: debug
-    org.hibernate.orm.jdbc.bind: TRACE
-    org.hibernate.orm.jdbc.extract: TRACE
-    org.springframework.batch: INFO
 
 external:
   openfeign-url: http://gateway:8000
