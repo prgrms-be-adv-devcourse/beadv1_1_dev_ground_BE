@@ -167,4 +167,4 @@ logging:
     org.springframework.batch: INFO
 
 external:
-  openfeign-url: http://localhost:8000
+  openfeign-url: http://localhost:8080

@@ -49,7 +49,7 @@ services:
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: root1234
-      MYSQL_DATABASE: dbay_user
+      MYSQL_DATABASE: dbay_db
       TZ: Asia/Seoul
     ports:
       - "3306:3306"
@@ -82,17 +82,25 @@ services:
     volumes:
       - ./dbay-0.0.1-SNAPSHOT.jar:/app/app.jar
     environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/dbay_user?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/dbay_db?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
       SPRING_DATASOURCE_USERNAME: root
       SPRING_DATASOURCE_PASSWORD: root1234
-      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9090
       SPRING_PROFILES_ACTIVE: deploy
       SPRING_JPA_HIBERNATE_DDL_AUTO: update
       SPRING_DATA_REDIS_HOST: redis
       SPRING_DATA_REDIS_PORT: 6379
+#      SPRING_ELASTICSEARCH_URIS: http://elasticsearch:9200
+      S3_BUCKET_NAME: ${S3_BUCKET_NAME}
+      S3_ACCESS_KEY: ${S3_ACCESS_KEY}
+      S3_SECRET_KEY: ${S3_SECRET_KEY}
+      S3_REGION: ${S3_REGION}
+      TOSS_TEST_SECRET_KEY: ${TOSS_TEST_SECRET_KEY}
+      external.openfeign-url: localhost:8080
     command: [ "java", "-jar", "app.jar" ]
     ports:
       - "8080:8080"
+
 
 
   user:
@@ -108,12 +116,14 @@ services:
       - ./user-0.0.1-SNAPSHOT.jar:/app/app.jar
     environment:
       SPRING_PROFILES_ACTIVE: deploy
-      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/dbay_user?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+      SPRING_DATASOURCE_URL: jdbc:mariadb://mariadb:3306/dbay_user?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
       SPRING_DATASOURCE_USERNAME: root
       SPRING_DATASOURCE_PASSWORD: root1234
       SPRING_DATA_REDIS_HOST: redis
       SPRING_DATA_REDIS_PORT: 6379
-      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9090
+      MAIL_EMAIL: ${MAIL_EMAIL}
+      MAIL_PASSWORD: ${MAIL_PASSWORD}
     command: [ "java", "-jar", "app.jar" ]
     ports:
       - "8082:8082"
@@ -147,7 +157,9 @@ services:
       - cluster.name=cluster-es
       - xpack.security.enabled=false
       - xpack.security.http.ssl.enabled=false
-      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      #- "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - "ES_JAVA_OPTS=-Xms1g -Xmx1g"
+
     volumes:
       - es-data:/usr/share/elasticsearch/data
 
@@ -163,3 +175,5 @@ services:
 
 volumes:
   es-data:
+
+

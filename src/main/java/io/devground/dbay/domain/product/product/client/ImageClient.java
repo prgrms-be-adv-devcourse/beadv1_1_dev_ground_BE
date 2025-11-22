@@ -17,7 +17,7 @@ import io.devground.core.dto.image.UpdateImagesRequest;
 import io.devground.core.model.vo.ImageType;
 import io.devground.core.model.web.BaseResponse;
 
-@FeignClient(name = "image", url = "${external.openfeign-url}", path = "/api/images")
+@FeignClient(name = "image", url = "localhost:8080", path = "/api/images")
 public interface ImageClient {
 
 	@GetMapping("/{referenceCode}")
