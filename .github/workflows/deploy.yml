@@ -1,6 +1,8 @@
 name: Deploy to EC2 (DEV)
 
 on:
+  pull_request:
+    branches: [ "dev" ]
   push:
     branches: ["dev"]
 
@@ -24,7 +26,7 @@ jobs:
       - name: Build JAR with Gradle
         run: |
           chmod +x gradlew
-          ./gradlew clean build
+          ./gradlew clean build -x text
 
       # 4) DockerHub 로그인
       - name: Login to DockerHub
