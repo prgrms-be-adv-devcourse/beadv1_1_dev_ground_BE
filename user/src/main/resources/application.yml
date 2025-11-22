@@ -2,14 +2,16 @@ server:
   port: 8082
 
 spring:
+
+
   profiles:
-    active: stage
+    active: deploy
 
   mail:
     host: smtp.gmail.com
     port: 587
-    username: your_email@gmail.com
-    password: your_app_password
+    username: ${MAIL_EMAIL}
+    password: ${MAIL_PASSWORD}
     properties:
       mail:
         smtp:
@@ -17,11 +19,11 @@ spring:
           starttls:
             enable: true
 
-#  datasource:
-#    driver-class-name: com.mysql.cj.jdbc.Driver
-#    url: jdbc:mysql://mysql:3306/dbay_user?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
-#    username: root
-#    password: root1234
+  datasource:
+    driver-class-name: org.mariadb.jdbc.Driver
+    url: jdbc:mariadb://mariadb:3306/dbay_user?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+    username: root
+    password: root1234
 
   jpa:
     hibernate:
@@ -33,12 +35,13 @@ spring:
         format_sql: true
 
   application:
-
     name: user-service
 
   kafka:
     bootstrap-servers:
-      - kafka:9092
+      - kafka:9090
+
+
 
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
@@ -65,18 +68,12 @@ eureka:
     fetch-registry: true
     service-url:
       defaultZone: http://eureka:8761/eureka/
-  instance:
-    prefer-ip-address: true
-    ip-address: user-service
-    non-secure-port: 8082
-    metadata-map:
-      port: 8082
 
-springdoc:
-  api-docs:
-    enabled: true
-  swagger-ui:
-    enabled: true
+#springdoc:
+#  api-docs:
+#    enabled: true
+#  swagger-ui:
+#    enabled: true
 
 
 custom:
@@ -121,3 +118,12 @@ logging:
     org.hibernate.orm.jdbc.bind: TRACE
     org.hibernate.orm.jdbc.extract: TRACE
     org.springframework.batch: INFO
+    org.springframework.kafka: debug
+
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    enabled: true
+    config-url: /user/v3/api-docs/swagger-config
+    url: /user/v3/api-docs

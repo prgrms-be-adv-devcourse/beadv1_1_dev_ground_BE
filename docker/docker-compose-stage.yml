@@ -81,6 +81,7 @@ services:
       SPRING_DATA_REDIS_HOST: redis
       SPRING_DATA_REDIS_PORT: 6379
       SPRING_ELASTICSEARCH_URIS: http://elasticsearch:9200
+      external.openfeign-url: localhost:8080
     command: [ "java", "-jar", "app.jar" ]
     ports:
       - "8080:8080"

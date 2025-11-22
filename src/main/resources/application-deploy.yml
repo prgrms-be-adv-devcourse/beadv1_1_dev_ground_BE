@@ -11,9 +11,13 @@ spring:
     username: root
     password: root1234
 
+  elasticsearch:
+    uris: http://elasticsearch:9200
+    connection-timeout: 10s
+    socket-timeout: 60s
+
   kafka:
-    bootstrap-servers:
-      - kafka:9092
+    bootstrap-servers: kafka:9090
 
   cloud:
     aws:
@@ -43,6 +47,5 @@ springdoc:
     enabled: true
   swagger-ui:
     enabled: true
-
-external:
-  openfeign-url: http://gateway:8000
+    config-url: /dbay/v3/api-docs/swagger-config
+    url: /dbay/v3/api-docs
