@@ -9,6 +9,7 @@ import io.devground.core.event.image.ImageProcessedEvent;
 import io.devground.core.event.product.ProductImagesDeleteEvent;
 import io.devground.core.event.product.ProductImagesPushEvent;
 import io.devground.core.event.vo.EventType;
+import io.devground.dbay.domain.image.entity.Image;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -31,12 +32,18 @@ public class ImageKafkaDltListener {
 
 		log.error("상품 이미지 등록 재시도 모두 실패 - SagaId: {}, ProductCode: {}", event.sagaId(), event.referenceCode());
 
-		imageKafkaProducer.publishImageProcessed(
-			new ImageProcessedEvent(
-				event.sagaId(), event.imageType(), event.referenceCode(), EventType.PUSH, event.imageUrls(),
-				null, false, "상품 이미지 등록 재시도 모두 실패"
-			)
-		);
+		try {
+			imageKafkaProducer.publishImageProcessed(
+				new ImageProcessedEvent(
+					event.sagaId(), event.imageType(), event.referenceCode(), EventType.PUSH, event.imageUrls(),
+					null, false, "상품 이미지 등록 재시도 모두 실패"
+				)
+			);
+		} catch (Exception e) {
+			log.error("상품 이미지 등록 DLT 처리도 실패/수동 정리 필요 - SagaId: {}, ProductCode: {}",
+				event.sagaId(), event.referenceCode()
+			);
+		}
 	}
 
 	@KafkaHandler
@@ -44,11 +51,17 @@ public class ImageKafkaDltListener {
 
 		log.error("상품 이미지 삭제 재시도 모두 실패 - SagaId: {}, ProductCode: {}", event.sagaId(), event.referenceCode());
 
-		imageKafkaProducer.publishImageProcessed(
-			new ImageProcessedEvent(
-				event.sagaId(), event.imageType(), event.referenceCode(), EventType.PUSH, null, null, false,
-				"상품 이미지 삭제 재시도 모두 실패"
-			)
-		);
+		try {
+			imageKafkaProducer.publishImageProcessed(
+				new ImageProcessedEvent(
+					event.sagaId(), event.imageType(), event.referenceCode(), EventType.DELETE, null, null, false,
+					"상품 이미지 삭제 재시도 모두 실패"
+				)
+			);
+		} catch (Exception e) {
+			log.error("상품 이미지 삭제 DLT 처리도 실패/수동 정리 필요 - SagaId: {}, ProductCode: {}",
+				event.sagaId(), event.referenceCode()
+			);
+		}
 	}
 }

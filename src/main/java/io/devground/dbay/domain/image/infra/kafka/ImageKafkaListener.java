@@ -23,95 +23,83 @@ import lombok.extern.slf4j.Slf4j;
 @Component
 @RequiredArgsConstructor
 @KafkaListener(
-	topics = {
-		"${products.topic.image.push}",
-		"${products.topic.image.delete}"
-	}
+        topics = {
+                "${products.topic.image.push}",
+                "${products.topic.image.delete}"
+        }
 )
 public class ImageKafkaListener {
 
-	private final ImageService imageService;
-	private final ImageKafkaProducer imageKafkaProducer;
-	private final SagaService sagaService;
+    private final ImageService imageService;
+    private final ImageKafkaProducer imageKafkaProducer;
+    private final SagaService sagaService;
 
-	@KafkaHandler
-	public void handleProductImagePush(ProductImagesPushEvent event) {
+    @KafkaHandler
+    public void handleProductImagePush(ProductImagesPushEvent event) {
 
-		String sagaId = event.sagaId();
-		String referenceCode = event.referenceCode();
-		ImageType imageType = event.imageType();
+        String sagaId = event.sagaId();
+        String referenceCode = event.referenceCode();
+        ImageType imageType = event.imageType();
 
-		try {
-			Saga saga = sagaService.getSaga(sagaId);
-			SagaStep step = saga.getCurrentStep();
+        Saga saga = sagaService.getSaga(sagaId);
+        SagaStep step = saga.getCurrentStep();
 
-			log.info("상품 이미지 등록 시도 - SagaId: {}, ProductCode: {}, Step: {}", sagaId, referenceCode, step);
+        log.info("상품 이미지 등록 시도 - SagaId: {}, ProductCode: {}, Step: {}", sagaId, referenceCode, step);
 
-			if (step.ordinal() >= SagaStep.IMAGE_DB_SAVE.ordinal()) {
-				log.warn("이미 종료된 이미지 등록 Saga - SagaId: {}, ProductCode: {}, Step: {}",
-					sagaId, referenceCode, step);
+        // TODO: ordinal 받는 거 말고 더 좋은 방식 있는지 생각해볼 것 (현재대로면 SagaStep 순서에 따라 영향)
+        if (step.ordinal() >= SagaStep.IMAGE_DB_SAVE.ordinal()) {
+            log.warn("이미 종료된 이미지 등록 Saga - SagaId: {}, ProductCode: {}, Step: {}",
+                    sagaId, referenceCode, step);
 
-				return;
-			}
+            return;
+        }
 
-			String thumbnailUrl = imageService.saveImages(imageType, referenceCode, event.imageUrls());
+        String thumbnailUrl = imageService.saveImages(imageType, referenceCode, event.imageUrls());
 
-			log.info("상품 이미지 등록 성공 - SagaId: {}, ProductCode: {}", sagaId, referenceCode);
+        log.info("상품 이미지 등록 성공 - SagaId: {}, ProductCode: {}", sagaId, referenceCode);
 
-			imageKafkaProducer.publishImageProcessed(
-				new ImageProcessedEvent(
-					sagaId, imageType, referenceCode, EventType.PUSH, event.imageUrls(), thumbnailUrl, true, null
-				)
-			);
-		} catch (Exception e) {
-			log.error("상품 이미지 등록 실패 - SagaId: {}, ProductCode: {}, Exception: {}",
-				sagaId, referenceCode, e.getMessage(), e);
+        imageKafkaProducer.publishImageProcessed(
+                new ImageProcessedEvent(
+                        sagaId, imageType, referenceCode, EventType.PUSH, event.imageUrls(), thumbnailUrl, true, null
+                )
+        );
+    }
 
-			imageKafkaProducer.publishImageProcessed(
-				new ImageProcessedEvent(sagaId, imageType, referenceCode, EventType.PUSH, event.imageUrls(), null,
-					false, e.getMessage()
-				)
-			);
+    @KafkaHandler
+    public void handleProductImageDelete(ProductImagesDeleteEvent event) {
 
-			throw e;
-		}
-	}
+        String sagaId = event.sagaId();
+        String referenceCode = event.referenceCode();
+        ImageType imageType = event.imageType();
+        List<String> deleteUrls = event.deleteUrls();
 
-	@KafkaHandler
-	public void handleProductImageDelete(ProductImagesDeleteEvent event) {
+        Saga saga = sagaService.getSaga(sagaId);
+        SagaStep step = saga.getCurrentStep();
 
-		String sagaId = event.sagaId();
-		String referenceCode = event.referenceCode();
-		ImageType imageType = event.imageType();
-		List<String> deleteUrls = event.deleteUrls();
+        if (step.ordinal() >= SagaStep.IMAGE_DELETED.ordinal()) {
+            log.warn("이미 종료된 이미지 삭제 Saga - SagaId: {}, ProductCode: {}, Step: {}",
+                    sagaId, referenceCode, step);
 
-		Saga saga = sagaService.getSaga(sagaId);
-		SagaStep step = saga.getCurrentStep();
+            return;
+        }
 
-		if (step.ordinal() >= SagaStep.IMAGE_DELETED.ordinal()) {
-			log.warn("이미 종료된 이미지 삭제 Saga - SagaId: {}, ProductCode: {}, Step: {}",
-				sagaId, referenceCode, step);
+        if (CollectionUtils.isEmpty(deleteUrls)) {
+            imageService.deleteImageByReferences(imageType, referenceCode);
 
-			return;
-		}
+            log.info("상품 전체 이미지 삭제 완료 - SagaId: {}, ProductCode: {}", sagaId, referenceCode);
+        } else {
+            imageService.deleteImagesByReferencesAndUrls(
+                    imageType, referenceCode, deleteUrls
+            );
 
-		if (CollectionUtils.isEmpty(deleteUrls)) {
-			imageService.deleteImageByReferences(imageType, referenceCode);
+            log.info("선택된 상품 이미지 삭제 완료 - SagaId: {}, ProductCode: {}, size: {}",
+                    sagaId, referenceCode, deleteUrls.size());
+        }
 
-			log.info("상품 전체 이미지 삭제 완료 - SagaId: {}, ProductCode: {}", sagaId, referenceCode);
-		} else {
-			imageService.deleteImagesByReferencesAndUrls(
-				imageType, referenceCode, deleteUrls
-			);
-
-			log.info("선택된 상품 이미지 삭제 완료 - SagaId: {}, ProductCode: {}, size: {}",
-				sagaId, referenceCode, deleteUrls.size());
-		}
-
-		imageKafkaProducer.publishImageProcessed(
-			new ImageProcessedEvent(
-				sagaId, imageType, referenceCode, EventType.DELETE, event.deleteUrls(), null, true, null
-			)
-		);
-	}
+        imageKafkaProducer.publishImageProcessed(
+                new ImageProcessedEvent(
+                        sagaId, imageType, referenceCode, EventType.DELETE, event.deleteUrls(), null, true, null
+                )
+        );
+    }
 }

@@ -180,34 +180,42 @@ public class ProductImageSagaOrchestrator {
 
 	public void handleImageProcessFailure(String sagaId, ImageProcessedEvent event) {
 
-		Saga saga = sagaService.getSaga(sagaId);
+		try {
+			Saga saga = sagaService.getSaga(sagaId);
 
-		if (saga.getSagaStatus().isTerminal()) {
-			log.info("이미 처리된 실패 Saga - SagaId: {}, ProductCode: {}", sagaId, event.referenceCode());
+			if (saga.getSagaStatus().isTerminal()) {
+				log.info("이미 처리된 실패 Saga - SagaId: {}, ProductCode: {}", sagaId, event.referenceCode());
 
-			return;
-		}
-
-		switch (event.eventType()) {
-			case PUSH -> {
-				log.error("이미지 업로드 실패/수동 보상 필요 - SagaId: {}, ProductCode: {}, ErrorMessage: {}",
-					sagaId, event.referenceCode(), event.errorMsg());
-
-				compensationService.compensateProductImageUploadFailure(sagaId, event.referenceCode(), event.errorMsg(),
-					event.urls());
+				return;
 			}
-			case DELETE -> {
-				log.error("이미지 삭제 실패 - SagaId: {}, ProductCode: {}, ErrorMessage: {}",
-					sagaId, event.referenceCode(), event.errorMsg());
 
-				sagaService.updateToFail(sagaId, "이미지 삭제 실패 (재시도, DLT 확인) : " + event.errorMsg());
-			}
-			default -> {
-				log.error("미지원 이벤트 실패 - SagaId: {}, ProductCode: {}, ErrorMessage: {}",
-					sagaId, event.referenceCode(), event.errorMsg());
+			switch (event.eventType()) {
+				case PUSH -> {
+					log.error("이미지 업로드 실패/수동 보상 필요 - SagaId: {}, ProductCode: {}, ErrorMessage: {}",
+						sagaId, event.referenceCode(), event.errorMsg());
 
-				sagaService.updateToFail(sagaId, "미지원 이벤트 실패: " + event.eventType());
+					compensationService.compensateProductImageUploadFailure(sagaId, event.referenceCode(),
+						event.errorMsg(),
+						event.urls());
+				}
+				case DELETE -> {
+					log.error("이미지 삭제 실패 - SagaId: {}, ProductCode: {}, ErrorMessage: {}",
+						sagaId, event.referenceCode(), event.errorMsg());
+
+					sagaService.updateToFail(sagaId, "이미지 삭제 실패 (재시도, DLT 확인) : " + event.errorMsg());
+				}
+				default -> {
+					log.error("미지원 이벤트 실패 - SagaId: {}, ProductCode: {}, ErrorMessage: {}",
+						sagaId, event.referenceCode(), event.errorMsg());
+
+					sagaService.updateToFail(sagaId, "미지원 이벤트 실패: " + event.eventType());
+				}
 			}
+		} catch (Exception e) {
+			log.error("이미지 최종 실패 처리 실패/수동 보상 필요 - SagaId: {}, ProductCode: {}, ErrorMessage: {}",
+				sagaId, event.referenceCode(), e.getMessage());
+
+			sagaService.updateToFail(sagaId, "이미지 최종 실패 처리 실패/수동 보상 필요: " + event.eventType());
 		}
 	}
 }
