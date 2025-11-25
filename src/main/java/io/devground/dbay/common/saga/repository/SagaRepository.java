@@ -35,10 +35,10 @@ public interface SagaRepository extends JpaRepository<Saga, Long> {
 		AND s.startedAt < :startedAt
 		AND s.sagaStatus = 'IN_PROCESS'
 		""")
-	List<Saga> findSagaByCurrentStepInAndStartedAtBefore(
+	List<Saga> findSagasByCurrentStepInAndStartedAtBefore(
 		@Param("steps") List<SagaStep> steps,
 		@Param("startedAt") LocalDateTime startedAt
 	);
 
-	List<Saga> findSagaBySagaStatusAndUpdatedAtBefore(SagaStatus sagaStatus, LocalDateTime updatedAt);
+	List<Saga> findAllBySagaStatusInAndUpdatedAtBefore(List<SagaStatus> sagaStatus, LocalDateTime updatedAt);
 }

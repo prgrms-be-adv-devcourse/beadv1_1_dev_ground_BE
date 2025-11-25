@@ -11,13 +11,13 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class ImageKafkaProducer {
 
-	private final KafkaTemplate<String, Object> kafkaTemplate;
-	private final ImageTopicProperties imageTopicProperties;
+    private final KafkaTemplate<String, Object> kafkaTemplate;
+    private final ImageTopicProperties imageTopicProperties;
 
-	public void publishImageProcessed(ImageProcessedEvent event) {
+    public void publishImageProcessed(ImageProcessedEvent event) {
 
-		String topic = imageTopicProperties.getProcessed();
-		kafkaTemplate.send(topic, event.sagaId(), event);
-	}
+        String topic = imageTopicProperties.getProcessed();
+        kafkaTemplate.send(topic, event.sagaId(), event);
+    }
 
 }

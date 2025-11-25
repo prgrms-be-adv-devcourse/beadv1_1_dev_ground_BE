@@ -39,7 +39,7 @@ public class ImageScheduledProcessor {
 
 		LocalDateTime deadline = LocalDateTime.now().minusMinutes(10);
 
-		List<Saga> timeoutSagas = sagaRepository.findSagaByCurrentStepInAndStartedAtBefore(
+		List<Saga> timeoutSagas = sagaRepository.findSagasByCurrentStepInAndStartedAtBefore(
 			List.of(WAITING_S3_UPLOAD, IMAGE_KAFKA_PUBLISHED, IMAGE_DB_SAVE),
 			deadline
 		);
@@ -86,26 +86,28 @@ public class ImageScheduledProcessor {
 	}
 
 	/**
-	 * 보상 처리 중 체류된 Saga 정리
+	 * 진행/보상 처리 중 체류된 Saga 정리
+	 * DLT에서까지 실패해서 어중간하게 머물러있는 Saga 정리
 	 * 현재는 10분마다 실행
+	 * 30분이 지났으면 실패 처리
 	 */
 	@Scheduled(fixedDelay = 600000)
 	public void deleteSagasStayedInCompensating() {
 
 		LocalDateTime deadline = LocalDateTime.now().minusMinutes(30);
 
-		List<Saga> stayedSagas =
-			sagaRepository.findSagaBySagaStatusAndUpdatedAtBefore(SagaStatus.COMPENSATING, deadline);
+		List<Saga> stayedSagas = sagaRepository.findAllBySagaStatusInAndUpdatedAtBefore(
+			List.of(SagaStatus.IN_PROCESS, SagaStatus.COMPENSATING), deadline);
 
 		if (stayedSagas.isEmpty()) {
 			return;
 		}
 
 		for (Saga saga : stayedSagas) {
-			log.error("미보상 상태로 멈춘 Saga/수동 처리 필요 - SagaId: {}, ProductCode: {}, Exception: {}",
+			log.error("진행/미보상 상태로 멈춘 Saga/수동 처리 필요 - SagaId: {}, ProductCode: {}, Exception: {}",
 				saga.getSagaId(), saga.getReferenceCode(), saga.getLastErrorMessage());
 
-			sagaService.updateToFail(saga.getSagaId(), "미보상 상태로 멈춘 Saga/수동 처리 필요: " + saga.getLastErrorMessage());
+			sagaService.updateToFail(saga.getSagaId(), "진행/미보상 상태로 멈춘 Saga/수동 처리 필요: " + saga.getLastErrorMessage());
 		}
 	}
 }
