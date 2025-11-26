@@ -1,4 +1,4 @@
-package io.devground.dbay.deposit.controller;
+package io.devground.deposit.controller;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
