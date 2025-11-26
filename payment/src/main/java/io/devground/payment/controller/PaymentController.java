@@ -29,12 +29,11 @@ public class PaymentController {
 
 	@PostMapping("/process")
 	public BaseResponse<PaymentDescription> processPayment(
-		//            @AuthenticationPrincipal(expression = "accountCode") String accountCode,
-		@RequestHeader("X-CODE") String accountCode,
+		@RequestHeader("X-CODE") String userCode,
 		@RequestBody @Valid PaymentConfirmRequest request
 	) {
 
-		Payment payment = paymentService.process(accountCode, request);
+		Payment payment = paymentService.process(userCode, request);
 
 		return BaseResponse.success(
 			200,
@@ -46,7 +45,6 @@ public class PaymentController {
 
 	@PostMapping("/toss")
 	public BaseResponse<PaymentDescription> tossPayment(
-		//            @AuthenticationPrincipal(expression = "accountCode") String accountCode,
 		@RequestBody @Valid TossPaymentConfirmRequest request
 	) {
 		log.info(request.paymentKey());
@@ -63,13 +61,12 @@ public class PaymentController {
 
 	@PostMapping("/deposit")
 	public BaseResponse<PaymentDescription> depositPayment(
-		//            @AuthenticationPrincipal(expression = "accountCode") String accountCode,
-		@RequestHeader("X-CODE") String accountCode,
+		@RequestHeader("X-CODE") String userCode,
 		@RequestBody @Valid DepositPaymentRequest request
 	) {
 
 		Payment payment = paymentService.pay(
-			new PaymentRequest(accountCode, PaymentType.DEPOSIT, null, request.orderCode(), request.amount())
+			new PaymentRequest(userCode, PaymentType.DEPOSIT, null, request.orderCode(), request.amount())
 		);
 
 		return BaseResponse.success(
