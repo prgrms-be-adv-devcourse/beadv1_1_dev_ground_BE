@@ -1,0 +1,25 @@
+server:
+  port: 8085
+
+spring:
+  config:
+    import: optional:classpath:env.properties
+
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://mysql:3306/dbay_db?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+    username: root
+    password: root1234
+
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://eureka:8761/eureka/
+  instance:
+    prefer-ip-address: true
+    ip-address: dbay
+    non-secure-port: 8080
+    metadata-map:
+      port: 8080
