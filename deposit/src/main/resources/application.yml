@@ -15,6 +15,10 @@ spring:
         physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
     properties:
       hibernate:
+<<<<<<< HEAD
+=======
+        dialect: org.hibernate.dialect.H2Dialect
+>>>>>>> cfbedd3 ([REFACTOR] Deposit MSA모듈 분리)
         default_batch_fetch_size: 500
         format_sql: true
 
@@ -25,6 +29,10 @@ spring:
 
   batch:
     jdbc:
+<<<<<<< HEAD
+=======
+      # always : ??, embedded : ?? DB ??? ??, never : ?? ???? ??
+>>>>>>> cfbedd3 ([REFACTOR] Deposit MSA모듈 분리)
       initialize-schema: never
 
   kafka:
@@ -90,6 +98,12 @@ logging:
     org.hibernate.orm.jdbc.extract: INFO
     org.springframework.batch: INFO
 
+<<<<<<< HEAD
+=======
+#external:
+#  openfeign-url: http://localhost:8080
+
+>>>>>>> cfbedd3 ([REFACTOR] Deposit MSA모듈 분리)
 custom:
   kafka:
     config:
