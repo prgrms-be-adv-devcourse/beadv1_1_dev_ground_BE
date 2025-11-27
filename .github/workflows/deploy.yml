@@ -2,9 +2,9 @@ name: Deploy to EC2 (DEV)
 
 on:
   pull_request:
-    branches: [ "dev" ]
+    branches: [ "dev", "dev-msa" ]
   push:
-    branches: ["dev"]
+    branches: ["dev", "dev-msa"]
 
 jobs:
   build_and_deploy:
