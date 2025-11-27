@@ -1,9 +1,12 @@
+server:
+  port: 8082
+
 spring:
   application:
     name: deposit
 
-  profiles:
-    active: local
+#  profiles:
+#    active: local
 
   jpa:
     hibernate:
@@ -54,9 +57,9 @@ eureka:
   instance:
     prefer-ip-address: true
     ip-address: deposit
-    non-secure-port: 8080
+    non-secure-port: 8082
     metadata-map:
-      port: 8080
+      port: 8082
 
 deposits:
   event:
@@ -69,6 +72,16 @@ deposits:
       join: deposits-join-commands
       purchase: deposits-purchase-commands
       name: deposits-commands
+
+springdoc:
+  api-docs:
+    enabled: true
+    path: /v3/api-docs
+  swagger-ui:
+    enabled: true
+    path: /swagger-ui.html
+    url: /v3/api-docs
+    config-url: /v3/api-docs/swagger-config
 
 logging:
   level:
