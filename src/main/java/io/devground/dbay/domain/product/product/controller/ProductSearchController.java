@@ -1,11 +1,5 @@
 package io.devground.dbay.domain.product.product.controller;
 
-import static org.springframework.http.HttpStatus.*;
-
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
 import io.devground.core.model.web.BaseResponse;
 import io.devground.core.model.web.PageDto;
 import io.devground.dbay.domain.product.product.model.dto.ProductSearchRequest;
@@ -17,6 +11,10 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springdoc.core.annotations.ParameterObject;
+import org.springframework.web.bind.annotation.*;
+
+import static org.springframework.http.HttpStatus.OK;
 
 @RestController
 @RequiredArgsConstructor
@@ -63,7 +61,7 @@ public class ProductSearchController {
 			@Parameter(name = "size", description = "페이지 크기(최대 100)", example = "10")
 		}
 	)
-	public BaseResponse<PageDto<ProductSearchResponse>> searchProducts(ProductSearchRequest request) {
+	public BaseResponse<PageDto<ProductSearchResponse>> searchProducts(@ParameterObject ProductSearchRequest request) {
 
 		return BaseResponse.success(
 			OK.value(),
@@ -88,7 +86,7 @@ public class ProductSearchController {
 			@Parameter(name = "size", description = "추천 결과 개수", example = "10"),
 		}
 	)
-	public BaseResponse<ProductSuggestResponse> suggestCompletion(ProductSuggestRequest request) {
+	public BaseResponse<ProductSuggestResponse> suggestCompletion(@ParameterObject ProductSuggestRequest request) {
 
 		return BaseResponse.success(
 			OK.value(),
@@ -112,7 +110,7 @@ public class ProductSearchController {
 			@Parameter(name = "size", description = "추천 결과 개수", example = "10"),
 		}
 	)
-	public BaseResponse<ProductSuggestResponse> suggestRelated(ProductSuggestRequest request) {
+	public BaseResponse<ProductSuggestResponse> suggestRelated(@ParameterObject ProductSuggestRequest request) {
 
 		return BaseResponse.success(
 			OK.value(),
