@@ -2,10 +2,9 @@ package io.devground.dbay.domain.payment.infra;
 
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestHeader;
 
+import io.devground.core.dto.deposit.response.DepositBalanceResponse;
 import io.devground.core.model.web.BaseResponse;
-import io.devground.dbay.domain.deposit.dto.response.DepositBalanceResponse;
 
 @FeignClient(
 	name = "PaymentToDeposit",
