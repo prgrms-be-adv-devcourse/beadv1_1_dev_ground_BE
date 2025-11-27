@@ -2,6 +2,3 @@ rootProject.name = 'payment'
 
 include(':core')
 project(':core').projectDir = file('../core')
-
-include(':user')
-project(':user').projectDir = file('../user')
