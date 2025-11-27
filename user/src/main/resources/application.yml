@@ -2,10 +2,11 @@ server:
   port: 8082
 
 spring:
-
-
   profiles:
-    active: deploy
+    active: stage
+
+  config:
+    import: optional:classpath:env.properties
 
   mail:
     host: smtp.gmail.com
@@ -40,8 +41,6 @@ spring:
   kafka:
     bootstrap-servers:
       - kafka:9090
-
-
 
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
