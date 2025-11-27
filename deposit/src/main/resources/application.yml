@@ -79,9 +79,6 @@ logging:
     org.hibernate.orm.jdbc.extract: INFO
     org.springframework.batch: INFO
 
-#external:
-#  openfeign-url: http://localhost:8080
-
 custom:
   kafka:
     config:
