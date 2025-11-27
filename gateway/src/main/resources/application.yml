@@ -3,8 +3,8 @@ server:
 
 logging:
   level:
-    org.springframework.cloud.gateway: TRACE
-    org.springframework.cloud.gateway.filter: TRACE
+    org.springframework.cloud.gateway: INFO
+    org.springframework.cloud.gateway.filter: INFO
 
 eureka:
   client:
@@ -25,120 +25,122 @@ spring:
 
   cloud:
     gateway:
-      routes:
-        # 1) Swagger UI
-        - id: user-swagger-ui
-          uri: http://host.docker.internal:8082
-          predicates:
-            - Path=/user/swagger-ui/**
-          filters:
-            - StripPrefix=1
+      server:
+        webflux:
+          routes:
+            # 1) Swagger UI
+                    - id: user-swagger-ui
+                      uri: http://host.docker.internal:8082
+                      predicates:
+                        - Path=/user/swagger-ui/**
+                      filters:
+                        - StripPrefix=1
 
-        - id: user-api-docs
-          uri: http://host.docker.internal:8082
-          predicates:
-            - Path=/user/v3/api-docs/**
-          filters:
-            - StripPrefix=1
+                    - id: user-api-docs
+                      uri: http://host.docker.internal:8082
+                      predicates:
+                        - Path=/user/v3/api-docs/**
+                      filters:
+                        - StripPrefix=1
 
-        - id: user-swagger-config
-          uri: http://host.docker.internal:8082
-          predicates:
-            - Path=/user/v3/api-docs/swagger-config/**
-          filters:
-            - StripPrefix=1
+                    - id: user-swagger-config
+                      uri: http://host.docker.internal:8082
+                      predicates:
+                        - Path=/user/v3/api-docs/swagger-config/**
+                      filters:
+                        - StripPrefix=1
 
-        # 1) Swagger UI
-        - id: dbay-swagger-ui
-          uri: http://host.docker.internal:8080
-          predicates:
-            - Path=/dbay/swagger-ui/**
-          filters:
-            - StripPrefix=1
+                    # 1) Swagger UI
+                    - id: dbay-swagger-ui
+                      uri: http://host.docker.internal:8080
+                      predicates:
+                        - Path=/dbay/swagger-ui/**
+                      filters:
+                        - StripPrefix=1
 
-        - id: dbay-api-docs
-          uri: http://host.docker.internal:8080
-          predicates:
-            - Path=/dbay/v3/api-docs/**
-          filters:
-            - StripPrefix=1
+                    - id: dbay-api-docs
+                      uri: http://host.docker.internal:8080
+                      predicates:
+                        - Path=/dbay/v3/api-docs/**
+                      filters:
+                        - StripPrefix=1
 
-        - id: dbay-swagger-config
-          uri: http://host.docker.internal:8080
-          predicates:
-            - Path=/dbay/v3/api-docs/swagger-config/**
-          filters:
-            - StripPrefix=1
+                    - id: dbay-swagger-config
+                      uri: http://host.docker.internal:8080
+                      predicates:
+                        - Path=/dbay/v3/api-docs/swagger-config/**
+                      filters:
+                        - StripPrefix=1
 
-        - id: admin
-          uri: lb://DBAY
-          predicates:
-            - Path=/api/admin/**
-          filters:
-            - CustomAuthFilter
+                    - id: admin
+                      uri: lb://DBAY
+                      predicates:
+                        - Path=/api/admin/**
+                      filters:
+                        - CustomAuthFilter
 
-        - id: image
-          uri: lb://DBAY
-          predicates:
-            - Path=/api/images/**
-          filters:
-            - CustomAuthFilter
+                    - id: image
+                      uri: lb://DBAY
+                      predicates:
+                        - Path=/api/images/**
+                      filters:
+                        - CustomAuthFilter
 
-        - id: deposits
-          uri: lb://DBAY
-          predicates:
-            - Path=/api/deposits/**
-          filters:
-            - CustomAuthFilter
+                    - id: deposits
+                      uri: lb://DBAY
+                      predicates:
+                        - Path=/api/deposits/**
+                      filters:
+                        - CustomAuthFilter
 
-        - id: carts
-          uri: lb://DBAY
-          predicates:
-            - Path=/api/carts/**
-          filters:
-            - CustomAuthFilter
+                    - id: carts
+                      uri: lb://DBAY
+                      predicates:
+                        - Path=/api/carts/**
+                      filters:
+                        - CustomAuthFilter
 
-        - id: products
-          uri: lb://DBAY
-          predicates:
-            - Path=/api/products/**
-          filters:
-            - CustomAuthFilter
+                    - id: products
+                      uri: lb://DBAY
+                      predicates:
+                        - Path=/api/products/**
+                      filters:
+                        - CustomAuthFilter
 
-        - id: categories
-          uri: lb://DBAY
-          predicates:
-            - Path=/api/categories/**
-          filters:
-            - CustomAuthFilter
+                    - id: categories
+                      uri: lb://DBAY
+                      predicates:
+                        - Path=/api/categories/**
+                      filters:
+                        - CustomAuthFilter
 
-        - id: orders
-          uri: lb://DBAY
-          predicates:
-            - Path=/api/orders/**
-          filters:
-            - CustomAuthFilter
+                    - id: orders
+                      uri: lb://DBAY
+                      predicates:
+                        - Path=/api/orders/**
+                      filters:
+                        - CustomAuthFilter
 
-        - id: payments
-          uri: lb://DBAY
-          predicates:
-            - Path=/api/payments/**
-          filters:
-            - CustomAuthFilter
+                    - id: payments
+                      uri: lb://DBAY
+                      predicates:
+                        - Path=/api/payments/**
+                      filters:
+                        - CustomAuthFilter
 
-        - id: settlements
-          uri: lb://DBAY
-          predicates:
-            - Path=/api/settlements/**
-          filters:
-            - CustomAuthFilter
+                    - id: settlements
+                      uri: lb://DBAY
+                      predicates:
+                        - Path=/api/settlements/**
+                      filters:
+                        - CustomAuthFilter
 
-        - id: users
-          uri: lb://USER-SERVICE
-          predicates:
-            - Path=/api/users/**
-          filters:
-            - CustomAuthFilter
+                    - id: users
+                      uri: lb://USER-SERVICE
+                      predicates:
+                        - Path=/api/users/**
+                      filters:
+                        - CustomAuthFilter
 
 management:
   endpoints:
