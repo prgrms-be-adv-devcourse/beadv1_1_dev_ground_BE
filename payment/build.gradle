@@ -1,6 +1,6 @@
 plugins {
     id 'java'
-    id 'org.springframework.boot' version '3.3.5'
+    id 'org.springframework.boot' version '3.5.8'
     id 'io.spring.dependency-management' version '1.1.7'
 }
 
@@ -25,7 +25,7 @@ repositories {
 }
 
 ext {
-    set('springCloudVersion', "2023.0.3")  // Boot 3.3.x에 맞는 버전
+    set('springCloudVersion', "2025.0.0")
 }
 
 dependencies {
@@ -35,9 +35,9 @@ dependencies {
 
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
-    implementation 'org.springframework.boot:spring-boot-starter-batch'
 
-    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.6.0'
+    // swagger
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.13'
 
     // check param binding
     implementation 'com.github.gavlyukovskiy:p6spy-spring-boot-starter:1.12.0'
@@ -49,7 +49,6 @@ dependencies {
 
     // reactive web
     implementation 'org.springframework.boot:spring-boot-starter-webflux'
-    implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
 
     // h2
     runtimeOnly 'com.h2database:h2'
@@ -61,6 +60,7 @@ dependencies {
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.springframework.security:spring-security-test'
     testImplementation 'org.springframework.kafka:spring-kafka-test'
     testImplementation 'io.projectreactor:reactor-test'
 
@@ -69,6 +69,7 @@ dependencies {
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
     implementation 'org.apache.httpcomponents:httpclient:4.5.13'
+    implementation 'software.amazon.awssdk:url-connection-client'
 
     implementation 'org.springframework.boot:spring-boot-starter-security'
 }
