@@ -1,13 +1,17 @@
 package io.devground.dbay.domain.product.product.service;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
+import co.elastic.clients.elasticsearch._types.FieldValue;
+import co.elastic.clients.elasticsearch._types.SortOrder;
+import co.elastic.clients.elasticsearch._types.query_dsl.BoolQuery;
+import co.elastic.clients.elasticsearch._types.query_dsl.Query;
+import co.elastic.clients.elasticsearch._types.query_dsl.TextQueryType;
+import io.devground.core.model.web.PageDto;
+import io.devground.dbay.domain.product.product.mapper.ProductSearchMapper;
+import io.devground.dbay.domain.product.product.model.dto.*;
+import io.devground.dbay.domain.product.product.model.entity.ProductDocument;
+import io.devground.dbay.domain.product.product.model.vo.SuggestType;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.MDC;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.elasticsearch.client.elc.NativeQuery;
@@ -21,24 +25,7 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
-import co.elastic.clients.elasticsearch._types.FieldValue;
-import co.elastic.clients.elasticsearch._types.SortOrder;
-import co.elastic.clients.elasticsearch._types.query_dsl.BoolQuery;
-import co.elastic.clients.elasticsearch._types.query_dsl.Query;
-import co.elastic.clients.elasticsearch._types.query_dsl.RangeQuery;
-import co.elastic.clients.elasticsearch._types.query_dsl.TextQueryType;
-import co.elastic.clients.json.JsonData;
-import io.devground.core.model.web.PageDto;
-import io.devground.dbay.domain.product.product.mapper.ProductSearchMapper;
-import io.devground.dbay.domain.product.product.model.dto.ProductSearchRequest;
-import io.devground.dbay.domain.product.product.model.dto.ProductSearchResponse;
-import io.devground.dbay.domain.product.product.model.dto.ProductSuggestRequest;
-import io.devground.dbay.domain.product.product.model.dto.ProductSuggestResponse;
-import io.devground.dbay.domain.product.product.model.dto.SuggestOption;
-import io.devground.dbay.domain.product.product.model.entity.ProductDocument;
-import io.devground.dbay.domain.product.product.model.vo.SuggestType;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -183,24 +170,27 @@ public class ProductSearchService {
 			);
 		}
 
+		// TODO: 버전 변경으로 인한 로직 점검 필요
 		// 4. 가격 범위 필터
+/*
 		if (!ObjectUtils.isEmpty(request.minPrice()) || !ObjectUtils.isEmpty(request.maxPrice())) {
 			boolBuilder.filter(f -> f
-				.range(r -> {
-					RangeQuery.Builder rangeQuery = r.field("price");
+				.range(r -> r.number(n -> {
+					n.field("price");
 
 					if (!ObjectUtils.isEmpty(request.minPrice())) {
-						rangeQuery.gte(JsonData.of(request.minPrice()));
+						n.gte(request.minPrice().doubleValue());
 					}
 
 					if (!ObjectUtils.isEmpty(request.maxPrice())) {
-						rangeQuery.lte(JsonData.of(request.maxPrice()));
+						n.lte(request.maxPrice().doubleValue());
 					}
 
-					return rangeQuery;
-				})
+					return n;
+				}))
 			);
 		}
+*/
 
 		// 5. 판매자 필터
 		if (StringUtils.hasText(request.sellerCode())) {
