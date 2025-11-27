@@ -4,8 +4,10 @@ import com.example.user.model.dto.request.EmailCertificationRequest;
 import com.example.user.model.dto.request.UserRequest;
 import com.example.user.model.entity.User;
 
+import jakarta.mail.MessagingException;
+
 public interface UserService {
-	void sendCertificateEmail(String email);
+	void sendCertificateEmail(String email) throws MessagingException;
 
 	void checkCertificateEmail(EmailCertificationRequest emailCertificationRequest);
 

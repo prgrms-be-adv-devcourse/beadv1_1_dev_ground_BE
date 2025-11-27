@@ -12,6 +12,7 @@ import org.thymeleaf.context.Context;
 
 import com.example.user.service.RedisService;
 
+import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,7 +26,7 @@ public class EmailProvider {
 	private final TemplateEngine templateEngine;
 	private final RedisService redisService;
 
-	public void sendEmail(String email, String verificationCode) {
+	public void sendEmail(String email, String verificationCode) throws MessagingException {
 		try {
 			redisService.save(email, verificationCode, Duration.ofMinutes(5));
 
@@ -49,6 +50,8 @@ public class EmailProvider {
 
 		} catch (Exception e) {
 			log.error(e.getMessage());
+
+			throw e;
 		}
 	}
 }
