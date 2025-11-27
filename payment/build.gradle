@@ -69,7 +69,6 @@ dependencies {
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
     implementation 'org.apache.httpcomponents:httpclient:4.5.13'
-    implementation 'software.amazon.awssdk:url-connection-client'
 
     implementation 'org.springframework.boot:spring-boot-starter-security'
 }
