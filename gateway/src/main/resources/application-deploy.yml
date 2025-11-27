@@ -19,18 +19,18 @@ spring:
 
   cloud:
     gateway:
-      globalcors:
-        add-to-simple-url-handler-mapping: true
-        corsConfigurations:
-          '[/**]':
-            allowedOrigins:
-              - "https://dbay.site"
-              - "https://www.dbay.site"
-              - "http://localhost:8000"
-              - "http://localhost:8080"
-            allowedMethods: "*"
-            allowedHeaders: "*"
-            allowCredentials: true
+#      globalcors:
+#        add-to-simple-url-handler-mapping: true
+#        corsConfigurations:
+#          '[/**]':
+#            allowedOrigins:
+#              - "https://dbay.site"
+#              - "https://www.dbay.site"
+#              - "http://localhost:8000"
+#              - "http://localhost:8080"
+#            allowedMethods: "*"
+#            allowedHeaders: "*"
+#            allowCredentials: true
 
       routes:
         - id: user-swagger-ui
