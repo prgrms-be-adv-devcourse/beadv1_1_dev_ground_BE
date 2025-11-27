@@ -19,6 +19,7 @@ import com.example.user.utils.provider.EmailProvider;
 import io.devground.core.events.user.UserCreatedEvent;
 import io.devground.core.events.user.UserDeletedEvent;
 import io.devground.core.model.vo.ErrorCode;
+import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -40,7 +41,7 @@ public class UserServiceImpl implements UserService {
 	private String userJoinCommandTopicName;
 
 	@Override
-	public void sendCertificateEmail(String email) {
+	public void sendCertificateEmail(String email) throws MessagingException {
 		String verificationCode = RandomStringUtils.randomAlphanumeric(10);
 
 		log.info("verificationCode:{}", verificationCode);
