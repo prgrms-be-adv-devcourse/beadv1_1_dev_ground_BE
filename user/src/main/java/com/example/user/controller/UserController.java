@@ -15,6 +15,7 @@ import com.example.user.service.UserService;
 import io.devground.core.model.web.BaseResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
@@ -27,7 +28,7 @@ public class UserController {
 
 	@Operation(summary = "인증메일 전송 API", description = "인증 메일을 전송합니다.")
 	@PostMapping("/send")
-	public BaseResponse<String> sendCertificateEmail(@RequestBody UserRequest userRequest) {
+	public BaseResponse<String> sendCertificateEmail(@RequestBody UserRequest userRequest) throws MessagingException {
 		userService.sendCertificateEmail(userRequest.email());
 
 		return BaseResponse.success(200, userRequest.email(), "인증메일 전송 성공");
