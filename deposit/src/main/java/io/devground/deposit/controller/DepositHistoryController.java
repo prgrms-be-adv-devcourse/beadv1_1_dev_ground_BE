@@ -7,13 +7,11 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.devground.core.dto.deposit.response.DepositHistoryResponse;
 import io.devground.core.model.web.BaseResponse;
 import io.devground.deposit.entity.DepositHistory;
-import io.devground.deposit.entity.vo.DepositHistoryType;
 import io.devground.deposit.mapper.DepositMapper;
 import io.devground.deposit.service.DepositService;
 import lombok.RequiredArgsConstructor;
@@ -28,7 +26,6 @@ public class DepositHistoryController {
 	@GetMapping
 	public BaseResponse<Page<DepositHistoryResponse>> getDepositHistories(
 		@RequestHeader("X-CODE") String userCode,
-		@RequestParam(required = false) DepositHistoryType type,
 		@PageableDefault Pageable pageable) {
 
 		Page<DepositHistory> histories = depositService.getDepositHistories(userCode, pageable);
