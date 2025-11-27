@@ -77,6 +77,11 @@ public class UserServiceImpl implements UserService {
 			|| redisService.find(email, String.class) == null) {
 			throw ErrorCode.NOT_VERIFICATION_EMAIL.throwServiceException();
 		}
+
+		if(findUserByEmail(email)){
+			throw ErrorCode.USER_ALREADY_EXIST.throwServiceException();
+		}
+
 		//사용자 정보 저장
 		User user = UserMapper.toEntity(userRequest, bCryptPasswordEncoder);
 		User savedUser = userRepository.save(user);
@@ -124,4 +129,7 @@ public class UserServiceImpl implements UserService {
 		kafkaTemplate.send(userJoinEventsTopicName, event.userCode(), event);
 	}
 
+	private boolean findUserByEmail(String email) {
+		return userRepository.existsByEmailAndOauthIdIsNull(email);
+	}
 }
