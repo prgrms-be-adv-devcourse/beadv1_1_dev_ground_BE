@@ -1,18 +1,9 @@
-server:
-  port: 8082
-
 spring:
   application:
     name: user-service
 
-  config:
-    import: optional:classpath:env:properties
-
   jpa:
     hibernate:
-      #      default_batch_fetch_size: 500
-      #      format_sql: true
-      ddl-auto: update
       naming:
         physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
 
@@ -22,54 +13,6 @@ spring:
     username: ${MARIA_DB_USERNAME}
     password: ${MAIRA_DB_PASSWORD}
 
-  data:
-    redis:
-      port: 6379
-      host: localhost
-
-  mail:
-    host: smtp.gmail.com
-    port: 587
-    username: ${MAIL_EMAIL}
-    password: ${MAIL_PASSWORD}
-    properties:
-      mail:
-        smtp:
-          auth: true
-          starttls:
-            enable: true
-
-  kafka:
-    bootstrap-servers:
-      - localhost:9092
-    #      - localhost:9094
-    #      - localhost:9096
-
-    producer:
-      key-serializer: org.apache.kafka.common.serialization.StringSerializer
-      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
-
-      acks: all
-
-      properties:
-        delivery.timeout.ms: 120000
-        linger.ms: 0
-        request.timeout.ms: 30000
-        enable.idempotence: true
-        allow.auto.create.topics: false
-
-    consumer:
-      group-id: accounts-service
-      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
-      properties:
-        spring.json.trusted.packages: com.example.*, io.devground.core.*
-        allow.auto.create.topics: false
-
-custom:
-  jwt:
-    secrets:
-      app-key: BBpgN9RJg1nYobpf7KHfJUaoiWSO-gD9EiEApPkV1rWJmH0vAVjMT2Pn-MtaaeElM7GFN88aQFl7d9adK_hB9w
 
 eureka:
   client:
