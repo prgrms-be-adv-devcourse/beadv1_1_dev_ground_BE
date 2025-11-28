@@ -14,4 +14,4 @@ eureka:
   instance:
     prefer-ip-address: true
     ip-address: localhost
-    non-secure-port: 8082
+    non-secure-port: 18080
