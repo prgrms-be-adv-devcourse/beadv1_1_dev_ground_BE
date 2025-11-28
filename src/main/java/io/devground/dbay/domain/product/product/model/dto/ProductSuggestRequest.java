@@ -4,16 +4,16 @@ import io.swagger.v3.oas.annotations.media.Schema;
 
 public record ProductSuggestRequest(
 
-	@Schema(description = "검색 키워드", example = "갤럭")
+	@Schema(description = "검색 키워드")
 	String keyword,
 
-	@Schema(description = "카테고리 ID(옵션, COMPLETION에서 카테고리별 자동완성 제공)", example = "1")
+	@Schema(description = "카테고리 ID")
 	Long categoryId,
 
-	@Schema(description = "판매 완료 상품 포함 여부", defaultValue = "false")
+	@Schema(description = "판매 완료 상품 포함 여부", example = "false")
 	Boolean includeSold,
 
-	@Schema(description = "제안 개수", example = "10", defaultValue = "10")
+	@Schema(description = "추천 개수", example = "10")
 	Integer size
 ) {
 	public ProductSuggestRequest {

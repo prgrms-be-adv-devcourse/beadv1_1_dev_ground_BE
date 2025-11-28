@@ -28,6 +28,7 @@ public class ProductSearchController {
 	@Operation(summary = "상품 검색 By Elasticsearch",
 		description = """
 			Elasticsearch를 활용한 상품 검색 API입니다.
+			NULL 값을 입력하면 해당 필터는 전체 검색으로 동작합니다.
 			
 			지원하는 기능은 아래와 같습니다.
 			
@@ -47,19 +48,7 @@ public class ProductSearchController {
 			- categoryIds=1,2,3, -> 멀티 카테고리(생략 시 전체 카테고리 검색)
 			- minPrice=10000&maxPrice=50000 -> 가격 범위
 			- sortBy=price&sortDirection=ASC -> 가격 오름차순
-			""",
-		parameters = {
-			@Parameter(name = "keyword", description = "검색 키워드", example = "갤럭시"),
-			@Parameter(name = "categoryIds", description = "카테고리 ID 목록(,로 구분)", example = "1,2,3"),
-			@Parameter(name = "minPrice", description = "최소 가격", example = "100000"),
-			@Parameter(name = "maxPrice", description = "최대 가격", example = "500000"),
-			@Parameter(name = "sellerCode", description = "판매자 코드", example = "USER"),
-			@Parameter(name = "productStatus", description = "상품 상태", example = "AVAILABLE"),
-			@Parameter(name = "sortBy", description = "정렬 기준(price/title/createdAt/updatedAt", example = "price"),
-			@Parameter(name = "sortDirection", description = "정렬 방향(ASC/DESC)", example = "ASC"),
-			@Parameter(name = "page", description = "페이지 번호(1부터 시작)", example = "1"),
-			@Parameter(name = "size", description = "페이지 크기(최대 100)", example = "10")
-		}
+			"""
 	)
 	public BaseResponse<PageDto<ProductSearchResponse>> searchProducts(@ParameterObject ProductSearchRequest request) {
 
@@ -74,24 +63,19 @@ public class ProductSearchController {
 	@Operation(summary = "검색어 자동완성 By Elasticsearch",
 		description = """
 			Elasticsearch Suggest를 이용한 검색어 자동완성 API입니다.
+			NULL 값을 입력하면 해당 필터는 전체 검색으로 동작합니다.
 			
 			- Title 및 CategoryName 기준 prefix에 따른 자동완성
 			- 삭제된 상품은 제외
 			- 카테고리별 자동완성(CategoryId) 지원
-			""",
-		parameters = {
-			@Parameter(name = "keyword", description = "검색 키워드", example = "갤럭시"),
-			@Parameter(name = "categoryId", description = "카테고리 ID", example = "1"),
-			@Parameter(name = "includeSold", description = "판매 완료 상품 포함 여부", example = "false"),
-			@Parameter(name = "size", description = "추천 결과 개수", example = "10"),
-		}
+			"""
 	)
 	public BaseResponse<ProductSuggestResponse> suggestCompletion(@ParameterObject ProductSuggestRequest request) {
 
 		return BaseResponse.success(
 			OK.value(),
 			productSearchService.suggestCompletion(request),
-			"검색어 추천이 성공적으로 완료되었습니다."
+			"키워드 자동완성이 성공적으로 완료되었습니다."
 		);
 	}
 
@@ -99,23 +83,18 @@ public class ProductSearchController {
 	@Operation(summary = "연관 검색어 추천 By Elasticsearch",
 		description = """
 			Elasticsearch Suggest를 이용한 연관 검색어 추천 API입니다.
+			NULL 값을 입력하면 해당 필터는 전체 검색으로 동작합니다.
 			
 			- Title, CategoryName, Description에서 Keyword와 함께 자주 등장하는 단어 집계
 			- 삭제된 상품 및 기본값 기준 판매 완료 상품 제외
-			""",
-		parameters = {
-			@Parameter(name = "keyword", description = "검색 키워드", example = "갤럭시"),
-			@Parameter(name = "categoryId", description = "카테고리 ID", example = "1"),
-			@Parameter(name = "includeSold", description = "판매 완료 상품 포함 여부", example = "false"),
-			@Parameter(name = "size", description = "추천 결과 개수", example = "10"),
-		}
+			"""
 	)
 	public BaseResponse<ProductSuggestResponse> suggestRelated(@ParameterObject ProductSuggestRequest request) {
 
 		return BaseResponse.success(
 			OK.value(),
 			productSearchService.suggestRelated(request),
-			"검색어 추천이 성공적으로 완료되었습니다."
+			"연관 검색어 추천이 성공적으로 완료되었습니다."
 		);
 	}
 }
