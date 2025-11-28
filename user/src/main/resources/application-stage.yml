@@ -5,6 +5,10 @@ spring:
     username: root
     password: root1234
 
+  kafka:
+    bootstrap-servers:
+      - localhost:9092
+
 eureka:
   client:
     register-with-eureka: true

@@ -16,4 +16,4 @@ eureka:
     ip-address: dbay
     non-secure-port: 18080
     metadata-map:
-      port: 8082
+      port: 18080
