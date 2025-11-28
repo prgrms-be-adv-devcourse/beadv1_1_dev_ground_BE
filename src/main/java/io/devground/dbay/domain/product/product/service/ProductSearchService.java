@@ -12,6 +12,7 @@ import io.devground.dbay.domain.product.product.model.entity.ProductDocument;
 import io.devground.dbay.domain.product.product.model.vo.SuggestType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
 import org.slf4j.MDC;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.elasticsearch.client.elc.NativeQuery;
@@ -172,7 +173,6 @@ public class ProductSearchService {
 
 		// TODO: 버전 변경으로 인한 로직 점검 필요
 		// 4. 가격 범위 필터
-/*
 		if (!ObjectUtils.isEmpty(request.minPrice()) || !ObjectUtils.isEmpty(request.maxPrice())) {
 			boolBuilder.filter(f -> f
 				.range(r -> r.number(n -> {
@@ -190,7 +190,6 @@ public class ProductSearchService {
 				}))
 			);
 		}
-*/
 
 		// 5. 판매자 필터
 		if (StringUtils.hasText(request.sellerCode())) {

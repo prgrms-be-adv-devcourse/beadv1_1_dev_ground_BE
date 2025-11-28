@@ -24,6 +24,8 @@ public record UpdateProductResponse(
 	@NonNull
 	String description,
 
+	// TODO: 썸네일
+
 	long price,
 
 	List<URL> presignedUrl
