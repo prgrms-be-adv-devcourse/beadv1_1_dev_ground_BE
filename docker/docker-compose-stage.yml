@@ -11,7 +11,7 @@ services:
     container_name: eureka
     working_dir: /app
     volumes:
-      - ./eureka-server-0.0.1-SNAPSHOT.jar:/app/app.jar
+      - ./eureka-server/build/libs/eureka-server-0.0.1-SNAPSHOT.jar:/app/app.jar
     command: [ "java", "-jar", "app.jar" ]
     ports:
       - "8761:8761"
@@ -23,7 +23,7 @@ services:
     depends_on:
       - eureka
     volumes:
-      - ./gateway-0.0.1-SNAPSHOT.jar:/app/app.jar
+      - ./gateway/build/libs/gateway-0.0.1-SNAPSHOT.jar:/app/app.jar
     environment:
       SPRING_PROFILES_ACTIVE: stage
     command: [ "java", "-jar", "app.jar" ]
@@ -69,8 +69,9 @@ services:
       - redis
       - kafka
     volumes:
-      - ./dbay-0.0.1-SNAPSHOT.jar:/app/app.jar
-      - ./logs:/app/logs
+#      - ./dbay-0.0.1-SNAPSHOT.jar:/app/app.jar
+#      - ./logs:/app/logs
+      - ./build/libs/dbay-0.0.1-SNAPSHOT.jar:/app/app.jar
     environment:
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/dbay_user?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
       SPRING_DATASOURCE_USERNAME: root
@@ -97,7 +98,9 @@ services:
       - kafka
       - eureka
     volumes:
-      - ./user-0.0.1-SNAPSHOT.jar:/app/app.jar
+      #- ./user-0.0.1-SNAPSHOT.jar:/app/app.jar
+      - ./user/build/libs/user-0.0.1-SNAPSHOT.jar
+
     environment:
       SPRING_PROFILES_ACTIVE: stage
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/dbay_user?serverTimezone=Asia/Seoul&characterEncoding=UTF-8

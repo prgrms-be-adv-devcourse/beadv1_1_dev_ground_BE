@@ -38,6 +38,8 @@ services:
       TZ: Asia/Seoul
     ports:
       - "3306:3306"
+    volumes:
+      - ./mysql-data:/var/lib/mysql
 
   mariadb:
     image: mariadb:11.3
@@ -61,7 +63,8 @@ services:
       - redis
       - kafka
     volumes:
-      - ./dbay-0.0.1-SNAPSHOT.jar:/app/app.jar
+      #- ./dbay-0.0.1-SNAPSHOT.jar:/app/app.jar
+      - ./build/libs/dbay-0.0.1-SNAPSHOT.jar:/app/app.jar
     environment:
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/dbay_user?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
       SPRING_DATASOURCE_USERNAME: root
@@ -87,7 +90,9 @@ services:
       - kafka
       - eureka
     volumes:
-      - ./user-0.0.1-SNAPSHOT.jar:/app/app.jar
+      #- ./user-0.0.1-SNAPSHOT.jar:/app/app.jar
+      #- ./user/build/libs/user-0.0.1-SNAPSHOT.jar
+      - ./user/build/libs/user-0.0.1-SNAPSHOT.jar:/app/app.jar
     environment:
       SPRING_PROFILES_ACTIVE: local
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/dbay_user?serverTimezone=Asia/Seoul&characterEncoding=UTF-8

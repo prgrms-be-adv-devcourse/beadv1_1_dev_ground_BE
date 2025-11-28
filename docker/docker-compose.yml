@@ -23,9 +23,9 @@ services:
     image: eclipse-temurin:21-jdk
     container_name: eureka
     working_dir: /app
-    volumes:
-      - ./eureka-server-0.0.1-SNAPSHOT.jar:/app/app.jar
-    command: [ "java", "-jar", "app.jar" ]
+#    volumes:
+#      - ./eureka-server-0.0.1-SNAPSHOT.jar:/app/app.jar
+#    command: [ "java", "-jar", "app.jar" ]
     ports:
       - "8761:8761"
 
@@ -35,8 +35,8 @@ services:
     working_dir: /app
     depends_on:
       - eureka
-    volumes:
-      - ./gateway-0.0.1-SNAPSHOT.jar:/app/app.jar
+#    volumes:
+#      - ./gateway-0.0.1-SNAPSHOT.jar:/app/app.jar
     environment:
       SPRING_PROFILES_ACTIVE: deploy
     command: [ "java", "-jar", "app.jar" ]
@@ -53,8 +53,8 @@ services:
       TZ: Asia/Seoul
     ports:
       - "3306:3306"
-    volumes:
-      - ./mysql-data:/var/lib/mysql
+#    volumes:
+#      - ./mysql-data:/var/lib/mysql
 
   mariadb:
     image: mariadb:11.3
@@ -66,8 +66,8 @@ services:
       TZ: Asia/Seoul
     ports:
       - "3307:3306"
-    volumes:
-      - ./maria-data:/var/lib/mysql
+#    volumes:
+#      - ./maria-data:/var/lib/mysql
 
 
   dbay:
@@ -79,8 +79,8 @@ services:
       - mysql
       - redis
       - kafka
-    volumes:
-      - ./dbay-0.0.1-SNAPSHOT.jar:/app/app.jar
+#    volumes:
+#      - ./dbay-0.0.1-SNAPSHOT.jar:/app/app.jar
     environment:
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/dbay_db?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
       SPRING_DATASOURCE_USERNAME: root
@@ -112,8 +112,8 @@ services:
       - redis
       - kafka
       - eureka
-    volumes:
-      - ./user-0.0.1-SNAPSHOT.jar:/app/app.jar
+#    volumes:
+#      - ./user-0.0.1-SNAPSHOT.jar:/app/app.jar
     environment:
       SPRING_PROFILES_ACTIVE: deploy
       SPRING_DATASOURCE_URL: jdbc:mariadb://mariadb:3306/dbay_user?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
@@ -159,8 +159,8 @@ services:
       - xpack.security.http.ssl.enabled=false
       - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
 
-    volumes:
-      - es-data:/usr/share/elasticsearch/data
+#    volumes:
+#      - es-data:/usr/share/elasticsearch/data
 
   kibana:
     image: kibana:9.1.3
