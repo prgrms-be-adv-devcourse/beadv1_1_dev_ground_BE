@@ -7,6 +7,10 @@ spring:
       naming:
         physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
 
+  kafka:
+    bootstrap-servers:
+      - localhost:9092
+
   datasource:
     driver-class-name: org.mariadb.jdbc.Driver
     url: ${MARIA_DB_URL}
