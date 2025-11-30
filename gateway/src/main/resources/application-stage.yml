@@ -6,14 +6,14 @@ spring:
           routes:
             # 1) Swagger UI
             - id: user-swagger-ui
-              uri: http://localhost:8082
+              uri: http://localhost:18080
               predicates:
                 - Path=/user/swagger-ui/**
               filters:
                 - StripPrefix=1
 
             - id: user-openapi
-              uri: http://localhost:8082
+              uri: http://localhost:18080
               predicates:
                 - Path=/v3/api-docs/**
                 - Header=Referer, .*/user/swagger-ui/.*
