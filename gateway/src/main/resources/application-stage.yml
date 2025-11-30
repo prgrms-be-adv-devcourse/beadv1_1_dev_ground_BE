@@ -12,7 +12,7 @@ spring:
               filters:
                 - StripPrefix=1
 
-            - id: user-api-docs
+            - id: user-openapi
               uri: http://localhost:8082
               predicates:
                 - Path=/v3/api-docs/**
@@ -26,7 +26,7 @@ spring:
               filters:
                 - StripPrefix=1
 
-            - id: dbay-api-docs
+            - id: dbay-openapi
               uri: http://localhost:8080
               predicates:
                 - Path=/v3/api-docs/**
@@ -108,7 +108,3 @@ eureka:
     fetch-registry: true
     service-url:
       defaultZone: http://localhost:8761/eureka/
-
-logging:
-  level:
-    org.springframework.cloud.gateway: DEBUG
