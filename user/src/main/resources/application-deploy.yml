@@ -15,5 +15,5 @@ eureka:
     prefer-ip-address: true
     ip-address: dbay
     non-secure-port: 18080
-    metadata-map:
+    metadata-map:0
       port: 18080
