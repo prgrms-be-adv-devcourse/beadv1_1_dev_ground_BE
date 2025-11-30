@@ -1,24 +1,24 @@
-server:
-  port: 8000
-
-logging:
-  level:
-    org.springframework.cloud.gateway: TRACE
-    org.springframework.cloud.gateway.filter: TRACE
-
-eureka:
-  client:
-    register-with-eureka: true
-    fetch-registry: true
-    service-url:
-      defaultZone: http://eureka:8761/eureka/
-
-spring:
-  application:
-    name: api-gateway
-
-  cloud:
-    gateway:
+#server:
+#  port: 8000
+#
+#logging:
+#  level:
+#    org.springframework.cloud.gateway: TRACE
+#    org.springframework.cloud.gateway.filter: TRACE
+#
+#eureka:
+#  client:
+#    register-with-eureka: true
+#    fetch-registry: true
+#    service-url:
+#      defaultZone: http://eureka:8761/eureka/
+#
+#spring:
+#  application:
+#    name: api-gateway
+#
+#  cloud:
+#    gateway:
 #      globalcors:
 #        add-to-simple-url-handler-mapping: true
 #        corsConfigurations:
@@ -31,137 +31,132 @@ spring:
 #            allowedMethods: "*"
 #            allowedHeaders: "*"
 #            allowCredentials: true
-
-      routes:
-        - id: user-swagger-ui
-          uri: lb://USER-SERVICE
-          predicates:
-            - Path=/user/swagger-ui/**
-          filters:
-            - StripPrefix=1
-
-        - id: user-api-docs
-          uri: lb://USER-SERVICE
-          predicates:
-            - Path=/user/v3/api-docs/**
-          filters:
-            - StripPrefix=1
-
-        - id: user-swagger-config
-          uri: lb://USER-SERVICE
-          predicates:
-            - Path=/user/v3/api-docs/swagger-config/**
-          filters:
-            - StripPrefix=1
-
-        # 1) Swagger UI
-        - id: dbay-swagger-ui
-          uri: lb://DBAY
-          predicates:
-            - Path=/dbay/swagger-ui/**
-          filters:
-            - StripPrefix=1
-
-        - id: dbay-api-docs
-          uri: lb://DBAY
-          predicates:
-            - Path=/dbay/v3/api-docs/**
-          filters:
-            - StripPrefix=1
-
-        - id: dbay-swagger-config
-          uri: lb://DBAY
-          predicates:
-            - Path=/dbay/v3/api-docs/swagger-config/**
-          filters:
-            - StripPrefix=1
-
-        - id: user-service
-          uri: lb://USER-SERVICE
-          predicates:
-            - Path=/api/users/**
+#
+#      routes:
+#        - id: user-swagger-ui
+#          uri: lb://USER-SERVICE
+#          predicates:
+#            - Path=/user/swagger-ui/**
 #          filters:
 #            - StripPrefix=1
-
-        #        - id: deposits
-        #          uri: lb://DBAY
-        #          predicates:
-        #            - Path=/api/deposits/**
-        #          filters:
-        #            - CustomAuthFilter
-
-        - id: deposits
-          uri: lb://DBAY
-          predicates:
-            - Path=/dbay/api/deposits/**
-          filters:
-            - StripPrefix=1
-            - CustomAuthFilter
-
-
-        - id: carts
-          uri: lb://DBAY
-          predicates:
-            - Path=/dbay/api/carts/**
-          filters:
-            - StripPrefix=1
-            - CustomAuthFilter
-
-        - id: products
-          uri: lb://DBAY
-          predicates:
-            - Path=/dbay/api/products/**
-          filters:
-            - StripPrefix=1
-            - CustomAuthFilter
-
-        - id: categories
-          uri: lb://DBAY
-          predicates:
-            - Path=/dbay/api/categories/**
-          filters:
-            - StripPrefix=1
-            - CustomAuthFilter
-
-        - id: adminCategories
-          uri: lb://DBAY
-          predicates:
-            - Path=/dbay/api/admin/categories/**
-          filters:
-            - StripPrefix=1
-            - CustomAuthFilter
-
-        - id: orders
-          uri: lb://DBAY
-          predicates:
-            - Path=/dbay/api/orders/**
-          filters:
-            - StripPrefix=1
-            - CustomAuthFilter
-
-        - id: payments
-          uri: lb://DBAY
-          predicates:
-            - Path=/dbay/api/payments/**
-          filters:
-            - StripPrefix=1
-            - CustomAuthFilter
-
-        - id: settlements
-          uri: lb://DBAY
-          predicates:
-            - Path=/dbay/api/settlements/**
-          filters:
-            - StripPrefix=1
-            - CustomAuthFilter
-
-management:
-  endpoints:
-    web:
-      exposure:
-        include: "*"
-
-custom:
-  jwt:
-    secrets:
-      app-key: BBpgN9RJg1nYobpf7KHfJUaoiWSO-gD9EiEApPkV1rWJmH0vAVjMT2Pn-MtaaeElM7GFN88aQFl7d9adK_hB9w
+#
+#        - id: user-api-docs
+#          uri: lb://USER-SERVICE
+#          predicates:
+#            - Path=/user/v3/api-docs/**
+#          filters:
+#            - StripPrefix=1
+#
+#        - id: user-swagger-config
+#          uri: lb://USER-SERVICE
+#          predicates:
+#            - Path=/user/v3/api-docs/swagger-config/**
+#          filters:
+#            - StripPrefix=1
+#
+#        # 1) Swagger UI
+#        - id: dbay-swagger-ui
+#          uri: lb://DBAY
+#          predicates:
+#            - Path=/dbay/swagger-ui/**
+#          filters:
+#            - StripPrefix=1
+#
+#        - id: dbay-api-docs
+#          uri: lb://DBAY
+#          predicates:
+#            - Path=/dbay/v3/api-docs/**
+#          filters:
+#            - StripPrefix=1
+#
+#        - id: dbay-swagger-config
+#          uri: lb://DBAY
+#          predicates:
+#            - Path=/dbay/v3/api-docs/swagger-config/**
+#          filters:
+#            - StripPrefix=1
+#
+#        - id: user-service
+#          uri: lb://USER-SERVICE
+#          predicates:
+#            - Path=/api/users/**
+##          filters:
+##            - StripPrefix=1
+#
+#        #        - id: deposits
+#        #          uri: lb://DBAY
+#        #          predicates:
+#        #            - Path=/api/deposits/**
+#        #          filters:
+#        #            - CustomAuthFilter
+#
+#        - id: deposits
+#          uri: lb://DBAY
+#          predicates:
+#            - Path=/dbay/api/deposits/**
+#          filters:
+#            - StripPrefix=1
+#            - CustomAuthFilter
+#
+#
+#        - id: carts
+#          uri: lb://DBAY
+#          predicates:
+#            - Path=/dbay/api/carts/**
+#          filters:
+#            - StripPrefix=1
+#            - CustomAuthFilter
+#
+#        - id: products
+#          uri: lb://DBAY
+#          predicates:
+#            - Path=/dbay/api/products/**
+#          filters:
+#            - StripPrefix=1
+#            - CustomAuthFilter
+#
+#        - id: categories
+#          uri: lb://DBAY
+#          predicates:
+#            - Path=/dbay/api/categories/**
+#          filters:
+#            - StripPrefix=1
+#            - CustomAuthFilter
+#
+#        - id: adminCategories
+#          uri: lb://DBAY
+#          predicates:
+#            - Path=/dbay/api/admin/categories/**
+#          filters:
+#            - StripPrefix=1
+#            - CustomAuthFilter
+#
+#        - id: orders
+#          uri: lb://DBAY
+#          predicates:
+#            - Path=/dbay/api/orders/**
+#          filters:
+#            - StripPrefix=1
+#            - CustomAuthFilter
+#
+#        - id: payments
+#          uri: lb://DBAY
+#          predicates:
+#            - Path=/dbay/api/payments/**
+#          filters:
+#            - StripPrefix=1
+#            - CustomAuthFilter
+#
+#        - id: settlements
+#          uri: lb://DBAY
+#          predicates:
+#            - Path=/dbay/api/settlements/**
+#          filters:
+#            - StripPrefix=1
+#            - CustomAuthFilter
+#
+#management:
+#  endpoints:
+#    web:
+#      exposure:
+#        include: "*"
