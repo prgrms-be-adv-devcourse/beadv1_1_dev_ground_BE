@@ -53,7 +53,6 @@ services:
       - ./maria-data:/var/lib/mysql
       - ./init-mariadb.sql:/docker-entrypoint-initdb.d/init.sql
 
-
   kafka:
     image: apache/kafka
     container_name: kafka
