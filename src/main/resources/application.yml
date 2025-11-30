@@ -125,11 +125,20 @@ products:
       push-dlt: ${products.topic.image.push}.DLT
       delete-dlt: ${products.topic.image.delete}.DLT
 
+<<<<<<< HEAD
 springdoc:
   api-docs:
     enabled: true
   swagger-ui:
     enabled: true
+=======
+#springdoc:
+#  api-docs:
+#    enabled: true
+#  swagger-ui:
+#    enabled: true
+#    config-url: /dbay/v3/api-docs/swagger-config
+>>>>>>> 82715b2 ([FIX] 운영 환경에서의 Swagger 버그 수정)
 
 custom:
   kafka:
