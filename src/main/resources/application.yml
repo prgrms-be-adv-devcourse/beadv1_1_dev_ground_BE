@@ -125,12 +125,12 @@ products:
       push-dlt: ${products.topic.image.push}.DLT
       delete-dlt: ${products.topic.image.delete}.DLT
 
-springdoc:
-  api-docs:
-    enabled: true
-  swagger-ui:
-    enabled: true
-    config-url: /dbay/v3/api-docs/swagger-config
+#springdoc:
+#  api-docs:
+#    enabled: true
+#  swagger-ui:
+#    enabled: true
+#    config-url: /dbay/v3/api-docs/swagger-config
 
 custom:
   kafka:
