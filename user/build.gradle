@@ -66,7 +66,7 @@ dependencies {
     runtimeOnly 'com.h2database:h2'
 
     // Swagger
-    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.6.0'
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.13'
     implementation 'com.github.gavlyukovskiy:p6spy-spring-boot-starter:1.12.0'
 
     // Thymeleaf

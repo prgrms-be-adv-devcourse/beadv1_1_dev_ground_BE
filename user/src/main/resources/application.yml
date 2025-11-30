@@ -68,13 +68,6 @@ eureka:
     service-url:
       defaultZone: http://eureka:8761/eureka/
 
-#springdoc:
-#  api-docs:
-#    enabled: true
-#  swagger-ui:
-#    enabled: true
-
-
 custom:
   jwt:
     secrets:
@@ -119,10 +112,10 @@ logging:
     org.springframework.batch: INFO
     org.springframework.kafka: debug
 
-springdoc:
-  api-docs:
-    enabled: true
-  swagger-ui:
-    enabled: true
-    config-url: /user/v3/api-docs/swagger-config
-    url: /user/v3/api-docs
+#springdoc:
+#  api-docs:
+#    enabled: true
+#  swagger-ui:
+#    enabled: true
+#    config-url: /user/v3/api-docs/swagger-config
+#    url: /user/v3/api-docs
