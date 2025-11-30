@@ -40,9 +40,6 @@ dependencies {
 
     // swagger
     implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.13'
-//    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.5.0'
-
-//    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.6.0'
 
     // check param binding
     implementation 'com.github.gavlyukovskiy:p6spy-spring-boot-starter:1.12.0'

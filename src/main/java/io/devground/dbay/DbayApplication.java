@@ -9,11 +9,11 @@ import org.springframework.kafka.annotation.EnableKafka;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
-@OpenAPIDefinition(
-        servers = {
-                @Server(url = "/dbay", description = "Dbay service via gateway")
-        }
-)
+// @OpenAPIDefinition(
+//         servers = {
+//                 @Server(url = "/dbay", description = "Dbay service via gateway")
+//         }
+// )
 @EnableAsync
 @EnableKafka
 @EnableScheduling
