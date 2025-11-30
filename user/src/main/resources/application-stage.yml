@@ -19,3 +19,9 @@ eureka:
     prefer-ip-address: true
     ip-address: localhost
     non-secure-port: 18080
+
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    enabled: true
