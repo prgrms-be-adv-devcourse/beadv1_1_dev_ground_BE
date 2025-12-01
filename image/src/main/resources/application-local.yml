@@ -1,6 +1,6 @@
 spring:
   datasource:
-    url: jdbc:h2:./product-db;MODE=MYSQL;
+    url: jdbc:h2:./image-db;MODE=MYSQL;
     driver-class-name: org.h2.Driver
     username: sa
     password:
@@ -11,6 +11,8 @@ spring:
       path: /h2-console
 
   jpa:
+    hibernate:
+      ddl-auto: update
     properties:
       hibernate:
         dialect: org.hibernate.dialect.H2Dialect
