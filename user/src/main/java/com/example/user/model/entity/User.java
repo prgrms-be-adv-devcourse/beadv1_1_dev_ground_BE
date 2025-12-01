@@ -70,10 +70,11 @@ public class User extends BaseEntity {
 	private String username;
 
 	@Builder
-	public User(String name, String password, String email, String nickname, String address, String addressDetail,
+	public User(String name, String password, Long oauthId, String email, String nickname, String address, String addressDetail,
 				String phone, RoleType role, String profileImage) {
 		this.name = name;
 		this.password = password;
+		this.oauthId = oauthId;
 		this.email = email;
 		this.nickname = nickname;
 		this.address = address;
