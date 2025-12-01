@@ -12,12 +12,14 @@ import org.springframework.transaction.annotation.Transactional;
 import com.example.user.mapper.UserMapper;
 import com.example.user.model.dto.request.EmailCertificationRequest;
 import com.example.user.model.dto.request.UserRequest;
+import com.example.user.model.dto.response.UserResponse;
 import com.example.user.model.entity.User;
 import com.example.user.repository.UserRepository;
 import com.example.user.utils.provider.EmailProvider;
 
 import io.devground.core.events.user.UserCreatedEvent;
 import io.devground.core.events.user.UserDeletedEvent;
+import io.devground.core.model.vo.DeleteStatus;
 import io.devground.core.model.vo.ErrorCode;
 import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
@@ -36,9 +38,6 @@ public class UserServiceImpl implements UserService {
 
 	@Value("${users.events.topic.join}")
 	private String userJoinEventsTopicName;
-
-	@Value("${users.commands.topic.join}")
-	private String userJoinCommandTopicName;
 
 	@Override
 	public void sendCertificateEmail(String email) throws MessagingException {
@@ -78,7 +77,7 @@ public class UserServiceImpl implements UserService {
 			throw ErrorCode.NOT_VERIFICATION_EMAIL.throwServiceException();
 		}
 
-		if(findUserByEmail(email)){
+		if (findUserByEmail(email)) {
 			throw ErrorCode.USER_ALREADY_EXIST.throwServiceException();
 		}
 
@@ -101,6 +100,14 @@ public class UserServiceImpl implements UserService {
 	public User getByUserCode(String userCode) {
 		return userRepository.findByCode(userCode)
 			.orElseThrow(() -> new IllegalArgumentException("해당 회원은 존재하지 않습니다."));
+	}
+
+	@Override
+	public UserResponse getByLoginUserCode(String userCode) {
+		User user = userRepository.findByCodeAndDeleteStatus(userCode, DeleteStatus.N)
+			.orElseThrow(ErrorCode.USER_NOT_FOUNT::throwServiceException);
+		return new UserResponse(user.getName(), user.getEmail(), user.getNickname(), user.getPhone(),
+			user.getAddress(), user.getAddressDetail());
 	}
 
 	@Override
