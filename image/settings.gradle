@@ -1,0 +1,4 @@
+rootProject.name = 'image'
+
+include(':core')
+project(':core').projectDir = file('../core')
