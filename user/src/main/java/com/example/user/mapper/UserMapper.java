@@ -2,6 +2,7 @@ package com.example.user.mapper;
 
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
+import com.example.user.model.dto.request.KakaoUserRequest;
 import com.example.user.model.dto.request.UserRequest;
 import io.devground.core.model.entity.RoleType;
 import com.example.user.model.entity.User;
@@ -18,6 +19,18 @@ public class UserMapper {
 			.addressDetail(userRequest.addressDetail())
 			.role(RoleType.USER)
 			.profileImage("")
+			.build();
+	}
+
+	public static User kakaoToEntity(KakaoUserRequest kakaoUserRequest, Long oauthId, BCryptPasswordEncoder bCryptPasswordEncoder) {
+		return User.builder()
+			.email(kakaoUserRequest.email())
+			.name(kakaoUserRequest.name())
+			.password(bCryptPasswordEncoder.encode(kakaoUserRequest.password()))
+			.nickname(kakaoUserRequest.nickname())
+			.phone(kakaoUserRequest.phone())
+			.role(RoleType.USER)
+			.oauthId(oauthId)
 			.build();
 	}
 }
