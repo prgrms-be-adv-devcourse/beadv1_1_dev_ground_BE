@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mariadb-configmap
+
+data:
+  MARIADB_ROOT_PASSWORD: "root1234"
+  MARIADB_DATABASE: "user_db"
+  MARIADB_USER: "root"
+  MARIADB_PASSWORD: "root1234"
+  TZ: "Asia/Seoul"
