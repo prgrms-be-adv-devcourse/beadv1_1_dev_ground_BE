@@ -3,6 +3,8 @@ package com.example.user.service;
 import java.time.Duration;
 import java.util.Optional;
 
+import javax.management.relation.Role;
+
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
@@ -190,24 +192,13 @@ public class KakaoServiceImpl implements KakaoService {
 		String phone = jsonNode.path("kakao_account").path("phone_number").asText();
 		phone = phone.replace("+82 10-", "010-");
 		log.info("phone = {}", phone);
+		String address = jsonNode.path("kakao_account").path("shipping_address").path("base_address").asText();
+		String addressee = jsonNode.path("kakao_account").path("shipping_address").path("detail_address").asText();
 		Long oauthId = jsonNode.get("id").asLong();
 		//카카오 유저는 비밀번호가 없어서 랜덤 값으로 지정
 		String password = RandomStringUtils.randomAlphanumeric(10);
 
-		// 배송지 정보 HTTP 요청 보내기
-		try {
-			res = rt.exchange(
-				"https://kapi.kakao.com/v1/user/shipping_address",
-				HttpMethod.GET,
-				kakaoUserInfoRequest,
-				String.class
-			);
-		} catch (HttpClientErrorException e){
-			log.error("[kakao Data Access API 오류] {}", e.getMessage());
-			throw ErrorCode.DATA_ACCESS_API.throwServiceException();
-		}
-
-		KakaoUserRequest kakaoUser = new KakaoUserRequest(name, email, password, nickname, oauthId, phone);
+		KakaoUserRequest kakaoUser = new KakaoUserRequest(name, email, password, nickname, oauthId, phone, address, addressee);
 		return kakaoUser;
 	}
 
