@@ -15,6 +15,7 @@ import com.example.user.model.dto.request.EmailCertificationRequest;
 import com.example.user.model.dto.request.KakaoCodeRequest;
 import com.example.user.model.dto.request.UserRequest;
 import com.example.user.model.dto.response.LoginResponse;
+import com.example.user.model.dto.response.UserResponse;
 import com.example.user.service.KakaoService;
 import com.example.user.service.UserService;
 
@@ -76,5 +77,11 @@ public class UserController {
 		log.info("카카오 로그인 시도");
 		KakaoCodeRequest kakaoCodeRequest = new KakaoCodeRequest(code);
 		return BaseResponse.success(200, kakaoService.kakaoLogin(kakaoCodeRequest, response, request), "카카오 로그인 성공");
+	}
+
+	@Operation(summary = "회원 정보 조회 API", description = "회원정보를 조회하는 API입니다.")
+	@GetMapping("/")
+	public BaseResponse<UserResponse> login(@RequestHeader("X-CODE") String userCode) throws IOException {
+		return BaseResponse.success(200, userService.getByLoginUserCode(userCode), "회원정보 조회 성공");
 	}
 }
