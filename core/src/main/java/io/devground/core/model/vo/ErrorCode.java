@@ -16,6 +16,8 @@ public enum ErrorCode {
 	METHOD_NOT_ALLOWED(400, "잘못된 Http Method 입니다."),
 	PAGE_MUST_BE_POSITIVE(400, "페이지 번호는 0보다 커야합니다."),
 	PAGE_SIZE_MUST_BE_POSITIVE(400, "페이지 사이즈는 0보다 커야합니다."),
+	JSON_PARSING_ERROR(400, "JSON 파싱이 잘못되었습니다."),
+
 
 	// user/auth
 	UNAUTHORIZED(401, "로그인이 필요합니다."),
@@ -28,6 +30,8 @@ public enum ErrorCode {
 	INVALID_PASSWORD(400, "잘못된 비밀번호입니다."),
 	EMPTY_REFRESH_TOKEN(400, "refresh 토큰이 없습니다."),
 	EXPIRED_REFRESH_TOKEN(400, "refresh 토큰이 만료되었습니다."),
+	DATA_ACCESS_API(401, "데이터를 받아오지 못했습니다"),
+
 
 	// cart
 	CART_ITEM_DELETE_NOT_SELECTED(400, "삭제할 상품이 선택되지 않았습니다."),
