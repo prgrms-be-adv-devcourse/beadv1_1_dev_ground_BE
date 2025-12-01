@@ -1,0 +1,36 @@
+apiVersion: v1
+
+kind: ConfigMap
+
+metadata:
+  name: logstash-configmap
+
+data:
+  logstash.conf: |
+    input {
+      jdbc {
+        jdbc_driver_library => "/opt/logstash/jdbc/mysql-connector-j-9.4.0.jar"
+        jdbc_driver_class   => "com.mysql.cj.jdbc.Driver"
+        jdbc_connection_string => "jdbc:mysql://db-mysql:3306/test_db?serverTimezone=UTC"
+        jdbc_user => "app1"
+        jdbc_password => "app1!"
+        schedule => "* * * * *"
+        last_run_metadata_path => "/usr/share/logstash/.jdbc_last_run_product"
+        use_column_value => true
+        tracking_column => "updated_at"
+        tracking_column_type => "timestamp"
+        statement => "
+          SELECT *
+          FROM product
+          WHERE updated_at >= :sql_last_value
+          ORDER BY updated_at ASC, id ASC"
+      }
+    }
+
+    output {
+      elasticsearch {
+        hosts => ["http://elasticsearch-service:9200"]
+        index => "exp-products"
+        document_id => "%{code}"
+      }
+    }

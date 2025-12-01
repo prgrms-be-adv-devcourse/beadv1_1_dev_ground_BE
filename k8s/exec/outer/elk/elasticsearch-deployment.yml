@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+
+kind: Deployment
+
+metadata:
+  name: elasticsearch
+
+spec:
+
+  replicas: 1
+
+  selector:
+    matchLabels:
+      app: elasticsearch
+
+  template:
+
+    metadata:
+      labels:
+        app: elasticsearch
+
+    spec:
+      containers:
+        - name: elasticsearch
+          image: eddie1031/es:latest
+          ports:
+            - containerPort: 9200
+          envFrom:
+            - configMapRef:
+                name: elasticsearch-configmap
