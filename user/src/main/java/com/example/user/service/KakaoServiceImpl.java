@@ -13,6 +13,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
@@ -32,6 +33,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import io.devground.core.events.user.UserCreatedEvent;
 import io.devground.core.model.entity.RoleType;
 import io.devground.core.model.vo.ErrorCode;
 import jakarta.servlet.http.Cookie;
@@ -56,6 +58,10 @@ public class KakaoServiceImpl implements KakaoService {
 	private final JWTUtil jwtUtil;
 	private final RandomNickname randomNickname;
 	private final BCryptPasswordEncoder bCryptPasswordEncoder;
+	private final KafkaTemplate<String, Object> kafkaTemplate;
+
+	@Value("${users.events.topic.join}")
+	private String userJoinEventsTopicName;
 
 
 	@Override
@@ -217,7 +223,10 @@ public class KakaoServiceImpl implements KakaoService {
 		}
 
 		User user = UserMapper.kakaoToEntity(kakaoUserRequest, oauthId,  bCryptPasswordEncoder);
-		userRepository.save(user);
+		String userCode = userRepository.save(user).getCode();
+		UserCreatedEvent event = new UserCreatedEvent(userCode);
+		log.info("Sending event: {}", event);
+		kafkaTemplate.send(userJoinEventsTopicName, event.userCode(), event);
 	}
 
 	private Cookie createCookie(String key, String value) {
