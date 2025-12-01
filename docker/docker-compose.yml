@@ -18,7 +18,6 @@ services:
     depends_on:
       - gateway
 
-
   eureka:
     image: eclipse-temurin:21-jdk
     container_name: eureka
@@ -69,7 +68,6 @@ services:
 #    volumes:
 #      - ./maria-data:/var/lib/mysql
 
-
   dbay:
     image: eclipse-temurin:21-jdk
     container_name: dbay
@@ -100,8 +98,6 @@ services:
     command: [ "java", "-jar", "app.jar" ]
     ports:
       - "8080:8080"
-
-
 
   user:
     image: eclipse-temurin:21-jdk

@@ -1,0 +1,137 @@
+server:
+  port: 8084
+
+spring:
+  application:
+    name: order
+
+  jpa:
+    hibernate:
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+
+  kafka:
+    bootstrap-servers: localhost:9092
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      acks: all
+      properties:
+        delivery.timeout.ms: 120000
+        linger.ms: 0
+        request.timeout.ms: 30000
+        enable.idempotence: true
+        allow.auto.create.topics: false
+
+    consumer:
+      group-id: dbay-consumer-group
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: io.devground.dbay.*, io.devground.core.*
+        allow.auto.create.topics: false
+
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+#  instance:
+#    prefer-ip-address: true
+#    ip-address: cart
+#    non-secure-port: 8080
+#    metadata-map:
+#      port: 8080
+
+
+
+carts:
+  event:
+    topic:
+      join: carts-join-events
+      purchase: carts-purchase-events
+  command:
+    topic:
+      join: carts-join-commands
+      purchase: carts-purchase-commands
+
+orders:
+  event:
+    topic:
+      purchase: orders-purchase-events
+  command:
+    topic:
+      purchase: orders-purchase-commands
+
+payments:
+  event:
+    topic:
+      purchase: payments-purchase-events
+      name: payments-events
+  command:
+    topic:
+      purchase: payments-purchase-commands
+      name: payments-commands
+
+deposits:
+  event:
+    topic:
+      join: deposits-join-events
+      purchase: deposits-purchase-events
+      name: deposits-events
+  command:
+    topic:
+      join: deposits-join-commands
+      purchase: deposits-purchase-commands
+      name: deposits-commands
+
+settlements:
+  event:
+    topic:
+      name: settlements-events
+  command:
+    topic:
+      name: settlements-commands
+
+products:
+  topic:
+    image:
+      push: product-images-push
+      delete: product-images-delete
+      push-dlt: ${products.topic.image.push}.DLT
+      delete-dlt: ${products.topic.image.delete}.DLT
+
+springdoc:
+  api-docs:
+    enabled: true
+    path: /v3/api-docs
+  swagger-ui:
+    enabled: true
+    path: /swagger-ui.html
+    url: /v3/api-docs
+    config-url: /v3/api-docs/swagger-config
+
+
+custom:
+  kafka:
+    config:
+      topic-partitions: 1
+      topic-replications: 1
+
+images:
+  topic:
+    push: images-push
+    delete: images-delete
+    processed: images-processed
+    processed-dlt: ${images.topic.processed}.DLT
+
+logging:
+  level:
+    org.hibernate.SQL: INFO
+    org.hibernate.orm.jdbc.bind: INFO
+    org.hibernate.orm.jdbc.extract: INFO
+    org.springframework.batch: INFO
+
+external:
+  openfeign-url: http://localhost:8080

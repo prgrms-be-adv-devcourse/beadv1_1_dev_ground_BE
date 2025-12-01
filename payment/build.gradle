@@ -50,6 +50,7 @@ dependencies {
     // reactive web
     implementation 'org.springframework.boot:spring-boot-starter-webflux'
 
+
     // h2
     runtimeOnly 'com.h2database:h2'
 

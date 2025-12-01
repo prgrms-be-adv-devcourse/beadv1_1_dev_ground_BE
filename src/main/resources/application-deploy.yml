@@ -41,11 +41,3 @@ eureka:
     non-secure-port: 8080
     metadata-map:
       port: 8080
-
-springdoc:
-  api-docs:
-    enabled: true
-  swagger-ui:
-    enabled: true
-    config-url: /dbay/v3/api-docs/swagger-config
-    url: /dbay/v3/api-docs

@@ -1,12 +1,17 @@
 server:
-  port: 8082
+  port: 18080
 
 spring:
   profiles:
-    active: stage
+    active: local
 
   config:
     import: optional:classpath:env.properties
+
+  data:
+    redis:
+      port: 6379
+      host: localhost
 
   mail:
     host: smtp.gmail.com
@@ -68,17 +73,16 @@ eureka:
     service-url:
       defaultZone: http://eureka:8761/eureka/
 
-#springdoc:
-#  api-docs:
-#    enabled: true
-#  swagger-ui:
-#    enabled: true
-
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    enabled: true
 
 custom:
   jwt:
     secrets:
-      app-key: BBpgN9RJg1nYobpf7KHfJUaoiWSO-gD9EiEApPkV1rWJmH0vAVjMT2Pn-MtaaeElM7GFN88aQFl7d9adK_hB9w
+      app-key: ${JWT_SECRET_KEY}
 
 users:
   config:
@@ -117,12 +121,4 @@ logging:
     org.hibernate.orm.jdbc.bind: TRACE
     org.hibernate.orm.jdbc.extract: TRACE
     org.springframework.batch: INFO
-    org.springframework.kafka: debug
-
-springdoc:
-  api-docs:
-    enabled: true
-  swagger-ui:
-    enabled: true
-    config-url: /user/v3/api-docs/swagger-config
-    url: /user/v3/api-docs
+    org.springframework.kafka: INFO

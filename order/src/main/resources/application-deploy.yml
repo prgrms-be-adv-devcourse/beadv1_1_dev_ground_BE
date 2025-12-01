@@ -1,0 +1,23 @@
+spring:
+
+  datasource:
+    driver-class-name: com.mysql.jdbc.Driver
+    url: jdbc:mysql://mysql:3306/dbay_order?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+    username: root
+    password: root1234
+
+  kafka:
+    bootstrap-servers: kafka:9090
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://eureka:8761/eureka/
+
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    enabled: true
+    config-url: /dbay/v3/api-docs/swagger-config
+    url: /dbay/v3/api-docs

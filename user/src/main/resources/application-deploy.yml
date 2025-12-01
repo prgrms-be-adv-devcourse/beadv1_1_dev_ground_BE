@@ -1,0 +1,19 @@
+spring:
+  datasource:
+    driver-class-name: org.mariadb.jdbc.Driver
+    url: jdbc:mariadb://localhost:3307/dbay_user?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+    username: root
+    password: root1234
+
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://eureka:8761/eureka/
+  instance:
+    prefer-ip-address: true
+    ip-address: dbay
+    non-secure-port: 18080
+    metadata-map:
+      port: 18080
