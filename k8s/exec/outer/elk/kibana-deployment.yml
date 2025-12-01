@@ -3,27 +3,28 @@ apiVersion: apps/v1
 kind: Deployment
 
 metadata:
-  name: kafka
-  labels:
-    app: kafka
+  name: kibana
 
 spec:
+
+  replicas: 1
+
   selector:
     matchLabels:
-      app: kafka
+      app: kibana
 
   template:
+
     metadata:
-      name: kafka
       labels:
-        app: kafka
+        app: kibana
 
     spec:
       containers:
-        - name: kafka
-          image: apache/kafka
+        - name: kibana
+          image: kibana:9.1.3
           ports:
-            - containerPort: 9092
+            - containerPort: 5601
           envFrom:
             - configMapRef:
-                name: kafka-config-map
+                name: kibana-configmap
