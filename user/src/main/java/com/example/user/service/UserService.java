@@ -2,6 +2,7 @@ package com.example.user.service;
 
 import com.example.user.model.dto.request.EmailCertificationRequest;
 import com.example.user.model.dto.request.UserRequest;
+import com.example.user.model.dto.response.UserResponse;
 import com.example.user.model.entity.User;
 
 import jakarta.mail.MessagingException;
@@ -14,6 +15,8 @@ public interface UserService {
 	User registerUser(UserRequest userRequest);
 
 	User getByUserCode(String userCode);
+
+	UserResponse getByLoginUserCode(String userCode);
 
 	void applyDepositCode(String userCode, String depositCode);
 
