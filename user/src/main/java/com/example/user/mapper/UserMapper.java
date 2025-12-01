@@ -29,6 +29,8 @@ public class UserMapper {
 			.password(bCryptPasswordEncoder.encode(kakaoUserRequest.password()))
 			.nickname(kakaoUserRequest.nickname())
 			.phone(kakaoUserRequest.phone())
+			.address(kakaoUserRequest.address())
+			.addressDetail(kakaoUserRequest.addressDetail())
 			.role(RoleType.USER)
 			.oauthId(oauthId)
 			.build();

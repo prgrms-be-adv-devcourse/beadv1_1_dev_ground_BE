@@ -122,3 +122,19 @@ logging:
     org.hibernate.orm.jdbc.extract: TRACE
     org.springframework.batch: INFO
     org.springframework.kafka: INFO
+
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    enabled: true
+    config-url: /user/v3/api-docs/swagger-config
+    url: /user/v3/api-docs
+
+kakao:
+  api-key: ${KAKAO_API_KEY}
+  client-secret: ${KAKAO_CLIENT_SECRET}
+  redirect-uri: http://localhost:8000/api/users/kakaoLogin
+  authentication:
+    method: client_secret_post
+    grant-type: authorization_code
