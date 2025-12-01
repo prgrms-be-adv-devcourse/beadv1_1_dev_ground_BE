@@ -74,6 +74,12 @@ eureka:
     service-url:
       defaultZone: http://eureka:8761/eureka/
 
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    enabled: true
+
 custom:
   jwt:
     secrets:
