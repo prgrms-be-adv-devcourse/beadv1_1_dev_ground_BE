@@ -176,7 +176,7 @@ public class KakaoServiceImpl implements KakaoService {
 			);
 		} catch (HttpClientErrorException e){
 			log.error("[kakao Data Access API 오류] {}", e.getMessage());
-			throw ErrorCode.DATA_ACCESS_API.throwServiceException();
+			throw ErrorCode.KAKAO_DATA_ACCESS_API.throwServiceException();
 		}
 
 		String resBody = res.getBody();
