@@ -2,8 +2,10 @@ package com.example.user.service;
 
 import com.example.user.model.dto.request.ChangePasswordRequest;
 import com.example.user.model.dto.request.EmailCertificationRequest;
+import com.example.user.model.dto.request.ModifyUserInfoRequest;
 import com.example.user.model.dto.request.UserRequest;
 import com.example.user.model.dto.response.ChangePasswordResponse;
+import com.example.user.model.dto.response.ModifyUserInfoResponse;
 import com.example.user.model.dto.response.UserResponse;
 import com.example.user.model.entity.User;
 
@@ -29,4 +31,6 @@ public interface UserService {
 	void requestDeleteUser(String userCode);
 
 	ChangePasswordResponse changePassword(String userCode, ChangePasswordRequest request);
+
+	ModifyUserInfoResponse modifyUserInfo(String userCode, ModifyUserInfoRequest request);
 }

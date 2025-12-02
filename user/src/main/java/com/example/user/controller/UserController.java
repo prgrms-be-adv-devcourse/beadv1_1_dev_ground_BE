@@ -15,9 +15,11 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.user.model.dto.request.ChangePasswordRequest;
 import com.example.user.model.dto.request.EmailCertificationRequest;
 import com.example.user.model.dto.request.KakaoCodeRequest;
+import com.example.user.model.dto.request.ModifyUserInfoRequest;
 import com.example.user.model.dto.request.UserRequest;
 import com.example.user.model.dto.response.ChangePasswordResponse;
 import com.example.user.model.dto.response.LoginResponse;
+import com.example.user.model.dto.response.ModifyUserInfoResponse;
 import com.example.user.model.dto.response.UserResponse;
 import com.example.user.service.KakaoService;
 import com.example.user.service.UserService;
@@ -92,5 +94,11 @@ public class UserController {
 	@PatchMapping("/pwd")
 	public BaseResponse<ChangePasswordResponse> changePassword(@RequestHeader("X-CODE") String userCode, ChangePasswordRequest changePasswordRequest) {
 		return BaseResponse.success(200, userService.changePassword(userCode, changePasswordRequest), "비밀번호 변경 성공");
+	}
+
+	@Operation(summary = "회원정보 변경 API", description = "회원정보를 변경하는 API입니다.")
+	@PatchMapping("/")
+	public BaseResponse<ModifyUserInfoResponse> modifyUserInfo(@RequestHeader("X-CODE") String userCode, ModifyUserInfoRequest modifyUserInfoRequest) {
+		return BaseResponse.success(200, userService.modifyUserInfo(userCode, modifyUserInfoRequest), "유저 정보 변경 성공");
 	}
 }
