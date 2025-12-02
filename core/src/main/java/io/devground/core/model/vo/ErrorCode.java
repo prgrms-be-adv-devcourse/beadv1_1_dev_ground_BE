@@ -30,7 +30,8 @@ public enum ErrorCode {
 	INVALID_PASSWORD(400, "잘못된 비밀번호입니다."),
 	EMPTY_REFRESH_TOKEN(400, "refresh 토큰이 없습니다."),
 	EXPIRED_REFRESH_TOKEN(400, "refresh 토큰이 만료되었습니다."),
-	DATA_ACCESS_API(401, "데이터를 받아오지 못했습니다"),
+	DATA_ACCESS_API(401, "데이터를 받아오지 못했습니다."),
+	PASSWORD_CONFIRM_MISMATCH(402, "새 비밀번호와 비밀번호 확인이 일치하지 않습니다."),
 
 
 	// cart
