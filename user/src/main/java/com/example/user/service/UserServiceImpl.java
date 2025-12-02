@@ -69,7 +69,7 @@ public class UserServiceImpl implements UserService {
 			redisService.delete(email);
 			redisService.save(email, "Verified", Duration.ofMinutes(10));
 		} else {
-			throw ErrorCode.WRONG_VERIFICATION_CODE.throwServiceException();
+			ErrorCode.WRONG_VERIFICATION_CODE.throwServiceException();
 		}
 	}
 
@@ -83,7 +83,7 @@ public class UserServiceImpl implements UserService {
 		}
 
 		if (findUserByEmail(email)) {
-			throw ErrorCode.USER_ALREADY_EXIST.throwServiceException();
+			ErrorCode.USER_ALREADY_EXIST.throwServiceException();
 		}
 
 		//사용자 정보 저장
@@ -145,7 +145,7 @@ public class UserServiceImpl implements UserService {
 	public ChangePasswordResponse changePassword(String userCode, ChangePasswordRequest request) {
 		User user = userRepository.findByCode(userCode).orElseThrow(ErrorCode.USER_NOT_FOUNT::throwServiceException);
 		if (!request.newPassword().equals(request.newPasswordCheck())) {
-			throw ErrorCode.PASSWORD_CONFIRM_MISMATCH.throwServiceException();
+			ErrorCode.PASSWORD_CONFIRM_MISMATCH.throwServiceException();
 		}
 
 		String password = bCryptPasswordEncoder.encode(request.password());
