@@ -206,7 +206,8 @@ public class UserServiceTest {
 			@Test
 			@DisplayName("유저 정보 전체 수정")
 			void modify_user_all_info_response() {
-				ModifyUserInfoRequest request = new ModifyUserInfoRequest("nickname", "010-0000-0000", "경기도 수원시", "영통구");
+				ModifyUserInfoRequest request = new ModifyUserInfoRequest("nickname", "010-0000-0000", "경기도 수원시",
+					"영통구");
 
 				when(userRepository.findByCode(userCode))
 					.thenReturn(Optional.of(user));
