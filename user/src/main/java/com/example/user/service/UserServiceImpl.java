@@ -13,8 +13,10 @@ import org.springframework.transaction.annotation.Transactional;
 import com.example.user.mapper.UserMapper;
 import com.example.user.model.dto.request.ChangePasswordRequest;
 import com.example.user.model.dto.request.EmailCertificationRequest;
+import com.example.user.model.dto.request.ModifyUserInfoRequest;
 import com.example.user.model.dto.request.UserRequest;
 import com.example.user.model.dto.response.ChangePasswordResponse;
+import com.example.user.model.dto.response.ModifyUserInfoResponse;
 import com.example.user.model.dto.response.UserResponse;
 import com.example.user.model.entity.User;
 import com.example.user.repository.UserRepository;
@@ -154,6 +156,17 @@ public class UserServiceImpl implements UserService {
 
 		return new ChangePasswordResponse(userCode, LocalDateTime.now());
 	}
+
+	@Override
+	public ModifyUserInfoResponse modifyUserInfo(String userCode, ModifyUserInfoRequest request) {
+		User user = userRepository.findByCode(userCode).orElseThrow(ErrorCode.USER_NOT_FOUNT::throwServiceException);
+
+		user.modifyUser(request.nickname(), request.phone(), request.address(), request.addressDetail());
+		userRepository.save(user);
+
+		return new ModifyUserInfoResponse(request.nickname(), request.phone(), request.address(), request.addressDetail());
+	}
+
 
 	private boolean findUserByEmail(String email) {
 		return userRepository.existsByEmailAndOauthIdIsNull(email);

@@ -3,7 +3,6 @@ package com.example.user.model.entity;
 import io.devground.core.model.entity.BaseEntity;
 
 import io.devground.core.model.entity.RoleType;
-import io.devground.core.model.entity.RoleType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -82,6 +81,21 @@ public class User extends BaseEntity {
 		this.phone = phone;
 		this.role = role;
 		this.profileImage = profileImage;
+	}
+
+	public void modifyUser(String nickname, String phone, String address, String addressDetail){
+		if (nickname != null) {
+			this.nickname = nickname;
+		}
+		if (phone != null) {
+			this.phone = phone;
+		}
+		if (address != null) {
+			this.address = address;
+		}
+		if (addressDetail != null) {
+			this.addressDetail = addressDetail;
+		}
 	}
 
 }
