@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -11,9 +12,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.user.model.dto.request.ChangePasswordRequest;
 import com.example.user.model.dto.request.EmailCertificationRequest;
 import com.example.user.model.dto.request.KakaoCodeRequest;
 import com.example.user.model.dto.request.UserRequest;
+import com.example.user.model.dto.response.ChangePasswordResponse;
 import com.example.user.model.dto.response.LoginResponse;
 import com.example.user.model.dto.response.UserResponse;
 import com.example.user.service.KakaoService;
@@ -83,5 +86,11 @@ public class UserController {
 	@GetMapping("/")
 	public BaseResponse<UserResponse> login(@RequestHeader("X-CODE") String userCode) throws IOException {
 		return BaseResponse.success(200, userService.getByLoginUserCode(userCode), "회원정보 조회 성공");
+	}
+
+	@Operation(summary = "비밀번호 변경 API", description = "비밀번호를 변경하는 API입니다.")
+	@PatchMapping("/pwd")
+	public BaseResponse<ChangePasswordResponse> changePassword(@RequestHeader("X-CODE") String userCode, ChangePasswordRequest changePasswordRequest) {
+		return BaseResponse.success(200, userService.changePassword(userCode, changePasswordRequest), "비밀번호 변경 성공");
 	}
 }

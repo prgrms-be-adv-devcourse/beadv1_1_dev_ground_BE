@@ -1,6 +1,7 @@
 package com.example.user.service;
 
 import java.time.Duration;
+import java.time.LocalDateTime;
 
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Value;
@@ -10,8 +11,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.example.user.mapper.UserMapper;
+import com.example.user.model.dto.request.ChangePasswordRequest;
 import com.example.user.model.dto.request.EmailCertificationRequest;
 import com.example.user.model.dto.request.UserRequest;
+import com.example.user.model.dto.response.ChangePasswordResponse;
 import com.example.user.model.dto.response.UserResponse;
 import com.example.user.model.entity.User;
 import com.example.user.repository.UserRepository;
@@ -134,6 +137,22 @@ public class UserServiceImpl implements UserService {
 	public void requestDeleteUser(String userCode) {
 		UserDeletedEvent event = new UserDeletedEvent(userCode);
 		kafkaTemplate.send(userJoinEventsTopicName, event.userCode(), event);
+	}
+
+	@Override
+	public ChangePasswordResponse changePassword(String userCode, ChangePasswordRequest request) {
+		User user = userRepository.findByCode(userCode).orElseThrow(ErrorCode.USER_NOT_FOUNT::throwServiceException);
+		if(!request.newPassword().equals(request.newPasswordCheck())){
+			throw ErrorCode.PASSWORD_CONFIRM_MISMATCH.throwServiceException();
+		}
+
+		String password = bCryptPasswordEncoder.encode(request.password());
+
+		if(user.getPassword().equals(password)) {
+			user.setPassword(bCryptPasswordEncoder.encode(request.newPassword()));
+		}
+
+		return new ChangePasswordResponse(userCode, LocalDateTime.now());
 	}
 
 	private boolean findUserByEmail(String email) {
