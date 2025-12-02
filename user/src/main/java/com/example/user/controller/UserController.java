@@ -70,7 +70,7 @@ public class UserController {
 
 	@Operation(summary = "회원탈퇴 API", description = "회원탈퇴 API입니다.")
 	@DeleteMapping("/")
-	public BaseResponse<String> deleteUser(@RequestHeader("X-CODE") String userCode){
+	public BaseResponse<String> deleteUser(@RequestHeader("X-CODE") String userCode) {
 		userService.requestDeleteUser(userCode);
 
 		return BaseResponse.success(200, "회원탈퇴 성공");
@@ -78,7 +78,8 @@ public class UserController {
 
 	@Operation(summary = "카카오 로그인 API", description = "카카오 로그인 API 입니다.")
 	@GetMapping("/kakaoLogin")
-	public BaseResponse<LoginResponse> kakaoLogin(@RequestParam("code") String code, HttpServletResponse response, HttpServletRequest request) throws IOException {
+	public BaseResponse<LoginResponse> kakaoLogin(@RequestParam("code") String code, HttpServletResponse response,
+		HttpServletRequest request) throws IOException {
 		log.info("카카오 로그인 시도");
 		KakaoCodeRequest kakaoCodeRequest = new KakaoCodeRequest(code);
 		return BaseResponse.success(200, kakaoService.kakaoLogin(kakaoCodeRequest, response, request), "카카오 로그인 성공");
@@ -92,13 +93,15 @@ public class UserController {
 
 	@Operation(summary = "비밀번호 변경 API", description = "비밀번호를 변경하는 API입니다.")
 	@PatchMapping("/pwd")
-	public BaseResponse<ChangePasswordResponse> changePassword(@RequestHeader("X-CODE") String userCode, ChangePasswordRequest changePasswordRequest) {
+	public BaseResponse<ChangePasswordResponse> changePassword(@RequestHeader("X-CODE") String userCode,
+		ChangePasswordRequest changePasswordRequest) {
 		return BaseResponse.success(200, userService.changePassword(userCode, changePasswordRequest), "비밀번호 변경 성공");
 	}
 
 	@Operation(summary = "회원정보 변경 API", description = "회원정보를 변경하는 API입니다.")
 	@PatchMapping("/")
-	public BaseResponse<ModifyUserInfoResponse> modifyUserInfo(@RequestHeader("X-CODE") String userCode, ModifyUserInfoRequest modifyUserInfoRequest) {
+	public BaseResponse<ModifyUserInfoResponse> modifyUserInfo(@RequestHeader("X-CODE") String userCode,
+		ModifyUserInfoRequest modifyUserInfoRequest) {
 		return BaseResponse.success(200, userService.modifyUserInfo(userCode, modifyUserInfoRequest), "유저 정보 변경 성공");
 	}
 }

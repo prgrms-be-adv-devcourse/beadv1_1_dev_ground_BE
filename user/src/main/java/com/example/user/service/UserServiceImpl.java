@@ -144,13 +144,13 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public ChangePasswordResponse changePassword(String userCode, ChangePasswordRequest request) {
 		User user = userRepository.findByCode(userCode).orElseThrow(ErrorCode.USER_NOT_FOUNT::throwServiceException);
-		if(!request.newPassword().equals(request.newPasswordCheck())){
+		if (!request.newPassword().equals(request.newPasswordCheck())) {
 			throw ErrorCode.PASSWORD_CONFIRM_MISMATCH.throwServiceException();
 		}
 
 		String password = bCryptPasswordEncoder.encode(request.password());
 
-		if(user.getPassword().equals(password)) {
+		if (user.getPassword().equals(password)) {
 			user.setPassword(bCryptPasswordEncoder.encode(request.newPassword()));
 		}
 
@@ -164,9 +164,9 @@ public class UserServiceImpl implements UserService {
 		user.modifyUser(request.nickname(), request.phone(), request.address(), request.addressDetail());
 		userRepository.save(user);
 
-		return new ModifyUserInfoResponse(request.nickname(), request.phone(), request.address(), request.addressDetail());
+		return new ModifyUserInfoResponse(request.nickname(), request.phone(), request.address(),
+			request.addressDetail());
 	}
-
 
 	private boolean findUserByEmail(String email) {
 		return userRepository.existsByEmailAndOauthIdIsNull(email);
