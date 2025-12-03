@@ -48,7 +48,9 @@ public class CategoryEntity extends BaseEntity {
 	private String fullPath;
 
 	@Builder
-	public CategoryEntity(CategoryEntity parent, String name, Integer depth) {
+	public CategoryEntity(String code, CategoryEntity parent, String name, Integer depth) {
+		this.registCode(code);
+
 		this.validateDepth(parent, depth);
 		this.parent = parent;
 		this.name = name;

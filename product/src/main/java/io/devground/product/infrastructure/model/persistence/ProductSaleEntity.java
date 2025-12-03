@@ -54,7 +54,9 @@ public class ProductSaleEntity extends BaseEntity {
 	private LocalDateTime soldAt;
 
 	@Builder
-	public ProductSaleEntity(String sellerCode, Long price, ProductEntity product) {
+	public ProductSaleEntity(String code, String sellerCode, Long price, ProductEntity product) {
+		this.registCode(code);
+
 		this.sellerCode = sellerCode;
 		this.price = price;
 		this.product = product;

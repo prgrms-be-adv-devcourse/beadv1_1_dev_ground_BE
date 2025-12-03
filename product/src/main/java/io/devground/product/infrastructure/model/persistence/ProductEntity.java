@@ -52,8 +52,10 @@ public class ProductEntity extends BaseEntity {
 	private ProductSaleEntity productSale;
 
 	@Builder
-	public ProductEntity(CategoryEntity category, String title, String description) {
+	public ProductEntity(String code, CategoryEntity category, String title, String description) {
 		validateCategory(category);
+
+		this.registCode(code);
 		this.category = category;
 		this.title = title;
 		this.description = description;
