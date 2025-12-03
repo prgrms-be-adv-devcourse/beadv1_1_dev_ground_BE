@@ -46,7 +46,7 @@ spring:
 
   kafka:
     bootstrap-servers:
-      - kafka:9090
+      - kafka-service:9090
 
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer

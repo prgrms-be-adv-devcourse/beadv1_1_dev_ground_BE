@@ -1,0 +1,10 @@
+apiVersion: v1
+
+kind: ConfigMap
+
+metadata:
+  name: paymentdb-configmap
+
+data:
+  MYSQL_DATABASE: "dbay_payment"
+  TZ: "Asia/Seoul"

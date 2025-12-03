@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+
+kind: Deployment
+
+metadata:
+  name: eureka
+  labels:
+    app: eureka
+
+spec:
+  replicas: 1
+
+  strategy:
+    type: RollingUpdate
+
+  selector:
+    matchLabels:
+      app: eureka
+
+  template:
+    metadata:
+      name: eureka
+      labels:
+        app: eureka
+
+    spec:
+      containers:
+        - name: eureka
+          image: jihei1/eureka
+          ports:
+            - containerPort: 8761

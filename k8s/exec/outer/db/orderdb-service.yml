@@ -1,0 +1,15 @@
+apiVersion: v1
+
+kind: Service
+
+metadata:
+  name: mysql-order
+
+spec:
+
+  selector:
+    app: mysql-order
+
+  ports:
+    - targetPort: 3306
+      port: 3306

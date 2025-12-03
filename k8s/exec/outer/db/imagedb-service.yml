@@ -1,0 +1,15 @@
+apiVersion: v1
+
+kind: Service
+
+metadata:
+  name: mysql-image
+
+spec:
+
+  selector:
+    app: mysql-image
+
+  ports:
+    - targetPort: 3306
+      port: 3306
