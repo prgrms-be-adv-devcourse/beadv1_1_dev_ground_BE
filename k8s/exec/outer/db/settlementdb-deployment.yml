@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+
+kind: Deployment
+
+metadata:
+  name: postgresql-settlement
+  labels:
+    app: postgresql-settlement
+
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgresql-settlement
+
+  template:
+    metadata:
+      name: postgresql-settlement
+      labels:
+        app: postgresql-settlement
+
+    spec:
+      containers:
+        - name: postgresql-settlement
+          image: postgres
+          ports:
+            - containerPort: 3306
+          envFrom:
+            - configMapRef:
+                name: settlementdb-configmap
+            - secretRef:
+                name: settlementdb-secret

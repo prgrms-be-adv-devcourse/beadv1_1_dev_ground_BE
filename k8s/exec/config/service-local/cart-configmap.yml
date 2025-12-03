@@ -1,0 +1,15 @@
+apiVersion: v1
+
+kind: ConfigMap
+
+metadata:
+  name: cart-local-configmap
+
+data:
+  SPRING_DATASOURCE_URL: "jdbc:postgresql://postgresql-cart:5432/dbay_cart?serverTimezone=Asia/Seoul&characterEncoding=UTF-8"
+  SPRING_KAFKA_BOOTSTRAP_SERVERS: "kafka-service:9090"
+  SPRING_PROFILES_ACTIVE: "local"
+  SPRING_JPA_HIBERNATE_DDL_AUTO: "update"
+  SPRING_DATA_REDIS_HOST: "redis"
+  SPRING_DATA_REDIS_PORT: "6379"
+
