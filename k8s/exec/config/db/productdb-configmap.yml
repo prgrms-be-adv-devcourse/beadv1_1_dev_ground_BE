@@ -1,0 +1,10 @@
+apiVersion: v1
+
+kind: ConfigMap
+
+metadata:
+  name: productdb-configmap
+
+data:
+  MYSQL_DATABASE: "dbay_product"
+  TZ: "Asia/Seoul"

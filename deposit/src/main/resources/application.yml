@@ -5,8 +5,8 @@ spring:
   application:
     name: deposit
 
-#  profiles:
-#    active: local
+  profiles:
+    active: local
 
   jpa:
     hibernate:
@@ -18,10 +18,10 @@ spring:
         default_batch_fetch_size: 500
         format_sql: true
 
-  h2:
-    console:
-      enabled: true
-      path: /h2-console
+#  h2:
+#    console:
+#      enabled: true
+#      path: /h2-console
 
   batch:
     jdbc:

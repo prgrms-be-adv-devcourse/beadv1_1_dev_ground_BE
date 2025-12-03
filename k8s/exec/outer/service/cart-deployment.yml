@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+
+kind: Deployment
+
+metadata:
+  name: cart-service
+  labels:
+    app: cart-service
+
+spec:
+  replicas: 1
+
+  strategy:
+    type: RollingUpdate
+
+  selector:
+    matchLabels:
+      app: cart-service
+
+  template:
+    metadata:
+      name: cart-service
+      labels:
+        app: cart-service
+
+    spec:
+      containers:
+        - name: cart
+          image: jihei1/cart
+          ports:
+            - containerPort: 8081
+          envFrom:
+            - configMapRef:
+                name: cart-configmap
+            - secretRef:
+                name: cart-secret

@@ -1,0 +1,11 @@
+apiVersion: v1
+
+kind: ConfigMap
+
+metadata:
+  name: userdb-configmap
+
+data:
+#  MARIA_DATABASE: "dbay_user"
+  DATABASE: "dbay_user"
+  TZ: "Asia/Seoul"

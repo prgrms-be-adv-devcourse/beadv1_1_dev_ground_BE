@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+
+kind: Deployment
+
+metadata:
+  name: settlement-service
+  labels:
+    app: settlement-service
+
+spec:
+  replicas: 1
+
+  strategy:
+    type: RollingUpdate
+
+  selector:
+    matchLabels:
+      app: settlement-service
+
+  template:
+    metadata:
+      name: settlement-service
+      labels:
+        app: settlement-service
+
+    spec:
+      containers:
+        - name: settlement
+          image: jihei1/settlement
+          ports:
+            - containerPort: 8087
+          envFrom:
+            - configMapRef:
+                name: settlement-configmap
+            - secretRef:
+                name: settlement-secret

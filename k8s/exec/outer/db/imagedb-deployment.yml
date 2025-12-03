@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+
+kind: Deployment
+
+metadata:
+  name: mysql-image
+  labels:
+    app: mysql-image
+
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mysql-image
+
+  template:
+    metadata:
+      name: mysql-image
+      labels:
+        app: mysql-image
+
+    spec:
+      containers:
+        - name: mysql-image
+          image: mysql
+          ports:
+            - containerPort: 3306
+          envFrom:
+            - configMapRef:
+                name: imagedb-configmap
+            - secretRef:
+                name: imagedb-secret

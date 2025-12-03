@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+
+kind: Deployment
+
+metadata:
+  name: product-service
+  labels:
+    app: product-service
+
+spec:
+  replicas: 1
+
+  strategy:
+    type: RollingUpdate
+
+  selector:
+    matchLabels:
+      app: product-service
+
+  template:
+    metadata:
+      name: product-service
+      labels:
+        app: product-service
+
+    spec:
+      containers:
+        - name: product
+          image: jihei1/product
+          ports:
+            - containerPort: 8086
+          envFrom:
+            - configMapRef:
+                name: product-local-configmap
+            - secretRef:
+                name: product-secret

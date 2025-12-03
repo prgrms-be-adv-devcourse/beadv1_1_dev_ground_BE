@@ -47,3 +47,9 @@ docker/product-mysql-data
 docker/image-mysql-data
 spy.log
 /logs
+.jar
+/k8s/exec/config/**/*secret.yml
+/k8s/exec/config/**/*-secret.yml
+*secret.yml
+
+.gradle-cache/

@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+
+kind: Deployment
+
+metadata:
+  name: mysql-image
+  labels:
+    app: mysql-image
+
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mysql-image
+
+  template:
+    metadata:
+      name: mysql-product
+      labels:
+        app: mysql-product
+
+    spec:
+      containers:
+        - name: mysql-product
+          image: mysql
+          ports:
+            - containerPort: 3306
+          envFrom:
+            - configMapRef:
+                name: productdb-configmap
+            - secretRef:
+                name: productdb-secret

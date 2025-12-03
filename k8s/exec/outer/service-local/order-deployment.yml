@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+
+kind: Deployment
+
+metadata:
+  name: order-service
+  labels:
+    app: order-service
+
+spec:
+  replicas: 1
+
+  strategy:
+    type: RollingUpdate
+
+  selector:
+    matchLabels:
+      app: order-service
+
+  template:
+    metadata:
+      name: order-service
+      labels:
+        app: order-service
+
+    spec:
+      containers:
+        - name: order
+          image: jihei1/order
+          ports:
+            - containerPort: 8084
+          envFrom:
+            - configMapRef:
+                name: order-local-configmap
+            - secretRef:
+                name: order-secret
