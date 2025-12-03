@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.devground.core.model.web.BaseResponse;
-import io.devground.product.application.service.ProductApplicationService;
+import io.devground.product.domain.port.in.ProductUseCase;
 import io.devground.product.domain.vo.pagination.PageDto;
 import io.devground.product.domain.vo.pagination.PageQuery;
 import io.devground.product.domain.vo.response.CartProductsResponse;
@@ -38,7 +38,7 @@ import lombok.RequiredArgsConstructor;
 @Tag(name = "ProductController", description = "상품 API")
 public class ProductApiController {
 
-	private final ProductApplicationService productApplication;
+	private final ProductUseCase productApplication;
 
 	// TODO: sellerCode 정책 정해진 후 수정
 	@GetMapping
