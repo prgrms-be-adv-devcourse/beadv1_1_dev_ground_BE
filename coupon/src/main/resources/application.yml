@@ -1,12 +1,15 @@
-server:
-  port: 8082
-
 spring:
   application:
-    name: deposit
+    name: coupon
 
   profiles:
     active: local
+
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://mysql:3306/dbay_coupon?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+    username: root
+    password: root1234
 
   jpa:
     hibernate:
@@ -18,17 +21,12 @@ spring:
         default_batch_fetch_size: 500
         format_sql: true
 
-#  h2:
-#    console:
-#      enabled: true
-#      path: /h2-console
-
-  batch:
-    jdbc:
-      initialize-schema: never
+  h2:
+    console:
+      enabled: false   # H2 비활성화
 
   kafka:
-    bootstrap-servers: kafka:9090
+    bootstrap-servers: localhost:9092
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
@@ -53,13 +51,25 @@ eureka:
     register-with-eureka: true
     fetch-registry: true
     service-url:
-      defaultZone: http://eureka:8761/eureka/
+      defaultZone: http://localhost:8761/eureka/
   instance:
     prefer-ip-address: true
     ip-address: deposit
     non-secure-port: 8089
     metadata-map:
       port: 8089
+
+deposits:
+  event:
+    topic:
+      join: deposits-join-events
+      purchase: deposits-purchase-events
+      name: deposits-events
+  command:
+    topic:
+      join: deposits-join-commands
+      purchase: deposits-purchase-commands
+      name: deposits-commands
 
 springdoc:
   api-docs:
