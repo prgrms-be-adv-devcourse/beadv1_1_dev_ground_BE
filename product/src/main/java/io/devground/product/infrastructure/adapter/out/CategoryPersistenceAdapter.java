@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Repository;
 
+import io.devground.core.model.vo.ErrorCode;
 import io.devground.product.application.port.out.persistence.CategoryPersistencePort;
 import io.devground.product.domain.vo.response.CategoryResponse;
 import io.devground.product.infrastructure.model.persistence.CategoryEntity;
@@ -21,6 +22,20 @@ public class CategoryPersistenceAdapter implements CategoryPersistencePort {
 		List<CategoryEntity> rootCategories = categoryRepository.findCategoriesByParentIsNullOrderByNameAsc();
 
 		return rootCategories.stream()
+			.map(CategoryResponse::new)
+			.toList();
+	}
+
+	@Override
+	public List<CategoryResponse> findChildCategories(Long parentId) {
+
+		if (!categoryRepository.existsCategoryById(parentId)) {
+			ErrorCode.CATEGORY_NOT_FOUND.throwServiceException();
+		}
+
+		List<CategoryEntity> childCategories = categoryRepository.findCategoriesByParentIdOrderByNameAsc(parentId);
+
+		return childCategories.stream()
 			.map(CategoryResponse::new)
 			.toList();
 	}

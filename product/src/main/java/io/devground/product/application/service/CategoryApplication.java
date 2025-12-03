@@ -18,14 +18,16 @@ public class CategoryApplication implements CategoryUseCase {
 	private final CategoryPersistencePort categoryPort;
 
 	@Override
+	@Transactional(readOnly = true)
 	public List<CategoryResponse> getRootCategories() {
 
 		return categoryPort.findRootCategories();
 	}
 
 	@Override
+	@Transactional(readOnly = true)
 	public List<CategoryResponse> getChildCategories(Long parentId) {
 
-		throw new UnsupportedOperationException("구현 중");
+		return categoryPort.findChildCategories(parentId);
 	}
 }
