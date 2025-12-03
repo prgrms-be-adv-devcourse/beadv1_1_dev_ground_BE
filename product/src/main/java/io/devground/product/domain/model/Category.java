@@ -1,10 +1,10 @@
 package io.devground.product.domain.model;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
-import io.devground.product.domain.util.DomainUtil;
-import io.devground.product.domain.vo.DeleteStatus;
+import io.devground.product.domain.util.DomainUtils;
 import io.devground.product.domain.vo.DomainErrorCode;
 
 public class Category {
@@ -12,12 +12,11 @@ public class Category {
 	private static final int MAX_DEPTH = 3;
 
 	private String code;
-	private DeleteStatus deleteStatus;
 
 	private LocalDateTime createdAt;
 	private LocalDateTime updatedAt;
 
-	private Category parent;
+	private String parentCode;
 
 	private List<Category> children;
 
@@ -25,42 +24,43 @@ public class Category {
 	private Integer depth;
 	private String fullPath;
 
-	public Category(Category parent, String name, Integer depth) {
-		this.validate(parent, depth);
+	public Category(String parentCode, Integer parentDepth, String name, String parentFullPath) {
+		int calculatedDepth = (parentDepth == null) ? 1 : parentDepth + 1;
 
-		this.code = DomainUtil.generateCode();
-		this.deleteStatus = DeleteStatus.N;
+		this.validate(calculatedDepth);
+
+		this.code = DomainUtils.generateCode();
 
 		this.createdAt = LocalDateTime.now();
 		this.updatedAt = LocalDateTime.now();
 
-		this.parent = parent;
-		this.children = List.of();
+		this.parentCode = parentCode;
+		this.children = new ArrayList<>();
 
 		this.name = name;
-		this.depth = depth;
+		this.depth = calculatedDepth;
 
-		this.fullPath = this.calculateFullPath(parent, name);
+		this.fullPath = this.calculateFullPath(parentFullPath, name);
 	}
 
 	public void updateClock() {
 		this.updatedAt = LocalDateTime.now();
 	}
 
-	public String calculateFullPath(Category parent, String name) {
-		if (parent == null) {
+	public void linkChildren(List<Category> children) {
+		this.children = children;
+	}
+
+	public String calculateFullPath(String parentFullPath, String name) {
+		if (parentFullPath == null || parentFullPath.isBlank()) {
 			return name;
 		}
 
-		return parent.getFullPath() + "/" + name;
+		return parentFullPath + "/" + name;
 	}
 
 	public String getCode() {
 		return code;
-	}
-
-	public DeleteStatus getDeleteStatus() {
-		return deleteStatus;
 	}
 
 	public LocalDateTime getCreatedAt() {
@@ -71,8 +71,8 @@ public class Category {
 		return updatedAt;
 	}
 
-	public Category getParent() {
-		return parent;
+	public String getParentCode() {
+		return parentCode;
 	}
 
 	public List<Category> getChildren() {
@@ -95,15 +95,9 @@ public class Category {
 		return this.children.isEmpty();
 	}
 
-	private void validate(Category parent, Integer depth) {
-		int calculatedDepth = depth != null ? depth : 1;
-
+	private void validate(int calculatedDepth) {
 		if (calculatedDepth > MAX_DEPTH) {
 			DomainErrorCode.CANNOT_EXCEED_MAX_DEPTH.throwException();
-		}
-
-		if (parent != null && parent.getDepth() + 1 != calculatedDepth) {
-			DomainErrorCode.MISMATCH_ON_DEPTH.throwException();
 		}
 	}
 }

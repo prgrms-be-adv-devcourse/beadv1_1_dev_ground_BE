@@ -5,8 +5,12 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import io.devground.product.application.model.vo.ApplicationImageType;
+import io.devground.product.application.port.out.ImagePort;
 import io.devground.product.application.port.out.persistence.ProductPersistencePort;
+import io.devground.product.domain.model.Product;
 import io.devground.product.domain.port.in.ProductUseCase;
+import io.devground.product.domain.vo.DomainErrorCode;
 import io.devground.product.domain.vo.pagination.PageDto;
 import io.devground.product.domain.vo.pagination.PageQuery;
 import io.devground.product.domain.vo.response.CartProductsResponse;
@@ -27,6 +31,7 @@ import lombok.RequiredArgsConstructor;
 public class ProductApplicationService implements ProductUseCase {
 
 	private final ProductPersistencePort productPort;
+	private final ImagePort imagePort;
 
 	@Override
 	@Transactional(readOnly = true)
@@ -50,7 +55,12 @@ public class ProductApplicationService implements ProductUseCase {
 	@Override
 	public ProductDetailResponse getProductDetail(String productCode) {
 
-		throw new UnsupportedOperationException("구현 중");
+		Product product = productPort.getProductByCode(productCode)
+			.orElseThrow(DomainErrorCode.PRODUCT_NOT_FOUND::throwException);
+
+		List<String> imageUrls = imagePort.getImageUrls(productCode, ApplicationImageType.PRODUCT);
+
+		return new ProductDetailResponse(product, imageUrls);
 	}
 
 	@Override

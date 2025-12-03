@@ -2,14 +2,12 @@ package io.devground.product.domain.model;
 
 import java.time.LocalDateTime;
 
-import io.devground.product.domain.util.DomainUtil;
-import io.devground.product.domain.vo.DeleteStatus;
+import io.devground.product.domain.util.DomainUtils;
 import io.devground.product.domain.vo.ProductSpec;
 
 public class Product {
 
 	private String code;
-	private DeleteStatus deleteStatus;
 
 	private LocalDateTime createdAt;
 	private LocalDateTime updatedAt;
@@ -22,8 +20,7 @@ public class Product {
 
 	public Product(ProductSpec productSpec, Category category) {
 
-		this.code = DomainUtil.generateCode();
-		this.deleteStatus = DeleteStatus.N;
+		this.code = DomainUtils.generateCode();
 
 		this.createdAt = LocalDateTime.now();
 		this.updatedAt = LocalDateTime.now();
@@ -43,10 +40,6 @@ public class Product {
 
 	public String getCode() {
 		return code;
-	}
-
-	public DeleteStatus getDeleteStatus() {
-		return deleteStatus;
 	}
 
 	public LocalDateTime getCreatedAt() {

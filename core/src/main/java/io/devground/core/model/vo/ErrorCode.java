@@ -19,6 +19,9 @@ public enum ErrorCode {
 	JSON_PARSING_ERROR(400, "JSON 파싱이 잘못되었습니다."),
 	PARAMETER_INVALID(400, "잘못된 파라미터 형식입니다."),
 
+	// type
+	IMAGE_TYPE_CANNOT_CONVERT(400, "이미지 타입이 잘못되었습니다."),
+
 	// user/auth
 	UNAUTHORIZED(401, "로그인이 필요합니다."),
 	USER_ALREADY_EXIST(400, "이미 회원가입된 사용자입니다."),
