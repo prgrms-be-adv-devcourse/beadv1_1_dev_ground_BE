@@ -1,5 +1,8 @@
 package io.devground.product.domain.vo.response;
 
+import io.devground.product.infrastructure.model.persistence.ProductEntity;
+import io.devground.product.infrastructure.model.persistence.ProductSaleEntity;
+
 public record GetAllProductsResponse(
 
 	String productCode,
@@ -7,6 +10,15 @@ public record GetAllProductsResponse(
 	String thumbnailUrl,
 	long price
 ) {
+	public GetAllProductsResponse(ProductEntity product, ProductSaleEntity productSale) {
+		this(
+			product.getCode(),
+			product.getTitle(),
+			product.getThumbnailUrl(),
+			productSale.getPrice()
+		);
+	}
+
 	public static GetAllProductsResponseBuilder builder() {
 		return new GetAllProductsResponseBuilder();
 	}
