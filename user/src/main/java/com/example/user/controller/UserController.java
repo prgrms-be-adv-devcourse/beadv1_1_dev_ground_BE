@@ -2,6 +2,7 @@ package com.example.user.controller;
 
 import java.io.IOException;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -103,5 +104,12 @@ public class UserController {
 	public BaseResponse<ModifyUserInfoResponse> modifyUserInfo(@RequestHeader("X-CODE") String userCode,
 		@RequestBody @Valid ModifyUserInfoRequest modifyUserInfoRequest) {
 		return BaseResponse.success(200, userService.modifyUserInfo(userCode, modifyUserInfoRequest), "유저 정보 변경 성공");
+	}
+
+	@Operation(summary = "로그인 확인 여부 API", description = "로그인 확인 여부를 조회합니다")
+	@GetMapping("/isLogin")
+	public BaseResponse<Boolean> isLogin(@RequestHeader(value = "X-CODE", required = false) String userCode) {
+		boolean isLogin = (userCode != null && !userCode.isBlank());
+		return BaseResponse.success(200, isLogin);
 	}
 }
