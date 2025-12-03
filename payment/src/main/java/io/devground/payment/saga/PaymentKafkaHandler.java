@@ -64,7 +64,7 @@ public class PaymentKafkaHandler {
 	//예치금 충전 성공
 	@KafkaHandler
 	public void handleEvent(@Payload DepositChargedSuccess depositChargedSuccessEvent) {
-
+		paymentService.applyDepositCharge(depositChargedSuccessEvent.userCode());
 	}
 
 	//예치금 충전 실패

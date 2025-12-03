@@ -15,5 +15,7 @@ public interface PaymentService {
 
 	void applyDepositPayment(String orderCode);
 
+	void applyDepositCharge(String userCode);
+
 	void cancelDepositPayment(String orderCode);
 }
