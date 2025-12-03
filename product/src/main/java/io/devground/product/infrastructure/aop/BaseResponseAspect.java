@@ -5,8 +5,8 @@ import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.springframework.stereotype.Component;
 
-import io.devground.product.infrastructure.model.web.BaseResponse;
-import io.devground.product.infrastructure.util.LogUtil;
+import io.devground.core.model.web.BaseResponse;
+import io.devground.product.infrastructure.util.LogUtils;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 
@@ -22,12 +22,12 @@ public class BaseResponseAspect {
 		String className = joinPoint.getSignature().getDeclaringType().getSimpleName();
 		String methodName = joinPoint.getSignature().getName();
 
-		LogUtil.logControllerRequest(className, methodName);
+		LogUtils.logControllerRequest(className, methodName);
 
 		Object proceed = joinPoint.proceed();
 
 		if (proceed instanceof BaseResponse<?> baseResponse) {
-			LogUtil.logControllerResponse(className, methodName, baseResponse);
+			LogUtils.logControllerResponse(className, methodName, baseResponse);
 
 			response.setStatus(baseResponse.resultCode());
 		}

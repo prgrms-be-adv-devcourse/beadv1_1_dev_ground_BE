@@ -17,7 +17,7 @@ public enum ErrorCode {
 	PAGE_MUST_BE_POSITIVE(400, "페이지 번호는 0보다 커야합니다."),
 	PAGE_SIZE_MUST_BE_POSITIVE(400, "페이지 사이즈는 0보다 커야합니다."),
 	JSON_PARSING_ERROR(400, "JSON 파싱이 잘못되었습니다."),
-
+	PARAMETER_INVALID(400, "잘못된 파라미터 형식입니다."),
 
 	// user/auth
 	UNAUTHORIZED(401, "로그인이 필요합니다."),
@@ -32,7 +32,6 @@ public enum ErrorCode {
 	EXPIRED_REFRESH_TOKEN(400, "refresh 토큰이 만료되었습니다."),
 	KAKAO_DATA_ACCESS_API(401, "카카오 로그인 정보를 받아오지 못했습니다."),
 	PASSWORD_CONFIRM_MISMATCH(401, "새 비밀번호와 비밀번호 확인이 일치하지 않습니다."),
-
 
 	// cart
 	CART_ITEM_DELETE_NOT_SELECTED(400, "삭제할 상품이 선택되지 않았습니다."),
@@ -53,6 +52,13 @@ public enum ErrorCode {
 	ORDER_CONFIRM_NOT_ALLOWED_BEFORE_DELIVERED(400, "배송완료 전에는 구매확정을 할 수 없습니다."),
 	ORDER_ALREADY_CONFIRMED(400, "이미 구매확정된 주문입니다."),
 	ORDER_CONFIRM_NOT_ALLOWED_BEFORE_TWO_WEEKS(400, "배송완료 후 2주가 지나 자동 구매확정 처리된 주문입니다."),
+
+	// product domain validation
+	DESCRIPTION_MUST_BE_INPUT(400, "상품 설명은 반드시 입력되어야 합니다"),
+	TITLE_MUST_BE_INPUT(400, "상품 이름은 반드시 입력되어야 합니다"),
+	PRICE_MUST_BE_INPUT(400, "상품 가격은 반드시 입력되어야 합니다."),
+	PRICE_MUST_BE_POSITIVE(400, "상품 가격은 반드시 양수여야 합니다."),
+	SELLER_CODE_MUST_BE_INPUT(400, "판매자 코드는 반드시 입력되어야 합니다."),
 
 	// product
 	ONLY_ON_SALE_PRODUCT_CHANGEABLE(400, "판매 중인 상품만 판매 완료 처리할 수 있습니다."),
