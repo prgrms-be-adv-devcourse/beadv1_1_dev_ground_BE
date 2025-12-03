@@ -94,14 +94,14 @@ public class UserController {
 	@Operation(summary = "비밀번호 변경 API", description = "비밀번호를 변경하는 API입니다.")
 	@PatchMapping("/pwd")
 	public BaseResponse<ChangePasswordResponse> changePassword(@RequestHeader("X-CODE") String userCode,
-		ChangePasswordRequest changePasswordRequest) {
+		@RequestBody ChangePasswordRequest changePasswordRequest) {
 		return BaseResponse.success(200, userService.changePassword(userCode, changePasswordRequest), "비밀번호 변경 성공");
 	}
 
 	@Operation(summary = "회원정보 변경 API", description = "회원정보를 변경하는 API입니다.")
 	@PatchMapping("/")
 	public BaseResponse<ModifyUserInfoResponse> modifyUserInfo(@RequestHeader("X-CODE") String userCode,
-		@Valid ModifyUserInfoRequest modifyUserInfoRequest) {
+		@RequestBody @Valid ModifyUserInfoRequest modifyUserInfoRequest) {
 		return BaseResponse.success(200, userService.modifyUserInfo(userCode, modifyUserInfoRequest), "유저 정보 변경 성공");
 	}
 }
