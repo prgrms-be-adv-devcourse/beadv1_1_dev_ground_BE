@@ -225,8 +225,19 @@ public class PaymentServiceImpl implements PaymentService {
 		payment.setPaymentStatus(PaymentStatus.PAYMENT_CANCELLED);
 	}
 
+	@Override
+	public void applyDepositCharge(String userCode){
+		Payment payment = getByUserCode(userCode);
+		payment.setPaymentStatus(PaymentStatus.PAYMENT_COMPLETED);
+	}
+
 	private Payment getByOrderCode(String orderCode) {
 		return paymentRepository.findByOrderCode(orderCode)
+			.orElseThrow(ErrorCode.PAYMENT_NOT_FOUND::throwServiceException);
+	}
+
+	private Payment getByUserCode(String userCode) {
+		return paymentRepository.findByUserCodeAndPaymentStatus(userCode, PaymentStatus.PAYMENT_PENDING)
 			.orElseThrow(ErrorCode.PAYMENT_NOT_FOUND::throwServiceException);
 	}
 }
