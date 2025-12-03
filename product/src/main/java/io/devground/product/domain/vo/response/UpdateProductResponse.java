@@ -1,0 +1,33 @@
+package io.devground.product.domain.vo.response;
+
+import java.net.URL;
+import java.util.List;
+
+import lombok.Builder;
+import lombok.NonNull;
+
+@Builder
+public record UpdateProductResponse(
+
+	@NonNull
+	String productCode,
+
+	@NonNull
+	String productSaleCode,
+
+	@NonNull
+	String sellerCode,
+
+	@NonNull
+	String title,
+
+	@NonNull
+	String description,
+
+	// TODO: 썸네일
+
+	long price,
+
+	List<URL> presignedUrl
+) {
+}
