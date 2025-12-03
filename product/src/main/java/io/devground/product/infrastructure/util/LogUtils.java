@@ -4,18 +4,18 @@ import org.aspectj.lang.JoinPoint;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 
+import io.devground.core.model.exception.ServiceException;
+import io.devground.core.model.vo.ErrorCode;
+import io.devground.core.model.web.BaseResponse;
 import io.devground.product.domain.exception.DomainException;
 import io.devground.product.domain.vo.DomainErrorCode;
 import io.devground.product.infrastructure.app.AppConfig;
-import io.devground.product.infrastructure.exception.InfraException;
-import io.devground.product.infrastructure.model.web.BaseResponse;
-import io.devground.product.infrastructure.vo.InfraErrorCode;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 
 @UtilityClass
 @Slf4j(topic = "service")
-public class LogUtil {
+public class LogUtils {
 
 	public void logControllerRequest(String className, String methodName) {
 
@@ -51,8 +51,8 @@ public class LogUtil {
 				status = String.valueOf(errorCode.getHttpStatus());
 				msg = errorCode.getMessage();
 			}
-			case InfraException exception -> {
-				InfraErrorCode errorCode = exception.getErrorCode();
+			case ServiceException exception -> {
+				ErrorCode errorCode = exception.getErrorCode();
 
 				status = String.valueOf(errorCode.getHttpStatus());
 				msg = errorCode.getMessage();

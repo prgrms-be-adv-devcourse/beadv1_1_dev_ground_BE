@@ -8,11 +8,11 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import io.devground.core.model.exception.ServiceException;
+import io.devground.core.model.vo.ErrorCode;
+import io.devground.core.model.web.BaseResponse;
 import io.devground.product.domain.exception.DomainException;
 import io.devground.product.domain.vo.DomainErrorCode;
-import io.devground.product.infrastructure.exception.InfraException;
-import io.devground.product.infrastructure.model.web.BaseResponse;
-import io.devground.product.infrastructure.vo.InfraErrorCode;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 
@@ -33,10 +33,10 @@ public class GlobalExceptionHandler {
 		return BaseResponse.fail(status, errorCode.getMessage());
 	}
 
-	@ExceptionHandler(InfraException.class)
-	public BaseResponse<String> handleInfraException(InfraException ex) {
+	@ExceptionHandler(ServiceException.class)
+	public BaseResponse<String> handleServiceException(ServiceException ex) {
 
-		InfraErrorCode errorCode = ex.getErrorCode();
+		ErrorCode errorCode = ex.getErrorCode();
 		int status = errorCode.getHttpStatus();
 
 		response.setStatus(status);

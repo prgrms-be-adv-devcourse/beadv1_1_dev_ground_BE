@@ -3,12 +3,12 @@ package io.devground.product.infrastructure.saga.service;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import io.devground.core.model.vo.ErrorCode;
 import io.devground.product.infrastructure.saga.entity.Saga;
 import io.devground.product.infrastructure.saga.repository.SagaRepository;
 import io.devground.product.infrastructure.saga.vo.SagaStatus;
 import io.devground.product.infrastructure.saga.vo.SagaStep;
 import io.devground.product.infrastructure.saga.vo.SagaType;
-import io.devground.product.infrastructure.vo.InfraErrorCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -121,13 +121,13 @@ public class SagaService {
 				referenceCode,
 				SagaStatus.IN_PROCESS
 			)
-			.orElseThrow(InfraErrorCode.SAGA_NOT_FOUND::throwException);
+			.orElseThrow(ErrorCode.SAGA_NOT_FOUND::throwServiceException);
 	}
 
 	@Transactional(readOnly = true)
 	public Saga getSaga(String sagaId) {
 
 		return sagaRepository.findBySagaId(sagaId)
-			.orElseThrow(InfraErrorCode.SAGA_NOT_FOUND::throwException);
+			.orElseThrow(ErrorCode.SAGA_NOT_FOUND::throwServiceException);
 	}
 }

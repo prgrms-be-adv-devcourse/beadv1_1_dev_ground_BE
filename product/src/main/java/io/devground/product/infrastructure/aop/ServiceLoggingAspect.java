@@ -5,7 +5,7 @@ import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.springframework.stereotype.Component;
 
-import io.devground.product.infrastructure.util.LogUtil;
+import io.devground.product.infrastructure.util.LogUtils;
 import lombok.RequiredArgsConstructor;
 
 @Aspect
@@ -18,7 +18,7 @@ public class ServiceLoggingAspect {
 		String className = joinPoint.getSignature().getDeclaringType().getSimpleName();
 		String methodName = joinPoint.getSignature().getName();
 
-		LogUtil.logServiceRequest(className, methodName);
+		LogUtils.logServiceRequest(className, methodName);
 
 		return joinPoint;
 	}
