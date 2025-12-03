@@ -1,14 +1,19 @@
 package io.devground.product.infrastructure.adapter.out;
 
+import java.util.Optional;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import io.devground.product.application.port.out.persistence.ProductPersistencePort;
+import io.devground.product.domain.model.Product;
+import io.devground.product.domain.vo.DomainErrorCode;
 import io.devground.product.domain.vo.pagination.PageDto;
 import io.devground.product.domain.vo.pagination.PageQuery;
 import io.devground.product.domain.vo.response.GetAllProductsResponse;
 import io.devground.product.infrastructure.mapper.PageMapper;
+import io.devground.product.infrastructure.mapper.ProductMapper;
 import io.devground.product.infrastructure.model.persistence.ProductEntity;
 import io.devground.product.infrastructure.util.PageUtils;
 import lombok.RequiredArgsConstructor;
@@ -31,5 +36,14 @@ public class ProductPersistenceAdapter implements ProductPersistencePort {
 			.map(product -> new GetAllProductsResponse(product, product.getProductSale()));
 
 		return PageMapper.from(responses);
+	}
+
+	@Override
+	public Optional<Product> getProductByCode(String code) {
+
+		ProductEntity product = productRepository.findByCode(code)
+			.orElseThrow(DomainErrorCode.PRODUCT_NOT_FOUND::throwException);
+
+		return Optional.of(ProductMapper.toProductDomain(product, product.getProductSale()));
 	}
 }
