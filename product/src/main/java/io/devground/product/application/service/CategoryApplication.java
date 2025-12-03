@@ -20,7 +20,7 @@ public class CategoryApplication implements CategoryUseCase {
 	@Override
 	public List<CategoryResponse> getRootCategories() {
 
-		throw new UnsupportedOperationException("구현 중");
+		return categoryPort.findRootCategories();
 	}
 
 	@Override
