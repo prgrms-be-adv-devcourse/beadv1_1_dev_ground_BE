@@ -29,9 +29,10 @@ public class ProductApplicationService implements ProductUseCase {
 	private final ProductPersistencePort productPort;
 
 	@Override
+	@Transactional(readOnly = true)
 	public PageDto<GetAllProductsResponse> getProducts(PageQuery pageRequest) {
 
-		throw new UnsupportedOperationException("구현 중");
+		return productPort.getProducts(pageRequest);
 	}
 
 	@Override
