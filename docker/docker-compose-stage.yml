@@ -56,7 +56,7 @@ services:
     ports:
       - "3306:3306"
     volumes:
-      - ./product-mysql-data:/var/lib/mysql
+      - product-mysql-data:/var/lib/mysql
 
   image_mysql:
     image: mysql:8.0
@@ -192,3 +192,6 @@ services:
       ELASTICSEARCH_HOSTS: '["http://elasticsearch:9200"]'
     depends_on:
       - elasticsearch
+
+volumes:
+  product-mysql-data:

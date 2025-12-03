@@ -4,7 +4,7 @@ import java.time.LocalDateTime;
 
 import io.devground.core.model.entity.BaseEntity;
 import io.devground.product.domain.vo.DomainErrorCode;
-import io.devground.product.infrastructure.vo.ProductStatus;
+import io.devground.product.domain.vo.ProductStatus;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
