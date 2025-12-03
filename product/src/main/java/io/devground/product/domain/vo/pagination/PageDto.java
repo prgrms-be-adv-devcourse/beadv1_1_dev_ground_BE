@@ -10,17 +10,4 @@ public record PageDto<T>(
 
 	List<T> items
 ) {
-	public PageDto(
-		int currentPageNumber,
-		int pageSize,
-		long totalPages,
-		long totalItems,
-		List<T> items
-	) {
-		this.currentPageNumber = currentPageNumber + 1;
-		this.pageSize = pageSize;
-		this.totalPages = totalPages;
-		this.totalItems = totalItems;
-		this.items = items;
-	}
 }
