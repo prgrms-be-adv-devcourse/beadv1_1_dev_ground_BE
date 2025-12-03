@@ -1,0 +1,33 @@
+server:
+  port: 8090
+
+spring:
+  application:
+    name: chat
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+    properties:
+      hibernate:
+        default_batch_fetch_size: 500
+        format_sql: true
+
+
+  kafka:
+    bootstrap-servers: kafka:9092
+
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://eureka:8761/eureka/
+  instance:
+    prefer-ip-address: true
+    ip-address: chat
+    non-secure-port: 8090
+    metadata-map:
+      port: 8090
