@@ -34,12 +34,12 @@ import io.devground.dbay.domain.product.product.repository.ProductRepository;
 import io.devground.dbay.domain.product.product.repository.ProductSaleRepository;
 import io.devground.dbay.domain.product.product.service.ProductIndexService;
 import io.devground.dbay.domain.product.product.service.ProductService;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 
 // TODO: 추후 Index 작업 Kafka 통신으로 변경. 이후 재시도까지 실패 시 알람,
 @Service
 @Transactional
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class ProductServiceImpl implements ProductService {
 
 	private final ImageClient imageClient;
