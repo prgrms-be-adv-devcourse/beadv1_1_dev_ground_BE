@@ -5,9 +5,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import io.devground.product.application.port.out.persistence.CategoryPersistencePort;
 import io.devground.product.application.port.out.persistence.ProductPersistencePort;
-import io.devground.product.domain.port.in.CategoryUseCase;
 import io.devground.product.domain.port.in.ProductUseCase;
 import io.devground.product.domain.vo.pagination.PageDto;
 import io.devground.product.domain.vo.pagination.PageQuery;
@@ -26,9 +24,8 @@ import lombok.RequiredArgsConstructor;
 @Service
 @Transactional
 @RequiredArgsConstructor
-public class ProductApplicationService implements CategoryUseCase, ProductUseCase {
+public class ProductApplicationService implements ProductUseCase {
 
-	private final CategoryPersistencePort categoryPort;
 	private final ProductPersistencePort productPort;
 
 	@Override
