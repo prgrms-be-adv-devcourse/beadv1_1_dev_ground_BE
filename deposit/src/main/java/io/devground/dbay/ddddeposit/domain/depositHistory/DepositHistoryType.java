@@ -1,6 +1,6 @@
-package io.devground.dbay.deposit.entity.vo;
+package io.devground.dbay.ddddeposit.domain.depositHistory;
 
-import io.devground.dbay.deposit.entity.Deposit;
+import io.devground.dbay.ddddeposit.domain.deposit.Deposit;
 
 public enum DepositHistoryType {
 

@@ -3,14 +3,15 @@ package io.devground.core.dto.deposit.response;
 import java.time.LocalDateTime;
 
 import io.devground.core.model.vo.DepositHistoryType;
+import lombok.Builder;
 
+@Builder
 public record DepositHistoryResponse(
-	Long id,
 	String code,
-	Long depositId,
+	String depositCode,
 	String userCode,
-	Long payerDepositId,
-	Long payeeDepositId,
+	String payerDepositCode,
+	String payeeDepositCode,
 	Long amount,
 	Long balanceAfter,
 	DepositHistoryType type,
