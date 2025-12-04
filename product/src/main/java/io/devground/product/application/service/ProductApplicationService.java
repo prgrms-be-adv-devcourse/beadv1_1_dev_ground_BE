@@ -9,7 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import io.devground.core.model.vo.ImageType;
 import io.devground.product.application.model.vo.ApplicationImageType;
-import io.devground.product.application.port.out.ImagePort;
+import io.devground.product.application.port.out.ImagePersistencePort;
 import io.devground.product.application.port.out.persistence.ProductSearchPort;
 import io.devground.product.application.port.out.persistence.ProductPersistencePort;
 import io.devground.product.domain.model.Product;
@@ -39,7 +39,7 @@ public class ProductApplicationService implements ProductUseCase {
 
 	private final ProductPersistencePort productPort;
 	private final ProductSearchPort productSearchPort;
-	private final ImagePort imagePort;
+	private final ImagePersistencePort imagePersistencePort;
 
 	@Override
 	@Transactional(readOnly = true)
@@ -67,7 +67,7 @@ public class ProductApplicationService implements ProductUseCase {
 		List<String> imageExtensions = request.imageExtensions();
 		List<URL> presignedUrls = new ArrayList<>();
 		if (imageExtensions != null && !imageExtensions.isEmpty()) {
-			presignedUrls = imagePort.prepareUploadUrls(
+			presignedUrls = imagePersistencePort.prepareUploadUrls(
 				new ImageUploadPlan(ImageType.PRODUCT, productCode, imageExtensions)
 			);
 		}
@@ -96,7 +96,7 @@ public class ProductApplicationService implements ProductUseCase {
 		Product product = productPort.getProductByCode(productCode);
 
 		// 이미지 불러오는 부분
-		List<String> imageUrls = imagePort.getImageUrls(productCode, ApplicationImageType.PRODUCT);
+		List<String> imageUrls = imagePersistencePort.getImageUrls(productCode, ApplicationImageType.PRODUCT);
 
 		return new ProductDetailResponse(product, imageUrls);
 	}
