@@ -6,10 +6,13 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
+import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
@@ -26,6 +29,7 @@ import io.devground.core.model.vo.ErrorCode;
 import io.devground.payment.infra.DepositFeignClient;
 import io.devground.payment.model.dto.request.PaymentRequest;
 import io.devground.payment.model.dto.request.RefundRequest;
+import io.devground.payment.model.dto.response.GetPaymentsResponse;
 import io.devground.payment.model.entity.Payment;
 import io.devground.payment.model.vo.PaymentConfirmRequest;
 import io.devground.payment.model.vo.PaymentStatus;
@@ -224,6 +228,29 @@ public class PaymentServiceImpl implements PaymentService {
 	}
 
 	@Override
+	public Page<GetPaymentsResponse> getPayments(String userCode, Pageable pageable) {
+		Page<Payment> paymentPage = pagePaymentsByUserCode(userCode, pageable);
+
+		List<Payment> payments = paymentPage.getContent();
+
+		if(payments.isEmpty()){
+			return Page.empty(pageable);
+		}
+
+		List<GetPaymentsResponse> content = payments.stream()
+			.map(p -> new GetPaymentsResponse(
+				p.getCode(),
+				p.getCreatedAt(),
+				p.getAmount(),
+				p.getPaymentType(),
+				p.getPaymentStatus()
+			))
+			.toList();
+
+		return new PageImpl<>(content, pageable, paymentPage.getTotalElements());
+	}
+
+	@Override
 	public void applyDepositPayment(String orderCode) {
 		Payment payment = getByOrderCode(orderCode);
 		payment.setPaymentStatus(PaymentStatus.PAYMENT_COMPLETED);
@@ -249,5 +276,9 @@ public class PaymentServiceImpl implements PaymentService {
 	private Payment getByUserCode(String userCode) {
 		return paymentRepository.findByUserCodeAndPaymentStatus(userCode, PaymentStatus.PAYMENT_PENDING)
 			.orElseThrow(ErrorCode.PAYMENT_NOT_FOUND::throwServiceException);
+	}
+
+	private Page<Payment> pagePaymentsByUserCode(String userCode, Pageable pageable) {
+		return paymentRepository.findByUserCodeByCreatedAtDesc(userCode, pageable);
 	}
 }
