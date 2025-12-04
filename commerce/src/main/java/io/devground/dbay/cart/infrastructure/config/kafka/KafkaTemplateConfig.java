@@ -1,0 +1,17 @@
+package io.devground.dbay.cart.infrastructure.config.kafka;
+
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.kafka.core.ProducerFactory;
+
+@Configuration
+public class KafkaTemplateConfig {
+
+	@Bean
+	public KafkaTemplate<String, Object> kafkaTemplate(
+		ProducerFactory<String, Object> producerFactory
+	) {
+		return new KafkaTemplate<>(producerFactory);
+	}
+}
