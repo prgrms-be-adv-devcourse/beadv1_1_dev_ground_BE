@@ -22,7 +22,7 @@ public class CategoryPersistenceAdapter implements CategoryPersistencePort {
 	@Override
 	public List<CategoryResponse> findRootCategories() {
 
-		List<CategoryEntity> rootCategories = categoryRepository.findCategoriesByParentIsNullOrderByNameAsc();
+		List<CategoryEntity> rootCategories = categoryRepository.findRootCategories();
 
 		return rootCategories.stream()
 			.map(CategoryResponse::new)

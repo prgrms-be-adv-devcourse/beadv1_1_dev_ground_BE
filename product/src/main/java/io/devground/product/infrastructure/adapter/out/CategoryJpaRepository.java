@@ -16,7 +16,7 @@ public interface CategoryJpaRepository extends JpaRepository<CategoryEntity, Lon
 		WHERE c.parent IS NULL
 		ORDER BY c.name ASC
 		""")
-	List<CategoryEntity> findCategoriesByParentIsNullOrderByNameAsc();
+	List<CategoryEntity> findRootCategories();
 
 	List<CategoryEntity> findCategoriesByParentIdOrderByNameAsc(Long parentId);
 
