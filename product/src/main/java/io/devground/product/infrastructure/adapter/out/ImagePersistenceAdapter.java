@@ -8,14 +8,14 @@ import org.springframework.stereotype.Service;
 import io.devground.core.model.vo.ImageType;
 import io.devground.core.model.web.BaseResponse;
 import io.devground.product.application.model.vo.ApplicationImageType;
-import io.devground.product.application.port.out.ImagePort;
+import io.devground.product.application.port.out.ImagePersistencePort;
 import io.devground.product.infrastructure.adapter.out.client.ImageClient;
 import io.devground.product.infrastructure.model.web.request.ImageUploadPlan;
 import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-public class ImageAdapter implements ImagePort {
+public class ImagePersistenceAdapter implements ImagePersistencePort {
 
 	private final ImageClient imageClient;
 
