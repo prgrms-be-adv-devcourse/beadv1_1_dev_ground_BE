@@ -7,15 +7,15 @@ import lombok.experimental.UtilityClass;
 @UtilityClass
 public class CategoryMapper {
 
-	public Category toDomain(CategoryEntity category) {
+	public Category toDomain(CategoryEntity categoryEntity) {
 
-		CategoryEntity parent = category.getParent();
+		CategoryEntity parent = categoryEntity.getParent();
 
-		return new Category(
-			parent.getCode(),
-			parent.getDepth(),
-			category.getName(),
-			parent.getFullPath()
-		);
+		Category category = new Category(parent.getCode(), parent.getDepth(), categoryEntity.getName(),
+			parent.getFullPath());
+
+		category.updateId(categoryEntity.getId());
+
+		return category;
 	}
 }

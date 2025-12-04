@@ -12,6 +12,7 @@ public enum ErrorCode {
 	INTERNAL_SERVER_ERROR(500, "서버 내부 오류가 발생했습니다."),
 
 	// common
+	CODE_MUST_BE_INPUT(400, "코드는 반드시 입력되어야 합니다."),
 	CODE_INVALID(400, "잘못된 코드 형식입니다."),
 	METHOD_NOT_ALLOWED(400, "잘못된 Http Method 입니다."),
 	PAGE_MUST_BE_POSITIVE(400, "페이지 번호는 0보다 커야합니다."),
@@ -77,6 +78,7 @@ public enum ErrorCode {
 	CATEGORY_NOT_FOUND(404, "카테고리를 찾을 수 없습니다."),
 
 	// image
+	IMAGE_TYPE_MUST_BE_INPUT(400, "이미지 타입은 반드시 입력되어야 합니다."),
 	IMAGE_NOT_FOUND(404, "이미지를 찾을 수 없습니다."),
 
 	// s3
