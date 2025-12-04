@@ -19,6 +19,7 @@ public class ProductMapper {
 		);
 
 		product.linkProductSale(toProductSaleDomain(productSaleEntity));
+		product.updateId(productEntity.getId());
 
 		return product;
 	}

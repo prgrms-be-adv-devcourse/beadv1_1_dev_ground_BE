@@ -1,7 +1,5 @@
 package io.devground.product.infrastructure.adapter.out;
 
-import java.util.Optional;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
@@ -14,7 +12,10 @@ import io.devground.product.domain.vo.pagination.PageQuery;
 import io.devground.product.domain.vo.response.GetAllProductsResponse;
 import io.devground.product.infrastructure.mapper.PageMapper;
 import io.devground.product.infrastructure.mapper.ProductMapper;
+import io.devground.product.infrastructure.model.persistence.CategoryEntity;
 import io.devground.product.infrastructure.model.persistence.ProductEntity;
+import io.devground.product.infrastructure.model.persistence.ProductSaleEntity;
+import io.devground.product.infrastructure.model.web.request.RegistProductRequest;
 import io.devground.product.infrastructure.util.PageUtils;
 import lombok.RequiredArgsConstructor;
 
@@ -22,6 +23,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class ProductPersistenceAdapter implements ProductPersistencePort {
 
+	private final CategoryJpaRepository categoryRepository;
 	private final ProductJpaRepository productRepository;
 	private final ProductSaleJpaRepository productSaleRepository;
 
@@ -39,11 +41,38 @@ public class ProductPersistenceAdapter implements ProductPersistencePort {
 	}
 
 	@Override
-	public Optional<Product> getProductByCode(String code) {
+	public Product getProductByCode(String code) {
 
 		ProductEntity product = productRepository.findByCode(code)
 			.orElseThrow(DomainErrorCode.PRODUCT_NOT_FOUND::throwException);
 
-		return Optional.of(ProductMapper.toProductDomain(product, product.getProductSale()));
+		return ProductMapper.toProductDomain(product, product.getProductSale());
+	}
+
+	@Override
+	public Product save(String sellerCode, RegistProductRequest request) {
+
+		CategoryEntity categoryEntity = categoryRepository.findById(request.categoryId())
+			.orElseThrow(DomainErrorCode.CATEGORY_NOT_FOUND::throwException);
+
+		ProductEntity productEntity = ProductEntity.builder()
+			.category(categoryEntity)
+			.title(request.title())
+			.description(request.description())
+			.build();
+
+		productRepository.save(productEntity);
+
+		ProductSaleEntity productSaleEntity = ProductSaleEntity.builder()
+			.product(productEntity)
+			.price(request.price())
+			.sellerCode(sellerCode)
+			.build();
+
+		productSaleEntity.addProduct(productEntity);
+
+		productSaleRepository.save(productSaleEntity);
+
+		return ProductMapper.toProductDomain(productEntity, productSaleEntity);
 	}
 }
