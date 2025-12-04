@@ -7,6 +7,7 @@ import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.Map;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -24,6 +25,7 @@ import io.devground.core.model.vo.DepositHistoryType;
 import io.devground.core.model.vo.ErrorCode;
 import io.devground.payment.infra.DepositFeignClient;
 import io.devground.payment.model.dto.request.PaymentRequest;
+import io.devground.payment.model.dto.request.RefundRequest;
 import io.devground.payment.model.entity.Payment;
 import io.devground.payment.model.vo.PaymentConfirmRequest;
 import io.devground.payment.model.vo.PaymentStatus;
@@ -201,10 +203,18 @@ public class PaymentServiceImpl implements PaymentService {
 
 	@Override
 	@Transactional
-	public Payment refund(String userCode, PaymentRequest request) {
+	public void refund(RefundRequest request) {
+		PaymentStatus status = PaymentStatus.PAYMENT_REFUNDED;
 
-		return paymentRepository.findByOrderCode(request.getOrderCode())
-			.orElseThrow(() -> new IllegalArgumentException("결제 내역을 찾을 수 없습니다."));
+		Payment payment = Payment.builder()
+			.userCode(request.userCode())
+			.orderCode(request.orderCode())
+			.amount(request.amount())
+			.build();
+
+		payment.setPaymentStatus(status);
+
+		paymentRepository.save(payment);
 	}
 
 	@Override
