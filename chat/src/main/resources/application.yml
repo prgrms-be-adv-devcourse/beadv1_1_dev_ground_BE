@@ -13,7 +13,7 @@ spring:
 
   data:
     mongodb:
-      uri: mongodb+srv://jihei0316_db_user:uWCyDsTQDkebyiEJ@chat.jsp7fdp.mongodb.net/chat?retryWrites=true&w=majority&appName=Chat
+      uri: ${MONGO_KEY}
 
   jpa:
     hibernate:

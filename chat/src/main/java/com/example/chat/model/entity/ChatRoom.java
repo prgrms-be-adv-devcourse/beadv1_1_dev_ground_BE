@@ -2,37 +2,37 @@ package com.example.chat.model.entity;
 
 import com.example.chat.enums.ChatRoomStatus;
 import io.devground.core.model.entity.BaseEntity;
-import jakarta.persistence.*;
+import jakarta.persistence.Id;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.util.UUID;
+
+@Document(collection = "chatRooms")
 @NoArgsConstructor
-@Entity
 @Getter
 public class ChatRoom extends BaseEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private String id;
 
-    @Column(nullable = false)
-    private Long productId;
+    private String chatCode = UUID.randomUUID().toString();
 
-    @Column(nullable = false)
-    private Long sellerId;
+    private Long productCode;
 
-    @Column(nullable = false)
-    private Long buyerId;
+    private Long sellerCode;
 
-    @Column(nullable = false)
+    private Long buyerCode;
+
     private ChatRoomStatus status;
 
     @Builder
-    public ChatRoom(Long productId, Long sellerId, Long buyerId, ChatRoomStatus status) {
-        this.productId = productId;
-        this.sellerId = sellerId;
-        this.buyerId = buyerId;
+    public ChatRoom(Long productCode, Long sellerCode, Long buyerCode, ChatRoomStatus status) {
+        this.productCode = productCode;
+        this.sellerCode = sellerCode;
+        this.buyerCode = buyerCode;
         this.status = status;
     }
 

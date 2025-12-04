@@ -5,32 +5,28 @@ import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.data.mongodb.core.mapping.Document;
 
+@Document(collection = "chatMessages")
 @NoArgsConstructor
-@Entity
 @Getter
 public class ChatMessages extends BaseEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
-    private Long roomId;
+    private Long chatId;
 
-    @Column(nullable = false)
     private String message;
 
-    @Column(nullable = false)
-    private Long senderId;
+    private Long senderCode;
 
-    @Column(nullable = false)
     private Boolean isRead;
 
     @Builder
-    public ChatMessages(Long roomId, Long senderId, String message, Boolean isRead) {
-        this.roomId = roomId;
-        this.senderId = senderId;
+    public ChatMessages(Long chatId, Long senderCode, String message, Boolean isRead) {
+        this.chatId = chatId;
+        this.senderCode = senderCode;
         this.message = message;
         this.isRead = false;
     }
