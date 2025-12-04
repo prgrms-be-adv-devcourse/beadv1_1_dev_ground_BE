@@ -1,6 +1,8 @@
 package io.devground.core.commands.cart;
 
+import jakarta.validation.constraints.NotBlank;
+
 public record CreateCartCommand(
-	String userCode
+	@NotBlank() String userCode
 ) {
 }
