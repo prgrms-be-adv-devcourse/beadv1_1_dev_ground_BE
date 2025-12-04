@@ -8,6 +8,11 @@ spring:
   kafka:
     bootstrap-servers: localhost:9092
 
+  elasticsearch:
+    uris: http://localhost:9200
+    connection-timeout: 10s
+    socket-timeout: 60s
+
 eureka:
   client:
     service-url:
