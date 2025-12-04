@@ -1,6 +1,7 @@
 package io.devground.payment.service;
 
 import io.devground.payment.model.dto.request.PaymentRequest;
+import io.devground.payment.model.dto.request.RefundRequest;
 import io.devground.payment.model.entity.Payment;
 import io.devground.payment.model.vo.PaymentConfirmRequest;
 
@@ -9,7 +10,7 @@ public interface PaymentService {
 
 	Payment pay(PaymentRequest request);
 
-	Payment refund(String userCode, PaymentRequest request);
+	void refund(RefundRequest request);
 
 	Payment confirmPayment(PaymentRequest request) throws Exception;
 

@@ -7,11 +7,15 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Component;
 
+import io.devground.core.commands.deposit.RefundDeposit;
 import io.devground.core.commands.payment.CancelCreatePaymentCommand;
 import io.devground.core.commands.payment.CompletePaymentCommand;
+import io.devground.core.commands.payment.DepositRefundCommand;
 import io.devground.core.commands.payment.PaymentCreateCommand;
 import io.devground.core.event.deposit.DepositChargeFailed;
 import io.devground.core.event.deposit.DepositChargedSuccess;
+import io.devground.core.model.vo.DepositHistoryType;
+import io.devground.payment.model.dto.request.RefundRequest;
 import io.devground.payment.model.vo.PaymentConfirmRequest;
 import io.devground.payment.service.PaymentService;
 import lombok.RequiredArgsConstructor;
@@ -55,10 +59,20 @@ public class PaymentKafkaHandler {
 		paymentService.applyDepositPayment(completePaymentCommand.orderCode());
 	}
 
-	//결제 취소
+	//결제 실패
 	@KafkaHandler
 	public void handleEvent(@Payload CancelCreatePaymentCommand command) {
 		paymentService.cancelDepositPayment(command.orderCode());
+	}
+
+	//예치금 환불(결제 취소)
+	@KafkaHandler
+	public void handleEvent(@Payload DepositRefundCommand command) {
+		RefundRequest request = new RefundRequest(command.userCode(), command.orderCode(), command.amount());
+		paymentService.refund(request);
+
+		RefundDeposit refundDeposit = new RefundDeposit(command.userCode(), command.amount(), DepositHistoryType.REFUND_INTERNAL);
+		kafkaTemplate.send(depositsCommandTopic, refundDeposit);
 	}
 
 	//예치금 충전 성공
