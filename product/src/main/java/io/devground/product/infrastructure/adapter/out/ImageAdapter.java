@@ -10,7 +10,7 @@ import io.devground.core.model.web.BaseResponse;
 import io.devground.product.application.model.vo.ApplicationImageType;
 import io.devground.product.application.port.out.ImagePort;
 import io.devground.product.infrastructure.adapter.out.client.ImageClient;
-import io.devground.product.infrastructure.model.web.request.GeneratePresignedRequest;
+import io.devground.product.infrastructure.model.web.request.ImageUploadPlan;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -30,7 +30,7 @@ public class ImageAdapter implements ImagePort {
 	}
 
 	@Override
-	public List<URL> generatePresignedUrls(GeneratePresignedRequest request) {
+	public List<URL> prepareUploadUrls(ImageUploadPlan request) {
 
 		BaseResponse<List<URL>> presignedUrlResponses = imageClient.generatePresignedUrls(request)
 			.throwIfNotSuccess();

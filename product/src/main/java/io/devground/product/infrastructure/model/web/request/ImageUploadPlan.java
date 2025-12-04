@@ -7,7 +7,7 @@ import org.springframework.util.StringUtils;
 import io.devground.core.model.vo.ErrorCode;
 import io.devground.core.model.vo.ImageType;
 
-public record GeneratePresignedRequest(
+public record ImageUploadPlan(
 
 	ImageType imageType,
 
@@ -15,7 +15,7 @@ public record GeneratePresignedRequest(
 
 	List<String> fileExtensions
 ) {
-	public GeneratePresignedRequest {
+	public ImageUploadPlan {
 		if (imageType == null) {
 			ErrorCode.IMAGE_TYPE_MUST_BE_INPUT.throwServiceException();
 		}

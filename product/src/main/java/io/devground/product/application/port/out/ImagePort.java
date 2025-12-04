@@ -4,11 +4,11 @@ import java.net.URL;
 import java.util.List;
 
 import io.devground.product.application.model.vo.ApplicationImageType;
-import io.devground.product.infrastructure.model.web.request.GeneratePresignedRequest;
+import io.devground.product.infrastructure.model.web.request.ImageUploadPlan;
 
 public interface ImagePort {
 
 	List<String> getImageUrls(String productCode, ApplicationImageType imageType);
 
-	List<URL> generatePresignedUrls(GeneratePresignedRequest request);
+	List<URL> prepareUploadUrls(ImageUploadPlan request);
 }
