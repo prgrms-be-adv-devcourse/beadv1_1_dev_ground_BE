@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import io.devground.core.model.exception.ServiceException;
 import io.devground.core.model.vo.ErrorCode;
 import io.devground.core.model.web.BaseResponse;
+import io.devground.dbay.ddddeposit.domain.exception.DomainException;
+import io.devground.dbay.ddddeposit.domain.exception.vo.DomainErrorCode;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 
@@ -19,6 +21,17 @@ import lombok.RequiredArgsConstructor;
 public class GlobalExceptionHandler {
 
 	private final HttpServletResponse response;
+
+	@ExceptionHandler(DomainException.class)
+	public BaseResponse<String> handleDomainException(DomainException ex) {
+
+		DomainErrorCode errorCode = ex.getErrorCode();
+		int status = errorCode.getHttpStatus();
+
+		response.setStatus(status);
+
+		return BaseResponse.fail(status, errorCode.getMessage());
+	}
 
 	@ExceptionHandler(ServiceException.class)
 	public BaseResponse<String> handleServiceException(ServiceException ex) {
