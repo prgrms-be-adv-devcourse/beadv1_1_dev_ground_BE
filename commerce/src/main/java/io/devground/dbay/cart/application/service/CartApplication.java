@@ -30,7 +30,9 @@ public class CartApplication implements CartUseCase {
     @Override
     @Transactional
     public Cart create(UserCode userCode) {
-        Objects.requireNonNull(userCode, "유저 코드가 누락되었습니다.");
+        if (userCode == null) {
+            throw ServiceError.CODE_INVALID.throwServiceException();
+        }
 
         return cartPersistencePort
                 .getCart(userCode)
@@ -61,8 +63,6 @@ public class CartApplication implements CartUseCase {
         Cart cart = cartPersistencePort.getCart(userCode)
                 .orElseThrow(ServiceError.CART_NOT_FOUND::throwServiceException);
 
-        cart.addCartItem(productCode);
-
         return cartPersistencePort.saveCartItem(cart.getCartCode(), productCode);
     }
 
@@ -78,8 +78,6 @@ public class CartApplication implements CartUseCase {
 
         Cart cart = cartPersistencePort.getCart(userCode)
                 .orElseThrow(ServiceError.CART_NOT_FOUND::throwServiceException);
-
-        cart.removeCartItem(productCode);
 
         cartPersistencePort.removeCartItem(cart.getCartCode(), productCode);
     }
@@ -101,8 +99,6 @@ public class CartApplication implements CartUseCase {
         Cart cart = cartPersistencePort.getCart(userCode)
                 .orElseThrow(ServiceError.CART_NOT_FOUND::throwServiceException);
 
-        cart.removeCartItems(productCodes);
-
         cartPersistencePort.removeCartItems(cart.getCartCode(), productCodes);
     }
 
@@ -115,8 +111,6 @@ public class CartApplication implements CartUseCase {
 
         Cart cart = cartPersistencePort.getCart(userCode)
                 .orElseThrow(ServiceError.CART_NOT_FOUND::throwServiceException);
-
-        cart.removeAllCartItems();
 
         cartPersistencePort.removeAllCartItems(cart.getCartCode());
     }
