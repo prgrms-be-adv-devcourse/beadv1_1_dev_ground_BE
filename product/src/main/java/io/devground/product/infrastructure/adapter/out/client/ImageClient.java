@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import io.devground.core.model.vo.ImageType;
 import io.devground.core.model.web.BaseResponse;
-import io.devground.product.infrastructure.model.web.request.GeneratePresignedRequest;
+import io.devground.product.infrastructure.model.web.request.ImageUploadPlan;
 
 @FeignClient(name = "image", url = "localhost:8080", path = "/api/images")
 public interface ImageClient {
@@ -21,5 +21,5 @@ public interface ImageClient {
 	BaseResponse<List<String>> getImageUrls(@PathVariable String referenceCode, @RequestParam ImageType imageType);
 
 	@PostMapping(value = "/upload")
-	BaseResponse<List<URL>> generatePresignedUrls(@RequestBody GeneratePresignedRequest request);
+	BaseResponse<List<URL>> generatePresignedUrls(@RequestBody ImageUploadPlan request);
 }

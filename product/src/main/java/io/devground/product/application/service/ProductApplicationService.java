@@ -25,7 +25,7 @@ import io.devground.product.domain.vo.response.ProductDetailResponse;
 import io.devground.product.domain.vo.response.RegistProductResponse;
 import io.devground.product.domain.vo.response.UpdateProductResponse;
 import io.devground.product.infrastructure.model.web.request.CartProductsRequest;
-import io.devground.product.infrastructure.model.web.request.GeneratePresignedRequest;
+import io.devground.product.infrastructure.model.web.request.ImageUploadPlan;
 import io.devground.product.infrastructure.model.web.request.ProductImageUrlsRequest;
 import io.devground.product.infrastructure.model.web.request.RegistProductRequest;
 import io.devground.product.infrastructure.model.web.request.UpdateProductRequest;
@@ -61,14 +61,14 @@ public class ProductApplicationService implements ProductUseCase {
 		String productCode = product.getCode();
 
 		// 2. ES 인덱싱
-		productSearchPort.indexProduct(product);
+		productSearchPort.prepareSearch(product);
 
 		// 3. PresignedUrl 발급
 		List<String> imageExtensions = request.imageExtensions();
 		List<URL> presignedUrls = new ArrayList<>();
 		if (imageExtensions != null && !imageExtensions.isEmpty()) {
-			presignedUrls = imagePort.generatePresignedUrls(
-				new GeneratePresignedRequest(ImageType.PRODUCT, productCode, imageExtensions)
+			presignedUrls = imagePort.prepareUploadUrls(
+				new ImageUploadPlan(ImageType.PRODUCT, productCode, imageExtensions)
 			);
 		}
 
