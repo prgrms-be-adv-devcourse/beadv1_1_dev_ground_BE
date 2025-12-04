@@ -11,6 +11,7 @@ public class Category {
 
 	private static final int MAX_DEPTH = 3;
 
+	private Long id;
 	private String code;
 
 	private LocalDateTime createdAt;
@@ -43,6 +44,10 @@ public class Category {
 		this.fullPath = this.calculateFullPath(parentFullPath, name);
 	}
 
+	public void updateId(Long id) {
+		this.id = id;
+	}
+
 	public void updateClock() {
 		this.updatedAt = LocalDateTime.now();
 	}
@@ -57,6 +62,10 @@ public class Category {
 		}
 
 		return parentFullPath + "/" + name;
+	}
+
+	public Long getId() {
+		return id;
 	}
 
 	public String getCode() {
