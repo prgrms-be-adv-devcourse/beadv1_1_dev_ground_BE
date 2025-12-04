@@ -3,6 +3,7 @@ package io.devground.dbay.common.exceptionhandler;
 import io.devground.core.model.exception.ServiceException;
 import io.devground.core.model.vo.ErrorCode;
 import io.devground.core.model.web.BaseResponse;
+import io.devground.dbay.cart.domain.exception.DomainError;
 import io.devground.dbay.cart.domain.exception.DomainException;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -21,9 +22,9 @@ public class GlobalExceptionHandler {
 	private final HttpServletResponse response;
 
 	@ExceptionHandler(DomainException.class)
-	public BaseResponse<String> handleDomainException(ServiceException ex) {
+	public BaseResponse<String> handleDomainException(DomainException ex) {
 
-		ErrorCode errorCode = ex.getErrorCode();
+		DomainError errorCode = ex.getErrorCode();
 		int status = errorCode.getHttpStatus();
 
 		response.setStatus(status);
