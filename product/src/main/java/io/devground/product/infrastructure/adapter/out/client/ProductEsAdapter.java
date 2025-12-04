@@ -1,6 +1,7 @@
 package io.devground.product.infrastructure.adapter.out.client;
 
 import org.slf4j.MDC;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import io.devground.product.application.port.out.persistence.ProductSearchPort;
@@ -19,7 +20,8 @@ public class ProductEsAdapter implements ProductSearchPort {
 	private final ProductSearchRepository productSearchRepository;
 
 	@Override
-	public void indexProduct(Product product) {
+	@Async("esTaskExecutor")
+	public void prepareSearch(Product product) {
 
 		String productCode = product.getCode();
 
