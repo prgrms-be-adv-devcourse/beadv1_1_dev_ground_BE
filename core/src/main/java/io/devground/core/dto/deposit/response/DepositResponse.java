@@ -2,8 +2,11 @@ package io.devground.core.dto.deposit.response;
 
 import java.time.LocalDateTime;
 
+import lombok.Builder;
+
+//todo : deposit 스펙 바뀜
+@Builder
 public record DepositResponse(
-	Long id,
 	String userCode,
 	String depositCode,
 	Long balance,

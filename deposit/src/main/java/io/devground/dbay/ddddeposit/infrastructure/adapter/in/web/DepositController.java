@@ -1,4 +1,4 @@
-package io.devground.dbay.deposit.controller;
+package io.devground.dbay.ddddeposit.infrastructure.adapter.in.web;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -8,7 +8,9 @@ import org.springframework.web.bind.annotation.RestController;
 import io.devground.core.dto.deposit.response.DepositBalanceResponse;
 import io.devground.core.dto.deposit.response.DepositResponse;
 import io.devground.core.model.web.BaseResponse;
-import io.devground.dbay.deposit.service.DepositService;
+import io.devground.dbay.ddddeposit.application.service.DepositApplication;
+import io.devground.dbay.ddddeposit.domain.deposit.Deposit;
+import io.devground.dbay.ddddeposit.infrastructure.mapper.DepositMapper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -19,12 +21,13 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/api/deposits")
 public class DepositController {
 
-	private final DepositService depositService;
+	private final DepositApplication depositApplication;
 
 	@GetMapping
 	@Operation(summary = "예치금 계정 조회", description = "사용자의 예치금 계정 정보를 조회합니다.")
 	public BaseResponse<DepositResponse> getDeposit(@RequestHeader("X-CODE") String userCode) {
-		DepositResponse response = depositService.getByUserCode(userCode);
+		Deposit deposit = depositApplication.getByUserCode(userCode);
+		DepositResponse response = DepositMapper.toDepositResponse(deposit);
 
 		return BaseResponse.success(200, response, "예치금 계정 조회 성공");
 	}
@@ -32,7 +35,8 @@ public class DepositController {
 	@GetMapping("/balance")
 	@Operation(summary = "잔액 조회", description = "사용자의 현재 예치금 잔액을 조회합니다.")
 	public BaseResponse<DepositBalanceResponse> getBalance(@RequestHeader("X-CODE") String userCode) {
-		DepositBalanceResponse response = depositService.getByBalance(userCode);
+		Deposit deposit = depositApplication.getByUserCode(userCode);
+		DepositBalanceResponse response = DepositMapper.toDepositBalanceResponse(deposit);
 
 		return BaseResponse.success(200, response, "잔액 조회 성공");
 	}
