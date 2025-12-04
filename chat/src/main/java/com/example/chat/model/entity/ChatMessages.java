@@ -1,11 +1,15 @@
 package com.example.chat.model.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import io.devground.core.model.entity.BaseEntity;
+import jakarta.persistence.*;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
-public class ChatMessages {
+@NoArgsConstructor
+@Entity
+@Getter
+public class ChatMessages extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,6 +26,14 @@ public class ChatMessages {
 
     @Column(nullable = false)
     private Boolean isRead;
+
+    @Builder
+    public ChatMessages(Long roomId, Long senderId, String message, Boolean isRead) {
+        this.roomId = roomId;
+        this.senderId = senderId;
+        this.message = message;
+        this.isRead = false;
+    }
 
 
 }

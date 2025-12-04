@@ -2,12 +2,14 @@ package com.example.chat.model.entity;
 
 import com.example.chat.enums.ChatRoomStatus;
 import io.devground.core.model.entity.BaseEntity;
-import jakarta.persistence.Column;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
-
+@NoArgsConstructor
+@Entity
+@Getter
 public class ChatRoom extends BaseEntity {
 
     @Id
@@ -25,6 +27,14 @@ public class ChatRoom extends BaseEntity {
 
     @Column(nullable = false)
     private ChatRoomStatus status;
+
+    @Builder
+    public ChatRoom(Long productId, Long sellerId, Long buyerId, ChatRoomStatus status) {
+        this.productId = productId;
+        this.sellerId = sellerId;
+        this.buyerId = buyerId;
+        this.status = status;
+    }
 
 
 
