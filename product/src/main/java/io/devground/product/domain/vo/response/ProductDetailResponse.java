@@ -3,6 +3,7 @@ package io.devground.product.domain.vo.response;
 import java.util.List;
 
 import io.devground.product.domain.model.Product;
+import io.devground.product.domain.vo.ProductStatus;
 
 public record ProductDetailResponse(
 
@@ -13,7 +14,7 @@ public record ProductDetailResponse(
 	String description,
 	String categoryPath,
 	long price,
-	String productStatus,
+	ProductStatus productStatus,
 	List<String> imageUrls
 ) {
 	public ProductDetailResponse(Product product, List<String> imageUrls) {
@@ -25,7 +26,7 @@ public record ProductDetailResponse(
 			product.getProductSpec().description(),
 			product.getCategory().getFullPath(),
 			product.getProductSale().getProductSaleSpec().price(),
-			product.getProductSale().getProductSaleSpec().productStatus().getValue(),
+			product.getProductSale().getProductSaleSpec().productStatus(),
 			imageUrls
 		);
 	}
