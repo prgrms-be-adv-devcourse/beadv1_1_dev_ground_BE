@@ -16,6 +16,10 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.devground.core.model.web.BaseResponse;
+import io.devground.product.application.model.CartProductsDto;
+import io.devground.product.application.model.ProductImageUrlsDto;
+import io.devground.product.application.model.RegistProductDto;
+import io.devground.product.application.model.UpdateProductDto;
 import io.devground.product.domain.port.in.ProductUseCase;
 import io.devground.product.domain.vo.pagination.PageDto;
 import io.devground.product.domain.vo.pagination.PageQuery;
@@ -61,9 +65,17 @@ public class ProductApiController {
 		@RequestHeader("X-CODE") String sellerCode
 	) {
 
+		RegistProductDto requestDto = new RegistProductDto(
+			request.categoryId(),
+			request.title(),
+			request.description(),
+			request.price(),
+			request.imageExtensions()
+		);
+
 		return BaseResponse.success(
 			CREATED.value(),
-			productApplication.registProduct(sellerCode, request),
+			productApplication.registProduct(sellerCode, requestDto),
 			"상품이 성공적으로 등록되었습니다."
 		);
 	}
@@ -76,9 +88,11 @@ public class ProductApiController {
 		@RequestHeader("X-CODE") String sellerCode
 	) {
 
+		ProductImageUrlsDto requestDto = new ProductImageUrlsDto(request.urls());
+
 		return BaseResponse.success(
 			NO_CONTENT.value(),
-			productApplication.saveImageUrls(sellerCode, productCode, request),
+			productApplication.saveImageUrls(sellerCode, productCode, requestDto),
 			"상품 이미지가 성공적으로 등록되었습니다."
 		);
 	}
@@ -106,9 +120,13 @@ public class ProductApiController {
 		@RequestHeader(name = "X-CODE") String sellerCode
 	) {
 
+		UpdateProductDto requestDto = new UpdateProductDto(
+			request.title(), request.description(), request.price(), request.deleteUrls(), request.newImageExtensions()
+		);
+
 		return BaseResponse.success(
 			OK.value(),
-			productApplication.updateProduct(sellerCode, productCode, request),
+			productApplication.updateProduct(sellerCode, productCode, requestDto),
 			"상품 정보가 성공적으로 수정되었습니다."
 		);
 	}
@@ -134,9 +152,11 @@ public class ProductApiController {
 		@RequestBody CartProductsRequest request
 	) {
 
+		CartProductsDto requestDto = new CartProductsDto(request.productCodes());
+
 		return BaseResponse.success(
 			OK.value(),
-			productApplication.getCartProducts(request),
+			productApplication.getCartProducts(requestDto),
 			"장바구니의 상품 정보들을 성공적으로 불러왔습니다."
 		);
 	}
@@ -149,6 +169,8 @@ public class ProductApiController {
 		@RequestBody CartProductsRequest request
 	) {
 
-		productApplication.updateStatusToSold(sellerCode, request);
+		CartProductsDto requestDto = new CartProductsDto(request.productCodes());
+
+		productApplication.updateStatusToSold(sellerCode, requestDto);
 	}
 }

@@ -18,16 +18,17 @@ public class ProductMapper {
 			CategoryMapper.toDomain(productEntity.getCategory())
 		);
 
-		product.linkProductSale(toProductSaleDomain(productSaleEntity));
+		product.linkProductSale(toProductSaleDomain(productEntity, productSaleEntity));
 		product.updateId(productEntity.getId());
 
 		return product;
 	}
 
-	public ProductSale toProductSaleDomain(ProductSaleEntity productSaleEntity) {
+	public ProductSale toProductSaleDomain(ProductEntity productEntity, ProductSaleEntity productSaleEntity) {
 
 		return new ProductSale(
 			productSaleEntity.getSellerCode(),
+			productEntity.getCode(),
 			new ProductSaleSpec(productSaleEntity.getPrice(), productSaleEntity.getProductStatus())
 		);
 	}

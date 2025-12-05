@@ -17,6 +17,7 @@ public enum DomainErrorCode {
 	PRICE_MUST_BE_INPUT(400, "상품 가격은 반드시 입력되어야 합니다."),
 	PRICE_MUST_BE_POSITIVE(400, "상품 가격은 반드시 양수여야 합니다."),
 	SELLER_CODE_MUST_BE_INPUT(400, "판매자 코드는 반드시 입력되어야 합니다."),
+	PRODUCT_CODE_MUST_BE_INPUT(400, "상품 코드는 반드시 입력되어야 합니다."),
 
 	// category
 	CANNOT_EXCEED_MAX_DEPTH(400, "카테고리는 최대 뎁스를 초과할 수 없습니다."),
