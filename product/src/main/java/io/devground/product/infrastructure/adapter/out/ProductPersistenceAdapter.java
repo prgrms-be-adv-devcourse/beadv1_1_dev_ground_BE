@@ -11,7 +11,6 @@ import io.devground.product.application.model.UpdateProductSoldDto;
 import io.devground.product.application.port.out.persistence.ProductPersistencePort;
 import io.devground.product.domain.model.Product;
 import io.devground.product.domain.vo.DomainErrorCode;
-import io.devground.product.domain.vo.ProductSaleSpec;
 import io.devground.product.domain.vo.pagination.PageDto;
 import io.devground.product.domain.vo.pagination.PageQuery;
 import io.devground.product.domain.vo.response.GetAllProductsResponse;
@@ -104,9 +103,7 @@ public class ProductPersistenceAdapter implements ProductPersistencePort {
 				ProductEntity product = getProduct(p.productCode());
 				ProductSaleEntity productSale = product.getProductSale();
 
-				ProductSaleSpec updatedSpec = p.productSaleSpec();
-
-				productSale.changeSoldSpec(updatedSpec.price(), updatedSpec.productStatus());
+				productSale.updateProductStatus(p.productStatus());
 			}
 		);
 	}

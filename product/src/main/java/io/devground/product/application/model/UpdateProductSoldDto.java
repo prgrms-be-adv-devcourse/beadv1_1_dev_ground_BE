@@ -1,10 +1,10 @@
 package io.devground.product.application.model;
 
-import io.devground.product.domain.vo.ProductSaleSpec;
+import io.devground.product.domain.vo.ProductStatus;
 
 public record UpdateProductSoldDto(
 
 	String productCode,
-	ProductSaleSpec productSaleSpec
+	ProductStatus productStatus
 ) {
 }

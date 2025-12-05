@@ -9,7 +9,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import io.devground.product.domain.model.Product;
+import io.devground.product.domain.vo.ProductStatus;
 import io.devground.product.domain.vo.response.CartProductsResponse;
 import io.devground.product.infrastructure.model.persistence.ProductEntity;
 
@@ -27,12 +27,15 @@ public interface ProductJpaRepository extends JpaRepository<ProductEntity, Long>
 			ps.price
 		)
 		FROM ProductEntity p
-		JOIN FETCH p.productSale ps
+		JOIN p.productSale ps
 		WHERE p.code IN :productCodes
-		AND ps.productStatus = 'ON_SALE'
+		AND ps.productStatus = :status
 		"""
 	)
-	List<CartProductsResponse> findCartProductsByProductCodes(@Param("productCodes") List<String> productCodes);
+	List<CartProductsResponse> findCartProductsByProductCodes(
+		@Param("productCodes") List<String> productCodes,
+		@Param("status") ProductStatus status
+	);
 
 	@Query("""
 		SELECT p
@@ -41,7 +44,7 @@ public interface ProductJpaRepository extends JpaRepository<ProductEntity, Long>
 		WHERE p.deleteStatus = 'N'
 		AND p.code IN :productCodes
 		""")
-	List<ProductEntity> findProductsByCodes(List<String> codes);
+	List<ProductEntity> findProductsByCodes(@Param("productCodes") List<String> productCodes);
 
 	@Query(
 		value = """
@@ -70,5 +73,5 @@ public interface ProductJpaRepository extends JpaRepository<ProductEntity, Long>
 			FROM ProductEntity p
 			"""
 	)
-	Page<Product> findAllWithCategories(Pageable pageable);
+	Page<ProductEntity> findAllWithCategories(Pageable pageable);
 }

@@ -27,8 +27,8 @@ import lombok.NoArgsConstructor;
 @Table(
 	indexes = {
 		@Index(
-			name = "idx_product_sale_seller_status_created",
-			columnList = "sellerCode, productStatus, createdAt"
+			name = "idx_product_sale_status_seller_created",
+			columnList = "productStatus, sellerCode, createdAt"
 		)
 	}
 )
@@ -68,12 +68,11 @@ public class ProductSaleEntity extends BaseEntity {
 		product.addProductSale(this);
 	}
 
-	public void changeSoldSpec(Long price, ProductStatus productStatus) {
+	public void updateProductStatus(ProductStatus productStatus) {
 		if (isSold()) {
 			DomainErrorCode.ONLY_ON_SALE_PRODUCT_CHANGEABLE.throwException();
 		}
 
-		this.price = price;
 		this.productStatus = productStatus;
 
 		if (productStatus == ProductStatus.SOLD) {
