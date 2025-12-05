@@ -34,8 +34,12 @@ public class ProductSale {
 	}
 
 	public void updateToSold(ProductSaleSpec productSaleSpec) {
-		this.productSaleSpec = productSaleSpec;
+		this.updateSpec(productSaleSpec);
 		this.updateSoldComplete();
+	}
+
+	public void updateSpec(ProductSaleSpec productSaleSpec) {
+		this.productSaleSpec = productSaleSpec;
 	}
 
 	public void updateSoldComplete() {

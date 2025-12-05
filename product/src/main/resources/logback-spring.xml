@@ -13,6 +13,16 @@
     <property name="ES_ERROR_LOG_FILE" value="${ELASTICSEARCH_LOG_DIR}/error/error"/>
     <property name="ES_JSON_LOG_FILE" value="${ELASTICSEARCH_LOG_DIR}/elasticsearch"/>
 
+    <property name="SAGA_INFO_PATTERN"
+              value="%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} [SagaId=%X{sagaId:-N/A}] [ProductCode=%X{productCode:-N/A}] - %msg%n"/>
+    <property name="SAGA_ERROR_PATTERN"
+              value="%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} [SagaId=%X{sagaId:-N/A}] [ProductCode=%X{productCode:-N/A}] [Exception=%X{errorMsg:-N/A}] - %msg%n"/>
+
+    <property name="ES_INFO_PATTERN"
+              value="%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} [ProductId=%X{productId:-N/A}] [ProductCode=%X{productCode:-N/A}] - %msg%n"/>
+    <property name="ES_ERROR_PATTERN"
+              value="%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} [ProductId=%X{productId:-N/A}] [ProductCode=%X{productCode:-N/A}] [Exception=%X{errorMsg:-N/A}] - %msg%n"/>
+
     <!-- 콘솔 출력 Appender -->
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
@@ -73,7 +83,8 @@
                 <maxHistory>30</maxHistory>
             </rollingPolicy>
             <encoder>
-                <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+                <pattern>${SAGA_INFO_PATTERN}</pattern>
+                <!--                <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>-->
             </encoder>
         </appender>
 
@@ -91,7 +102,8 @@
                 <maxHistory>30</maxHistory>
             </rollingPolicy>
             <encoder>
-                <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+                <pattern>${SAGA_ERROR_PATTERN}</pattern>
+                <!--                <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>-->
             </encoder>
         </appender>
 
@@ -109,7 +121,8 @@
                 <maxHistory>30</maxHistory>
             </rollingPolicy>
             <encoder>
-                <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+                <pattern>${SAGA_ERROR_PATTERN}</pattern>
+                <!--                <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>-->
             </encoder>
         </appender>
 
@@ -127,7 +140,8 @@
                 <maxHistory>30</maxHistory>
             </rollingPolicy>
             <encoder>
-                <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+                <pattern>${ES_INFO_PATTERN}</pattern>
+                <!--                <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>-->
             </encoder>
         </appender>
 
@@ -145,7 +159,8 @@
                 <maxHistory>30</maxHistory>
             </rollingPolicy>
             <encoder>
-                <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+                <pattern>${ES_ERROR_PATTERN}</pattern>
+                <!--                <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>-->
             </encoder>
         </appender>
     </springProfile>

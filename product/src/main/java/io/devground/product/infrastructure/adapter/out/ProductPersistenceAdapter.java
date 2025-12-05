@@ -6,11 +6,14 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
+import io.devground.core.model.vo.ErrorCode;
 import io.devground.product.application.model.RegistProductDto;
 import io.devground.product.application.model.UpdateProductSoldDto;
 import io.devground.product.application.port.out.persistence.ProductPersistencePort;
 import io.devground.product.domain.model.Product;
+import io.devground.product.domain.model.ProductSale;
 import io.devground.product.domain.vo.DomainErrorCode;
+import io.devground.product.domain.vo.ProductSpec;
 import io.devground.product.domain.vo.pagination.PageDto;
 import io.devground.product.domain.vo.pagination.PageQuery;
 import io.devground.product.domain.vo.response.GetAllProductsResponse;
@@ -102,6 +105,22 @@ public class ProductPersistenceAdapter implements ProductPersistencePort {
 		ProductEntity product = getProduct(updateProductsSoldDto.productCode());
 
 		product.getProductSale().updateProductStatus(updateProductsSoldDto.productStatus());
+	}
+
+	@Override
+	public void updateProduct(String sellerCode, Product product, ProductSale productSale) {
+
+		ProductEntity productEntity = getProduct(product.getCode());
+		ProductSaleEntity productSaleEntity = productEntity.getProductSale();
+
+		if (!productSaleEntity.getSellerCode().equals(sellerCode)) {
+			ErrorCode.IS_NOT_PRODUCT_OWNER.throwServiceException();
+		}
+
+		ProductSpec productSpec = product.getProductSpec();
+
+		productEntity.changeProductMetadata(productSpec.title(), productSpec.description());
+		productSaleEntity.changePrice(productSale.getProductSaleSpec().price());
 	}
 
 	private ProductEntity getProduct(String code) {
