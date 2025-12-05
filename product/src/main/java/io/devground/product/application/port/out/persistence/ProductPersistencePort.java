@@ -13,4 +13,6 @@ public interface ProductPersistencePort {
 	Product getProductByCode(String code);
 
 	Product save(String sellerCode, RegistProductRequest request);
+
+	void updateThumbnail(String productCode, String thumbnail);
 }

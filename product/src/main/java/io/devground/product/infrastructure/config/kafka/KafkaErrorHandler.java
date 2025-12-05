@@ -1,4 +1,4 @@
-package io.devground.product.infrastructure.kafka;
+package io.devground.product.infrastructure.config.kafka;
 
 import org.apache.kafka.common.TopicPartition;
 import org.springframework.beans.factory.annotation.Value;

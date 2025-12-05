@@ -75,4 +75,13 @@ public class ProductPersistenceAdapter implements ProductPersistencePort {
 
 		return ProductMapper.toProductDomain(productEntity, productSaleEntity);
 	}
+
+	@Override
+	public void updateThumbnail(String productCode, String thumbnail) {
+
+		ProductEntity product = productRepository.findByCode(productCode)
+			.orElseThrow(DomainErrorCode.PRODUCT_NOT_FOUND::throwException);
+
+		product.updateThumbnail(thumbnail);
+	}
 }

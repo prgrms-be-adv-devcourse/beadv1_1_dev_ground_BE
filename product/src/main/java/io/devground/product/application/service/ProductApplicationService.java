@@ -10,8 +10,9 @@ import org.springframework.transaction.annotation.Transactional;
 import io.devground.core.model.vo.ImageType;
 import io.devground.product.application.model.vo.ApplicationImageType;
 import io.devground.product.application.port.out.ImagePersistencePort;
-import io.devground.product.application.port.out.persistence.ProductSearchPort;
+import io.devground.product.application.port.out.ProductOrchestrationPort;
 import io.devground.product.application.port.out.persistence.ProductPersistencePort;
+import io.devground.product.application.port.out.persistence.ProductSearchPort;
 import io.devground.product.domain.model.Product;
 import io.devground.product.domain.model.ProductSale;
 import io.devground.product.domain.port.in.ProductUseCase;
@@ -39,6 +40,7 @@ public class ProductApplicationService implements ProductUseCase {
 
 	private final ProductPersistencePort productPort;
 	private final ProductSearchPort productSearchPort;
+	private final ProductOrchestrationPort productOrchestrationPort;
 	private final ImagePersistencePort imagePersistencePort;
 
 	@Override
@@ -86,7 +88,12 @@ public class ProductApplicationService implements ProductUseCase {
 	@Override
 	public Void saveImageUrls(String sellerCode, String productCode, ProductImageUrlsRequest request) {
 
-		throw new UnsupportedOperationException("구현 중");
+		Product product = productPort.getProductByCode(productCode);
+		String productSellerCode = product.getProductSale().getSellerCode();
+
+		productOrchestrationPort.uploadProductImages(sellerCode, productCode, productSellerCode, request.urls());
+
+		return null;
 	}
 
 	@Override
@@ -124,5 +131,10 @@ public class ProductApplicationService implements ProductUseCase {
 	public void updateStatusToSold(String sellerCode, CartProductsRequest request) {
 
 		throw new UnsupportedOperationException("구현 중");
+	}
+
+	public void updateThumbnail(String productCode, String thumbnail) {
+
+		productPort.updateThumbnail(productCode, thumbnail);
 	}
 }
