@@ -16,6 +16,8 @@ public class Product {
 
 	private ProductSpec productSpec;
 
+	private String thumbnailUrl;
+
 	private Category category;
 
 	private ProductSale productSale;
@@ -38,6 +40,10 @@ public class Product {
 		this.productSale = productSale;
 	}
 
+	public void updateSpec(ProductSpec productSpec) {
+		this.productSpec = productSpec;
+	}
+
 	public void updateId(Long id) {
 		this.id = id;
 	}
@@ -49,6 +55,10 @@ public class Product {
 	public void updateDeleteStatus(DeleteStatus deleteStatus) {
 		this.deleteStatus = deleteStatus;
 		this.updateClock();
+	}
+
+	public void updateThumbnail(String thumbnailUrl) {
+		this.thumbnailUrl = thumbnailUrl;
 	}
 
 	public Long getId() {
@@ -69,6 +79,10 @@ public class Product {
 
 	public ProductSpec getProductSpec() {
 		return productSpec;
+	}
+
+	public String getThumbnailUrl() {
+		return thumbnailUrl;
 	}
 
 	public Category getCategory() {

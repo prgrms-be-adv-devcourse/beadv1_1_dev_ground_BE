@@ -14,10 +14,11 @@ public class ProductMapper {
 	public Product toProductDomain(ProductEntity productEntity, ProductSaleEntity productSaleEntity) {
 
 		Product product = new Product(
-			new ProductSpec(productEntity.getTitle(), productEntity.getDescription(), productEntity.getThumbnailUrl()),
+			new ProductSpec(productEntity.getTitle(), productEntity.getDescription()),
 			CategoryMapper.toDomain(productEntity.getCategory())
 		);
 
+		product.updateThumbnail(productEntity.getThumbnailUrl());
 		product.linkProductSale(toProductSaleDomain(productEntity, productSaleEntity));
 		product.updateId(productEntity.getId());
 
