@@ -25,6 +25,18 @@ public class ProductEsAdapter implements ProductSearchPort {
 	@Async("esTaskExecutor")
 	public void prepareSearch(Product product) {
 
+		this.indexProduct(product);
+	}
+
+	@Override
+	@Async("esTaskExecutor")
+	public void updateSearch(Product product) {
+
+		this.indexProduct(product);
+	}
+
+	private void indexProduct(Product product) {
+
 		String productCode = product.getCode();
 
 		MDC.put("productId", String.valueOf(product.getId()));
