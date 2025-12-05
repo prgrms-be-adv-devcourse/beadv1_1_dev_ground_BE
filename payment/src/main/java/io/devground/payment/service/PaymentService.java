@@ -5,6 +5,7 @@ import org.springframework.data.domain.Pageable;
 
 import io.devground.payment.model.dto.request.PaymentRequest;
 import io.devground.payment.model.dto.request.RefundRequest;
+import io.devground.payment.model.dto.request.TossRefundRequest;
 import io.devground.payment.model.dto.response.GetPaymentsResponse;
 import io.devground.payment.model.entity.Payment;
 import io.devground.payment.model.vo.PaymentConfirmRequest;
@@ -15,6 +16,8 @@ public interface PaymentService {
 	Payment pay(PaymentRequest request);
 
 	void refund(RefundRequest request);
+
+	void tossRefund(TossRefundRequest request);
 
 	Payment confirmPayment(PaymentRequest request) throws Exception;
 

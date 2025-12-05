@@ -29,6 +29,7 @@ import io.devground.core.model.vo.ErrorCode;
 import io.devground.payment.infra.DepositFeignClient;
 import io.devground.payment.model.dto.request.PaymentRequest;
 import io.devground.payment.model.dto.request.RefundRequest;
+import io.devground.payment.model.dto.request.TossRefundRequest;
 import io.devground.payment.model.dto.response.GetPaymentsResponse;
 import io.devground.payment.model.entity.Payment;
 import io.devground.payment.model.vo.PaymentConfirmRequest;
@@ -47,6 +48,7 @@ public class PaymentServiceImpl implements PaymentService {
 	private final ObjectMapper objectMapper;
 	private final DepositFeignClient depositFeignClient;
 	private final PaymentRepository paymentRepository;
+	private final HttpClient httpClient;
 
 	@Value("${deposits.command.topic.name}")
 	private String depositsCommandTopic;
@@ -144,6 +146,7 @@ public class PaymentServiceImpl implements PaymentService {
 		//카프카 전송
 		ChargeDeposit command = new ChargeDeposit(
 			userCode,
+			paymentKey,
 			amount,
 			DepositHistoryType.CHARGE_TOSS
 		);
@@ -176,9 +179,6 @@ public class PaymentServiceImpl implements PaymentService {
 			Map<String, Object> requestMap = objectMapper.convertValue(request, new TypeReference<>() {
 			});
 
-			// 3. HTTP 요청 구성
-			HttpClient client = HttpClient.newHttpClient();
-
 			HttpRequest httpRequest = HttpRequest.newBuilder()
 				.uri(URI.create(tossPayConfirmUrl))
 				.header("Authorization", encryptedSecretKey)
@@ -187,7 +187,7 @@ public class PaymentServiceImpl implements PaymentService {
 				.build();
 
 			// 4. HTTP 요청 수행
-			HttpResponse<String> response = client.send(httpRequest, HttpResponse.BodyHandlers.ofString());
+			HttpResponse<String> response = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
 
 			// 5. 응답 처리
 			if (response.statusCode() == HttpStatus.OK.value()) {
@@ -219,6 +219,43 @@ public class PaymentServiceImpl implements PaymentService {
 		payment.setPaymentStatus(status);
 
 		paymentRepository.save(payment);
+	}
+
+	@Override
+	@Transactional
+	public void tossRefund(TossRefundRequest request){
+		try {
+			String target = tossPaySecretKey + ":";
+
+			Base64.Encoder encoder = Base64.getEncoder();
+			String encryptedSecretKey = "Basic " + encoder.encodeToString(target.getBytes(StandardCharsets.UTF_8));
+			String url = String.format("https://api.tosspayments.com/v1/payments/%s/cancel", request.paymentKey());
+
+
+			HttpRequest httpRequest = HttpRequest.newBuilder()
+				.uri(URI.create(url))
+				.header("Authorization", encryptedSecretKey)
+				.header("Content-Type", "application/json")
+				.method("POST", HttpRequest.BodyPublishers.ofString("{\"cancelReason\":\"예치금 충전 불가\"}"))
+				.build();
+
+			HttpResponse<String> response = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
+			System.out.println(response.body());
+
+			Payment payment = paymentRepository.findByPaymentKey(request.paymentKey())
+				.orElseThrow(ErrorCode.PAYMENT_NOT_FOUND::throwServiceException);
+
+			payment.setPaymentStatus(PaymentStatus.PAYMENT_REFUNDED);
+
+			if (response.statusCode() == HttpStatus.OK.value()) {
+				log.info("환불 성공");
+			} else {
+				log.error("토스페이먼츠 환불 수행 과정에서 오류가 발생하였습니다. 다시 시도하여 주시기 바랍니다. 응답코드 : {}", response.statusCode());
+				log.info("response.body() = {}", response.body());
+			}
+		} catch (Exception e) {
+			log.error("토스페이먼츠 환불 수행 과정에서 오류가 발생하였습니다.");
+		}
 	}
 
 	@Override
@@ -257,6 +294,7 @@ public class PaymentServiceImpl implements PaymentService {
 	}
 
 	@Override
+	@Transactional
 	public void cancelDepositPayment(String orderCode) {
 		Payment payment = getByOrderCode(orderCode);
 		payment.setPaymentStatus(PaymentStatus.PAYMENT_CANCELLED);
@@ -279,6 +317,7 @@ public class PaymentServiceImpl implements PaymentService {
 	}
 
 	private Page<Payment> pagePaymentsByUserCode(String userCode, Pageable pageable) {
-		return paymentRepository.findByUserCodeByCreatedAtDesc(userCode, pageable);
+		return paymentRepository.findByUserCodeOrderByPaidAtDesc(userCode, pageable);
 	}
+
 }
