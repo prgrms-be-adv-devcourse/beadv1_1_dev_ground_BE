@@ -16,6 +16,7 @@ import io.devground.core.event.deposit.DepositChargeFailed;
 import io.devground.core.event.deposit.DepositChargedSuccess;
 import io.devground.core.model.vo.DepositHistoryType;
 import io.devground.payment.model.dto.request.RefundRequest;
+import io.devground.payment.model.dto.request.TossRefundRequest;
 import io.devground.payment.model.vo.PaymentConfirmRequest;
 import io.devground.payment.service.PaymentService;
 import lombok.RequiredArgsConstructor;
@@ -84,6 +85,7 @@ public class PaymentKafkaHandler {
 	//예치금 충전 실패
 	@KafkaHandler
 	public void handleEvent(@Payload DepositChargeFailed depositChargeFailed) {
-
+		TossRefundRequest request = new TossRefundRequest(depositChargeFailed.userCode(), depositChargeFailed.paymentKey(), depositChargeFailed.amount());
+		paymentService.tossRefund(request);
 	}
 }
