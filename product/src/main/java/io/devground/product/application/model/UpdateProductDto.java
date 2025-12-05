@@ -1,0 +1,13 @@
+package io.devground.product.application.model;
+
+import java.util.List;
+
+public record UpdateProductDto(
+
+	String title,
+	String description,
+	Long price,
+	List<String> deleteUrls,
+	List<String> newImageExtensions
+) {
+}
