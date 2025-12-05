@@ -21,5 +21,5 @@ public interface ProductPersistencePort {
 
 	List<Product> getProductsByCodes(String sellerCode, List<String> productCodes);
 
-	void updateToSold(List<UpdateProductSoldDto> updatedProductsInfo);
+	void updateToSold(UpdateProductSoldDto updatedProductsSoldDto);
 }

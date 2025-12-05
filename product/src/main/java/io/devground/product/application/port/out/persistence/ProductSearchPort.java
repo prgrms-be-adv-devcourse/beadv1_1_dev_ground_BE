@@ -5,4 +5,6 @@ import io.devground.product.domain.model.Product;
 public interface ProductSearchPort {
 
 	void prepareSearch(Product product);
+
+	void updateSearch(Product product);
 }

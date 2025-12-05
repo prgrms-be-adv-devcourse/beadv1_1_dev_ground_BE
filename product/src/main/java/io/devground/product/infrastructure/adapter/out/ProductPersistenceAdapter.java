@@ -97,15 +97,11 @@ public class ProductPersistenceAdapter implements ProductPersistencePort {
 	}
 
 	@Override
-	public void updateToSold(List<UpdateProductSoldDto> updateProductsInfo) {
+	public void updateToSold(UpdateProductSoldDto updateProductsSoldDto) {
 
-		updateProductsInfo.forEach(p -> {
-				ProductEntity product = getProduct(p.productCode());
-				ProductSaleEntity productSale = product.getProductSale();
+		ProductEntity product = getProduct(updateProductsSoldDto.productCode());
 
-				productSale.updateProductStatus(p.productStatus());
-			}
-		);
+		product.getProductSale().updateProductStatus(updateProductsSoldDto.productStatus());
 	}
 
 	private ProductEntity getProduct(String code) {
