@@ -4,6 +4,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import io.devground.core.model.web.BaseResponse;
 import io.devground.payment.mapper.PaymentMapper;
 import io.devground.payment.model.dto.request.PaymentRequest;
+import io.devground.payment.model.dto.request.TossRefundRequest;
 import io.devground.payment.model.dto.response.GetPaymentsResponse;
 import io.devground.payment.model.entity.Payment;
 import io.devground.payment.model.vo.DepositPaymentRequest;
@@ -87,5 +89,16 @@ public class PaymentController {
 		@PageableDefault Pageable pageable
 	){
 		return BaseResponse.success(200, paymentService.getPayments(userCode, pageable), "결제 내역 조회 성공");
+	}
+
+	@PostMapping("/tossRefund/{userCode}/{paymentKey}")
+	public BaseResponse<String> refundPayment(
+		@PathVariable String userCode,
+		@PathVariable String paymentKey
+	){
+		TossRefundRequest request = new TossRefundRequest(userCode, paymentKey, 10000L);
+		paymentService.tossRefund(request);
+
+		return BaseResponse.success(200, "환불 성공");
 	}
 }
