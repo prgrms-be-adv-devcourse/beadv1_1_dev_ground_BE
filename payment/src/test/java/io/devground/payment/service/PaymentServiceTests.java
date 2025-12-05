@@ -1,8 +1,11 @@
 package io.devground.payment.service;
 
+import static org.assertj.core.api.AssertionsForClassTypes.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.BDDMockito.*;
+
+import java.util.List;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -11,7 +14,10 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
@@ -19,13 +25,21 @@ import io.devground.core.commands.deposit.RefundDeposit;
 import io.devground.core.commands.payment.DepositRefundCommand;
 import io.devground.core.model.vo.DepositHistoryType;
 import io.devground.payment.model.dto.request.RefundRequest;
+import io.devground.payment.model.dto.response.GetPaymentsResponse;
+import io.devground.payment.model.entity.Payment;
+import io.devground.payment.model.vo.PaymentStatus;
+import io.devground.payment.model.vo.PaymentType;
+import io.devground.payment.repository.PaymentRepository;
 import io.devground.payment.saga.PaymentKafkaHandler;
 
 @ExtendWith(SpringExtension.class)
 public class PaymentServiceTests {
 
+	@InjectMocks
+	PaymentServiceImpl paymentService;
+
 	@Mock
-	PaymentService paymentService;
+	private PaymentRepository paymentRepository;
 
 	@Mock
 	KafkaTemplate<String, Object> kafkaTemplate;
@@ -67,5 +81,56 @@ public class PaymentServiceTests {
 		assertEquals("USER-001", event.userCode());
 		assertEquals(10_000L, event.amount());
 		assertEquals(DepositHistoryType.REFUND_INTERNAL, event.type());
+	}
+
+	@Test
+	@DisplayName("결제 내역 전체 조회 성공")
+	void getPayments_success() {
+		String userCode = "USER-001";
+		String orderCode = "ORDER-123";
+		Pageable pageable = PageRequest.of(0, 10);
+
+		Payment p1 = Payment.builder()
+			.userCode(userCode)
+			.amount(10_000L)
+			.build();
+
+		p1.setPaymentStatus(PaymentStatus.PAYMENT_COMPLETED);
+
+		Payment p2 = Payment.builder()
+			.userCode(userCode)
+			.amount(20_000L)
+			.build();
+
+		p2.setPaymentStatus(PaymentStatus.PAYMENT_REFUNDED);
+
+
+		Page<Payment> paymentPage =
+			new PageImpl<>(List.of(p1, p2), pageable, 5);
+
+		// BDD 스타일 stubbing
+		given(paymentRepository.findByUserCodeByCreatedAtDesc(userCode, pageable))
+			.willReturn(paymentPage);
+
+		// when
+		Page<GetPaymentsResponse> result =
+			paymentService.getPayments(userCode, pageable);
+
+		// then
+		// 1) repository 호출 검증 (BDD 스타일)
+		then(paymentRepository).should()
+			.findByUserCodeByCreatedAtDesc(userCode, pageable);
+		then(paymentRepository).shouldHaveNoMoreInteractions();
+
+		// 2) Page 메타데이터 검증
+		assertThat(result.getTotalElements()).isEqualTo(2);
+		assertThat(result.getNumber()).isEqualTo(0);
+		assertThat(result.getSize()).isEqualTo(10);
+
+
+		GetPaymentsResponse r1 = result.getContent().get(0);
+		assertThat(r1.amount()).isEqualTo(10_000L);
+		assertThat(r1.type()).isEqualTo(PaymentType.DEPOSIT);
+		assertThat(r1.status()).isEqualTo(PaymentStatus.PAYMENT_COMPLETED);
 	}
 }
