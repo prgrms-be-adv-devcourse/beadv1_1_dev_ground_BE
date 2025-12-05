@@ -27,14 +27,21 @@ public interface ProductJpaRepository extends JpaRepository<ProductEntity, Long>
 			ps.price
 		)
 		FROM ProductEntity p
-		JOIN p.productSale ps
+		JOIN FETCH p.productSale ps
 		WHERE p.code IN :productCodes
 		AND ps.productStatus = 'ON_SALE'
 		"""
 	)
 	List<CartProductsResponse> findCartProductsByProductCodes(@Param("productCodes") List<String> productCodes);
 
-	List<ProductEntity> findAllByCodeIn(List<String> codes);
+	@Query("""
+		SELECT p
+		FROM ProductEntity p
+		JOIN FETCH p.productSale ps
+		WHERE p.deleteStatus = 'N'
+		AND p.code IN :productCodes
+		""")
+	List<ProductEntity> findProductsByCodes(List<String> codes);
 
 	@Query(
 		value = """

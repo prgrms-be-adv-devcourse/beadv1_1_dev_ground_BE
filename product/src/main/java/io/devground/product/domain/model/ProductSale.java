@@ -13,35 +13,47 @@ public class ProductSale {
 	private LocalDateTime createdAt;
 	private LocalDateTime updatedAt;
 
+	private String productCode;
 	private String sellerCode;
 
 	private ProductSaleSpec productSaleSpec;
 
 	private LocalDateTime soldAt;
 
-	public ProductSale(String sellerCode, ProductSaleSpec productSaleSpec) {
-		validate(sellerCode);
+	public ProductSale(String sellerCode, String productCode, ProductSaleSpec productSaleSpec) {
+		validate(sellerCode, productCode);
 
 		this.code = DomainUtils.generateCode();
 
 		this.createdAt = LocalDateTime.now();
 		this.updatedAt = LocalDateTime.now();
 
+		this.productCode = productCode;
 		this.sellerCode = sellerCode;
 		this.productSaleSpec = productSaleSpec;
 	}
 
+	public void updateToSold(ProductSaleSpec productSaleSpec) {
+		this.productSaleSpec = productSaleSpec;
+		this.updateSoldComplete();
+	}
+
 	public void updateSoldComplete() {
 		this.soldAt = LocalDateTime.now();
+		this.updateClock();
 	}
 
 	public void updateClock() {
 		this.updatedAt = LocalDateTime.now();
 	}
 
-	private void validate(String sellerCode) {
+	private void validate(String sellerCode, String productCode) {
 		if (sellerCode == null || sellerCode.isBlank()) {
 			DomainErrorCode.SELLER_CODE_MUST_BE_INPUT.throwException();
+		}
+
+		if (productCode == null || productCode.isBlank()) {
+			DomainErrorCode.PRODUCT_CODE_MUST_BE_INPUT.throwException();
 		}
 	}
 
@@ -55,6 +67,10 @@ public class ProductSale {
 
 	public LocalDateTime getUpdatedAt() {
 		return updatedAt;
+	}
+
+	public String getProductCode() {
+		return productCode;
 	}
 
 	public String getSellerCode() {

@@ -68,13 +68,17 @@ public class ProductSaleEntity extends BaseEntity {
 		product.addProductSale(this);
 	}
 
-	public void changeAsSold() {
+	public void changeSoldSpec(Long price, ProductStatus productStatus) {
 		if (isSold()) {
 			DomainErrorCode.ONLY_ON_SALE_PRODUCT_CHANGEABLE.throwException();
 		}
 
-		this.productStatus = ProductStatus.SOLD;
-		this.soldAt = LocalDateTime.now();
+		this.price = price;
+		this.productStatus = productStatus;
+
+		if (productStatus == ProductStatus.SOLD) {
+			this.soldAt = LocalDateTime.now();
+		}
 	}
 
 	public void changePrice(Long price) {
