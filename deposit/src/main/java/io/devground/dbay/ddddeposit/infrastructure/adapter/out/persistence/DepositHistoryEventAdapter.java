@@ -33,10 +33,10 @@ public class DepositHistoryEventAdapter implements DepositHistoryCommandPort {
 			.orElseThrow(() -> new IllegalArgumentException("Deposit not found: " + depositHistory.getDepositCode()));
 
 		DepositEntity payerDepositEntity = depositJpaRepository.findByCode(depositHistory.getPayerDepositCode())
-			.orElseThrow(() -> new IllegalArgumentException("Deposit not found: " + depositHistory.getDepositCode()));
+			.orElseThrow(() -> new IllegalArgumentException("Deposit not found: " + depositHistory.getPayerDepositCode()));
 
 		DepositEntity payeeDepositEntity = depositJpaRepository.findByCode(depositHistory.getPayeeDepositCode())
-			.orElseThrow(() -> new IllegalArgumentException("Deposit not found: " + depositHistory.getDepositCode()));
+			.orElseThrow(() -> new IllegalArgumentException("Deposit not found: " + depositHistory.getPayeeDepositCode()));
 
 		DepositHistoryEntity entity = DepositHistoryMapper.toEntity(
 			depositHistory,
