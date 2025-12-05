@@ -127,6 +127,35 @@ public class ProductImageCompensationService {
 		}
 	}
 
+	@Transactional(propagation = Propagation.REQUIRES_NEW)
+	public void compensateProductImageUpdateFailure(
+		String sagaId, String productCode, List<String> deleteUrls, String errorMsg
+	) {
+
+		if (!CollectionUtils.isEmpty(deleteUrls)) {
+			log.warn("이미지 업데이트 실패/삭제된 이미지는 복구 불가능 - deleteUrls: {}", deleteUrls);
+		}
+
+		Saga saga = sagaService.getSaga(sagaId);
+		if (saga.getSagaStatus().isTerminal()) {
+			log.warn("이미 종료된 Saga/업데이트 보상 중지");
+
+			return;
+		}
+
+		if (saga.getSagaStatus().isCompensating()) {
+			log.warn("이미 보상 중인 Saga/업데이트 보상 중지");
+
+			return;
+		}
+
+		sagaService.updateToFail(
+			sagaId,
+			String.format("이미지 업데이트 실패/수동 복구 필요 - ProductCode: %s, deleteUrls: %s, Exception: %s",
+				productCode, deleteUrls, errorMsg)
+		);
+	}
+
 	private String validateThumbnail(String curThumbnail, List<String> deleteUrls, String compensatedThumbnail) {
 		if (ObjectUtils.isEmpty(curThumbnail)) {
 			return compensatedThumbnail;
