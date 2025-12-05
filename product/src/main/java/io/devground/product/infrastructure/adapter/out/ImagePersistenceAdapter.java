@@ -10,6 +10,7 @@ import io.devground.core.model.web.BaseResponse;
 import io.devground.product.application.model.vo.ApplicationImageType;
 import io.devground.product.application.port.out.ImagePersistencePort;
 import io.devground.product.infrastructure.adapter.out.client.ImageClient;
+import io.devground.product.infrastructure.model.web.request.ImageUpdatePlan;
 import io.devground.product.infrastructure.model.web.request.ImageUploadPlan;
 import lombok.RequiredArgsConstructor;
 
@@ -36,5 +37,14 @@ public class ImagePersistenceAdapter implements ImagePersistencePort {
 			.throwIfNotSuccess();
 
 		return presignedUrlResponses.data();
+	}
+
+	@Override
+	public List<URL> updateImages(ImageUpdatePlan request) {
+
+		BaseResponse<List<URL>> newPresignedUrlResponses = imageClient.updateImages(request)
+			.throwIfNotSuccess();
+
+		return newPresignedUrlResponses.data();
 	}
 }

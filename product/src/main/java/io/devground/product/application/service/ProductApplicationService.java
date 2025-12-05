@@ -76,15 +76,7 @@ public class ProductApplicationService implements ProductUseCase {
 			);
 		}
 
-		return new RegistProductResponse(
-			productCode,
-			productSale.getCode(),
-			sellerCode,
-			productSpec.title(),
-			productSpec.description(),
-			productSaleSpec.price(),
-			presignedUrls
-		);
+		return new RegistProductResponse(product, productSale, presignedUrls);
 	}
 
 	@Override
@@ -113,7 +105,27 @@ public class ProductApplicationService implements ProductUseCase {
 	@Override
 	public UpdateProductResponse updateProduct(String sellerCode, String productCode, UpdateProductDto request) {
 
-		throw new UnsupportedOperationException("구현 중");
+		Product product = productPort.getProductByCode(productCode);
+		ProductSale productSale = product.getProductSale();
+
+		ProductSpec updatedProductSpec = new ProductSpec(request.title(), request.description());
+		ProductSaleSpec productSaleSpec = new ProductSaleSpec(request.price(), ProductStatus.ON_SALE);
+
+		product.updateSpec(updatedProductSpec);
+		productSale.updateSpec(productSaleSpec);
+
+		// 1. 상품 수정
+		productPort.updateProduct(sellerCode, product, productSale);
+
+		// 2. ES 인덱싱
+		productSearchPort.updateSearch(product);
+
+		// 3. 이미지 수정 및 필요 시 PresignedUrl 발급
+		List<URL> newPresignedUrls = productOrchestrationPort.updateProductImages(
+			productCode, request.deleteUrls(), request.newImageExtensions()
+		);
+
+		return new UpdateProductResponse(product, productSale, newPresignedUrls);
 	}
 
 	@Override

@@ -2,6 +2,8 @@ package io.devground.product.infrastructure.adapter.out.kafka;
 
 import static io.devground.core.model.vo.ImageType.*;
 
+import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.slf4j.MDC;
@@ -12,11 +14,14 @@ import io.devground.core.event.image.ImageProcessedEvent;
 import io.devground.core.event.product.ProductImagesPushEvent;
 import io.devground.core.model.exception.ServiceException;
 import io.devground.core.model.vo.ErrorCode;
+import io.devground.product.application.port.out.ImagePersistencePort;
 import io.devground.product.application.port.out.ProductOrchestrationPort;
 import io.devground.product.domain.exception.DomainException;
+import io.devground.product.infrastructure.model.web.request.ImageUpdatePlan;
 import io.devground.product.infrastructure.saga.entity.Saga;
 import io.devground.product.infrastructure.saga.service.SagaService;
 import io.devground.product.infrastructure.saga.vo.SagaStep;
+import io.devground.product.infrastructure.saga.vo.SagaType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -25,6 +30,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class ProductOrchestrator implements ProductOrchestrationPort {
 
+	private final ImagePersistencePort imagePort;
 	private final SagaService sagaService;
 	private final ProductKafkaProducer productKafkaProducer;
 	private final ProductImageCompensationService compensationService;
@@ -74,6 +80,47 @@ public class ProductOrchestrator implements ProductOrchestrationPort {
 			compensationService.compensateProductImageUploadFailure(
 				sagaId, productCode, "이벤트 발행 실패: " + e.getMessage(), urls
 			);
+
+			throw e;
+		} finally {
+			MDC.clear();
+		}
+	}
+
+	@Override
+	public List<URL> updateProductImages(String productCode, List<String> deleteUrls, List<String> newExtensions) {
+
+		String sagaId = sagaService.startSaga(productCode, SagaType.PRODUCT_IMAGE_UPDATE);
+
+		MDC.put("sagaId", sagaId);
+		MDC.put("productCode", productCode);
+
+		log.info("상품 이미지 수정 시도");
+
+		try {
+			List<URL> updatedPresignedUrls = new ArrayList<>();
+
+			if (!CollectionUtils.isEmpty(deleteUrls) || !CollectionUtils.isEmpty(newExtensions)) {
+				updatedPresignedUrls = imagePort.updateImages
+					(
+						new ImageUpdatePlan(PRODUCT, productCode, deleteUrls, newExtensions)
+					);
+			}
+
+			return updatedPresignedUrls;
+		} catch (DomainException | ServiceException e) {
+			MDC.put("errorMsg", e.getMessage());
+			log.error("상품 이미지 수정 실패");
+
+			compensationService.compensateProductImageUpdateFailure(sagaId, productCode, deleteUrls,
+				e.getMessage());
+
+			throw e;
+		} catch (Exception e) {
+			MDC.put("errorMsg", e.getMessage());
+			log.error("상품 이미지 수정 실패 - ExStack: ", e);
+
+			compensationService.compensateProductImageUpdateFailure(sagaId, productCode, deleteUrls, e.getMessage());
 
 			throw e;
 		} finally {
