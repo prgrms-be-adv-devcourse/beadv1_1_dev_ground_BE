@@ -121,6 +121,7 @@ public class DepositEventHandler {
 
 			DepositChargeFailed depositChargeFailed = new DepositChargeFailed(
 				command.userCode(),
+				command.paymentKey(),
 				command.amount(),
 				"예치금 충전에 실패했어요"
 			);
@@ -277,6 +278,7 @@ public class DepositEventHandler {
 			// TODO: SettlementDepositChargeFailed 이벤트 생성 필요
 			DepositChargeFailed depositChargeFailed = new DepositChargeFailed(
 				command.userCode(),
+				"",
 				command.amount(),
 				"정산 예치금 충전에 실패했어요"
 			);
