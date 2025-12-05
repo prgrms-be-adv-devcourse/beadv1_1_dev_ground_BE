@@ -10,9 +10,7 @@ import io.devground.core.model.vo.ImageType;
 public record ImageUploadPlan(
 
 	ImageType imageType,
-
 	String referenceCode,
-
 	List<String> fileExtensions
 ) {
 	public ImageUploadPlan {
