@@ -3,9 +3,7 @@ package io.devground.product.domain.vo;
 public record ProductSpec(
 
 	String title,
-	String description,
-	// TODO: thumbnailURL이 여기에 필요한지 숙고
-	String thumbnailUrl
+	String description
 ) {
 
 	public ProductSpec {
