@@ -108,8 +108,7 @@ public class PaymentServiceTests {
 		Page<Payment> paymentPage =
 			new PageImpl<>(List.of(p1, p2), pageable, 5);
 
-		// BDD 스타일 stubbing
-		given(paymentRepository.findByUserCodeByCreatedAtDesc(userCode, pageable))
+		given(paymentRepository.findByUserCodeOrderByPaidAtDesc(userCode, pageable))
 			.willReturn(paymentPage);
 
 		// when
@@ -119,7 +118,7 @@ public class PaymentServiceTests {
 		// then
 		// 1) repository 호출 검증 (BDD 스타일)
 		then(paymentRepository).should()
-			.findByUserCodeByCreatedAtDesc(userCode, pageable);
+			.findByUserCodeOrderByPaidAtDesc(userCode, pageable);
 		then(paymentRepository).shouldHaveNoMoreInteractions();
 
 		// 2) Page 메타데이터 검증
