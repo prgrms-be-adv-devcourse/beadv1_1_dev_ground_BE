@@ -135,25 +135,24 @@ public class ProductApplicationService implements ProductUseCase {
 
 		List<Product> products = productPort.getProductsByCodes(sellerCode, request.productCodes());
 
-		List<ProductSale> productSales = products.stream()
-			.map(Product::getProductSale)
-			.toList();
-
-		List<UpdateProductSoldDto> updatedProductsInfo = new ArrayList<>();
-
-		for (ProductSale productSale : productSales) {
+		for (Product product : products) {
+			ProductSale productSale = product.getProductSale();
 			Long price = productSale.getProductSaleSpec().price();
 			ProductSaleSpec updatedSaleSpec = new ProductSaleSpec(price, ProductStatus.SOLD);
 
 			productSale.updateToSold(updatedSaleSpec);
 
-			updatedProductsInfo.add(new UpdateProductSoldDto(
+			UpdateProductSoldDto updatedProductSoldDto = new UpdateProductSoldDto(
 				productSale.getProductCode(),
 				updatedSaleSpec.productStatus()
-			));
-		}
+			);
 
-		productPort.updateToSold(updatedProductsInfo);
+			// 1. 상품 판매 완료 처리
+			productPort.updateToSold(updatedProductSoldDto);
+
+			// 2. ES 인덱싱
+			productSearchPort.updateSearch(product);
+		}
 	}
 
 	public void updateThumbnail(String productCode, String thumbnail) {

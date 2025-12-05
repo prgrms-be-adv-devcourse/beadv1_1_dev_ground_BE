@@ -41,7 +41,7 @@ public class ProductESUtil {
 			.productCode(product.getCode())
 			.title(productSpec.title())
 			.description(productSpec.description())
-			.thumbnailUrl(productSpec.thumbnailUrl())
+			.thumbnailUrl(product.getThumbnailUrl())
 			.categoryId(category.getId())
 			.categoryName(category.getName())
 			.categoryFullPath(category.getFullPath())
