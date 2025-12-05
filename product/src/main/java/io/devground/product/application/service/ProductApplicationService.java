@@ -59,8 +59,6 @@ public class ProductApplicationService implements ProductUseCase {
 		Product product = productPort.save(sellerCode, request);
 
 		ProductSale productSale = product.getProductSale();
-		ProductSpec productSpec = product.getProductSpec();
-		ProductSaleSpec productSaleSpec = productSale.getProductSaleSpec();
 
 		String productCode = product.getCode();
 
