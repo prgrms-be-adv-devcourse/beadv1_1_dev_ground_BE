@@ -143,11 +143,13 @@ public class ProductApplicationService implements ProductUseCase {
 
 		for (ProductSale productSale : productSales) {
 			Long price = productSale.getProductSaleSpec().price();
-			productSale.updateToSold(new ProductSaleSpec(price, ProductStatus.SOLD));
+			ProductSaleSpec updatedSaleSpec = new ProductSaleSpec(price, ProductStatus.SOLD);
+
+			productSale.updateToSold(updatedSaleSpec);
 
 			updatedProductsInfo.add(new UpdateProductSoldDto(
 				productSale.getProductCode(),
-				productSale.getProductSaleSpec()
+				updatedSaleSpec.productStatus()
 			));
 		}
 
