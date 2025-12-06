@@ -14,4 +14,6 @@ public interface ProductOrchestrationPort {
 	void handleImageProcessFailure(String sagaId, ImageProcessedEvent event);
 
 	List<URL> updateProductImages(String productCode, List<String> deleteUrls, List<String> newExtensions);
+
+	void deleteProductImages(String productCode);
 }
