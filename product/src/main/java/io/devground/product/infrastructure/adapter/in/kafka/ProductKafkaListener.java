@@ -7,7 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import io.devground.core.event.image.ImageProcessedEvent;
 import io.devground.product.application.port.out.ProductOrchestrationPort;
-import io.devground.product.application.service.ProductApplicationService;
+import io.devground.product.domain.port.in.ProductUseCase;
 import io.devground.product.infrastructure.saga.entity.Saga;
 import io.devground.product.infrastructure.saga.service.SagaService;
 import lombok.RequiredArgsConstructor;
@@ -23,7 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 public class ProductKafkaListener {
 
 	private final ProductOrchestrationPort orchestrator;
-	private final ProductApplicationService productApplication;
+	private final ProductUseCase productApplication;
 	private final SagaService sagaService;
 
 	@KafkaHandler

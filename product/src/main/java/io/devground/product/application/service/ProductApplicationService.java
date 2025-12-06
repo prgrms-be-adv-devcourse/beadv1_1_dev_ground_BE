@@ -7,6 +7,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import io.devground.core.model.vo.DeleteStatus;
 import io.devground.core.model.vo.ImageType;
 import io.devground.product.application.model.CartProductsDto;
 import io.devground.product.application.model.ProductImageUrlsDto;
@@ -15,9 +16,9 @@ import io.devground.product.application.model.UpdateProductDto;
 import io.devground.product.application.model.UpdateProductSoldDto;
 import io.devground.product.application.model.vo.ApplicationImageType;
 import io.devground.product.application.port.out.ImagePersistencePort;
+import io.devground.product.application.port.out.ProductEventPort;
 import io.devground.product.application.port.out.ProductOrchestrationPort;
 import io.devground.product.application.port.out.persistence.ProductPersistencePort;
-import io.devground.product.application.port.out.persistence.ProductSearchPort;
 import io.devground.product.domain.model.Product;
 import io.devground.product.domain.model.ProductSale;
 import io.devground.product.domain.port.in.ProductUseCase;
@@ -41,9 +42,9 @@ import lombok.RequiredArgsConstructor;
 public class ProductApplicationService implements ProductUseCase {
 
 	private final ProductPersistencePort productPort;
-	private final ProductSearchPort productSearchPort;
 	private final ProductOrchestrationPort productOrchestrationPort;
 	private final ImagePersistencePort imagePort;
+	private final ProductEventPort productEventPort;
 
 	@Override
 	@Transactional(readOnly = true)
@@ -63,7 +64,7 @@ public class ProductApplicationService implements ProductUseCase {
 		String productCode = product.getCode();
 
 		// 2. ES 인덱싱
-		productSearchPort.prepareSearch(product);
+		productEventPort.publishCreated(product);
 
 		// 3. PresignedUrl 발급
 		List<String> imageExtensions = request.imageExtensions();
@@ -83,7 +84,7 @@ public class ProductApplicationService implements ProductUseCase {
 		Product product = productPort.getProductByCode(productCode);
 		String productSellerCode = product.getProductSale().getSellerCode();
 
-		productOrchestrationPort.uploadProductImages(sellerCode, productCode, productSellerCode, request.urls());
+		productOrchestrationPort.uploadProductImages(sellerCode, productSellerCode, productCode, request.urls());
 
 		return null;
 	}
@@ -116,7 +117,7 @@ public class ProductApplicationService implements ProductUseCase {
 		productPort.updateProduct(sellerCode, product, productSale);
 
 		// 2. ES 인덱싱
-		productSearchPort.updateSearch(product);
+		productEventPort.publishUpdated(product);
 
 		// 3. 이미지 수정 및 필요 시 PresignedUrl 발급
 		List<URL> newPresignedUrls = productOrchestrationPort.updateProductImages(
@@ -129,7 +130,19 @@ public class ProductApplicationService implements ProductUseCase {
 	@Override
 	public Void deleteProduct(String sellerCode, String productCode) {
 
-		throw new UnsupportedOperationException("구현 중");
+		Product product = productPort.getProductByCode(productCode);
+
+		// 1. 상품 삭제
+		product.updateDeleteStatus(DeleteStatus.Y);
+		productPort.deleteProduct(sellerCode, product);
+
+		// 2. ES 인덱싱
+		productEventPort.publishDeleted(product);
+
+		// 3. 이미지 삭제
+		productOrchestrationPort.deleteProductImages(productCode);
+
+		return null;
 	}
 
 	@Override
@@ -161,10 +174,11 @@ public class ProductApplicationService implements ProductUseCase {
 			productPort.updateToSold(updatedProductSoldDto);
 
 			// 2. ES 인덱싱
-			productSearchPort.updateSearch(product);
+			productEventPort.publishUpdated(product);
 		}
 	}
 
+	@Override
 	public void updateThumbnail(String productCode, String thumbnail) {
 
 		productPort.updateThumbnail(productCode, thumbnail);

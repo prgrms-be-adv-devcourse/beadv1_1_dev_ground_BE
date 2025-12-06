@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
 import io.devground.core.event.image.ImageProcessedEvent;
+import io.devground.core.event.product.ProductImagesDeleteEvent;
 import io.devground.core.event.product.ProductImagesPushEvent;
 import io.devground.core.model.exception.ServiceException;
 import io.devground.core.model.vo.ErrorCode;
@@ -121,6 +122,43 @@ public class ProductOrchestrator implements ProductOrchestrationPort {
 			log.error("상품 이미지 수정 실패 - ExStack: ", e);
 
 			compensationService.compensateProductImageUpdateFailure(sagaId, productCode, deleteUrls, e.getMessage());
+
+			throw e;
+		} finally {
+			MDC.clear();
+		}
+	}
+
+	@Override
+	public void deleteProductImages(String productCode) {
+
+		String sagaId = sagaService.startSaga(productCode, SagaType.PRODUCT_IMAGE_DELETE);
+
+		MDC.put("sagaId", sagaId);
+		MDC.put("productCode", productCode);
+
+		log.info("상품 이미지 삭제 시도");
+
+		try {
+			sagaService.updateStep(sagaId, SagaStep.IMAGE_KAFKA_PUBLISHED);
+
+			productKafkaProducer.publishProductImageDelete(
+				new ProductImagesDeleteEvent(sagaId, PRODUCT, productCode, null)
+			);
+
+			log.info("이미지 삭제 이벤트 발행 완료");
+		} catch (DomainException | ServiceException e) {
+			MDC.put("errorMsg", e.getMessage());
+			log.error("이미지 삭제 이벤트 발행 실패");
+
+			sagaService.updateToFail(sagaId, "이미지 삭제 이벤트 발행 실패" + e.getMessage());
+
+			throw e;
+		} catch (Exception e) {
+			MDC.put("errorMsg", e.getMessage());
+			log.error("이미지 삭제 이벤트 발행 실패 - ExStack: ", e);
+
+			sagaService.updateToFail(sagaId, "이미지 삭제 이벤트 발행 실패" + e.getMessage());
 
 			throw e;
 		} finally {

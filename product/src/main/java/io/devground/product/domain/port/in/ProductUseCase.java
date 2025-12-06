@@ -31,4 +31,6 @@ public interface ProductUseCase {
 	List<CartProductsResponse> getCartProducts(CartProductsDto request);
 
 	void updateStatusToSold(String sellerCode, CartProductsDto request);
+
+	void updateThumbnail(String productCode, String thumbnail);
 }

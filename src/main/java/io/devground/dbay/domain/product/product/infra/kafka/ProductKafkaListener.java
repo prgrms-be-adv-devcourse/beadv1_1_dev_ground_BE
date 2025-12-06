@@ -30,8 +30,7 @@ public class ProductKafkaListener {
 
 		String sagaId = event.sagaId();
 
-		log.info("이미지 처리 결과 수신 - SagaId: {}, ProductCode: {}, isSuccess: {}",
-			sagaId, event.referenceCode(), event.isSuccess());
+		log.info("이미지 처리 결과 수신");
 
 		// 외부에서 직접 Image API 호출한 경우
 		if (sagaId == null) {
@@ -42,8 +41,7 @@ public class ProductKafkaListener {
 		Saga saga = sagaService.getSaga(sagaId);
 
 		if (saga.getSagaStatus().isTerminal()) {
-			log.warn("이미 종료된 Saga - SagaId: {}, ProductCode: {}, Step: {}",
-				sagaId, event.referenceCode(), saga.getCurrentStep());
+			log.warn("이미 종료된 Saga");
 
 			return;
 		}
