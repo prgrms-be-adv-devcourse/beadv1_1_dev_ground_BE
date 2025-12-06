@@ -25,4 +25,6 @@ public interface ProductPersistencePort {
 	void updateToSold(UpdateProductSoldDto updatedProductsSoldDto);
 
 	void updateProduct(String sellerCode, Product product, ProductSale productSale);
+
+	void deleteProduct(String sellerCode, Product product);
 }

@@ -123,6 +123,18 @@ public class ProductPersistenceAdapter implements ProductPersistencePort {
 		productSaleEntity.changePrice(productSale.getProductSaleSpec().price());
 	}
 
+	@Override
+	public void deleteProduct(String sellerCode, Product product) {
+
+		ProductEntity productEntity = getProduct(product.getCode());
+
+		if (!productEntity.getProductSale().getSellerCode().equals(sellerCode)) {
+			ErrorCode.IS_NOT_PRODUCT_OWNER.throwServiceException();
+		}
+
+		productEntity.delete();
+	}
+
 	private ProductEntity getProduct(String code) {
 		return productRepository.findByCode(code)
 			.orElseThrow(DomainErrorCode.PRODUCT_NOT_FOUND::throwException);

@@ -35,6 +35,13 @@ public class ProductEsAdapter implements ProductSearchPort {
 		this.indexProduct(product);
 	}
 
+	@Override
+	@Async("esTaskExecutor")
+	public void deleteSearch(Product product) {
+
+		this.indexProduct(product);
+	}
+
 	private void indexProduct(Product product) {
 
 		String productCode = product.getCode();
