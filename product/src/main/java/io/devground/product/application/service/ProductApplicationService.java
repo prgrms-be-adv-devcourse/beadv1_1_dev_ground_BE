@@ -151,7 +151,7 @@ public class ProductApplicationService implements ProductUseCase {
 
 	// TODO: 다시 한 번 확인해보기 - 단순한 작업을 이렇게 복잡하게 처리할 필요가 있을 것인가에 대하여
 	@Override
-	public void updateStatusToSold(String sellerCode, CartProductsDto request) {
+	public Void updateStatusToSold(String sellerCode, CartProductsDto request) {
 
 		List<Product> products = productPort.getProductsByCodes(sellerCode, request.productCodes());
 
@@ -173,6 +173,8 @@ public class ProductApplicationService implements ProductUseCase {
 			// 2. ES 인덱싱
 			productEventPort.publishUpdated(product);
 		}
+
+		return null;
 	}
 
 	@Override

@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.devground.core.model.web.BaseResponse;
@@ -162,9 +161,8 @@ public class ProductApiController {
 	}
 
 	@PatchMapping("/status")
-	@ResponseStatus(NO_CONTENT)
 	@Operation(summary = "상품 판매 처리", description = "상품의 상태를 판매된 상태로 변경합니다.")
-	public void updateStatusToSold(
+	public BaseResponse<Void> updateStatusToSold(
 		@RequestHeader("X-CODE") String sellerCode,
 		@RequestBody CartProductsRequest request
 	) {
@@ -172,5 +170,11 @@ public class ProductApiController {
 		CartProductsDto requestDto = new CartProductsDto(request.productCodes());
 
 		productApplication.updateStatusToSold(sellerCode, requestDto);
+
+		return BaseResponse.success(
+			NO_CONTENT.value(),
+			productApplication.updateStatusToSold(sellerCode, requestDto),
+			"상품 정보가 성공적으로 삭제되었습니다."
+		);
 	}
 }
