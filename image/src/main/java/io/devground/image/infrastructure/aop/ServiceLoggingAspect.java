@@ -6,20 +6,16 @@ import org.aspectj.lang.annotation.Before;
 import org.springframework.stereotype.Component;
 
 import io.devground.image.infrastructure.util.LogUtils;
-import lombok.RequiredArgsConstructor;
 
 @Aspect
 @Component
-@RequiredArgsConstructor
 public class ServiceLoggingAspect {
 
 	@Before("@within(org.springframework.stereotype.Service)")
-	public Object logService(JoinPoint joinPoint) {
+	public void logService(JoinPoint joinPoint) {
 		String className = joinPoint.getSignature().getDeclaringType().getSimpleName();
 		String methodName = joinPoint.getSignature().getName();
 
 		LogUtils.logServiceRequest(className, methodName);
-
-		return joinPoint;
 	}
 }
