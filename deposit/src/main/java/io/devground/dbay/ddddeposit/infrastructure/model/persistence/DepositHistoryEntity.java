@@ -7,6 +7,7 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -30,21 +31,21 @@ public class DepositHistoryEntity extends BaseEntity {
 	@Column(nullable = false)
 	private String userCode;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "depositId")
 	private DepositEntity depositEntity;
 
 	@Column(nullable = false)
 	private String depositCode;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "payerDepositId")
 	private DepositEntity payerDepositEntity;
 
 	@Column
 	private String payerDepositCode;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "payeeDepositId")
 	private DepositEntity payeeDepositEntity;
 
