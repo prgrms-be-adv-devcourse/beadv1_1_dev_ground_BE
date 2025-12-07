@@ -98,8 +98,6 @@ public class OrderApplication implements OrderUseCase {
         Order order = Order.createSelected(userCode, orderProducts);
 
         orderPersistencePort.createSelectedOrder(userInfo, order, orderProducts);
-
-
     }
 
     @Override
@@ -151,6 +149,20 @@ public class OrderApplication implements OrderUseCase {
                 orderPage.totalItems(),
                 orderDescriptions
         );
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public OrderDetailDescription getOrderDetail(UserCode userCode, OrderCode orderCode) {
+        if (userCode == null) {
+            throw ServiceError.USER_NOT_FOUNT.throwServiceException();
+        }
+
+        if (orderCode == null) {
+            throw ServiceError.ORDER_NOT_FOUND.throwServiceException();
+        }
+
+        return orderPersistencePort.getOrderDetail(userCode, orderCode);
     }
 
     private UserInfo getUserInfoOrThrow(UserCode userCode) {

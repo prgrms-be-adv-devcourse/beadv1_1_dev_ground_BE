@@ -9,6 +9,8 @@ import java.util.List;
 
 public interface OrderItemJpaRepository extends JpaRepository<OrderItemEntity, Long> {
 
+    List<OrderItemEntity> findAllByOrderEntity_Id(Long orderId);
+
     @Query("""
         SELECT oi
         FROM OrderItemEntity oi

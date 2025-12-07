@@ -10,4 +10,5 @@ public interface OrderUseCase {
     void createOrderByOne(UserCode userCode, ProductCode productCode);
     void createOrderBySelected(UserCode userCode, List<ProductCode> productCodes);
     PageDto<OrderDescription> getOrderLists(UserCode userCode, RoleType roleType, PageQuery pageQuery);
+    OrderDetailDescription getOrderDetail(UserCode userCode, OrderCode orderCode);
 }
