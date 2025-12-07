@@ -2,7 +2,7 @@ package io.devground.product.domain.model;
 
 import java.time.LocalDateTime;
 
-import io.devground.product.domain.util.DomainUtils;
+import io.devground.core.util.CodeUtil;
 import io.devground.product.domain.vo.DomainErrorCode;
 import io.devground.product.domain.vo.ProductSaleSpec;
 
@@ -23,7 +23,7 @@ public class ProductSale {
 	public ProductSale(String sellerCode, String productCode, ProductSaleSpec productSaleSpec) {
 		validate(sellerCode, productCode);
 
-		this.code = DomainUtils.generateCode();
+		this.code = CodeUtil.generateUUID();
 
 		this.createdAt = LocalDateTime.now();
 		this.updatedAt = LocalDateTime.now();
