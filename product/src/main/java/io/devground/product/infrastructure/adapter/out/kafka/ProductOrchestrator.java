@@ -15,7 +15,7 @@ import io.devground.core.event.product.ProductImagesDeleteEvent;
 import io.devground.core.event.product.ProductImagesPushEvent;
 import io.devground.core.model.exception.ServiceException;
 import io.devground.core.model.vo.ErrorCode;
-import io.devground.product.application.port.out.ImagePersistencePort;
+import io.devground.product.application.port.out.ImageClientPort;
 import io.devground.product.application.port.out.ProductOrchestrationPort;
 import io.devground.product.domain.exception.DomainException;
 import io.devground.product.infrastructure.model.web.request.ImageUpdatePlan;
@@ -31,7 +31,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class ProductOrchestrator implements ProductOrchestrationPort {
 
-	private final ImagePersistencePort imagePort;
+	private final ImageClientPort imagePort;
 	private final SagaService sagaService;
 	private final ProductKafkaProducer productKafkaProducer;
 	private final ProductImageCompensationService compensationService;
