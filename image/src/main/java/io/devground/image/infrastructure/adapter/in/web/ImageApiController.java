@@ -14,12 +14,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import io.devground.core.dto.image.DeleteImagesRequest;
-import io.devground.core.dto.image.GeneratePresignedRequest;
-import io.devground.core.dto.image.UpdateImagesRequest;
 import io.devground.core.model.vo.ImageType;
 import io.devground.core.model.web.BaseResponse;
 import io.devground.image.application.service.ImageApplicationService;
+import io.devground.image.infrastructure.model.web.request.DeleteImagesRequest;
+import io.devground.image.infrastructure.model.web.request.GeneratePresignedRequest;
+import io.devground.image.infrastructure.model.web.request.UpdateImagesRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;

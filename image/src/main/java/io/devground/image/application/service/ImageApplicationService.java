@@ -20,7 +20,8 @@ public class ImageApplicationService implements ImageUseCase {
 
 	@Override
 	public List<URL> generatePresignedUrls(ImageType imageType, String referenceCode, List<String> fileExtensions) {
-		return List.of();
+
+		return imagePersistencePort.generatePresignedUrls(imageType, referenceCode, fileExtensions);
 	}
 
 	@Override

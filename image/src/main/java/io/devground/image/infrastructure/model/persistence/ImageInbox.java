@@ -1,4 +1,4 @@
-package io.devground.image.infrastructure.model;
+package io.devground.image.infrastructure.model.persistence;
 
 import io.devground.core.event.vo.EventType;
 import jakarta.persistence.Column;
