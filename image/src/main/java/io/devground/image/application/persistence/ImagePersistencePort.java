@@ -18,4 +18,6 @@ public interface ImagePersistencePort {
 	void deleteAllImages(ImageType imageType, String referenceCode);
 
 	void deleteTargetImages(ImageType imageType, String referenceCode, List<String> urls);
+
+	String compensateToS3Upload(ImageType imageType, String referenceCode, List<String> urls);
 }

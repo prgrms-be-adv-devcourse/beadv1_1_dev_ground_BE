@@ -4,6 +4,7 @@ import java.net.URL;
 import java.util.List;
 
 import org.springframework.stereotype.Repository;
+import org.springframework.util.CollectionUtils;
 
 import io.devground.core.model.vo.ImageType;
 import io.devground.image.application.persistence.ImagePersistencePort;
@@ -74,5 +75,18 @@ public class ImagePersistenceAdapter implements ImagePersistencePort {
 		if (imagesDeleteCount > 0) {
 			s3Service.deleteObjectsByUrls(urls);
 		}
+	}
+
+	@Override
+	public String compensateToS3Upload(ImageType imageType, String referenceCode, List<String> urls) {
+
+		if (!CollectionUtils.isEmpty(urls)) {
+			s3Service.deleteObjectsByUrls(urls);
+		}
+
+		return imageRepository.findAllByImageTypeAndReferenceCode(imageType, referenceCode).stream()
+			.map(ImageEntity::getImageUrl)
+			.findFirst()
+			.orElse("");
 	}
 }
