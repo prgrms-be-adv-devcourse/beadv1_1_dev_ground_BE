@@ -6,11 +6,9 @@ import org.aspectj.lang.annotation.Aspect;
 import org.springframework.stereotype.Component;
 
 import io.devground.product.infrastructure.util.LogUtils;
-import lombok.RequiredArgsConstructor;
 
 @Aspect
 @Component
-@RequiredArgsConstructor
 public class GlobalExceptionLoggingAspect {
 
 	@AfterThrowing(pointcut = "@within(org.springframework.stereotype.Service)", throwing = "ex")
