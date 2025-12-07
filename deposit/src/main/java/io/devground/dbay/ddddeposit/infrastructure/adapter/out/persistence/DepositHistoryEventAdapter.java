@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Repository;
 
+import io.devground.dbay.ddddeposit.application.exception.vo.ServiceErrorCode;
 import io.devground.dbay.ddddeposit.application.port.out.DepositHistoryCommandPort;
 import io.devground.dbay.ddddeposit.domain.depositHistory.DepositHistory;
 import io.devground.dbay.ddddeposit.domain.pagination.PageDto;
@@ -30,13 +31,16 @@ public class DepositHistoryEventAdapter implements DepositHistoryCommandPort {
 		log.debug("Saving deposit history: {}", depositHistory.getCode());
 
 		DepositEntity depositEntity = depositJpaRepository.findByCode(depositHistory.getDepositCode())
-			.orElseThrow(() -> new IllegalArgumentException("Deposit not found: " + depositHistory.getDepositCode()));
+			.orElseThrow(() -> ServiceErrorCode.DEPOSIT_NOT_FOUND
+				.throwServiceException("depositCode: " + depositHistory.getDepositCode()));
 
 		DepositEntity payerDepositEntity = depositJpaRepository.findByCode(depositHistory.getPayerDepositCode())
-			.orElseThrow(() -> new IllegalArgumentException("Deposit not found: " + depositHistory.getPayerDepositCode()));
+			.orElseThrow(() -> ServiceErrorCode.DEPOSIT_NOT_FOUND
+				.throwServiceException("depositCode: " + depositHistory.getPayerDepositCode()));
 
 		DepositEntity payeeDepositEntity = depositJpaRepository.findByCode(depositHistory.getPayeeDepositCode())
-			.orElseThrow(() -> new IllegalArgumentException("Deposit not found: " + depositHistory.getPayeeDepositCode()));
+			.orElseThrow(() -> ServiceErrorCode.DEPOSIT_NOT_FOUND
+				.throwServiceException("depositCode: " + depositHistory.getPayeeDepositCode()));
 
 		DepositHistoryEntity entity = DepositHistoryMapper.toEntity(
 			depositHistory,
@@ -47,7 +51,6 @@ public class DepositHistoryEventAdapter implements DepositHistoryCommandPort {
 
 		DepositHistoryEntity savedEntity = depositHistoryJpaRepository.save(entity);
 
-		// Entity -> Domain 변환하여 반환
 		return DepositHistoryMapper.toDomain(savedEntity);
 	}
 
