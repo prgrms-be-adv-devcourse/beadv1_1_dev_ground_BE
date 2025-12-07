@@ -42,9 +42,13 @@ public class ImageClientAdapter implements ImageClientPort {
 	}
 
 	@Override
-	public List<URL> updateImages(ImageUpdatePlan request) {
+	public List<URL> updateImages(
+		ImageType imageType, String productCode, List<String> deleteUrls, List<String> newImageExtensions
+	) {
 
-		BaseResponse<List<URL>> newPresignedUrlResponses = imageClient.updateImages(request)
+		ImageUpdatePlan imageUpdatePlan = new ImageUpdatePlan(imageType, productCode, deleteUrls, newImageExtensions);
+
+		BaseResponse<List<URL>> newPresignedUrlResponses = imageClient.updateImages(imageUpdatePlan)
 			.throwIfNotSuccess();
 
 		return newPresignedUrlResponses.data();
