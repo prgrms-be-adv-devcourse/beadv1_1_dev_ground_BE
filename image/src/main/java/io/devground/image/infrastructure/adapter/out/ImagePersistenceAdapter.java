@@ -8,6 +8,7 @@ import org.springframework.util.CollectionUtils;
 
 import io.devground.core.model.vo.ImageType;
 import io.devground.image.application.persistence.ImagePersistencePort;
+import io.devground.image.domain.model.Image;
 import io.devground.image.infrastructure.adapter.out.s3.S3Service;
 import io.devground.image.infrastructure.mapper.ImageMapper;
 import io.devground.image.infrastructure.model.persistence.ImageEntity;
@@ -27,18 +28,18 @@ public class ImagePersistenceAdapter implements ImagePersistencePort {
 	}
 
 	@Override
-	public List<String> getImageUrls(ImageType imageType, String referenceCode) {
+	public List<Image> getImages(ImageType imageType, String referenceCode) {
 
 		return imageRepository.findAllByImageTypeAndReferenceCode(imageType, referenceCode).stream()
-			.map(ImageEntity::getImageUrl)
+			.map(ImageMapper::toImageDomain)
 			.toList();
 	}
 
 	@Override
-	public void saveImages(ImageType imageType, String referenceCode, List<String> newUrls) {
+	public void saveImages(List<Image> images) {
 
-		List<ImageEntity> newImages = newUrls.stream()
-			.map(url -> ImageMapper.of(imageType, referenceCode, url))
+		List<ImageEntity> newImages = images.stream()
+			.map(ImageMapper::toImageEntity)
 			.toList();
 
 		imageRepository.saveAll(newImages);

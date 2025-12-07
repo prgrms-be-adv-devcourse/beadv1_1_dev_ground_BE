@@ -8,7 +8,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import io.devground.core.model.vo.ImageType;
 import io.devground.image.application.persistence.ImagePersistencePort;
+import io.devground.image.domain.model.Image;
 import io.devground.image.domain.port.in.ImageUseCase;
+import io.devground.image.domain.vo.ImageSpec;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -32,22 +34,30 @@ public class ImageApplicationService implements ImageUseCase {
 		}
 
 		// 1. 이미지 조회
-		List<String> foundUrls = imagePort.getImageUrls(imageType, referenceCode);
+		List<Image> foundImages = imagePort.getImages(imageType, referenceCode);
+
+		List<String> foundUrls = foundImages.stream()
+			.map(image -> image.getImageSpec().imageUrl())
+			.toList();
 
 		List<String> newUrls = imageUrls.stream()
 			.distinct()
 			.filter(url -> !foundUrls.contains(url))
 			.toList();
 
+		List<Image> newImages = newUrls.stream()
+			.map(url -> new Image(new ImageSpec(referenceCode, imageType, url)))
+			.toList();
+
 		// 2. 중복 제거 후 이미지 저장
-		if (!newUrls.isEmpty()) {
-			imagePort.saveImages(imageType, referenceCode, newUrls);
+		if (!newImages.isEmpty()) {
+			imagePort.saveImages(newImages);
 		}
 
 		// 3. 썸네일 추출
-		return foundUrls.isEmpty()
-			? newUrls.getFirst()
-			: foundUrls.getFirst();
+		return foundImages.isEmpty()
+			? newImages.getFirst().getImageSpec().imageUrl()
+			: foundImages.getFirst().getImageSpec().imageUrl();
 	}
 
 	@Override
