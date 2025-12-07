@@ -36,4 +36,8 @@ public class OrderItem {
         return this.orderProduct.productPrice();
     }
 
+    public String getProductName() {
+        return this.orderProduct.productName();
+    }
+
 }

@@ -8,16 +8,16 @@ import io.devground.dbay.order.application.vo.ProductInfoSnapShot;
 import io.devground.dbay.order.application.vo.ProductSnapShot;
 import io.devground.dbay.order.application.vo.UserInfo;
 import io.devground.dbay.order.domain.model.Order;
+import io.devground.dbay.order.domain.model.OrderItem;
 import io.devground.dbay.order.domain.port.in.OrderUseCase;
-import io.devground.dbay.order.domain.vo.OrderProduct;
-import io.devground.dbay.order.domain.vo.ProductCode;
-import io.devground.dbay.order.domain.vo.ProductStatus;
-import io.devground.dbay.order.domain.vo.UserCode;
+import io.devground.dbay.order.domain.vo.*;
+import io.devground.dbay.order.domain.vo.pagination.PageDto;
+import io.devground.dbay.order.domain.vo.pagination.PageQuery;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class OrderApplication implements OrderUseCase {
@@ -100,6 +100,57 @@ public class OrderApplication implements OrderUseCase {
         orderPersistencePort.createSelectedOrder(userInfo, order, orderProducts);
 
 
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public PageDto<OrderDescription> getOrderLists(UserCode userCode, RoleType roleType, PageQuery pageQuery) {
+        if (userCode == null) {
+            throw ServiceError.USER_NOT_FOUNT.throwServiceException();
+        }
+
+        PageDto<OrderDescription> orderPage = orderPersistencePort.getOrders(userCode, roleType, pageQuery);
+
+        List<OrderDescription> orders = orderPage.items();
+
+        if (orders.isEmpty()) {
+            return new PageDto<>(
+                    pageQuery.page(),
+                    pageQuery.size(),
+                    0,
+                    0,
+                    List.of()
+            );
+        }
+
+        List<String> orderCodes = orders.stream().map(OrderDescription::code).toList();
+
+        List<OrderItemInfo> orderItems = orderPersistencePort.getOrderItems(orderCodes);
+
+        Map<String, List<OrderItemInfo>> itemsByOrderId = orderItems.stream()
+                .collect(Collectors.groupingBy(
+                        OrderItemInfo::code,
+                        Collectors.toList()
+                ));
+
+        List<OrderDescription> orderDescriptions = orders.stream()
+                .map(o -> new OrderDescription(
+                        o.code(),
+                        o.userCode(),
+                        o.createdAt(),
+                        o.updatedAt(),
+                        o.totalAmount(),
+                        o.orderStatus(),
+                        itemsByOrderId.getOrDefault(o.code(), Collections.emptyList())
+                )).toList();
+
+        return new PageDto<>(
+                orderPage.currentPageNumber(),
+                orderPage.pageSize(),
+                orderPage.totalPages(),
+                orderPage.totalItems(),
+                orderDescriptions
+        );
     }
 
     private UserInfo getUserInfoOrThrow(UserCode userCode) {
