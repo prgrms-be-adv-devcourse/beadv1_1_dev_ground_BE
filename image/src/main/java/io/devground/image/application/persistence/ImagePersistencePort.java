@@ -12,13 +12,11 @@ public interface ImagePersistencePort {
 
 	List<Image> getImages(ImageType imageType, String referenceCode);
 
+	List<Image> getTargetImages(ImageType imageType, String referenceCode, List<String> urls);
+
 	void saveImages(List<Image> images);
 
-	void deleteImages(ImageType imageType, String referenceCode, List<String> deleteUrls);
-
-	void deleteAllImages(ImageType imageType, String referenceCode);
-
-	void deleteTargetImages(ImageType imageType, String referenceCode, List<String> urls);
+	void deleteAllImages(List<Image> images);
 
 	String compensateToS3Upload(ImageType imageType, String referenceCode, List<String> urls);
 
