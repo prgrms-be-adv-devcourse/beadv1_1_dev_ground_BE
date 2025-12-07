@@ -9,12 +9,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import io.devground.core.model.vo.DeleteStatus;
 import io.devground.core.model.vo.ImageType;
-import io.devground.product.domain.vo.request.CartProductsDto;
-import io.devground.product.domain.vo.request.ProductImageUrlsDto;
-import io.devground.product.domain.vo.request.RegistProductDto;
-import io.devground.product.domain.vo.request.UpdateProductDto;
-import io.devground.product.domain.vo.request.UpdateProductSoldDto;
-import io.devground.product.application.model.vo.ApplicationImageType;
 import io.devground.product.application.port.out.ImageClientPort;
 import io.devground.product.application.port.out.ProductEventPort;
 import io.devground.product.application.port.out.ProductOrchestrationPort;
@@ -27,6 +21,11 @@ import io.devground.product.domain.vo.ProductSpec;
 import io.devground.product.domain.vo.ProductStatus;
 import io.devground.product.domain.vo.pagination.PageDto;
 import io.devground.product.domain.vo.pagination.PageQuery;
+import io.devground.product.domain.vo.request.CartProductsDto;
+import io.devground.product.domain.vo.request.ProductImageUrlsDto;
+import io.devground.product.domain.vo.request.RegistProductDto;
+import io.devground.product.domain.vo.request.UpdateProductDto;
+import io.devground.product.domain.vo.request.UpdateProductSoldDto;
 import io.devground.product.domain.vo.response.CartProductsResponse;
 import io.devground.product.domain.vo.response.GetAllProductsResponse;
 import io.devground.product.domain.vo.response.ProductDetailResponse;
@@ -93,7 +92,7 @@ public class ProductApplicationService implements ProductUseCase {
 		Product product = productPort.getProductByCode(productCode);
 
 		// 이미지 불러오는 부분
-		List<String> imageUrls = imagePort.getImageUrls(productCode, ApplicationImageType.PRODUCT);
+		List<String> imageUrls = imagePort.getImageUrls(productCode, ImageType.PRODUCT);
 
 		return new ProductDetailResponse(product, imageUrls);
 	}
