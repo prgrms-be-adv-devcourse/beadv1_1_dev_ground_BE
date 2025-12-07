@@ -31,9 +31,11 @@ public class ImagePersistenceAdapter implements ImagePersistencePort {
 	}
 
 	@Override
-	public List<URL> prepareUploadUrls(ImageUploadPlan request) {
+	public List<URL> prepareUploadUrls(ImageType imageType, String productCode, List<String> fileExtensions) {
 
-		BaseResponse<List<URL>> presignedUrlResponses = imageClient.generatePresignedUrls(request)
+		ImageUploadPlan imageUploadPlan = new ImageUploadPlan(imageType, productCode, fileExtensions);
+
+		BaseResponse<List<URL>> presignedUrlResponses = imageClient.generatePresignedUrls(imageUploadPlan)
 			.throwIfNotSuccess();
 
 		return presignedUrlResponses.data();

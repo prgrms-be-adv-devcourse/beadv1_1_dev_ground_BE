@@ -32,7 +32,6 @@ import io.devground.product.domain.vo.response.GetAllProductsResponse;
 import io.devground.product.domain.vo.response.ProductDetailResponse;
 import io.devground.product.domain.vo.response.RegistProductResponse;
 import io.devground.product.domain.vo.response.UpdateProductResponse;
-import io.devground.product.infrastructure.model.web.request.ImageUploadPlan;
 import lombok.RequiredArgsConstructor;
 
 // TODO: Dbay 제거 후 ProductApplication으로 롤백
@@ -70,9 +69,7 @@ public class ProductApplicationService implements ProductUseCase {
 		List<String> imageExtensions = request.imageExtensions();
 		List<URL> presignedUrls = new ArrayList<>();
 		if (imageExtensions != null && !imageExtensions.isEmpty()) {
-			presignedUrls = imagePort.prepareUploadUrls(
-				new ImageUploadPlan(ImageType.PRODUCT, productCode, imageExtensions)
-			);
+			presignedUrls = imagePort.prepareUploadUrls(ImageType.PRODUCT, productCode, imageExtensions);
 		}
 
 		return new RegistProductResponse(product, productSale, presignedUrls);
