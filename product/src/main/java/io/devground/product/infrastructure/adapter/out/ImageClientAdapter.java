@@ -7,7 +7,6 @@ import org.springframework.stereotype.Service;
 
 import io.devground.core.model.vo.ImageType;
 import io.devground.core.model.web.BaseResponse;
-import io.devground.product.application.model.vo.ApplicationImageType;
 import io.devground.product.application.port.out.ImageClientPort;
 import io.devground.product.infrastructure.adapter.out.client.ImageClient;
 import io.devground.product.infrastructure.model.web.request.ImageUpdatePlan;
@@ -21,8 +20,7 @@ public class ImageClientAdapter implements ImageClientPort {
 	private final ImageClient imageClient;
 
 	@Override
-	public List<String> getImageUrls(String productCode, ApplicationImageType applicationImageType) {
-		ImageType imageType = ImageType.fromName(applicationImageType.name());
+	public List<String> getImageUrls(String productCode, ImageType imageType) {
 
 		BaseResponse<List<String>> urlResponses = imageClient.getImageUrls(productCode, imageType)
 			.throwIfNotSuccess();
