@@ -1,4 +1,4 @@
-package io.devground.image.infrastructure.model;
+package io.devground.image.infrastructure.model.persistence;
 
 import io.devground.core.model.entity.BaseEntity;
 import io.devground.core.model.vo.ImageType;
