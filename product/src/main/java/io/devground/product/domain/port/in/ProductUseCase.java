@@ -2,10 +2,10 @@ package io.devground.product.domain.port.in;
 
 import java.util.List;
 
-import io.devground.product.application.model.CartProductsDto;
-import io.devground.product.application.model.ProductImageUrlsDto;
-import io.devground.product.application.model.RegistProductDto;
-import io.devground.product.application.model.UpdateProductDto;
+import io.devground.product.domain.vo.request.CartProductsDto;
+import io.devground.product.domain.vo.request.ProductImageUrlsDto;
+import io.devground.product.domain.vo.request.RegistProductDto;
+import io.devground.product.domain.vo.request.UpdateProductDto;
 import io.devground.product.domain.vo.pagination.PageDto;
 import io.devground.product.domain.vo.pagination.PageQuery;
 import io.devground.product.domain.vo.response.CartProductsResponse;

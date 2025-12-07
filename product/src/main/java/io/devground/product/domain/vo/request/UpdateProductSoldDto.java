@@ -1,4 +1,4 @@
-package io.devground.product.application.model;
+package io.devground.product.domain.vo.request;
 
 import io.devground.product.domain.vo.ProductStatus;
 
