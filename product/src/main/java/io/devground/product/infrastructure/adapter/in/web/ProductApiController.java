@@ -15,10 +15,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.devground.core.model.web.BaseResponse;
-import io.devground.product.application.model.CartProductsDto;
-import io.devground.product.application.model.ProductImageUrlsDto;
-import io.devground.product.application.model.RegistProductDto;
-import io.devground.product.application.model.UpdateProductDto;
+import io.devground.product.domain.vo.request.CartProductsDto;
+import io.devground.product.domain.vo.request.ProductImageUrlsDto;
+import io.devground.product.domain.vo.request.RegistProductDto;
+import io.devground.product.domain.vo.request.UpdateProductDto;
 import io.devground.product.domain.port.in.ProductUseCase;
 import io.devground.product.domain.vo.pagination.PageDto;
 import io.devground.product.domain.vo.pagination.PageQuery;
