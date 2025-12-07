@@ -15,7 +15,7 @@ import io.devground.product.application.model.RegistProductDto;
 import io.devground.product.application.model.UpdateProductDto;
 import io.devground.product.application.model.UpdateProductSoldDto;
 import io.devground.product.application.model.vo.ApplicationImageType;
-import io.devground.product.application.port.out.ImagePersistencePort;
+import io.devground.product.application.port.out.ImageClientPort;
 import io.devground.product.application.port.out.ProductEventPort;
 import io.devground.product.application.port.out.ProductOrchestrationPort;
 import io.devground.product.application.port.out.persistence.ProductPersistencePort;
@@ -42,7 +42,7 @@ public class ProductApplicationService implements ProductUseCase {
 
 	private final ProductPersistencePort productPort;
 	private final ProductOrchestrationPort productOrchestrationPort;
-	private final ImagePersistencePort imagePort;
+	private final ImageClientPort imagePort;
 	private final ProductEventPort productEventPort;
 
 	@Override

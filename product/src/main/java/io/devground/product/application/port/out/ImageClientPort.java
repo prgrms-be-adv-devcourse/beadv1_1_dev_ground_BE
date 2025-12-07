@@ -7,7 +7,7 @@ import io.devground.core.model.vo.ImageType;
 import io.devground.product.application.model.vo.ApplicationImageType;
 import io.devground.product.infrastructure.model.web.request.ImageUpdatePlan;
 
-public interface ImagePersistencePort {
+public interface ImageClientPort {
 
 	List<String> getImageUrls(String productCode, ApplicationImageType imageType);
 
