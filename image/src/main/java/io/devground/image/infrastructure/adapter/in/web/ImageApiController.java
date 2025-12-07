@@ -54,7 +54,7 @@ public class ImageApiController {
 
 		return BaseResponse.success(
 			OK.value(),
-			imageService.getImagesByCode(imageType, referenceCode),
+			imageService.getImageUrls(imageType, referenceCode),
 			"이미지 목록이 발급되었습니다."
 		);
 	}

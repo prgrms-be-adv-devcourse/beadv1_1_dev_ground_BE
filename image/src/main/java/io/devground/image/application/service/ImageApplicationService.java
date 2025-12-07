@@ -67,7 +67,11 @@ public class ImageApplicationService implements ImageUseCase {
 
 		// 1. 삭제할 이미지가 존재하면 삭제
 		if (deleteUrls != null && !deleteUrls.isEmpty()) {
-			imagePort.deleteImages(imageType, referenceCode, deleteUrls);
+			List<Image> imagesToDelete = imagePort.getTargetImages(imageType, referenceCode, deleteUrls);
+
+			if (!imagesToDelete.isEmpty()) {
+				imagePort.deleteAllImages(imagesToDelete);
+			}
 		}
 
 		// 2. 새로운 PresignedUrl 발급
@@ -76,25 +80,35 @@ public class ImageApplicationService implements ImageUseCase {
 
 	@Override
 	@Transactional(readOnly = true)
-	public List<String> getImagesByCode(ImageType imageType, String referenceCode) {
+	public List<String> getImageUrls(ImageType imageType, String referenceCode) {
 
-		return imagePort.getImageUrls(imageType, referenceCode);
+		List<Image> images = imagePort.getImages(imageType, referenceCode);
+
+		return images.stream().map(image -> image.getImageSpec().imageUrl()).toList();
 	}
 
 	@Override
 	public void deleteImageByReferences(ImageType imageType, String referenceCode) {
 
-		imagePort.deleteAllImages(imageType, referenceCode);
+		List<Image> images = imagePort.getImages(imageType, referenceCode);
+
+		if (images.isEmpty()) {
+			return;
+		}
+
+		imagePort.deleteAllImages(images);
 	}
 
 	@Override
 	public void deleteImagesByReferencesAndUrls(ImageType imageType, String referenceCode, List<String> urls) {
 
-		if (urls == null || urls.isEmpty()) {
+		List<Image> images = imagePort.getTargetImages(imageType, referenceCode, urls);
+
+		if (images.isEmpty()) {
 			return;
 		}
 
-		imagePort.deleteTargetImages(imageType, referenceCode, urls);
+		imagePort.deleteAllImages(images);
 	}
 
 	@Override
