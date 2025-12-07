@@ -2,9 +2,9 @@ package io.devground.product.application.port.out.persistence;
 
 import java.util.List;
 
-import io.devground.product.application.model.CartProductsDto;
-import io.devground.product.application.model.RegistProductDto;
-import io.devground.product.application.model.UpdateProductSoldDto;
+import io.devground.product.domain.vo.request.CartProductsDto;
+import io.devground.product.domain.vo.request.RegistProductDto;
+import io.devground.product.domain.vo.request.UpdateProductSoldDto;
 import io.devground.product.domain.model.Product;
 import io.devground.product.domain.model.ProductSale;
 import io.devground.product.domain.vo.pagination.PageDto;

@@ -9,11 +9,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import io.devground.core.model.vo.DeleteStatus;
 import io.devground.core.model.vo.ImageType;
-import io.devground.product.application.model.CartProductsDto;
-import io.devground.product.application.model.ProductImageUrlsDto;
-import io.devground.product.application.model.RegistProductDto;
-import io.devground.product.application.model.UpdateProductDto;
-import io.devground.product.application.model.UpdateProductSoldDto;
+import io.devground.product.domain.vo.request.CartProductsDto;
+import io.devground.product.domain.vo.request.ProductImageUrlsDto;
+import io.devground.product.domain.vo.request.RegistProductDto;
+import io.devground.product.domain.vo.request.UpdateProductDto;
+import io.devground.product.domain.vo.request.UpdateProductSoldDto;
 import io.devground.product.application.model.vo.ApplicationImageType;
 import io.devground.product.application.port.out.ImageClientPort;
 import io.devground.product.application.port.out.ProductEventPort;
