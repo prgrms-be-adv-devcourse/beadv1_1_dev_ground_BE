@@ -49,8 +49,8 @@ public class ProductOrchestrator implements ProductOrchestrationPort {
 			return;
 		}
 
-		Saga saga = sagaService.findLatestSagaByReferenceCode(productCode);
-		String sagaId = saga.getSagaId();
+		String sagaId = sagaService.startSaga(productCode, SagaType.PRODUCT_IMAGE_REGIST);
+		Saga saga = sagaService.getSaga(sagaId);
 
 		MDC.put("sagaId", sagaId);
 		MDC.put("productCode", productCode);
@@ -58,6 +58,18 @@ public class ProductOrchestrator implements ProductOrchestrationPort {
 		log.info("이미지 등록 이벤트 진행");
 
 		try {
+			if (saga.getSagaStatus().isTerminal()) {
+				log.warn("이미 종료된 Saga - 이미지 등록 이벤트 발행 스킵");
+
+				return;
+			}
+
+			if (saga.getCurrentStep().isAtLeast(SagaStep.IMAGE_DB_SAVE)) {
+				log.warn("이미 이미지 저장 완료된 Saga - 이미지 등록 이벤트 발행 스킵");
+
+				return;
+			}
+
 			sagaService.updateStep(sagaId, SagaStep.IMAGE_KAFKA_PUBLISHED);
 
 			productKafkaProducer.publishProductImagePush(
@@ -133,6 +145,7 @@ public class ProductOrchestrator implements ProductOrchestrationPort {
 	public void deleteProductImages(String productCode) {
 
 		String sagaId = sagaService.startSaga(productCode, SagaType.PRODUCT_IMAGE_DELETE);
+		Saga saga = sagaService.getSaga(sagaId);
 
 		MDC.put("sagaId", sagaId);
 		MDC.put("productCode", productCode);
@@ -140,6 +153,18 @@ public class ProductOrchestrator implements ProductOrchestrationPort {
 		log.info("상품 이미지 삭제 시도");
 
 		try {
+			if (saga.getSagaStatus().isTerminal()) {
+				log.warn("이미 종료된 Saga - 이미지 삭제 이벤트 발행 스킵");
+
+				return;
+			}
+
+			if (saga.getCurrentStep().isAtLeast(SagaStep.IMAGE_DELETED)) {
+				log.warn("이미 이미지 삭제 완료된 Saga - 이미지 삭제 이벤트 발행 스킵");
+
+				return;
+			}
+
 			sagaService.updateStep(sagaId, SagaStep.IMAGE_KAFKA_PUBLISHED);
 
 			productKafkaProducer.publishProductImageDelete(

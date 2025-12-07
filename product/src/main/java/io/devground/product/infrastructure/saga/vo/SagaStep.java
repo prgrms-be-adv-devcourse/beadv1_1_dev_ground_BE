@@ -15,5 +15,9 @@ public enum SagaStep {
 	// productImageSaga
 	IMAGE_KAFKA_PUBLISHED,
 	IMAGE_DB_SAVE,
-	IMAGE_DELETED
+	IMAGE_DELETED;
+
+	public boolean isAtLeast(SagaStep sagaStep) {
+		return this.ordinal() >= sagaStep.ordinal();
+	}
 }
