@@ -12,4 +12,6 @@ public interface ImagePersistencePort {
 	List<String> getImageUrls(ImageType imageType, String referenceCode);
 
 	void saveImages(ImageType imageType, String referenceCode, List<String> newUrls);
+
+	void deleteImages(ImageType imageType, String referenceCode, List<String> deleteUrls);
 }
