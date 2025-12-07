@@ -56,7 +56,7 @@ public class ImageApplicationService implements ImageUseCase {
 	) {
 
 		// 1. 삭제할 이미지가 존재하면 삭제
-		if (deleteUrls != null && deleteUrls.isEmpty()) {
+		if (deleteUrls != null && !deleteUrls.isEmpty()) {
 			imagePort.deleteImages(imageType, referenceCode, deleteUrls);
 		}
 
