@@ -71,8 +71,10 @@ public class ImageApplicationService implements ImageUseCase {
 	}
 
 	@Override
+	@Transactional(readOnly = true)
 	public List<String> getImagesByCode(ImageType imageType, String referenceCode) {
-		return List.of();
+
+		return imagePort.getImageUrls(imageType, referenceCode);
 	}
 
 	@Override
