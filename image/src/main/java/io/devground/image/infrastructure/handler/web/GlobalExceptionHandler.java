@@ -67,10 +67,11 @@ public class GlobalExceptionHandler {
 	@ExceptionHandler(Exception.class)
 	public BaseResponse<String> handleException(Exception ex) {
 
-		int status = HttpStatus.INTERNAL_SERVER_ERROR.value();
+		ErrorCode errorCode = ErrorCode.INTERNAL_SERVER_ERROR;
+		int status = errorCode.getHttpStatus();
 
 		response.setStatus(status);
 
-		return BaseResponse.fail(status, ex.getMessage());
+		return BaseResponse.fail(status, errorCode.getMessage());
 	}
 }
