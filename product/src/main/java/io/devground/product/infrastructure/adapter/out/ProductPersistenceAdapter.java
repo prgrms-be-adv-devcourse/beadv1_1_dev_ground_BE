@@ -7,6 +7,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import io.devground.core.model.vo.ErrorCode;
+import io.devground.product.application.model.CartProductsDto;
 import io.devground.product.application.model.RegistProductDto;
 import io.devground.product.application.model.UpdateProductSoldDto;
 import io.devground.product.application.port.out.persistence.ProductPersistencePort;
@@ -14,8 +15,10 @@ import io.devground.product.domain.model.Product;
 import io.devground.product.domain.model.ProductSale;
 import io.devground.product.domain.vo.DomainErrorCode;
 import io.devground.product.domain.vo.ProductSpec;
+import io.devground.product.domain.vo.ProductStatus;
 import io.devground.product.domain.vo.pagination.PageDto;
 import io.devground.product.domain.vo.pagination.PageQuery;
+import io.devground.product.domain.vo.response.CartProductsResponse;
 import io.devground.product.domain.vo.response.GetAllProductsResponse;
 import io.devground.product.infrastructure.mapper.PageMapper;
 import io.devground.product.infrastructure.mapper.ProductMapper;
@@ -133,6 +136,19 @@ public class ProductPersistenceAdapter implements ProductPersistencePort {
 		}
 
 		productEntity.delete();
+	}
+
+	@Override
+	public List<CartProductsResponse> getCartProducts(CartProductsDto request) {
+
+		List<CartProductsResponse> responses = productRepository.findCartProductsByProductCodes(
+			request.productCodes(), ProductStatus.ON_SALE);
+
+		if (responses.isEmpty() || request.productCodes().size() != responses.size()) {
+			ErrorCode.PRODUCT_NOT_FOUND.throwServiceException();
+		}
+
+		return responses;
 	}
 
 	private ProductEntity getProduct(String code) {

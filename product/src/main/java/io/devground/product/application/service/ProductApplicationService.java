@@ -146,7 +146,7 @@ public class ProductApplicationService implements ProductUseCase {
 	@Transactional(readOnly = true)
 	public List<CartProductsResponse> getCartProducts(CartProductsDto request) {
 
-		throw new UnsupportedOperationException("구현 중");
+		return productPort.getCartProducts(request);
 	}
 
 	// TODO: 다시 한 번 확인해보기 - 단순한 작업을 이렇게 복잡하게 처리할 필요가 있을 것인가에 대하여
