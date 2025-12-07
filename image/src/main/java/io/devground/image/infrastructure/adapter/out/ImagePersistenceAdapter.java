@@ -89,4 +89,22 @@ public class ImagePersistenceAdapter implements ImagePersistencePort {
 			.findFirst()
 			.orElse("");
 	}
+
+	@Override
+	public String compensateUpload(ImageType imageType, String referenceCode, List<String> urls) {
+
+		if (!CollectionUtils.isEmpty(urls)) {
+			List<ImageEntity> images =
+				imageRepository.findAllByImageTypeAndReferenceCodeAndImageUrlIn(imageType, referenceCode, urls);
+
+			s3Service.deleteObjectsByUrls(urls);
+
+			imageRepository.deleteAllInBatch(images);
+		}
+
+		return imageRepository.findAllByImageTypeAndReferenceCode(imageType, referenceCode).stream()
+			.map(ImageEntity::getImageUrl)
+			.findFirst()
+			.orElse("");
+	}
 }
