@@ -4,7 +4,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import io.devground.product.domain.util.DomainUtils;
+import io.devground.core.util.CodeUtil;
 import io.devground.product.domain.vo.DomainErrorCode;
 
 public class Category {
@@ -30,7 +30,7 @@ public class Category {
 
 		this.validate(calculatedDepth);
 
-		this.code = DomainUtils.generateCode();
+		this.code = CodeUtil.generateUUID();
 
 		this.createdAt = LocalDateTime.now();
 		this.updatedAt = LocalDateTime.now();

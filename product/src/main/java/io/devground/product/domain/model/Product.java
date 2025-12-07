@@ -3,7 +3,7 @@ package io.devground.product.domain.model;
 import java.time.LocalDateTime;
 
 import io.devground.core.model.vo.DeleteStatus;
-import io.devground.product.domain.util.DomainUtils;
+import io.devground.core.util.CodeUtil;
 import io.devground.product.domain.vo.ProductSpec;
 
 public class Product {
@@ -26,7 +26,7 @@ public class Product {
 
 	public Product(ProductSpec productSpec, Category category) {
 
-		this.code = DomainUtils.generateCode();
+		this.code = CodeUtil.generateUUID();
 
 		this.createdAt = LocalDateTime.now();
 		this.updatedAt = LocalDateTime.now();
