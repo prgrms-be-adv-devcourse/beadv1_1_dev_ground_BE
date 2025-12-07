@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import java.util.List;
 
 @FeignClient(
-	name = "product",
+	name = "product-order",
 	url = "localhost:8000",
 	path = "/api/products"
 )

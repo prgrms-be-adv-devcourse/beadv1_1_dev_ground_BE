@@ -4,10 +4,19 @@ import io.devground.core.model.vo.ErrorCode;
 import io.devground.dbay.order.application.port.out.persistence.OrderPersistencePort;
 import io.devground.dbay.order.application.vo.UserInfo;
 import io.devground.dbay.order.domain.model.Order;
-import io.devground.dbay.order.domain.vo.OrderProduct;
+import io.devground.dbay.order.domain.model.OrderItem;
+import io.devground.dbay.order.domain.vo.*;
+import io.devground.dbay.order.domain.vo.pagination.PageDto;
+import io.devground.dbay.order.domain.vo.pagination.PageQuery;
+import io.devground.dbay.order.infrastructure.mapper.OrderMapper;
+import io.devground.dbay.order.infrastructure.mapper.PageMapper;
 import io.devground.dbay.order.infrastructure.model.persistence.OrderEntity;
 import io.devground.dbay.order.infrastructure.model.persistence.OrderItemEntity;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -89,5 +98,40 @@ public class OrderPersistenceAdapter implements OrderPersistencePort {
                 ).toList();
 
         orderItemJpaRepository.saveAll(orderItems);
+    }
+
+    @Override
+    public PageDto<OrderDescription> getOrders(UserCode userCode, RoleType roleType, PageQuery pageQuery) {
+        return orderListByRole(userCode, roleType, pageQuery);
+    }
+
+    @Override
+    public List<OrderItemInfo> getOrderItems(List<String> orderCodes) {
+
+        List<Long> OrderIds = orderJpaRepository.findIdByOrderCodes(orderCodes);
+
+        List<OrderItemEntity> orderItems = orderItemJpaRepository.findAllByOrderIds(OrderIds);
+
+        return orderItems.stream().map(OrderMapper::toOrderItemInfo).toList();
+    }
+
+    private PageDto<OrderDescription> orderListByRole(UserCode userCode, RoleType roleType, PageQuery pageQuery) {
+        Pageable pageable = PageMapper.toPageable(pageQuery);
+
+        Page<OrderEntity> orderPage = roleType == RoleType.USER ?
+                orderJpaRepository.findByNotDeletedOrders(userCode.value(),pageable)
+                : orderJpaRepository.findAllByNotDeletedOrders(pageable);
+
+        List<OrderDescription> orders = orderPage.getContent().stream()
+                .map(OrderMapper::toOrderDescription)
+                .toList();
+
+        return new PageDto<>(
+                orderPage.getNumber(),
+                orderPage.getSize(),
+                orderPage.getTotalPages(),
+                orderPage.getTotalElements(),
+                orders
+        );
     }
 }

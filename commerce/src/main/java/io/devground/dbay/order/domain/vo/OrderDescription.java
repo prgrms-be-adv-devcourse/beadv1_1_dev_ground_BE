@@ -5,6 +5,7 @@ import java.util.List;
 
 public record OrderDescription(
         String code,
+        String userCode,
         LocalDateTime createdAt,
         LocalDateTime updatedAt,
         Long totalAmount,
