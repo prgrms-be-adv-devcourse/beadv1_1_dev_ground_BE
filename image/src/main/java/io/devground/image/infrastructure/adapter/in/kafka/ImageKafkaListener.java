@@ -16,7 +16,7 @@ import io.devground.core.model.vo.ImageType;
 import io.devground.image.application.service.ImageApplicationService;
 import io.devground.image.infrastructure.adapter.out.ImageInboxJpaRepository;
 import io.devground.image.infrastructure.adapter.out.kafka.ImageKafkaProducer;
-import io.devground.image.infrastructure.model.ImageInbox;
+import io.devground.image.infrastructure.model.persistence.ImageInbox;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
