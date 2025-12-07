@@ -51,4 +51,21 @@ public class OrderMapper {
                 orderItemEntity.getProductPrice()
         );
     }
+
+    public static OrderDetailDescription toOrderDetailDescription(OrderEntity orderEntity, long productTotalAmount) {
+        return new OrderDetailDescription(
+                orderEntity.getCode(),
+                orderEntity.getCreatedAt(),
+                orderEntity.getUpdatedAt(),
+                orderEntity.getOrderStatus(),
+                orderEntity.getTotalAmount(),
+                orderEntity.getTotalAmount() - productTotalAmount,
+                productTotalAmount,
+                0,
+                orderEntity.getNickName(),
+                orderEntity.getAddress(),
+                orderEntity.getAddressDetail(),
+                orderEntity.getOrderStatus().isCancellable()
+        );
+    }
 }

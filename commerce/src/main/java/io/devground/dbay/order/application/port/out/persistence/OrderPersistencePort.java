@@ -14,4 +14,5 @@ public interface OrderPersistencePort {
     void createSelectedOrder(UserInfo userInfo, Order order, List<OrderProduct> orderProducts);
     PageDto<OrderDescription> getOrders(UserCode userCode, RoleType roleType, PageQuery pageQuery);
     List<OrderItemInfo> getOrderItems(List<String> orderCodes);
+    OrderDetailDescription getOrderDetail(UserCode userCode, OrderCode orderCode);
 }

@@ -108,11 +108,33 @@ public class OrderPersistenceAdapter implements OrderPersistencePort {
     @Override
     public List<OrderItemInfo> getOrderItems(List<String> orderCodes) {
 
+        if (orderCodes == null || orderCodes.stream().anyMatch(Objects::isNull)) {
+            throw ErrorCode.ORDER_NOT_FOUND.throwServiceException();
+        }
+
         List<Long> OrderIds = orderJpaRepository.findIdByOrderCodes(orderCodes);
 
         List<OrderItemEntity> orderItems = orderItemJpaRepository.findAllByOrderIds(OrderIds);
 
         return orderItems.stream().map(OrderMapper::toOrderItemInfo).toList();
+    }
+
+    @Override
+    public OrderDetailDescription getOrderDetail(UserCode userCode, OrderCode orderCode) {
+        if (userCode == null) {
+            throw ErrorCode.USER_NOT_FOUNT.throwServiceException();
+        }
+
+        if (orderCode == null) {
+            throw ErrorCode.ORDER_NOT_FOUND.throwServiceException();
+        }
+
+        OrderEntity orderEntity = orderJpaRepository.findByCode(orderCode.value())
+                .orElseThrow(ErrorCode.ORDER_NOT_FOUND::throwServiceException);
+
+        long productTotalAmount = orderEntity.getOrderItems().stream().mapToLong(OrderItemEntity::getProductPrice).sum();
+
+        return OrderMapper.toOrderDetailDescription(orderEntity, productTotalAmount);
     }
 
     private PageDto<OrderDescription> orderListByRole(UserCode userCode, RoleType roleType, PageQuery pageQuery) {
