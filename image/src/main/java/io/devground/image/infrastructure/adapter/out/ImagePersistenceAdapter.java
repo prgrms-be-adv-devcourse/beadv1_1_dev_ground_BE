@@ -55,4 +55,24 @@ public class ImagePersistenceAdapter implements ImagePersistencePort {
 			imageRepository.deleteAllInBatch(imagesToDelete);
 		}
 	}
+
+	@Override
+	public void deleteAllImages(ImageType imageType, String referenceCode) {
+
+		long imagesDeleteCount = imageRepository.deleteByImageTypeAndReferenceCode(imageType, referenceCode);
+
+		if (imagesDeleteCount > 0) {
+			s3Service.deleteAllObjectsByIdentifier(imageType, referenceCode);
+		}
+	}
+
+	@Override
+	public void deleteTargetImages(ImageType imageType, String referenceCode, List<String> urls) {
+
+		long imagesDeleteCount = imageRepository.deleteImagesByReferencesAndImageUrls(imageType, referenceCode, urls);
+
+		if (imagesDeleteCount > 0) {
+			s3Service.deleteObjectsByUrls(urls);
+		}
+	}
 }
