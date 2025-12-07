@@ -1,6 +1,8 @@
 package io.devground.image.infrastructure.mapper;
 
 import io.devground.core.model.vo.ImageType;
+import io.devground.image.domain.model.Image;
+import io.devground.image.domain.vo.ImageSpec;
 import io.devground.image.infrastructure.model.persistence.ImageEntity;
 import lombok.experimental.UtilityClass;
 
@@ -14,5 +16,23 @@ public class ImageMapper {
 			.referenceCode(referenceCode)
 			.imageUrl(imageUrls)
 			.build();
+	}
+
+	public Image toImageDomain(ImageEntity imageEntity) {
+
+		ImageSpec imageSpec = new ImageSpec(
+			imageEntity.getReferenceCode(),
+			imageEntity.getImageType(),
+			imageEntity.getImageUrl()
+		);
+
+		return new Image(imageSpec);
+	}
+
+	public ImageEntity toImageEntity(Image image) {
+
+		ImageSpec imageSpec = image.getImageSpec();
+
+		return of(imageSpec.imageType(), imageSpec.referenceCode(), imageSpec.imageUrl());
 	}
 }
