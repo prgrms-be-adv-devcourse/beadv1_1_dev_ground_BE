@@ -1,8 +1,4 @@
 rootProject.name = 'commerce'
 include(':core')
-include(':eureka-server')
-include(':gateway')
 
 project(':core').projectDir = file('../core')
-project(':eureka-server').projectDir = file('../eureka-server')
-project(':gateway').projectDir = file('../gateway')
