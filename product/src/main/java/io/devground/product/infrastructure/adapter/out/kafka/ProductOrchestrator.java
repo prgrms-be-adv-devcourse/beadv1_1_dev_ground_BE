@@ -18,7 +18,6 @@ import io.devground.core.model.vo.ErrorCode;
 import io.devground.product.application.port.out.ImageClientPort;
 import io.devground.product.application.port.out.ProductOrchestrationPort;
 import io.devground.product.domain.exception.DomainException;
-import io.devground.product.infrastructure.model.web.request.ImageUpdatePlan;
 import io.devground.product.infrastructure.saga.entity.Saga;
 import io.devground.product.infrastructure.saga.service.SagaService;
 import io.devground.product.infrastructure.saga.vo.SagaStep;
@@ -114,10 +113,7 @@ public class ProductOrchestrator implements ProductOrchestrationPort {
 			List<URL> updatedPresignedUrls = new ArrayList<>();
 
 			if (!CollectionUtils.isEmpty(deleteUrls) || !CollectionUtils.isEmpty(newExtensions)) {
-				updatedPresignedUrls = imagePort.updateImages
-					(
-						new ImageUpdatePlan(PRODUCT, productCode, deleteUrls, newExtensions)
-					);
+				updatedPresignedUrls = imagePort.updateImages(PRODUCT, productCode, deleteUrls, newExtensions);
 			}
 
 			return updatedPresignedUrls;
