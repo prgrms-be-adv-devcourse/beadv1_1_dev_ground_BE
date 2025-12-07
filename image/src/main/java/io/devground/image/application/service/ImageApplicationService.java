@@ -10,9 +10,7 @@ import io.devground.core.model.vo.ImageType;
 import io.devground.image.application.persistence.ImagePersistencePort;
 import io.devground.image.domain.port.in.ImageUseCase;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
-@Slf4j(topic = "saga")
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -57,12 +55,8 @@ public class ImageApplicationService implements ImageUseCase {
 		ImageType imageType, String referenceCode, List<String> deleteUrls, List<String> newImageExtensions
 	) {
 
-		log.info("업데이트 시도");
-
 		// 1. 삭제할 이미지가 존재하면 삭제
 		if (deleteUrls != null && deleteUrls.isEmpty()) {
-			log.info("업데이트 진행");
-
 			imagePort.deleteImages(imageType, referenceCode, deleteUrls);
 		}
 
@@ -80,11 +74,17 @@ public class ImageApplicationService implements ImageUseCase {
 	@Override
 	public void deleteImageByReferences(ImageType imageType, String referenceCode) {
 
+		imagePort.deleteAllImages(imageType, referenceCode);
 	}
 
 	@Override
 	public void deleteImagesByReferencesAndUrls(ImageType imageType, String referenceCode, List<String> urls) {
 
+		if (urls == null || urls.isEmpty()) {
+			return;
+		}
+
+		imagePort.deleteTargetImages(imageType, referenceCode, urls);
 	}
 
 	@Override
