@@ -16,17 +16,38 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class ImageApplicationService implements ImageUseCase {
 
-	private final ImagePersistencePort imagePersistencePort;
+	private final ImagePersistencePort imagePort;
 
 	@Override
 	public List<URL> generatePresignedUrls(ImageType imageType, String referenceCode, List<String> fileExtensions) {
 
-		return imagePersistencePort.generatePresignedUrls(imageType, referenceCode, fileExtensions);
+		return imagePort.generatePresignedUrls(imageType, referenceCode, fileExtensions);
 	}
 
 	@Override
 	public String saveImages(ImageType imageType, String referenceCode, List<String> imageUrls) {
-		return "";
+
+		if (imageUrls == null || imageUrls.isEmpty()) {
+			return null;
+		}
+
+		// 1. 이미지 조회
+		List<String> foundUrls = imagePort.getImageUrls(imageType, referenceCode);
+
+		List<String> newUrls = imageUrls.stream()
+			.distinct()
+			.filter(url -> !foundUrls.contains(url))
+			.toList();
+
+		// 2. 중복 제거 후 이미지 저장
+		if (!newUrls.isEmpty()) {
+			imagePort.saveImages(imageType, referenceCode, newUrls);
+		}
+
+		// 3. 썸네일 추출
+		return foundUrls.isEmpty()
+			? newUrls.getFirst()
+			: foundUrls.getFirst();
 	}
 
 	@Override
