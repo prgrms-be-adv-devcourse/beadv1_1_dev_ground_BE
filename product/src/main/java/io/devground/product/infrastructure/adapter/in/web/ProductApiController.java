@@ -169,8 +169,6 @@ public class ProductApiController {
 
 		CartProductsDto requestDto = new CartProductsDto(request.productCodes());
 
-		productApplication.updateStatusToSold(sellerCode, requestDto);
-
 		return BaseResponse.success(
 			NO_CONTENT.value(),
 			productApplication.updateStatusToSold(sellerCode, requestDto),
