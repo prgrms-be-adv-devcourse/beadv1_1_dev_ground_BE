@@ -96,6 +96,8 @@ public class ImageApplicationService implements ImageUseCase {
 
 	@Override
 	public String compensateUpload(ImageType imageType, String referenceCode, List<String> urls) {
-		return "";
+
+		// DB에 처음으로 저장된 이미지를 썸네일로 대체 사용
+		return imagePort.compensateUpload(imageType, referenceCode, urls);
 	}
 }
