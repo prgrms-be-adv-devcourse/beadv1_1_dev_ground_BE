@@ -36,6 +36,14 @@ public class ImagePersistenceAdapter implements ImagePersistencePort {
 	}
 
 	@Override
+	public List<Image> getTargetImages(ImageType imageType, String referenceCode, List<String> urls) {
+
+		return imageRepository.findAllByImageTypeAndReferenceCodeAndImageUrlIn(imageType, referenceCode, urls).stream()
+			.map(ImageMapper::toImageDomain)
+			.toList();
+	}
+
+	@Override
 	public void saveImages(List<Image> images) {
 
 		List<ImageEntity> newImages = images.stream()
@@ -46,34 +54,19 @@ public class ImagePersistenceAdapter implements ImagePersistencePort {
 	}
 
 	@Override
-	public void deleteImages(ImageType imageType, String referenceCode, List<String> deleteUrls) {
+	public void deleteAllImages(List<Image> images) {
 
-		List<ImageEntity> imagesToDelete =
-			imageRepository.findAllByImageTypeAndReferenceCodeAndImageUrlIn(imageType, referenceCode, deleteUrls);
+		List<ImageEntity> imageEntities = images.stream()
+			.map(ImageMapper::toImageEntity)
+			.toList();
 
-		if (!imagesToDelete.isEmpty()) {
-			s3Service.deleteObjectsByUrls(deleteUrls);
+		imageRepository.deleteAllInBatch(imageEntities);
 
-			imageRepository.deleteAllInBatch(imagesToDelete);
-		}
-	}
+		List<String> urls = images.stream()
+			.map(image -> image.getImageSpec().imageUrl())
+			.toList();
 
-	@Override
-	public void deleteAllImages(ImageType imageType, String referenceCode) {
-
-		long imagesDeleteCount = imageRepository.deleteByImageTypeAndReferenceCode(imageType, referenceCode);
-
-		if (imagesDeleteCount > 0) {
-			s3Service.deleteAllObjectsByIdentifier(imageType, referenceCode);
-		}
-	}
-
-	@Override
-	public void deleteTargetImages(ImageType imageType, String referenceCode, List<String> urls) {
-
-		long imagesDeleteCount = imageRepository.deleteImagesByReferencesAndImageUrls(imageType, referenceCode, urls);
-
-		if (imagesDeleteCount > 0) {
+		if (!urls.isEmpty()) {
 			s3Service.deleteObjectsByUrls(urls);
 		}
 	}

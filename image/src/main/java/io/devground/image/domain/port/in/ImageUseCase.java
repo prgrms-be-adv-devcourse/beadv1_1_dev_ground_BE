@@ -15,7 +15,7 @@ public interface ImageUseCase {
 		ImageType imageType, String referenceCode, List<String> deleteUrls, List<String> newImageExtensions
 	);
 
-	List<String> getImagesByCode(ImageType imageType, String referenceCode);
+	List<String> getImageUrls(ImageType imageType, String referenceCode);
 
 	void deleteImageByReferences(ImageType imageType, String referenceCode);
 
