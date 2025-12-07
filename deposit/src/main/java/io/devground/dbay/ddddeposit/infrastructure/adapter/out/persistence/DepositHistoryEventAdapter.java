@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Repository;
 
@@ -62,8 +63,7 @@ public class DepositHistoryEventAdapter implements DepositHistoryCommandPort {
 		PageRequest springPageable = PageRequest.of(pageQuery.page(), pageQuery.size());
 
 		// JPA Repository 조회
-		org.springframework.data.domain.Page<DepositHistoryEntity> entityPage = depositHistoryJpaRepository.findByUserCode(
-			userCode, springPageable);
+		Page<DepositHistoryEntity> entityPage = depositHistoryJpaRepository.findByUserCode(userCode, springPageable);
 
 		// Entity -> Domain 변환
 		List<DepositHistory> items = entityPage.getContent().stream()
