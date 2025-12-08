@@ -68,4 +68,26 @@ public class OrderMapper {
                 orderEntity.getOrderStatus().isCancellable()
         );
     }
+
+    public static Order toOrderDomain(OrderEntity orderEntity) {
+        return Order.restore(
+                new OrderCode(orderEntity.getCode()),
+                new UserCode(orderEntity.getUserCode()),
+                orderEntity.getOrderItems().stream()
+                        .map(OrderMapper::toOrderItemDomain)
+                        .toList()
+        );
+    }
+
+    public static OrderItem toOrderItemDomain(OrderItemEntity orderItemEntity) {
+        return OrderItem.create(
+                new OrderCode(orderItemEntity.getOrderEntity().getCode()),
+                new OrderProduct(
+                        orderItemEntity.getProductCode(),
+                        orderItemEntity.getSellerCode(),
+                        orderItemEntity.getProductName(),
+                        orderItemEntity.getProductPrice()
+                )
+        );
+    }
 }
