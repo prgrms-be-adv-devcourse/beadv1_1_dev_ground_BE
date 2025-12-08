@@ -4,24 +4,46 @@
     <property name="LOG_DIR" value="./logs/"/>
     <property name="SAGA_LOG_DIR" value="./logs/kafka/saga"/>
     <property name="ELASTICSEARCH_LOG_DIR" value="./logs/elasticsearch"/>
+
     <property name="LOG_FILE_NAME" value="info/info"/>
     <property name="ERROR_LOG_FILE_NAME" value="error/error"/>
+
     <property name="SAGA_INFO_LOG_FILE" value="${SAGA_LOG_DIR}/info/info"/>
     <property name="SAGA_ERROR_LOG_FILE" value="${SAGA_LOG_DIR}/error/error"/>
     <property name="SAGA_TIMEOUT_LOG_FILE" value="${SAGA_LOG_DIR}/timeout/error"/>
-    <property name="ES_INFO_LOG_FILE" value="${ELASTICSEARCH_LOG_DIR}/info/info"/>
-    <property name="ES_ERROR_LOG_FILE" value="${ELASTICSEARCH_LOG_DIR}/error/error"/>
-    <property name="ES_JSON_LOG_FILE" value="${ELASTICSEARCH_LOG_DIR}/elasticsearch"/>
 
+    <property name="ES_INDEX_INFO_LOG_FILE" value="${ELASTICSEARCH_LOG_DIR}/index/info/info"/>
+    <property name="ES_INDEX_ERROR_LOG_FILE" value="${ELASTICSEARCH_LOG_DIR}/index/error/error"/>
+    <property name="ES_INDEX_JSON_LOG_FILE" value="${ELASTICSEARCH_LOG_DIR}/index/index"/>
+
+    <property name="ES_BATCH_INFO_LOG_FILE" value="${ELASTICSEARCH_LOG_DIR}/batch/info/info"/>
+    <property name="ES_BATCH_ERROR_LOG_FILE" value="${ELASTICSEARCH_LOG_DIR}/batch/error/error"/>
+
+    <property name="ES_SEARCH_INFO_LOG_FILE" value="${ELASTICSEARCH_LOG_DIR}/search/info/info"/>
+    <property name="ES_SEARCH_ERROR_LOG_FILE" value="${ELASTICSEARCH_LOG_DIR}/search/error/error"/>
+    <property name="ES_SEARCH_JSON_LOG_FILE" value="${ELASTICSEARCH_LOG_DIR}/search/search"/>
+
+    <!-- Saga 패턴 -->
     <property name="SAGA_INFO_PATTERN"
-              value="%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} [SagaId=%X{sagaId:-N/A}] [ProductCode=%X{productCode:-N/A}] - %msg%n"/>
+              value="%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} [SagaId=%X{sagaId:-N/A}] [ProductCode=%X{productCode:-N/A}] %msg%n"/>
     <property name="SAGA_ERROR_PATTERN"
-              value="%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} [SagaId=%X{sagaId:-N/A}] [ProductCode=%X{productCode:-N/A}] [Exception=%X{errorMsg:-N/A}] - %msg%n"/>
+              value="%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} [SagaId=%X{sagaId:-N/A}] [ProductCode=%X{productCode:-N/A}] [Exception=%X{errorMsg:-N/A}] %msg%n"/>
 
-    <property name="ES_INFO_PATTERN"
-              value="%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} [ProductId=%X{productId:-N/A}] [ProductCode=%X{productCode:-N/A}] - %msg%n"/>
-    <property name="ES_ERROR_PATTERN"
-              value="%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} [ProductId=%X{productId:-N/A}] [ProductCode=%X{productCode:-N/A}] [Exception=%X{errorMsg:-N/A}] - %msg%n"/>
+    <!-- ES 인덱싱 패턴 -->
+    <property name="ES_INDEX_INFO_PATTERN"
+              value="%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} [ProductId=%X{productId:-N/A}] [ProductCode=%X{productCode:-N/A}] %msg%n"/>
+    <property name="ES_INDEX_ERROR_PATTERN"
+              value="%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} [ProductId=%X{productId:-N/A}] [ProductCode=%X{productCode:-N/A}] [Exception=%X{errorMsg:-N/A}] %msg%n"/>
+
+    <!-- ES 배치 패턴 -->
+    <property name="ES_BATCH_PATTERN"
+              value="%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"/>
+
+    <!-- ES 검색 패턴 -->
+    <property name="ES_SEARCH_INFO_PATTERN"
+              value="%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} [Keyword=%X{keyword:-N/A}] [SuggestType=%X{suggestType:-N/A}] %msg%n"/>
+    <property name="ES_SEARCH_ERROR_PATTERN"
+              value="%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} [Keyword=%X{keyword:-N/A}] [SuggestType=%X{suggestType:-N/A}] [Exception=%X{errorMsg:-N/A}] %msg%n"/>
 
     <!-- 콘솔 출력 Appender -->
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
@@ -84,7 +106,6 @@
             </rollingPolicy>
             <encoder>
                 <pattern>${SAGA_INFO_PATTERN}</pattern>
-                <!--                <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>-->
             </encoder>
         </appender>
 
@@ -103,7 +124,6 @@
             </rollingPolicy>
             <encoder>
                 <pattern>${SAGA_ERROR_PATTERN}</pattern>
-                <!--                <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>-->
             </encoder>
         </appender>
 
@@ -122,61 +142,142 @@
             </rollingPolicy>
             <encoder>
                 <pattern>${SAGA_ERROR_PATTERN}</pattern>
-                <!--                <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>-->
             </encoder>
         </appender>
 
-        <!-- ES INFO 로그 -->
-        <appender name="ES_INFO_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-            <file>${ES_INFO_LOG_FILE}.log</file>
+        <!-- ES 인덱싱 INFO 로그 -->
+        <appender name="ES_INDEX_INFO_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+            <file>${ES_INDEX_INFO_LOG_FILE}.log</file>
             <filter class="ch.qos.logback.classic.filter.LevelFilter">
                 <level>ERROR</level>
                 <onMatch>DENY</onMatch>
                 <onMismatch>ACCEPT</onMismatch>
             </filter>
             <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
-                <fileNamePattern>${ES_INFO_LOG_FILE}-%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
+                <fileNamePattern>${ES_INDEX_INFO_LOG_FILE}-%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
                 <maxFileSize>10MB</maxFileSize>
                 <maxHistory>30</maxHistory>
             </rollingPolicy>
             <encoder>
-                <pattern>${ES_INFO_PATTERN}</pattern>
-                <!--                <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>-->
+                <pattern>${ES_INDEX_INFO_PATTERN}</pattern>
             </encoder>
         </appender>
 
-        <!-- ES ERROR 로그 -->
-        <appender name="ES_ERROR_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-            <file>${ES_ERROR_LOG_FILE}.log</file>
+        <!-- ES 인덱싱 ERROR 로그 -->
+        <appender name="ES_INDEX_ERROR_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+            <file>${ES_INDEX_ERROR_LOG_FILE}.log</file>
             <filter class="ch.qos.logback.classic.filter.LevelFilter">
                 <level>ERROR</level>
                 <onMatch>ACCEPT</onMatch>
                 <onMismatch>DENY</onMismatch>
             </filter>
             <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
-                <fileNamePattern>${ES_ERROR_LOG_FILE}-%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
+                <fileNamePattern>${ES_INDEX_ERROR_LOG_FILE}-%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
                 <maxFileSize>10MB</maxFileSize>
                 <maxHistory>30</maxHistory>
             </rollingPolicy>
             <encoder>
-                <pattern>${ES_ERROR_PATTERN}</pattern>
-                <!--                <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>-->
+                <pattern>${ES_INDEX_ERROR_PATTERN}</pattern>
+            </encoder>
+        </appender>
+
+        <!-- ES 배치 INFO 로그 -->
+        <appender name="ES_BATCH_INFO_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+            <file>${ES_BATCH_INFO_LOG_FILE}.log</file>
+            <filter class="ch.qos.logback.classic.filter.LevelFilter">
+                <level>ERROR</level>
+                <onMatch>DENY</onMatch>
+                <onMismatch>ACCEPT</onMismatch>
+            </filter>
+            <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+                <fileNamePattern>${ES_BATCH_INFO_LOG_FILE}-%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
+                <maxFileSize>10MB</maxFileSize>
+                <maxHistory>30</maxHistory>
+            </rollingPolicy>
+            <encoder>
+                <pattern>${ES_BATCH_PATTERN}</pattern>
+            </encoder>
+        </appender>
+
+        <!-- ES 배치 ERROR 로그 -->
+        <appender name="ES_BATCH_ERROR_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+            <file>${ES_BATCH_ERROR_LOG_FILE}.log</file>
+            <filter class="ch.qos.logback.classic.filter.LevelFilter">
+                <level>ERROR</level>
+                <onMatch>ACCEPT</onMatch>
+                <onMismatch>DENY</onMismatch>
+            </filter>
+            <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+                <fileNamePattern>${ES_BATCH_ERROR_LOG_FILE}-%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
+                <maxFileSize>10MB</maxFileSize>
+                <maxHistory>30</maxHistory>
+            </rollingPolicy>
+            <encoder>
+                <pattern>${ES_BATCH_PATTERN}</pattern>
+            </encoder>
+        </appender>
+
+        <!-- ES 검색 INFO 로그 -->
+        <appender name="ES_SEARCH_INFO_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+            <file>${ES_SEARCH_INFO_LOG_FILE}.log</file>
+            <filter class="ch.qos.logback.classic.filter.LevelFilter">
+                <level>ERROR</level>
+                <onMatch>DENY</onMatch>
+                <onMismatch>ACCEPT</onMismatch>
+            </filter>
+            <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+                <fileNamePattern>${ES_SEARCH_INFO_LOG_FILE}-%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
+                <maxFileSize>10MB</maxFileSize>
+                <maxHistory>30</maxHistory>
+            </rollingPolicy>
+            <encoder>
+                <pattern>${ES_SEARCH_INFO_PATTERN}</pattern>
+            </encoder>
+        </appender>
+
+        <!-- ES 검색 ERROR 로그 -->
+        <appender name="ES_SEARCH_ERROR_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+            <file>${ES_SEARCH_ERROR_LOG_FILE}.log</file>
+            <filter class="ch.qos.logback.classic.filter.LevelFilter">
+                <level>ERROR</level>
+                <onMatch>ACCEPT</onMatch>
+                <onMismatch>DENY</onMismatch>
+            </filter>
+            <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+                <fileNamePattern>${ES_SEARCH_ERROR_LOG_FILE}-%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
+                <maxFileSize>10MB</maxFileSize>
+                <maxHistory>30</maxHistory>
+            </rollingPolicy>
+            <encoder>
+                <pattern>${ES_SEARCH_ERROR_PATTERN}</pattern>
             </encoder>
         </appender>
     </springProfile>
 
     <!-- ES JSON 로그 (Stage 전용) - LogStash에서 사용 -->
     <springProfile name="stage">
-        <appender name="ES_JSON_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <appender name="ES_INDEX_JSON_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
             <file>${ES_JSON_LOG_FILE}.json</file>
             <encoder class="net.logstash.logback.encoder.LogstashEncoder">
-                <customFields>{"application":"dbay", "service":"elasticsearch", "environment":"stage"}</customFields>
+                <customFields>{"application":"product", "service":"elasticsearch-index", "environment":"stage"}</customFields>
                 <includeMdcKeyName>productCode</includeMdcKeyName>
                 <includeMdcKeyName>productId</includeMdcKeyName>
-                <includeMdcKeyName>keyword</includeMdcKeyName>
             </encoder>
             <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-                <fileNamePattern>${ES_JSON_LOG_FILE}-%d{yyyy-MM-dd}.json.gz</fileNamePattern>
+                <fileNamePattern>${ES_INDEX_JSON_LOG_FILE}-%d{yyyy-MM-dd}.json.gz</fileNamePattern>
+                <maxHistory>30</maxHistory>
+            </rollingPolicy>
+        </appender>
+
+        <appender name="ES_SEARCH_JSON_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+            <file>${ES_SEARCH_JSON_LOG_FILE}.json</file>
+            <encoder class="net.logstash.logback.encoder.LogstashEncoder">
+                <customFields>{"application":"product", "service":"elasticsearch-search", "environment":"stage"}</customFields>
+                <includeMdcKeyName>keyword</includeMdcKeyName>
+                <includeMdcKeyName>suggestType</includeMdcKeyName>
+            </encoder>
+            <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+                <fileNamePattern>${ES_SEARCH_JSON_LOG_FILE}-%d{yyyy-MM-dd}.json.gz</fileNamePattern>
                 <maxHistory>30</maxHistory>
             </rollingPolicy>
         </appender>
@@ -184,16 +285,29 @@
 
     <!-- ES JSON 로그 (Deploy 전용) - LogStash에서 사용 -->
     <springProfile name="deploy">
-        <appender name="ES_JSON_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-            <file>${ES_JSON_LOG_FILE}.json</file>
+        <appender name="ES_INDEX_JSON_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+            <file>${ES_INDEX_JSON_LOG_FILE}.json</file>
             <encoder class="net.logstash.logback.encoder.LogstashEncoder">
-                <customFields>{"application":"dbay", "service":"elasticsearch", "environment":"deploy"}</customFields>
+                <customFields>{"application":"product", "service":"elasticsearch-index", "environment":"deploy"}</customFields>
                 <includeMdcKeyName>productCode</includeMdcKeyName>
                 <includeMdcKeyName>productId</includeMdcKeyName>
-                <includeMdcKeyName>keyword</includeMdcKeyName>
             </encoder>
             <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-                <fileNamePattern>${ES_JSON_LOG_FILE}-%d{yyyy-MM-dd}.json.gz</fileNamePattern>
+                <fileNamePattern>${ES_INDEX_JSON_LOG_FILE}-%d{yyyy-MM-dd}.json.gz</fileNamePattern>
+                <maxHistory>30</maxHistory>
+                <totalSizeCap>3GB</totalSizeCap>
+            </rollingPolicy>
+        </appender>
+
+        <appender name="ES_SEARCH_JSON_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+            <file>${ES_SEARCH_JSON_LOG_FILE}.json</file>
+            <encoder class="net.logstash.logback.encoder.LogstashEncoder">
+                <customFields>{"application":"product", "service":"elasticsearch-search", "environment":"deploy"}</customFields>
+                <includeMdcKeyName>keyword</includeMdcKeyName>
+                <includeMdcKeyName>suggestType</includeMdcKeyName>
+            </encoder>
+            <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+                <fileNamePattern>${ES_SEARCH_JSON_LOG_FILE}-%d{yyyy-MM-dd}.json.gz</fileNamePattern>
                 <maxHistory>30</maxHistory>
                 <totalSizeCap>3GB</totalSizeCap>
             </rollingPolicy>
@@ -223,17 +337,24 @@
 
         <!-- ES 인덱싱 관련 로거 -->
         <logger name="esIndex" level="INFO" additivity="false">
-            <appender-ref ref="ES_INFO_FILE"/>
-            <appender-ref ref="ES_ERROR_FILE"/>
-            <appender-ref ref="ES_JSON_FILE"/>
+            <appender-ref ref="ES_INDEX_INFO_FILE"/>
+            <appender-ref ref="ES_INDEX_ERROR_FILE"/>
+            <appender-ref ref="ES_INDEX_JSON_FILE"/>
+            <appender-ref ref="CONSOLE"/>
+        </logger>
+
+        <!-- ES 배치 관련 로거 -->
+        <logger name="esBatch" level="INFO" additivity="false">
+            <appender-ref ref="ES_BATCH_INFO_FILE"/>
+            <appender-ref ref="ES_BATCH_ERROR_FILE"/>
             <appender-ref ref="CONSOLE"/>
         </logger>
 
         <!-- ES 검색 관련 로거 -->
         <logger name="esSearch" level="INFO" additivity="false">
-            <appender-ref ref="ES_INFO_FILE"/>
-            <appender-ref ref="ES_ERROR_FILE"/>
-            <appender-ref ref="ES_JSON_FILE"/>
+            <appender-ref ref="ES_SEARCH_INFO_FILE"/>
+            <appender-ref ref="ES_SEARCH_ERROR_FILE"/>
+            <appender-ref ref="ES_SEARCH_JSON_FILE"/>
             <appender-ref ref="CONSOLE"/>
         </logger>
     </springProfile>
