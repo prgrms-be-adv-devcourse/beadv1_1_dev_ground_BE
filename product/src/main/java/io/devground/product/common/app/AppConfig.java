@@ -1,4 +1,4 @@
-package io.devground.product.product.infrastructure.app;
+package io.devground.product.common.app;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
