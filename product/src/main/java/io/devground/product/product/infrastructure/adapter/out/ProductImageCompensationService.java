@@ -1,4 +1,4 @@
-package io.devground.product.product.infrastructure.adapter.out.kafka;
+package io.devground.product.product.infrastructure.adapter.out;
 
 import static io.devground.core.model.vo.ImageType.*;
 
@@ -14,8 +14,8 @@ import org.springframework.util.ObjectUtils;
 import io.devground.core.model.exception.ServiceException;
 import io.devground.core.model.vo.ErrorCode;
 import io.devground.product.product.domain.exception.ProductDomainException;
-import io.devground.product.product.infrastructure.adapter.out.ProductJpaRepository;
-import io.devground.product.product.infrastructure.adapter.out.client.ImageClient;
+import io.devground.product.product.infrastructure.adapter.out.repository.ProductJpaRepository;
+import io.devground.product.product.infrastructure.adapter.out.repository.client.ImageClient;
 import io.devground.product.product.infrastructure.model.persistence.ProductEntity;
 import io.devground.product.product.infrastructure.model.web.request.DeleteImagesRequest;
 import io.devground.product.product.infrastructure.saga.entity.Saga;

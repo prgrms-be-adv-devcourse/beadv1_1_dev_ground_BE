@@ -1,4 +1,4 @@
-package io.devground.product.product.infrastructure.adapter.out.client;
+package io.devground.product.product.infrastructure.adapter.out.repository.client;
 
 import java.net.URL;
 import java.util.List;

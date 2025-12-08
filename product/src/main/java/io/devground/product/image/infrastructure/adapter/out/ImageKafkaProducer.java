@@ -1,4 +1,4 @@
-package io.devground.product.image.infrastructure.adapter.out.kafka;
+package io.devground.product.image.infrastructure.adapter.out;
 
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;

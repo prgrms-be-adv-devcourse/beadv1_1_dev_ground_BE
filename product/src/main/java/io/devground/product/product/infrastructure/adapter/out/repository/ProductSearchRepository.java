@@ -1,4 +1,4 @@
-package io.devground.product.product.infrastructure.adapter.out;
+package io.devground.product.product.infrastructure.adapter.out.repository;
 
 import org.springframework.data.elasticsearch.repository.ElasticsearchRepository;
 import org.springframework.stereotype.Repository;

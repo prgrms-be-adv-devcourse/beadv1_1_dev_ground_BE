@@ -9,6 +9,7 @@ import io.devground.product.product.application.port.out.persistence.CategoryPer
 import io.devground.product.product.domain.model.Category;
 import io.devground.product.product.domain.vo.ProductDomainErrorCode;
 import io.devground.product.product.domain.vo.response.CategoryResponse;
+import io.devground.product.product.infrastructure.adapter.out.repository.CategoryJpaRepository;
 import io.devground.product.product.infrastructure.mapper.CategoryMapper;
 import io.devground.product.product.infrastructure.model.persistence.CategoryEntity;
 import lombok.RequiredArgsConstructor;

@@ -1,4 +1,4 @@
-package io.devground.product.image.infrastructure.adapter.out.s3;
+package io.devground.product.image.infrastructure.adapter.out;
 
 import java.net.URL;
 import java.time.Duration;
