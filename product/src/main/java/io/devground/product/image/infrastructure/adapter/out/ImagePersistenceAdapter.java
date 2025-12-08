@@ -9,7 +9,7 @@ import org.springframework.util.CollectionUtils;
 import io.devground.core.model.vo.ImageType;
 import io.devground.product.image.application.persistence.ImagePersistencePort;
 import io.devground.product.image.domain.model.Image;
-import io.devground.product.image.infrastructure.adapter.out.s3.S3Service;
+import io.devground.product.image.infrastructure.adapter.out.repository.ImageJpaRepository;
 import io.devground.product.image.infrastructure.mapper.ImageMapper;
 import io.devground.product.image.infrastructure.model.persistence.ImageEntity;
 import lombok.RequiredArgsConstructor;
