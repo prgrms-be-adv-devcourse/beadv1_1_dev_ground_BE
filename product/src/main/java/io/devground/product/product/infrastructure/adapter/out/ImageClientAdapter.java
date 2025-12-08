@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 import io.devground.core.model.vo.ImageType;
 import io.devground.core.model.web.BaseResponse;
 import io.devground.product.product.application.port.out.ImageClientPort;
-import io.devground.product.product.infrastructure.adapter.out.client.ImageClient;
+import io.devground.product.product.infrastructure.adapter.out.repository.client.ImageClient;
 import io.devground.product.product.infrastructure.model.web.request.ImageUpdatePlan;
 import io.devground.product.product.infrastructure.model.web.request.ImageUploadPlan;
 import lombok.RequiredArgsConstructor;

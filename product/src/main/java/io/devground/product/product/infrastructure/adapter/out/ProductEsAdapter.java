@@ -1,4 +1,4 @@
-package io.devground.product.product.infrastructure.adapter.out.client;
+package io.devground.product.product.infrastructure.adapter.out;
 
 import org.slf4j.MDC;
 import org.springframework.scheduling.annotation.Async;
@@ -8,7 +8,7 @@ import io.devground.core.model.exception.ServiceException;
 import io.devground.product.product.application.port.out.persistence.ProductPrepareSearchPort;
 import io.devground.product.product.domain.exception.ProductDomainException;
 import io.devground.product.product.domain.model.Product;
-import io.devground.product.product.infrastructure.adapter.out.ProductSearchRepository;
+import io.devground.product.product.infrastructure.adapter.out.repository.ProductSearchRepository;
 import io.devground.product.product.infrastructure.model.persistence.ProductDocument;
 import io.devground.product.product.infrastructure.util.ProductESUtil;
 import lombok.RequiredArgsConstructor;

@@ -1,4 +1,4 @@
-package io.devground.product.image.infrastructure.adapter.out;
+package io.devground.product.image.infrastructure.adapter.out.repository;
 
 import java.util.List;
 

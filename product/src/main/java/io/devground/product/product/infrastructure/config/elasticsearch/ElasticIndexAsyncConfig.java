@@ -1,4 +1,4 @@
-package io.devground.product.product.infrastructure.config;
+package io.devground.product.product.infrastructure.config.elasticsearch;
 
 import java.util.concurrent.Executor;
 import java.util.concurrent.ThreadPoolExecutor;

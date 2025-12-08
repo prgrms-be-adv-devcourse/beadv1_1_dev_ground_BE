@@ -15,7 +15,7 @@ import org.springframework.data.elasticsearch.core.ReactiveElasticsearchOperatio
 import org.springframework.stereotype.Component;
 
 import io.devground.product.product.domain.model.Product;
-import io.devground.product.product.infrastructure.adapter.out.ProductJpaRepository;
+import io.devground.product.product.infrastructure.adapter.out.repository.ProductJpaRepository;
 import io.devground.product.product.infrastructure.mapper.ProductMapper;
 import io.devground.product.product.infrastructure.model.persistence.ProductDocument;
 import io.devground.product.product.infrastructure.model.persistence.ProductEntity;

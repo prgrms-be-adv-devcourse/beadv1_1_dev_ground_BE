@@ -1,4 +1,4 @@
-package io.devground.product.product.infrastructure.adapter.out;
+package io.devground.product.product.infrastructure.adapter.out.repository;
 
 import java.util.Optional;
 

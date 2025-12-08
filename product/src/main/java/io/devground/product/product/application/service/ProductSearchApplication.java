@@ -21,7 +21,7 @@ import lombok.RequiredArgsConstructor;
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
-public class ProductSearchApplicationService implements ProductSearchUseCase {
+public class ProductSearchApplication implements ProductSearchUseCase {
 
 	private final ProductSearchPort searchPort;
 

@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.devground.core.model.web.BaseResponse;
-import io.devground.product.product.application.service.ProductSearchApplicationService;
+import io.devground.product.product.application.service.ProductSearchApplication;
 import io.devground.product.product.domain.vo.pagination.PageDto;
 import io.devground.product.product.domain.vo.request.ProductSearchDto;
 import io.devground.product.product.domain.vo.request.ProductSuggestDto;
@@ -26,7 +26,7 @@ import lombok.RequiredArgsConstructor;
 @Tag(name = "ProductSearchController", description = "상품 검색 API. 엘라스틱 서치 사용")
 public class ProductSearchApiController {
 
-	private final ProductSearchApplicationService productSearchService;
+	private final ProductSearchApplication productSearchService;
 
 	@GetMapping("/search")
 	@Operation(summary = "상품 검색 By Elasticsearch",
