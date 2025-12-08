@@ -13,7 +13,7 @@ import org.springframework.util.ObjectUtils;
 
 import io.devground.core.model.exception.ServiceException;
 import io.devground.core.model.vo.ErrorCode;
-import io.devground.product.product.domain.exception.DomainException;
+import io.devground.product.product.domain.exception.ProductDomainException;
 import io.devground.product.product.infrastructure.adapter.out.ProductJpaRepository;
 import io.devground.product.product.infrastructure.adapter.out.client.ImageClient;
 import io.devground.product.product.infrastructure.model.persistence.ProductEntity;
@@ -102,7 +102,7 @@ public class ProductImageCompensationService {
 
 			log.info("이미지 등록 보상 완료");
 
-		} catch (DomainException | ServiceException e) {
+		} catch (ProductDomainException | ServiceException e) {
 			MDC.put("errorMsg", e.getMessage());
 			log.error("이미지 등록 보상 트랜잭션 실패");
 

@@ -7,7 +7,7 @@ import org.springframework.stereotype.Repository;
 import io.devground.core.model.vo.ErrorCode;
 import io.devground.product.product.application.port.out.persistence.CategoryPersistencePort;
 import io.devground.product.product.domain.model.Category;
-import io.devground.product.product.domain.vo.DomainErrorCode;
+import io.devground.product.product.domain.vo.ProductDomainErrorCode;
 import io.devground.product.product.domain.vo.response.CategoryResponse;
 import io.devground.product.product.infrastructure.mapper.CategoryMapper;
 import io.devground.product.product.infrastructure.model.persistence.CategoryEntity;
@@ -47,7 +47,7 @@ public class CategoryPersistenceAdapter implements CategoryPersistencePort {
 	public Category getCategory(Long categoryId) {
 
 		CategoryEntity categoryEntity = categoryRepository.findById(categoryId)
-			.orElseThrow(DomainErrorCode.CATEGORY_NOT_FOUND::throwException);
+			.orElseThrow(ProductDomainErrorCode.CATEGORY_NOT_FOUND::throwException);
 
 		return CategoryMapper.toDomain(categoryEntity);
 	}

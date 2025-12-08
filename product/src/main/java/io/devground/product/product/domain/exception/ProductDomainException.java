@@ -1,22 +1,22 @@
 package io.devground.product.product.domain.exception;
 
-import io.devground.product.product.domain.vo.DomainErrorCode;
+import io.devground.product.product.domain.vo.ProductDomainErrorCode;
 
-public class DomainException extends RuntimeException {
+public class ProductDomainException extends RuntimeException {
 
-	private final DomainErrorCode errorCode;
+	private final ProductDomainErrorCode errorCode;
 
-	public DomainException(DomainErrorCode errorCode) {
+	public ProductDomainException(ProductDomainErrorCode errorCode) {
 		super(errorCode.getHttpStatus() + " : " + errorCode.getMessage());
 		this.errorCode = errorCode;
 	}
 
-	public DomainException(DomainErrorCode errorCode, Throwable cause) {
+	public ProductDomainException(ProductDomainErrorCode errorCode, Throwable cause) {
 		super(errorCode.getHttpStatus() + " : " + errorCode.getMessage(), cause);
 		this.errorCode = errorCode;
 	}
 
-	public DomainErrorCode getErrorCode() {
+	public ProductDomainErrorCode getErrorCode() {
 		return errorCode;
 	}
 }

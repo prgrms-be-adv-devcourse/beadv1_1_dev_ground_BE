@@ -1,5 +1,6 @@
 package io.devground.product.product.infrastructure.handler.web;
 
+import org.springframework.core.annotation.Order;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -9,9 +10,10 @@ import io.devground.product.product.domain.vo.ProductDomainErrorCode;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 
+@Order(1)
 @RestControllerAdvice
 @RequiredArgsConstructor
-public class GlobalExceptionHandler {
+public class ProductExceptionHandler {
 
 	private final HttpServletResponse response;
 

@@ -1,8 +1,8 @@
 package io.devground.product.product.domain.vo;
 
-import io.devground.product.product.domain.exception.DomainException;
+import io.devground.product.product.domain.exception.ProductDomainException;
 
-public enum DomainErrorCode {
+public enum ProductDomainErrorCode {
 
 	// server
 	INTERNAL_SERVER_ERROR(500, "서버 내부 오류가 발생했습니다."),
@@ -35,21 +35,21 @@ public enum DomainErrorCode {
 	private final int httpStatus;
 	private final String message;
 
-	DomainErrorCode(int httpStatus, String message) {
+	ProductDomainErrorCode(int httpStatus, String message) {
 		this.httpStatus = httpStatus;
 		this.message = message;
 	}
 
-	public DomainException throwException() {
-		throw new DomainException(this);
+	public ProductDomainException throwException() {
+		throw new ProductDomainException(this);
 	}
 
-	public DomainException throwException(Throwable cause) {
-		throw new DomainException(this, cause);
+	public ProductDomainException throwException(Throwable cause) {
+		throw new ProductDomainException(this, cause);
 	}
 
-	public static DomainErrorCode fromHttpStatus(int httpStatus, String msg) {
-		for (DomainErrorCode errorCode : DomainErrorCode.values()) {
+	public static ProductDomainErrorCode fromHttpStatus(int httpStatus, String msg) {
+		for (ProductDomainErrorCode errorCode : ProductDomainErrorCode.values()) {
 			if (errorCode.getHttpStatus() == httpStatus && errorCode.getMessage().equals(msg)) {
 				return errorCode;
 			}

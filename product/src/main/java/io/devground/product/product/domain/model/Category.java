@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import io.devground.core.util.CodeUtil;
-import io.devground.product.product.domain.vo.DomainErrorCode;
+import io.devground.product.product.domain.vo.ProductDomainErrorCode;
 
 public class Category {
 
@@ -106,7 +106,7 @@ public class Category {
 
 	private void validate(int calculatedDepth) {
 		if (calculatedDepth > MAX_DEPTH) {
-			DomainErrorCode.CANNOT_EXCEED_MAX_DEPTH.throwException();
+			ProductDomainErrorCode.CANNOT_EXCEED_MAX_DEPTH.throwException();
 		}
 	}
 }
