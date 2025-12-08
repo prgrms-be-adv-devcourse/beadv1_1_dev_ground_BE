@@ -17,35 +17,56 @@ public class Category {
 	private LocalDateTime createdAt;
 	private LocalDateTime updatedAt;
 
-	private String parentCode;
-
+	private Category parent;
 	private List<Category> children;
 
 	private String name;
 	private Integer depth;
 	private String fullPath;
 
-	public Category(String parentCode, Integer parentDepth, String name, String parentFullPath) {
-		int calculatedDepth = (parentDepth == null) ? 1 : parentDepth + 1;
-
-		this.validate(calculatedDepth);
-
-		this.code = CodeUtil.generateUUID();
-
-		this.createdAt = LocalDateTime.now();
-		this.updatedAt = LocalDateTime.now();
-
-		this.parentCode = parentCode;
+	public Category() {
 		this.children = new ArrayList<>();
-
-		this.name = name;
-		this.depth = calculatedDepth;
-
-		this.fullPath = this.calculateFullPath(parentFullPath, name);
 	}
 
-	public void updateId(Long id) {
-		this.id = id;
+	public static Category of(Category parent, String name) {
+		Category category = new Category();
+
+		category.code = CodeUtil.generateUUID();
+
+		category.createdAt = LocalDateTime.now();
+		category.updatedAt = LocalDateTime.now();
+
+		category.parent = parent;
+		category.children = new ArrayList<>();
+		category.name = name;
+
+		category.depth = (parent == null) ? 1 : parent.depth + 1;
+		category.validate();
+
+		category.fullPath = category.calculateFullPath();
+
+		return category;
+	}
+
+	public static Category from(
+		Long id, String code, LocalDateTime createdAt, LocalDateTime updatedAt, Category parent, String name,
+		Integer depth, String fullPath
+	) {
+		Category category = new Category();
+		category.id = id;
+		category.code = code;
+
+		category.createdAt = createdAt;
+		category.updatedAt = updatedAt;
+
+		category.parent = parent;
+		category.children = new ArrayList<>();
+		category.name = name;
+
+		category.depth = depth;
+		category.fullPath = fullPath;
+
+		return category;
 	}
 
 	public void updateClock() {
@@ -56,12 +77,21 @@ public class Category {
 		this.children = children;
 	}
 
-	public String calculateFullPath(String parentFullPath, String name) {
-		if (parentFullPath == null || parentFullPath.isBlank()) {
+	public void addChild(Category child) {
+		this.children.add(child);
+		child.parent = this;
+	}
+
+	public String calculateFullPath() {
+		if (parent == null) {
 			return name;
 		}
 
-		return parentFullPath + "/" + name;
+		return parent.fullPath + "/" + name;
+	}
+
+	public boolean isLeaf() {
+		return this.children.isEmpty();
 	}
 
 	public Long getId() {
@@ -80,8 +110,8 @@ public class Category {
 		return updatedAt;
 	}
 
-	public String getParentCode() {
-		return parentCode;
+	public Category getParent() {
+		return parent;
 	}
 
 	public List<Category> getChildren() {
@@ -100,13 +130,13 @@ public class Category {
 		return fullPath;
 	}
 
-	public boolean isLeaf() {
-		return this.children.isEmpty();
-	}
-
-	private void validate(int calculatedDepth) {
-		if (calculatedDepth > MAX_DEPTH) {
+	private void validate() {
+		if (depth > MAX_DEPTH) {
 			ProductDomainErrorCode.CANNOT_EXCEED_MAX_DEPTH.throwException();
+		}
+
+		if (parent != null && parent.depth + 1 != depth) {
+			ProductDomainErrorCode.MISMATCH_ON_DEPTH.throwException();
 		}
 	}
 }
