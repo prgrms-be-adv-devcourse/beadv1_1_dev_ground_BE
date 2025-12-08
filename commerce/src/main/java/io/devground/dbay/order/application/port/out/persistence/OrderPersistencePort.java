@@ -10,9 +10,11 @@ import io.devground.dbay.order.domain.vo.pagination.PageQuery;
 import java.util.List;
 
 public interface OrderPersistencePort {
+    Order getOrder(OrderCode orderCode);
     void createSingleOrder(UserInfo userInfo, Order order, OrderProduct orderProduct);
     void createSelectedOrder(UserInfo userInfo, Order order, List<OrderProduct> orderProducts);
     PageDto<OrderDescription> getOrders(UserCode userCode, RoleType roleType, PageQuery pageQuery);
     List<OrderItemInfo> getOrderItems(List<String> orderCodes);
     OrderDetailDescription getOrderDetail(UserCode userCode, OrderCode orderCode);
+    void cancel(OrderCode orderCode);
 }

@@ -21,6 +21,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 @Repository
 @RequiredArgsConstructor
@@ -28,6 +29,18 @@ public class OrderPersistenceAdapter implements OrderPersistencePort {
 
     private final OrderJpaRepository orderJpaRepository;
     private final OrderItemJpaRepository orderItemJpaRepository;
+
+    @Override
+    public Order getOrder(OrderCode orderCode) {
+        if (orderCode == null) {
+            throw ErrorCode.ORDER_NOT_FOUND.throwServiceException();
+        }
+
+        OrderEntity orderEntity = orderJpaRepository.findByCode(orderCode.value())
+                .orElseThrow(ErrorCode.ORDER_NOT_FOUND::throwServiceException);
+
+        return OrderMapper.toOrderDomain(orderEntity);
+    }
 
     @Override
     public void createSingleOrder(UserInfo userInfo, Order order, OrderProduct orderProduct) {
@@ -135,6 +148,15 @@ public class OrderPersistenceAdapter implements OrderPersistencePort {
         long productTotalAmount = orderEntity.getOrderItems().stream().mapToLong(OrderItemEntity::getProductPrice).sum();
 
         return OrderMapper.toOrderDetailDescription(orderEntity, productTotalAmount);
+    }
+
+    @Override
+    public void cancel(OrderCode orderCode) {
+        if (orderCode == null) {
+            throw ErrorCode.ORDER_NOT_FOUND.throwServiceException();
+        }
+
+        orderJpaRepository.cancelByCode(orderCode.value());
     }
 
     private PageDto<OrderDescription> orderListByRole(UserCode userCode, RoleType roleType, PageQuery pageQuery) {
