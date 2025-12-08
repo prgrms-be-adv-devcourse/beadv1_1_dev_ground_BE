@@ -54,12 +54,20 @@ public class CategoryPersistenceAdapter implements CategoryPersistencePort {
 	@Override
 	public Category save(Category category) {
 
-		CategoryEntity categoryEntity = CategoryMapper.toEntity(category);
-
+		CategoryEntity parentEntity = null;
 		if (category.getParent() != null) {
-			CategoryEntity parentEntity = categoryRepository.findById(category.getParent().getId())
+			parentEntity = categoryRepository.findById(category.getParent().getId())
 				.orElseThrow(ProductDomainErrorCode.CATEGORY_NOT_FOUND::throwException);
+		}
 
+		CategoryEntity categoryEntity = CategoryEntity.builder()
+			.code(category.getCode())
+			.parent(parentEntity)
+			.name(category.getName())
+			.depth(category.getDepth())
+			.build();
+
+		if (parentEntity != null) {
 			parentEntity.addChildren(categoryEntity);
 		}
 

@@ -7,6 +7,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import io.devground.core.model.vo.ErrorCode;
+import io.devground.core.util.CodeUtil;
 import io.devground.product.common.util.PageUtils;
 import io.devground.product.product.application.port.out.persistence.ProductPersistencePort;
 import io.devground.product.product.domain.model.Product;
@@ -23,7 +24,6 @@ import io.devground.product.product.domain.vo.response.CartProductsResponse;
 import io.devground.product.product.domain.vo.response.GetAllProductsResponse;
 import io.devground.product.product.infrastructure.adapter.out.repository.CategoryJpaRepository;
 import io.devground.product.product.infrastructure.adapter.out.repository.ProductJpaRepository;
-import io.devground.product.product.infrastructure.adapter.out.repository.ProductSaleJpaRepository;
 import io.devground.product.product.infrastructure.mapper.PageMapper;
 import io.devground.product.product.infrastructure.mapper.ProductMapper;
 import io.devground.product.product.infrastructure.model.persistence.CategoryEntity;
@@ -37,7 +37,6 @@ public class ProductPersistenceAdapter implements ProductPersistencePort {
 
 	private final CategoryJpaRepository categoryRepository;
 	private final ProductJpaRepository productRepository;
-	private final ProductSaleJpaRepository productSaleRepository;
 
 	@Override
 	public PageDto<GetAllProductsResponse> getProducts(PageQuery pageRequest) {
@@ -68,13 +67,14 @@ public class ProductPersistenceAdapter implements ProductPersistencePort {
 
 		ProductEntity productEntity = ProductEntity.builder()
 			.category(categoryEntity)
+			.code(CodeUtil.generateUUID())
 			.title(request.title())
 			.description(request.description())
 			.build();
 
-		productRepository.save(productEntity);
 
 		ProductSaleEntity productSaleEntity = ProductSaleEntity.builder()
+			.code(CodeUtil.generateUUID())
 			.product(productEntity)
 			.price(request.price())
 			.sellerCode(sellerCode)
@@ -82,7 +82,7 @@ public class ProductPersistenceAdapter implements ProductPersistencePort {
 
 		productSaleEntity.addProduct(productEntity);
 
-		productSaleRepository.save(productSaleEntity);
+		productRepository.save(productEntity);
 
 		return ProductMapper.toProductDomain(productEntity, productSaleEntity);
 	}

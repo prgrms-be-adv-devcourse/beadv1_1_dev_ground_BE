@@ -1,6 +1,7 @@
 package io.devground.product.product.infrastructure.mapper;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import io.devground.product.product.domain.model.Category;
 import io.devground.product.product.domain.vo.response.AdminCategoryResponse;
@@ -35,25 +36,11 @@ public class CategoryMapper {
 
 		List<Category> children = categoryEntity.getChildren().stream()
 			.map(CategoryMapper::toDomain)
-			.toList();
+			.collect(Collectors.toList());
 
 		category.linkChildren(children);
 
 		return category;
-	}
-
-	public CategoryEntity toEntity(Category category) {
-
-		if (category == null) {
-			return null;
-		}
-
-		return CategoryEntity.builder()
-			.code(category.getCode())
-			.parent(null)
-			.name(category.getName())
-			.depth(category.getDepth())
-			.build();
 	}
 
 	public AdminCategoryResponse toAdminResponse(Category category) {
@@ -87,12 +74,17 @@ public class CategoryMapper {
 			return null;
 		}
 
+		Category parent = null;
+		if (categoryEntity.getParent() != null) {
+			parent = toDomainWithoutChildren(categoryEntity.getParent());
+		}
+
 		return Category.from(
 			categoryEntity.getId(),
 			categoryEntity.getCode(),
 			categoryEntity.getCreatedAt(),
 			categoryEntity.getUpdatedAt(),
-			null,
+			parent,
 			categoryEntity.getName(),
 			categoryEntity.getDepth(),
 			categoryEntity.getFullPath()

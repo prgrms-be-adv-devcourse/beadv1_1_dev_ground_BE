@@ -18,6 +18,7 @@ public class ProductMapper {
 			CategoryMapper.toDomain(productEntity.getCategory())
 		);
 
+		product.updateCode(productEntity.getCode());
 		product.updateThumbnail(productEntity.getThumbnailUrl());
 		product.linkProductSale(toProductSaleDomain(productEntity, productSaleEntity));
 		product.updateId(productEntity.getId());
@@ -27,10 +28,14 @@ public class ProductMapper {
 
 	public ProductSale toProductSaleDomain(ProductEntity productEntity, ProductSaleEntity productSaleEntity) {
 
-		return new ProductSale(
+		ProductSale productSale = new ProductSale(
 			productSaleEntity.getSellerCode(),
 			productEntity.getCode(),
 			new ProductSaleSpec(productSaleEntity.getPrice(), productSaleEntity.getProductStatus())
 		);
+
+		productSale.updateCode(productSaleEntity.getCode());
+
+		return productSale;
 	}
 }

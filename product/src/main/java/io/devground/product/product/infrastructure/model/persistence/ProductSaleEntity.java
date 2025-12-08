@@ -3,6 +3,7 @@ package io.devground.product.product.infrastructure.model.persistence;
 import java.time.LocalDateTime;
 
 import io.devground.core.model.entity.BaseEntity;
+import io.devground.core.util.CodeUtil;
 import io.devground.product.product.domain.vo.ProductDomainErrorCode;
 import io.devground.product.product.domain.vo.ProductStatus;
 import jakarta.persistence.Column;
@@ -55,7 +56,11 @@ public class ProductSaleEntity extends BaseEntity {
 
 	@Builder
 	public ProductSaleEntity(String code, String sellerCode, Long price, ProductEntity product) {
-		this.registCode(code);
+		if (code == null || code.isBlank()) {
+			this.register(CodeUtil.generateUUID());
+		} else {
+			this.register(code);
+		}
 
 		this.sellerCode = sellerCode;
 		this.price = price;
