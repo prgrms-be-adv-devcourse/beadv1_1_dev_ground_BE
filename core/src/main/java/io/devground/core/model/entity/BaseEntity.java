@@ -54,10 +54,6 @@ public abstract class BaseEntity {
 			this.updatedAt = LocalDateTime.now();
 	}
 
-	public void registCode(String code) {
-		this.code = code;
-	}
-
 	public void delete() {
 		this.deleteStatus = DeleteStatus.Y;
 		this.updatedAt = LocalDateTime.now();

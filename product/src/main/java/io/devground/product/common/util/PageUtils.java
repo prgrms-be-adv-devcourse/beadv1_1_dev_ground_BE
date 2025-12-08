@@ -52,7 +52,7 @@ public class PageUtils {
 		}
 
 		if ("price".equals(property)) {
-			return Sort.by(new Sort.Order(direction, "productSaleEntity.price"));
+			return Sort.by(new Sort.Order(direction, "productSale.price"));
 		}
 
 		if ("createdAt".equals(property)) {

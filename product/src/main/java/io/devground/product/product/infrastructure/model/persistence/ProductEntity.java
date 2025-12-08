@@ -55,7 +55,8 @@ public class ProductEntity extends BaseEntity {
 	public ProductEntity(String code, CategoryEntity category, String title, String description) {
 		validateCategory(category);
 
-		this.registCode(code);
+		register(code);
+
 		this.category = category;
 		this.title = title;
 		this.description = description;
