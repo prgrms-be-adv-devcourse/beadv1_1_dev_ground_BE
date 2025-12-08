@@ -19,6 +19,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -43,6 +44,15 @@ public class OrderPersistenceAdapter implements OrderPersistencePort {
     }
 
     @Override
+    public LocalDateTime getUpdatedAtByOrder(OrderCode orderCode) {
+        if (orderCode == null) {
+            throw ErrorCode.ORDER_NOT_FOUND.throwServiceException();
+        }
+
+        return orderJpaRepository.findUpdatedAtByCode(orderCode.value());
+    }
+
+    @Override
     public void createSingleOrder(UserInfo userInfo, Order order, OrderProduct orderProduct) {
 
         if (userInfo == null) {
@@ -61,6 +71,8 @@ public class OrderPersistenceAdapter implements OrderPersistencePort {
                 .addressDetail(userInfo.addressDetail())
                 .totalAmount(order.totalPrice(order.getOrderItems()))
                 .build();
+
+
 
         orderJpaRepository.save(orderEntity);
 
@@ -157,6 +169,15 @@ public class OrderPersistenceAdapter implements OrderPersistencePort {
         }
 
         orderJpaRepository.cancelByCode(orderCode.value());
+    }
+
+    @Override
+    public void confirm(OrderCode orderCode) {
+        if (orderCode == null) {
+            throw ErrorCode.ORDER_NOT_FOUND.throwServiceException();
+        }
+
+        orderJpaRepository.confirmByCode(orderCode.value());
     }
 
     private PageDto<OrderDescription> orderListByRole(UserCode userCode, RoleType roleType, PageQuery pageQuery) {
