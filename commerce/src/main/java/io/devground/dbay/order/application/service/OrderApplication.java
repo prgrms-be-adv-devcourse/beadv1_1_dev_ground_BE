@@ -165,6 +165,35 @@ public class OrderApplication implements OrderUseCase {
         return orderPersistencePort.getOrderDetail(userCode, orderCode);
     }
 
+    @Override
+    public void confirmOrder(UserCode userCode, OrderCode orderCode) {
+        if (userCode == null) {
+            throw ServiceError.USER_NOT_FOUNT.throwServiceException();
+        }
+
+        if (orderCode == null) {
+            throw ServiceError.ORDER_NOT_FOUND.throwServiceException();
+        }
+    }
+
+    @Override
+    @Transactional
+    public void cancelOrder(UserCode userCode, OrderCode orderCode) {
+        if (userCode == null) {
+            throw ServiceError.USER_NOT_FOUNT.throwServiceException();
+        }
+
+        if (orderCode == null) {
+            throw ServiceError.ORDER_NOT_FOUND.throwServiceException();
+        }
+
+        Order order = orderPersistencePort.getOrder(orderCode);
+
+        order.cancel();
+
+        orderPersistencePort.cancel(orderCode);
+    }
+
     private UserInfo getUserInfoOrThrow(UserCode userCode) {
         if (userCode == null) {
             throw ServiceError.USER_NOT_FOUNT.throwServiceException();

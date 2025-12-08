@@ -81,4 +81,17 @@ public class OrderApiController {
                 "주문 상세 조회 성공"
         );
     }
+
+    @PatchMapping("/{orderCode}")
+    @Operation(summary = "주문 취소", description = "주문 취소")
+    public BaseResponse<Void> cancelOrder(
+            @RequestHeader("X-CODE") String userCode,
+            @PathVariable String orderCode
+    ) {
+        orderApplication.cancelOrder(new UserCode(userCode), new OrderCode(orderCode));
+        return BaseResponse.success(
+                204,
+                "주문 취소 완료"
+        );
+    }
 }
