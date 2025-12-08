@@ -1,4 +1,4 @@
-package io.devground.dbay.domain.product.product.controller;
+package io.devground.product.product.infrastructure.adapter.in.web;
 
 import static org.springframework.http.HttpStatus.*;
 
@@ -8,12 +8,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.devground.core.model.web.BaseResponse;
-import io.devground.core.model.web.PageDto;
-import io.devground.dbay.domain.product.product.model.dto.ProductSearchRequest;
-import io.devground.dbay.domain.product.product.model.dto.ProductSearchResponse;
-import io.devground.dbay.domain.product.product.model.dto.ProductSuggestRequest;
-import io.devground.dbay.domain.product.product.model.dto.ProductSuggestResponse;
-import io.devground.dbay.domain.product.product.service.ProductSearchService;
+import io.devground.product.product.application.service.ProductSearchApplicationService;
+import io.devground.product.product.domain.vo.pagination.PageDto;
+import io.devground.product.product.domain.vo.request.ProductSearchDto;
+import io.devground.product.product.domain.vo.request.ProductSuggestDto;
+import io.devground.product.product.domain.vo.response.ProductSearchResponse;
+import io.devground.product.product.domain.vo.response.ProductSuggestResponse;
+import io.devground.product.product.infrastructure.model.web.request.ProductSearchRequest;
+import io.devground.product.product.infrastructure.model.web.request.ProductSuggestRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -22,9 +24,9 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @RequestMapping("/api/products")
 @Tag(name = "ProductSearchController", description = "상품 검색 API. 엘라스틱 서치 사용")
-public class ProductSearchController {
+public class ProductSearchApiController {
 
-	private final ProductSearchService productSearchService;
+	private final ProductSearchApplicationService productSearchService;
 
 	@GetMapping("/search")
 	@Operation(summary = "상품 검색 By Elasticsearch",
@@ -54,9 +56,14 @@ public class ProductSearchController {
 	)
 	public BaseResponse<PageDto<ProductSearchResponse>> searchProducts(@ParameterObject ProductSearchRequest request) {
 
+		ProductSearchDto requestDto = new ProductSearchDto(
+			request.keyword(), request.categoryIds(), request.minPrice(), request.maxPrice(), request.sellerCode(),
+			request.productStatus(), request.sortBy(), request.sortDirection(), request.page(), request.size()
+		);
+
 		return BaseResponse.success(
 			OK.value(),
-			productSearchService.searchProducts(request),
+			productSearchService.searchProducts(requestDto),
 			"상품 검색이 성공적으로 완료되었습니다."
 		);
 	}
@@ -74,9 +81,13 @@ public class ProductSearchController {
 	)
 	public BaseResponse<ProductSuggestResponse> suggestCompletion(@ParameterObject ProductSuggestRequest request) {
 
+		ProductSuggestDto requestDto = new ProductSuggestDto(
+			request.keyword(), request.categoryId(), request.includeSold(), request.size()
+		);
+
 		return BaseResponse.success(
 			OK.value(),
-			productSearchService.suggestCompletion(request),
+			productSearchService.suggestCompletion(requestDto),
 			"키워드 자동완성이 성공적으로 완료되었습니다."
 		);
 	}
@@ -93,9 +104,13 @@ public class ProductSearchController {
 	)
 	public BaseResponse<ProductSuggestResponse> suggestRelated(@ParameterObject ProductSuggestRequest request) {
 
+		ProductSuggestDto requestDto = new ProductSuggestDto(
+			request.keyword(), request.categoryId(), request.includeSold(), request.size()
+		);
+
 		return BaseResponse.success(
 			OK.value(),
-			productSearchService.suggestRelated(request),
+			productSearchService.suggestRelated(requestDto),
 			"연관 검색어 추천이 성공적으로 완료되었습니다."
 		);
 	}
