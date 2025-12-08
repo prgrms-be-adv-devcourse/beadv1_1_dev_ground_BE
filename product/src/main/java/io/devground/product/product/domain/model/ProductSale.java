@@ -33,6 +33,10 @@ public class ProductSale {
 		this.productSaleSpec = productSaleSpec;
 	}
 
+	public void updateCode(String code) {
+		this.code = code;
+	}
+
 	public void updateToSold(ProductSaleSpec productSaleSpec) {
 		this.updateSpec(productSaleSpec);
 		this.updateSoldComplete();

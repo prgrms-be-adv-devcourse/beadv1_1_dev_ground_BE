@@ -49,7 +49,7 @@ public class CategoryEntity extends BaseEntity {
 
 	@Builder
 	public CategoryEntity(String code, CategoryEntity parent, String name, Integer depth) {
-		this.registCode(code);
+		register(code);
 
 		this.validateDepth(parent, depth);
 		this.parent = parent;

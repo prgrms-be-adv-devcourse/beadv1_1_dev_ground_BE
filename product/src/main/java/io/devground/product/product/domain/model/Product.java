@@ -36,6 +36,10 @@ public class Product {
 		this.category = category;
 	}
 
+	public void updateCode(String code) {
+		this.code = code;
+	}
+
 	public void linkProductSale(ProductSale productSale) {
 		this.productSale = productSale;
 	}
