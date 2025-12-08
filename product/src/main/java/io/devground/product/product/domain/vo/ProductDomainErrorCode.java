@@ -11,6 +11,9 @@ public enum ProductDomainErrorCode {
 	PAGE_MUST_BE_POSITIVE(400, "페이지 번호는 0보다 커야합니다."),
 	PAGE_SIZE_MUST_BE_POSITIVE(400, "페이지 사이즈는 0보다 커야합니다."),
 
+	// category domain validation
+	CATEGORY_MUST_BE_INPUT(400, "카테고리는 반드시 입력되어야 합니다"),
+
 	// product domain validation
 	DESCRIPTION_MUST_BE_INPUT(400, "상품 설명은 반드시 입력되어야 합니다"),
 	TITLE_MUST_BE_INPUT(400, "상품 이름은 반드시 입력되어야 합니다"),
@@ -18,6 +21,7 @@ public enum ProductDomainErrorCode {
 	PRICE_MUST_BE_POSITIVE(400, "상품 가격은 반드시 양수여야 합니다."),
 	SELLER_CODE_MUST_BE_INPUT(400, "판매자 코드는 반드시 입력되어야 합니다."),
 	PRODUCT_CODE_MUST_BE_INPUT(400, "상품 코드는 반드시 입력되어야 합니다."),
+	PRODUCT_STATUS_MUST_BE_INPUT(400, "상품 판매 상태는 반드시 입력되어야 합니다."),
 
 	// category
 	CANNOT_EXCEED_MAX_DEPTH(400, "카테고리는 최대 뎁스를 초과할 수 없습니다."),

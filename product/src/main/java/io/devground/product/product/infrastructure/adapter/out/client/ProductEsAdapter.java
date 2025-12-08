@@ -5,7 +5,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import io.devground.core.model.exception.ServiceException;
-import io.devground.product.product.application.port.out.persistence.ProductSearchPort;
+import io.devground.product.product.application.port.out.persistence.ProductPrepareSearchPort;
 import io.devground.product.product.domain.exception.ProductDomainException;
 import io.devground.product.product.domain.model.Product;
 import io.devground.product.product.infrastructure.adapter.out.ProductSearchRepository;
@@ -17,7 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 @Slf4j(topic = "esIndex")
 @RequiredArgsConstructor
-public class ProductEsAdapter implements ProductSearchPort {
+public class ProductEsAdapter implements ProductPrepareSearchPort {
 
 	private final ProductSearchRepository productSearchRepository;
 
