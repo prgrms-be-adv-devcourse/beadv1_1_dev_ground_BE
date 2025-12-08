@@ -88,11 +88,12 @@ public class ProductSearchAdapter implements ProductSearchPort {
 		MDC.put("suggestType", suggestType);
 
 		try {
-			log.info("키워드 제안 - Keyword={}, Type={}", keyword, suggestType);
+			log.info("자동완성 키워드 제안");
 
 			return processCompletedSuggestion(request, keyword);
 		} catch (Exception e) {
-			log.error("키워드 추천 실패 - Keyword={}, Type={}, Exception={}", keyword, suggestType, e.getMessage());
+			MDC.put("errorMsg", e.getMessage());
+			log.error("키워드 추천 실패 - ExStack: ", e);
 
 			return Collections.emptyList();
 		} finally {
@@ -115,11 +116,12 @@ public class ProductSearchAdapter implements ProductSearchPort {
 		MDC.put("suggestType", suggestType);
 
 		try {
-			log.info("키워드 제안 - Keyword={}, Type={}", keyword, suggestType);
+			log.info("연관검색어 키워드 제안");
 
 			return processRelatedSuggestion(request, keyword);
 		} catch (Exception e) {
-			log.error("키워드 추천 실패 - Keyword={}, Type={}, Exception={}", keyword, suggestType, e.getMessage());
+			MDC.put("errorMsg", e.getMessage());
+			log.error("키워드 추천 실패 - ExStack: ", e);
 
 			return Collections.emptyList();
 		} finally {
@@ -340,15 +342,10 @@ public class ProductSearchAdapter implements ProductSearchPort {
 						if (suggestOptions.size() >= request.size()) {
 							break;
 						}
-
-						log.info("자동 완성 키워드 추가 - Text: {}, Score: {}", suggestedText, score);
 					}
 				}
 			}
 		}
-
-		log.info("자동 완성 최종 제안 - Keyword: {}, CategoryId: {}, Size: {}개",
-			keyword, request.categoryId(), suggestOptions.size());
 
 		return suggestOptions;
 	}
@@ -440,8 +437,6 @@ public class ProductSearchAdapter implements ProductSearchPort {
 				)
 			)
 			.toList();
-
-		log.info("키워드의 연관 검색어 제안 - Suggestions: {}", suggestOptions.size());
 
 		return suggestOptions;
 	}
