@@ -94,4 +94,18 @@ public class OrderApiController {
                 "주문 취소 완료"
         );
     }
+
+    @PatchMapping("/confirm/{orderCode}")
+    @Operation(summary = "주문 구매 확정", description = "주문 구매 확정")
+    public BaseResponse<Void> confirmOrder(
+            @RequestHeader("X-CODE") String userCode,
+            @PathVariable String orderCode
+    ) {
+        orderApplication.confirmOrder(new UserCode(userCode), new OrderCode(orderCode));
+
+        return BaseResponse.success(
+                204,
+                "구매 확정 완료"
+        );
+    }
 }

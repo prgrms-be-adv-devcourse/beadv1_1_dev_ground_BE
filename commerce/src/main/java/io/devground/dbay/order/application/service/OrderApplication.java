@@ -16,6 +16,7 @@ import io.devground.dbay.order.domain.vo.pagination.PageQuery;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -174,6 +175,13 @@ public class OrderApplication implements OrderUseCase {
         if (orderCode == null) {
             throw ServiceError.ORDER_NOT_FOUND.throwServiceException();
         }
+
+        Order order = orderPersistencePort.getOrder(orderCode);
+        LocalDateTime updatedAt = orderPersistencePort.getUpdatedAtByOrder(orderCode);
+
+        order.confirm(updatedAt);
+
+        orderPersistencePort.confirm(orderCode);
     }
 
     @Override

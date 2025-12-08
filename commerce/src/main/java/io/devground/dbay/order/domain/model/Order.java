@@ -1,14 +1,12 @@
 package io.devground.dbay.order.domain.model;
 
 import io.devground.dbay.cart.domain.exception.DomainError;
-import io.devground.dbay.cart.domain.model.CartItem;
 import io.devground.dbay.order.domain.vo.OrderCode;
 import io.devground.dbay.order.domain.vo.OrderProduct;
 import io.devground.dbay.order.domain.vo.OrderStatus;
 import io.devground.dbay.order.domain.vo.UserCode;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -54,8 +52,9 @@ public class Order {
         }
 
         OrderCode orderCode = OrderCode.create();
+        LocalDateTime now = LocalDateTime.now();
 
-        return new Order(orderCode, userCode, List.of(OrderItem.create(orderCode, orderProduct)));
+        return new Order(orderCode, userCode, List.of(OrderItem.create(orderCode, orderProduct)), now, now);
     }
 
     // 선택 생성
@@ -73,16 +72,17 @@ public class Order {
         }
 
         OrderCode orderCode = OrderCode.create();
+        LocalDateTime now = LocalDateTime.now();
 
         List<OrderItem> orderItems = orderProducts.stream()
                 .map(op -> OrderItem.create(orderCode, op))
                 .toList();
 
-        return new Order(orderCode, userCode, orderItems);
+        return new Order(orderCode, userCode, orderItems, now, now);
     }
 
     public static Order restore(OrderCode orderCode, UserCode userCode, List<OrderItem> orderItems) {
-        return new Order(orderCode, userCode, new ArrayList<>(orderItems));
+        return new Order(orderCode, userCode, orderItems);
     }
 
     // 주문이 가지는 행동
@@ -103,7 +103,7 @@ public class Order {
         this.orderStatus = OrderStatus.CANCELLED;
     }
 
-    public void confirm(LocalDateTime deliveredAt) {
+    public void confirm(LocalDateTime updatedAt) {
         if (this.orderStatus == OrderStatus.CONFIRMED) {
             throw DomainError.ORDER_ALREADY_CONFIRMED.throwDomainException();
         }
@@ -112,9 +112,9 @@ public class Order {
             throw DomainError.ORDER_CONFIRM_NOT_ALLOWED_BEFORE_DELIVERED.throwDomainException();
         }
 
-        LocalDateTime twoWeeksAfterDelivery = deliveredAt.plusWeeks(2);
+        LocalDateTime twoWeeksAfterDelivery = updatedAt.plusWeeks(2);
 
-        if (deliveredAt.isAfter(twoWeeksAfterDelivery)) {
+        if (updatedAt.isAfter(twoWeeksAfterDelivery)) {
             throw DomainError.ORDER_CONFIRM_NOT_ALLOWED_BEFORE_TWO_WEEKS.throwDomainException();
         }
 
