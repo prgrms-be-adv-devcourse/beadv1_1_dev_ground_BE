@@ -18,7 +18,7 @@ public interface ProductJpaRepository extends JpaRepository<ProductEntity, Long>
 	Optional<ProductEntity> findByCode(String productCode);
 
 	@Query("""
-		SELECT new io.devground.product.domain.vo.response.CartProductsResponse
+		SELECT new io.devground.product.product.domain.vo.response.CartProductsResponse
 		(
 			p.code,
 			ps.code,
