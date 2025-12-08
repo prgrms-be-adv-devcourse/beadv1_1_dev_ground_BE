@@ -60,4 +60,13 @@ public interface OrderJpaRepository extends JpaRepository<OrderEntity, Long> {
         WHERE o.code = :orderCode
         """)
     void confirmByCode(String orderCode);
+
+    @Modifying
+    @Query("""
+        UPDATE OrderEntity o
+        SET o.orderStatus = io.devground.dbay.order.domain.vo.OrderStatus.PAID,
+        o.updatedAt = CURRENT_TIMESTAMP
+        WHERE o.code = :orderCode
+        """)
+    void paidByCode(String orderCode);
 }

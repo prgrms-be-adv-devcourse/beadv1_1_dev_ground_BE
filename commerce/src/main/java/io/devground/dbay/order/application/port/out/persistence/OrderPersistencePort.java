@@ -20,4 +20,5 @@ public interface OrderPersistencePort {
     OrderDetailDescription getOrderDetail(UserCode userCode, OrderCode orderCode);
     void cancel(OrderCode orderCode);
     void confirm(OrderCode orderCode);
+    void paid(OrderCode orderCode);
 }

@@ -13,4 +13,5 @@ public interface OrderUseCase {
     OrderDetailDescription getOrderDetail(UserCode userCode, OrderCode orderCode);
     void confirmOrder(UserCode userCode, OrderCode orderCode);
     void cancelOrder(UserCode userCode, OrderCode orderCode);
+    void paidOrder(UserCode userCode, OrderCode orderCode);
 }

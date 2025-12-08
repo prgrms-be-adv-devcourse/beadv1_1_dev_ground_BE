@@ -180,6 +180,15 @@ public class OrderPersistenceAdapter implements OrderPersistencePort {
         orderJpaRepository.confirmByCode(orderCode.value());
     }
 
+    @Override
+    public void paid(OrderCode orderCode) {
+        if (orderCode == null) {
+            throw ErrorCode.ORDER_NOT_FOUND.throwServiceException();
+        }
+
+        orderJpaRepository.paidByCode(orderCode.value());
+    }
+
     private PageDto<OrderDescription> orderListByRole(UserCode userCode, RoleType roleType, PageQuery pageQuery) {
         Pageable pageable = PageMapper.toPageable(pageQuery);
 

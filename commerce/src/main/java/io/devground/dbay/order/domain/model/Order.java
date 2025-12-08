@@ -52,9 +52,8 @@ public class Order {
         }
 
         OrderCode orderCode = OrderCode.create();
-        LocalDateTime now = LocalDateTime.now();
 
-        return new Order(orderCode, userCode, List.of(OrderItem.create(orderCode, orderProduct)), now, now);
+        return new Order(orderCode, userCode, List.of(OrderItem.create(orderCode, orderProduct)));
     }
 
     // 선택 생성
@@ -72,13 +71,12 @@ public class Order {
         }
 
         OrderCode orderCode = OrderCode.create();
-        LocalDateTime now = LocalDateTime.now();
 
         List<OrderItem> orderItems = orderProducts.stream()
                 .map(op -> OrderItem.create(orderCode, op))
                 .toList();
 
-        return new Order(orderCode, userCode, orderItems, now, now);
+        return new Order(orderCode, userCode, orderItems);
     }
 
     public static Order restore(OrderCode orderCode, UserCode userCode, List<OrderItem> orderItems) {
