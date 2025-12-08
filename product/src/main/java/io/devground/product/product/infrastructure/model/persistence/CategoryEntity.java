@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import io.devground.core.model.entity.BaseEntity;
-import io.devground.product.product.domain.vo.DomainErrorCode;
+import io.devground.product.product.domain.vo.ProductDomainErrorCode;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -76,11 +76,11 @@ public class CategoryEntity extends BaseEntity {
 		int calculatedDepth = depth != null ? depth : 1;
 
 		if (calculatedDepth > MAX_DEPTH) {
-			DomainErrorCode.CANNOT_EXCEED_MAX_DEPTH.throwException();
+			ProductDomainErrorCode.CANNOT_EXCEED_MAX_DEPTH.throwException();
 		}
 
 		if (parent != null && parent.getDepth() + 1 != calculatedDepth) {
-			DomainErrorCode.MISMATCH_ON_DEPTH.throwException();
+			ProductDomainErrorCode.MISMATCH_ON_DEPTH.throwException();
 		}
 	}
 

@@ -7,17 +7,18 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import io.devground.core.model.vo.ErrorCode;
-import io.devground.product.product.domain.vo.request.CartProductsDto;
-import io.devground.product.product.domain.vo.request.RegistProductDto;
-import io.devground.product.product.domain.vo.request.UpdateProductSoldDto;
+import io.devground.product.common.util.PageUtils;
 import io.devground.product.product.application.port.out.persistence.ProductPersistencePort;
 import io.devground.product.product.domain.model.Product;
 import io.devground.product.product.domain.model.ProductSale;
-import io.devground.product.product.domain.vo.DomainErrorCode;
+import io.devground.product.product.domain.vo.ProductDomainErrorCode;
 import io.devground.product.product.domain.vo.ProductSpec;
 import io.devground.product.product.domain.vo.ProductStatus;
 import io.devground.product.product.domain.vo.pagination.PageDto;
 import io.devground.product.product.domain.vo.pagination.PageQuery;
+import io.devground.product.product.domain.vo.request.CartProductsDto;
+import io.devground.product.product.domain.vo.request.RegistProductDto;
+import io.devground.product.product.domain.vo.request.UpdateProductSoldDto;
 import io.devground.product.product.domain.vo.response.CartProductsResponse;
 import io.devground.product.product.domain.vo.response.GetAllProductsResponse;
 import io.devground.product.product.infrastructure.mapper.PageMapper;
@@ -25,7 +26,6 @@ import io.devground.product.product.infrastructure.mapper.ProductMapper;
 import io.devground.product.product.infrastructure.model.persistence.CategoryEntity;
 import io.devground.product.product.infrastructure.model.persistence.ProductEntity;
 import io.devground.product.product.infrastructure.model.persistence.ProductSaleEntity;
-import io.devground.product.product.infrastructure.util.PageUtils;
 import lombok.RequiredArgsConstructor;
 
 @Repository
@@ -61,7 +61,7 @@ public class ProductPersistenceAdapter implements ProductPersistencePort {
 	public Product save(String sellerCode, RegistProductDto request) {
 
 		CategoryEntity categoryEntity = categoryRepository.findById(request.categoryId())
-			.orElseThrow(DomainErrorCode.CATEGORY_NOT_FOUND::throwException);
+			.orElseThrow(ProductDomainErrorCode.CATEGORY_NOT_FOUND::throwException);
 
 		ProductEntity productEntity = ProductEntity.builder()
 			.category(categoryEntity)
@@ -153,7 +153,7 @@ public class ProductPersistenceAdapter implements ProductPersistencePort {
 
 	private ProductEntity getProduct(String code) {
 		return productRepository.findByCode(code)
-			.orElseThrow(DomainErrorCode.PRODUCT_NOT_FOUND::throwException);
+			.orElseThrow(ProductDomainErrorCode.PRODUCT_NOT_FOUND::throwException);
 	}
 
 	private List<ProductEntity> getProducts(List<String> productCodes) {

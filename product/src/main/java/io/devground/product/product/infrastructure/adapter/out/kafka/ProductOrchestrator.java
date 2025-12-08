@@ -17,7 +17,7 @@ import io.devground.core.model.exception.ServiceException;
 import io.devground.core.model.vo.ErrorCode;
 import io.devground.product.product.application.port.out.ImageClientPort;
 import io.devground.product.product.application.port.out.ProductOrchestrationPort;
-import io.devground.product.product.domain.exception.DomainException;
+import io.devground.product.product.domain.exception.ProductDomainException;
 import io.devground.product.product.infrastructure.saga.entity.Saga;
 import io.devground.product.product.infrastructure.saga.service.SagaService;
 import io.devground.product.product.infrastructure.saga.vo.SagaStep;
@@ -76,7 +76,7 @@ public class ProductOrchestrator implements ProductOrchestrationPort {
 			);
 
 			log.info("이미지 등록 이벤트 발행 완료");
-		} catch (DomainException | ServiceException e) {
+		} catch (ProductDomainException | ServiceException e) {
 			MDC.put("errorMsg", e.getMessage());
 			log.error("이미지 등록 이벤트 발행 실패");
 
@@ -117,7 +117,7 @@ public class ProductOrchestrator implements ProductOrchestrationPort {
 			}
 
 			return updatedPresignedUrls;
-		} catch (DomainException | ServiceException e) {
+		} catch (ProductDomainException | ServiceException e) {
 			MDC.put("errorMsg", e.getMessage());
 			log.error("상품 이미지 수정 실패");
 
@@ -168,7 +168,7 @@ public class ProductOrchestrator implements ProductOrchestrationPort {
 			);
 
 			log.info("이미지 삭제 이벤트 발행 완료");
-		} catch (DomainException | ServiceException e) {
+		} catch (ProductDomainException | ServiceException e) {
 			MDC.put("errorMsg", e.getMessage());
 			log.error("이미지 삭제 이벤트 발행 실패");
 
@@ -241,7 +241,7 @@ public class ProductOrchestrator implements ProductOrchestrationPort {
 					sagaService.updateToFail(sagaId, "미지원 이벤트 실패: " + event.eventType());
 				}
 			}
-		} catch (DomainException | ServiceException e) {
+		} catch (ProductDomainException | ServiceException e) {
 			MDC.put("errorMsg", e.getMessage());
 			log.error("이미지 최종 실패 처리 실패/수동 보상 필요");
 

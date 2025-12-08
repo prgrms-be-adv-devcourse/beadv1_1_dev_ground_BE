@@ -3,7 +3,7 @@ package io.devground.product.product.infrastructure.model.persistence;
 import java.time.LocalDateTime;
 
 import io.devground.core.model.entity.BaseEntity;
-import io.devground.product.product.domain.vo.DomainErrorCode;
+import io.devground.product.product.domain.vo.ProductDomainErrorCode;
 import io.devground.product.product.domain.vo.ProductStatus;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -70,7 +70,7 @@ public class ProductSaleEntity extends BaseEntity {
 
 	public void updateProductStatus(ProductStatus productStatus) {
 		if (isSold()) {
-			DomainErrorCode.ONLY_ON_SALE_PRODUCT_CHANGEABLE.throwException();
+			ProductDomainErrorCode.ONLY_ON_SALE_PRODUCT_CHANGEABLE.throwException();
 		}
 
 		this.productStatus = productStatus;
@@ -82,7 +82,7 @@ public class ProductSaleEntity extends BaseEntity {
 
 	public void changePrice(Long price) {
 		if (isSold()) {
-			DomainErrorCode.SOLD_PRODUCT_CANNOT_UPDATE.throwException();
+			ProductDomainErrorCode.SOLD_PRODUCT_CANNOT_UPDATE.throwException();
 		}
 
 		this.price = price;

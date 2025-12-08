@@ -8,11 +8,11 @@ public record ProductSpec(
 
 	public ProductSpec {
 		if (title == null || title.isBlank()) {
-			DomainErrorCode.TITLE_MUST_BE_INPUT.throwException();
+			ProductDomainErrorCode.TITLE_MUST_BE_INPUT.throwException();
 		}
 
 		if (description == null || description.isBlank()) {
-			DomainErrorCode.DESCRIPTION_MUST_BE_INPUT.throwException();
+			ProductDomainErrorCode.DESCRIPTION_MUST_BE_INPUT.throwException();
 		}
 	}
 }

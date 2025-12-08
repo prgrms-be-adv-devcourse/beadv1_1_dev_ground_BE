@@ -8,11 +8,11 @@ public record ProductSaleSpec(
 
 	public ProductSaleSpec {
 		if (price == null) {
-			DomainErrorCode.PRICE_MUST_BE_INPUT.throwException();
+			ProductDomainErrorCode.PRICE_MUST_BE_INPUT.throwException();
 		}
 
 		if (price <= 0) {
-			DomainErrorCode.PRICE_MUST_BE_POSITIVE.throwException();
+			ProductDomainErrorCode.PRICE_MUST_BE_POSITIVE.throwException();
 		}
 	}
 }
