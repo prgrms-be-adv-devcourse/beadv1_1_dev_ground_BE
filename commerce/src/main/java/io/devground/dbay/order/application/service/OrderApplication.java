@@ -167,6 +167,7 @@ public class OrderApplication implements OrderUseCase {
     }
 
     @Override
+    @Transactional
     public void confirmOrder(UserCode userCode, OrderCode orderCode) {
         if (userCode == null) {
             throw ServiceError.USER_NOT_FOUNT.throwServiceException();
@@ -200,6 +201,24 @@ public class OrderApplication implements OrderUseCase {
         order.cancel();
 
         orderPersistencePort.cancel(orderCode);
+    }
+
+    @Override
+    @Transactional
+    public void paidOrder(UserCode userCode, OrderCode orderCode) {
+        if (userCode == null) {
+            throw ServiceError.USER_NOT_FOUNT.throwServiceException();
+        }
+
+        if (orderCode == null) {
+            throw ServiceError.ORDER_NOT_FOUND.throwServiceException();
+        }
+
+        Order order = orderPersistencePort.getOrder(orderCode);
+
+        order.paid();
+
+        orderPersistencePort.paid(orderCode);
     }
 
     private UserInfo getUserInfoOrThrow(UserCode userCode) {
