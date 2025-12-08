@@ -17,7 +17,7 @@ import io.devground.product.product.infrastructure.model.web.request.DeleteImage
 import io.devground.product.product.infrastructure.model.web.request.ImageUpdatePlan;
 import io.devground.product.product.infrastructure.model.web.request.ImageUploadPlan;
 
-@FeignClient(name = "image", url = "localhost:8080", path = "/api/images")
+@FeignClient(name = "image", url = "localhost:8086", path = "/api/images")
 public interface ImageClient {
 
 	@GetMapping("/{referenceCode}")
