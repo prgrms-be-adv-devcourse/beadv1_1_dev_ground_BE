@@ -58,19 +58,19 @@ services:
     volumes:
       - product-mysql-data:/var/lib/mysql
 
-  image_mysql:
-    image: mysql:8.0
-    container_name: image_mysql
-    restart: always
-    environment:
-      SPRING_PROFILES_ACTIVE: stage
-      MYSQL_ROOT_PASSWORD: root1234
-      MYSQL_DATABASE: image_db
-      TZ: Asia/Seoul
-    ports:
-      - "3306:3306"
-    volumes:
-      - ./image-mysql-data:/var/lib/mysql
+#  image_mysql:
+#    image: mysql:8.0
+#    container_name: image_mysql
+#    restart: always
+#    environment:
+#      SPRING_PROFILES_ACTIVE: stage
+#      MYSQL_ROOT_PASSWORD: root1234
+#      MYSQL_DATABASE: image_db
+#      TZ: Asia/Seoul
+#    ports:
+#      - "3306:3306"
+#    volumes:
+#      - ./image-mysql-data:/var/lib/mysql
 
   mariadb:
     image: mariadb:11.3
