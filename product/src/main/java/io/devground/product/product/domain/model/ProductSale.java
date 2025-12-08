@@ -3,7 +3,7 @@ package io.devground.product.product.domain.model;
 import java.time.LocalDateTime;
 
 import io.devground.core.util.CodeUtil;
-import io.devground.product.product.domain.vo.DomainErrorCode;
+import io.devground.product.product.domain.vo.ProductDomainErrorCode;
 import io.devground.product.product.domain.vo.ProductSaleSpec;
 
 public class ProductSale {
@@ -53,11 +53,11 @@ public class ProductSale {
 
 	private void validate(String sellerCode, String productCode) {
 		if (sellerCode == null || sellerCode.isBlank()) {
-			DomainErrorCode.SELLER_CODE_MUST_BE_INPUT.throwException();
+			ProductDomainErrorCode.SELLER_CODE_MUST_BE_INPUT.throwException();
 		}
 
 		if (productCode == null || productCode.isBlank()) {
-			DomainErrorCode.PRODUCT_CODE_MUST_BE_INPUT.throwException();
+			ProductDomainErrorCode.PRODUCT_CODE_MUST_BE_INPUT.throwException();
 		}
 	}
 

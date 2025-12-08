@@ -1,7 +1,7 @@
 package io.devground.product.product.infrastructure.model.persistence;
 
 import io.devground.core.model.entity.BaseEntity;
-import io.devground.product.product.domain.vo.DomainErrorCode;
+import io.devground.product.product.domain.vo.ProductDomainErrorCode;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -77,7 +77,7 @@ public class ProductEntity extends BaseEntity {
 
 	private void validateCategory(CategoryEntity category) {
 		if (category != null && !category.isLeaf()) {
-			DomainErrorCode.PRODUCT_MUST_WITH_LEAF_CATEGORY.throwException();
+			ProductDomainErrorCode.PRODUCT_MUST_WITH_LEAF_CATEGORY.throwException();
 		}
 	}
 }

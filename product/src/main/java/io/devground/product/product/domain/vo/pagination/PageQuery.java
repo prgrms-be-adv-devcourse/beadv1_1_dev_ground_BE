@@ -1,6 +1,6 @@
 package io.devground.product.product.domain.vo.pagination;
 
-import io.devground.product.product.domain.vo.DomainErrorCode;
+import io.devground.product.product.domain.vo.ProductDomainErrorCode;
 
 public record PageQuery(
 	int page,
@@ -9,11 +9,11 @@ public record PageQuery(
 ) {
 	public PageQuery(int page, int size, SortSpec sort) {
 		if (page <= 0) {
-			DomainErrorCode.PAGE_MUST_BE_POSITIVE.throwException();
+			ProductDomainErrorCode.PAGE_MUST_BE_POSITIVE.throwException();
 		}
 
 		if (size <= 0) {
-			DomainErrorCode.PAGE_SIZE_MUST_BE_POSITIVE.throwException();
+			ProductDomainErrorCode.PAGE_SIZE_MUST_BE_POSITIVE.throwException();
 		}
 
 		this.page = page - 1;
