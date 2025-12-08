@@ -257,7 +257,7 @@
     <!-- ES JSON 로그 (Stage 전용) - LogStash에서 사용 -->
     <springProfile name="stage">
         <appender name="ES_INDEX_JSON_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-            <file>${ES_JSON_LOG_FILE}.json</file>
+            <file>${ES_INDEX_JSON_LOG_FILE}.json</file>
             <encoder class="net.logstash.logback.encoder.LogstashEncoder">
                 <customFields>{"application":"product", "service":"elasticsearch-index", "environment":"stage"}</customFields>
                 <includeMdcKeyName>productCode</includeMdcKeyName>
