@@ -137,13 +137,13 @@ public class PaymentServiceImpl implements PaymentService {
 
 		// 결제 성공시 예치금 충전 처리
 		//카프카 전송
-		ChargeDeposit command = new ChargeDeposit(
-			userCode,
-			amount,
-			DepositHistoryType.CHARGE_TOSS
-		);
+		// ChargeDeposit command = new ChargeDeposit(
+		// 	userCode,
+		// 	amount,
+		// 	DepositHistoryType.CHARGE_TOSS
+		// );
 
-		kafkaTemplate.send(depositsCommandTopic, command);
+		// kafkaTemplate.send(depositsCommandTopic, command);
 
 		// 결제 내역 저장
 		Payment payment = Payment.builder()
