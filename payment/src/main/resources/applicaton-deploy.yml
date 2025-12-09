@@ -20,6 +20,6 @@ eureka:
   instance:
     prefer-ip-address: true
     ip-address: dbay
-    non-secure-port: 8080
+    non-secure-port: 8085
     metadata-map:
-      port: 8080
+      port: 8085
