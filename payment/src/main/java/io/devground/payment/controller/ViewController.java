@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import io.devground.core.util.CodeUtil;
 import lombok.RequiredArgsConstructor;
 
 @Controller
@@ -23,7 +24,7 @@ public class ViewController {
 		Model model
 	) {
 		//ChargePaymentRequest description = new ChargePaymentRequest(userCode, 10000L);
-		String orderCode = UUID.randomUUID().toString();
+		String orderCode = CodeUtil.generateUUID();
 		model.addAttribute("userCode", userCode);
 		model.addAttribute("orderCode", orderCode);
 		model.addAttribute("amount", 10000L);
