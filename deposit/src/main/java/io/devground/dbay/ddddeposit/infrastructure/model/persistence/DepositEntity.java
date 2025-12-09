@@ -27,7 +27,7 @@ public class DepositEntity extends BaseEntity {
 
 	public static DepositEntity of(String code, String userCode) {
 		DepositEntity depositEntity = new DepositEntity();
-		depositEntity.code = code;
+		depositEntity.register(code);
 		depositEntity.userCode = userCode;
 		depositEntity.balance = 0L;
 
