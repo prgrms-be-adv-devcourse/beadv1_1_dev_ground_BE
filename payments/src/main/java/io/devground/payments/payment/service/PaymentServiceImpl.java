@@ -53,13 +53,13 @@ public class PaymentServiceImpl implements PaymentService {
 	@Value("${deposits.command.topic.name}")
 	private String depositsCommandTopic;
 
-	@Value("${custom.payments.toss.secretKey}")
+	@Value("${custom.toss.secretKey}")
 	private String tossPaySecretKey;
 
 	@Value("${payments.event.topic.purchase}")
 	private String paymentPurchaseEventTopic;
 
-	@Value("${custom.payments.toss.confirm-url}")
+	@Value("${custom.toss.confirm-url}")
 	private String tossPayConfirmUrl;
 
 	@Override
