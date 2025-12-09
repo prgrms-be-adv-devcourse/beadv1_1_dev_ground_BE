@@ -6,9 +6,9 @@ import io.devground.dbay.order.application.port.out.product.OrderProductPort;
 import io.devground.dbay.order.application.port.out.user.OrderUserPort;
 import io.devground.dbay.order.application.vo.ProductInfoSnapShot;
 import io.devground.dbay.order.application.vo.ProductSnapShot;
+import io.devground.dbay.order.domain.vo.Progress;
 import io.devground.dbay.order.application.vo.UserInfo;
 import io.devground.dbay.order.domain.model.Order;
-import io.devground.dbay.order.domain.model.OrderItem;
 import io.devground.dbay.order.domain.port.in.OrderUseCase;
 import io.devground.dbay.order.domain.vo.*;
 import io.devground.dbay.order.domain.vo.pagination.PageDto;
@@ -16,7 +16,9 @@ import io.devground.dbay.order.domain.vo.pagination.PageQuery;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -219,6 +221,60 @@ public class OrderApplication implements OrderUseCase {
         order.paid();
 
         orderPersistencePort.paid(orderCode);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public PageDto<UnsettledOrderItemResponse> getUnsettledOrderItems(PageQuery pageQuery) {
+        if (pageQuery.page() < 0) {
+            throw ServiceError.PAGE_MUST_BE_POSITIVE.throwServiceException();
+        }
+
+        if (pageQuery.size() < 0) {
+            throw ServiceError.PAGE_SIZE_MUST_BE_POSITIVE.throwServiceException();
+        }
+
+        LocalDate today = LocalDate.now().minusDays(1);
+        LocalDate twoWeeksAgo = LocalDate.now().minusWeeks(2);
+
+        LocalDateTime start = twoWeeksAgo.atStartOfDay();
+        LocalDateTime end = today.atTime(LocalTime.MAX);
+
+        return orderPersistencePort.getUnsettledOrderItems(pageQuery, start, end);
+    }
+
+    @Override
+    @Transactional
+    public Progress autoUpdateOrderStatus() {
+        LocalDateTime now = LocalDateTime.now();
+
+        LocalDateTime oneDayAgo = now.minusDays(1);
+        LocalDateTime threeDaysAgo = now.minusDays(3);
+
+        List<Long> toDelivery = orderPersistencePort.getPaidOrders(oneDayAgo);
+
+        long paidOrder = toDelivery.size();
+        long progress1 = 0;
+
+        if (!toDelivery.isEmpty()) {
+            progress1 = orderPersistencePort.changeStatusPaidToDelivery(toDelivery);
+        }
+
+        List<Long> toDelivered = orderPersistencePort.getDeliveryOrders(threeDaysAgo);
+
+        long deliveryOrder = toDelivered.size();
+        long progress2 = 0;
+
+        if (!toDelivered.isEmpty()) {
+            progress2 = orderPersistencePort.changeStatusDeliveryToDelivered(toDelivered);
+        }
+
+        return new Progress(
+                paidOrder,
+                progress1,
+                deliveryOrder,
+                progress2
+        )
     }
 
     private UserInfo getUserInfoOrThrow(UserCode userCode) {

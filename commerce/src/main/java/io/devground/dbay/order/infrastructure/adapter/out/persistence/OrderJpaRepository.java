@@ -1,5 +1,6 @@
 package io.devground.dbay.order.infrastructure.adapter.out.persistence;
 
+import io.devground.dbay.order.domain.vo.UnsettledOrderItemResponse;
 import io.devground.dbay.order.infrastructure.model.persistence.OrderEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -69,4 +70,36 @@ public interface OrderJpaRepository extends JpaRepository<OrderEntity, Long> {
         WHERE o.code = :orderCode
         """)
     void paidByCode(String orderCode);
+
+    @Query("""
+        SELECT o.id
+        FROM OrderEntity o
+        WHERE o.orderStatus = io.devground.dbay.order.domain.vo.OrderStatus.PAID
+        AND o.updatedAt <= :oneDayAgo
+        """)
+    List<Long> findOrdersToPaid(LocalDateTime oneDayAgo);
+
+    @Modifying
+    @Query("""
+        UPDATE OrderEntity o
+        SET o.orderStatus = io.devground.dbay.order.domain.vo.OrderStatus.START_DELIVERY
+        WHERE o.id IN :ids
+        """)
+    int changePaidToDelivery(List<Long> ids);
+
+    @Query("""
+        SELECT o.id
+        FROM OrderEntity o
+        WHERE o.orderStatus = io.devground.dbay.order.domain.vo.OrderStatus.START_DELIVERY
+        AND o.updatedAt <= :threeDaysAgo
+        """)
+    List<Long> findOrdersToDelivered(LocalDateTime threeDaysAgo);
+
+    @Modifying
+    @Query("""
+        UPDATE OrderEntity o
+        SET o.orderStatus = io.devground.dbay.order.domain.vo.OrderStatus.DELIVERED
+        WHERE o.id IN :ids
+        """)
+    int changeDeliveryToDelivered(List<Long> ids);
 }

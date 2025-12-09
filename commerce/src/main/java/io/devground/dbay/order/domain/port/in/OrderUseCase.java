@@ -14,4 +14,6 @@ public interface OrderUseCase {
     void confirmOrder(UserCode userCode, OrderCode orderCode);
     void cancelOrder(UserCode userCode, OrderCode orderCode);
     void paidOrder(UserCode userCode, OrderCode orderCode);
+    PageDto<UnsettledOrderItemResponse> getUnsettledOrderItems(PageQuery pageQuery);
+    Progress autoUpdateOrderStatus();
 }
