@@ -1,5 +1,0 @@
-rootProject.name = 'payment'
-
-include(':core')
-project(':core').projectDir = file('../core')
-
