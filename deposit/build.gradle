@@ -48,6 +48,7 @@ dependencies {
     implementation 'org.postgresql:postgresql'
 
     annotationProcessor 'org.projectlombok:lombok'
+    testRuntimeOnly 'com.h2database:h2'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.boot:spring-boot-testcontainers'
 //    testImplementation 'org.springframework.batch:spring-batch-test'
@@ -55,6 +56,8 @@ dependencies {
     testImplementation 'org.testcontainers:junit-jupiter'
     testImplementation 'org.testcontainers:kafka'
     testImplementation 'org.testcontainers:postgresql'
+    testImplementation 'org.springframework.cloud:spring-cloud-starter-contract-stub-runner'
+
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
     implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.6.0'
 }
