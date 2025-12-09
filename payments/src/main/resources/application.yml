@@ -57,7 +57,7 @@ eureka:
   instance:
     prefer-ip-address: true
     ip-address: settlement
-    non-secure-port: 8086
+    non-secure-port: 8085
     metadata-map:
       port: 8086
 
@@ -77,9 +77,9 @@ custom:
     settlement:
       rate: 0.95
 
-    toss:
-      secretKey: ${TOSS_TEST_SECRET_KEY}
-      confirm-url: "https://api.tosspayments.com/v1/payments/confirm"
+  toss:
+    secretKey: ${TOSS_TEST_SECRET_KEY}
+    confirm-url: "https://api.tosspayments.com/v1/payments/confirm"
 
 payments:
   event:
