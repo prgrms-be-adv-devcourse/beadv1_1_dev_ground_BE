@@ -189,6 +189,49 @@ public class OrderPersistenceAdapter implements OrderPersistencePort {
         orderJpaRepository.paidByCode(orderCode.value());
     }
 
+    @Override
+    public PageDto<UnsettledOrderItemResponse> getUnsettledOrderItems(PageQuery pageQuery, LocalDateTime start, LocalDateTime end) {
+        Pageable pageable = PageMapper.toPageable(pageQuery);
+
+        Page<UnsettledOrderItemResponse> unsettledOrderPage = orderItemJpaRepository.findOrderItemsDelivered(start, end, pageable);
+
+        return new PageDto<>(
+                unsettledOrderPage.getNumber(),
+                unsettledOrderPage.getSize(),
+                unsettledOrderPage.getTotalPages(),
+                unsettledOrderPage.getTotalElements(),
+                unsettledOrderPage.getContent()
+        );
+    }
+
+    @Override
+    public List<Long> getPaidOrders(LocalDateTime oneDayAgo) {
+        return orderJpaRepository.findOrdersToPaid(oneDayAgo);
+    }
+
+    @Override
+    public int changeStatusPaidToDelivery(List<Long> ids) {
+        if (ids == null || ids.stream().anyMatch(Objects::isNull)) {
+            throw ErrorCode.ORDER_NOT_FOUND.throwServiceException();
+        }
+
+        return orderJpaRepository.changePaidToDelivery(ids);
+    }
+
+    @Override
+    public List<Long> getDeliveryOrders(LocalDateTime threeDaysAgo) {
+        return orderJpaRepository.findOrdersToDelivered(threeDaysAgo);
+    }
+
+    @Override
+    public int changeStatusDeliveryToDelivered(List<Long> ids) {
+        if (ids == null || ids.stream().anyMatch(Objects::isNull)) {
+            throw ErrorCode.ORDER_NOT_FOUND.throwServiceException();
+        }
+
+        return orderJpaRepository.changeDeliveryToDelivered(ids);
+    }
+
     private PageDto<OrderDescription> orderListByRole(UserCode userCode, RoleType roleType, PageQuery pageQuery) {
         Pageable pageable = PageMapper.toPageable(pageQuery);
 

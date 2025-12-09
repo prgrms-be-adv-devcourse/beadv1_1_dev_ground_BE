@@ -108,4 +108,18 @@ public class OrderApiController {
                 "구매 확정 완료"
         );
     }
+
+    @GetMapping("/unsettled-items")
+    @Operation(summary = "정산 위한 주문 정보 조회", description = "주문 완료된 주문들에 대해 정산처리하기 위함")
+    public BaseResponse<PageDto<UnsettledOrderItemResponse>> getUnsettledOrderItems(
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "1000") int size
+    ) {
+        PageQuery pageQuery = new PageQuery(page, size, new SortSpec("id", SortSpec.Direction.ASC));
+        return BaseResponse.success(
+                200,
+                orderApplication.getUnsettledOrderItems(pageQuery),
+                "정산 처리를 위한 주문 정보 조회 완료"
+        );
+    }
 }

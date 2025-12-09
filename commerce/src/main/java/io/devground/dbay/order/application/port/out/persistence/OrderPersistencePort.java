@@ -21,4 +21,9 @@ public interface OrderPersistencePort {
     void cancel(OrderCode orderCode);
     void confirm(OrderCode orderCode);
     void paid(OrderCode orderCode);
+    PageDto<UnsettledOrderItemResponse> getUnsettledOrderItems(PageQuery pageQuery, LocalDateTime start, LocalDateTime end);
+    List<Long> getPaidOrders(LocalDateTime oneDayAgo);
+    int changeStatusPaidToDelivery(List<Long> ids);
+    List<Long> getDeliveryOrders(LocalDateTime threeDaysAgo);
+    int changeStatusDeliveryToDelivered(List<Long> ids);
 }
