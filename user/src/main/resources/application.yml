@@ -36,6 +36,7 @@ spring:
         format_sql: true
 
   application:
+
     name: user-service
 
   kafka:

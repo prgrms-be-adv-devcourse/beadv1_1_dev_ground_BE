@@ -9,7 +9,6 @@ import io.devground.core.event.image.ImageProcessedEvent;
 import io.devground.core.event.product.ProductImagesDeleteEvent;
 import io.devground.core.event.product.ProductImagesPushEvent;
 import io.devground.core.event.vo.EventType;
-import io.devground.dbay.domain.image.entity.Image;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
