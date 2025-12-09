@@ -28,6 +28,9 @@ public class User extends BaseEntity {
 	private Long id;
 
 	@Column(nullable = false)
+	private String code;
+
+	@Column(nullable = false)
 	private String name;
 
 	@Setter
@@ -69,9 +72,10 @@ public class User extends BaseEntity {
 	private String username;
 
 	@Builder
-	public User(String name, String password, Long oauthId, String email, String nickname, String address, String addressDetail,
+	public User(String name, String code, String password, Long oauthId, String email, String nickname, String address, String addressDetail,
 				String phone, RoleType role, String profileImage) {
 		this.name = name;
+		this.code = code;
 		this.password = password;
 		this.oauthId = oauthId;
 		this.email = email;

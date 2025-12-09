@@ -8,10 +8,11 @@ import io.devground.user.model.dto.request.UserRequest;
 import io.devground.user.model.entity.User;
 
 public class UserMapper {
-	public static User toEntity(UserRequest userRequest, BCryptPasswordEncoder bCryptPasswordEncoder) {
+	public static User toEntity(UserRequest userRequest, BCryptPasswordEncoder bCryptPasswordEncoder, String userCode) {
 		return User.builder()
 			.email(userRequest.email())
 			.name(userRequest.name())
+			.code(userCode)
 			.password(bCryptPasswordEncoder.encode(userRequest.password()))
 			.nickname(userRequest.nickname())
 			.phone(userRequest.phone())
