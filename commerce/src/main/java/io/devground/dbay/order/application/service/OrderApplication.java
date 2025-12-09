@@ -1,6 +1,7 @@
 package io.devground.dbay.order.application.service;
 
 import io.devground.dbay.order.application.exception.ServiceError;
+import io.devground.dbay.order.application.port.out.event.OrderPublishEventPort;
 import io.devground.dbay.order.application.port.out.persistence.OrderPersistencePort;
 import io.devground.dbay.order.application.port.out.product.OrderProductPort;
 import io.devground.dbay.order.application.port.out.user.OrderUserPort;
@@ -28,11 +29,17 @@ public class OrderApplication implements OrderUseCase {
     private final OrderUserPort orderUserPort;
     private final OrderProductPort orderProductPort;
     private final OrderPersistencePort orderPersistencePort;
+    private final OrderPublishEventPort orderPublishEventPort;
 
-    public OrderApplication(OrderUserPort orderUserPort, OrderProductPort orderProductPort, OrderPersistencePort orderPersistencePort) {
+    public OrderApplication(OrderUserPort orderUserPort,
+        OrderProductPort orderProductPort,
+        OrderPersistencePort orderPersistencePort,
+        OrderPublishEventPort orderPublishEventPort
+    ) {
         this.orderUserPort = orderUserPort;
         this.orderProductPort = orderProductPort;
         this.orderPersistencePort = orderPersistencePort;
+        this.orderPublishEventPort = orderPublishEventPort;
     }
 
     @Override
@@ -67,6 +74,13 @@ public class OrderApplication implements OrderUseCase {
 
         // 3. 주문 생성
         orderPersistencePort.createSingleOrder(userInfo, order, orderProduct);
+
+        orderPublishEventPort.publishEvent(
+                order.getOrderCode(),
+                order.getUserCode(),
+                orderProduct.productPrice(),
+                List.of(productCode.value())
+        );
     }
 
     @Override
@@ -100,7 +114,18 @@ public class OrderApplication implements OrderUseCase {
 
         Order order = Order.createSelected(userCode, orderProducts);
 
+        long totalAmount = orderProducts.stream().mapToLong(OrderProduct::productPrice).sum();
+        List<String> productCodeLists = orderProducts.stream().map(OrderProduct::productCode)
+                        .toList();
+
         orderPersistencePort.createSelectedOrder(userInfo, order, orderProducts);
+
+        orderPublishEventPort.publishEvent(
+                order.getOrderCode(),
+                order.getUserCode(),
+                totalAmount,
+                productCodeLists
+        );
     }
 
     @Override
@@ -274,7 +299,7 @@ public class OrderApplication implements OrderUseCase {
                 progress1,
                 deliveryOrder,
                 progress2
-        )
+        );
     }
 
     private UserInfo getUserInfoOrThrow(UserCode userCode) {
