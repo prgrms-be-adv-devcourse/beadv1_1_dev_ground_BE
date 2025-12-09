@@ -24,6 +24,8 @@ import io.devground.core.model.vo.DeleteStatus;
 import io.devground.user.model.dto.request.EmailCertificationRequest;
 import io.devground.user.model.dto.request.ModifyUserInfoRequest;
 import io.devground.user.model.dto.request.UserRequest;
+import io.devground.user.model.dto.response.ModifyUserInfoResponse;
+import io.devground.user.model.dto.response.UserResponse;
 import io.devground.user.model.entity.User;
 import io.devground.user.repository.UserRepository;
 
@@ -154,7 +156,7 @@ public class UserServiceTest {
 				when(userRepository.findByCodeAndDeleteStatus(userCode, DeleteStatus.N))
 					.thenReturn(Optional.of(user));
 
-				io.devground.user.model.dto.response.UserResponse result = userService.getByLoginUserCode(userCode);
+				UserResponse result = userService.getByLoginUserCode(userCode);
 
 				assertAll(
 					() -> assertEquals("tester", result.name()),
@@ -208,7 +210,7 @@ public class UserServiceTest {
 				when(userRepository.findByCode(userCode))
 					.thenReturn(Optional.of(user));
 
-				io.devground.user.model.dto.response.ModifyUserInfoResponse result = userService.modifyUserInfo(userCode, request);
+				ModifyUserInfoResponse result = userService.modifyUserInfo(userCode, request);
 
 				assertEquals("nickname", result.nickname());
 				assertEquals("010-0000-0000", result.phone());
@@ -224,7 +226,7 @@ public class UserServiceTest {
 				when(userRepository.findByCode(userCode))
 					.thenReturn(Optional.of(user));
 
-				io.devground.user.model.dto.response.ModifyUserInfoResponse result = userService.modifyUserInfo(userCode, request);
+				ModifyUserInfoResponse result = userService.modifyUserInfo(userCode, request);
 
 				assertEquals("nickname", result.nickname());
 				assertNull(result.phone());
@@ -251,7 +253,7 @@ public class UserServiceTest {
 				when(userRepository.findByCode(userCode))
 					.thenReturn(Optional.of(user));
 
-				io.devground.user.model.dto.response.ModifyUserInfoResponse result = userService.modifyUserInfo(userCode, request);
+				ModifyUserInfoResponse result = userService.modifyUserInfo(userCode, request);
 
 				assertEquals("010-1111-2222", result.phone());
 				assertNull(result.nickname());
