@@ -5,9 +5,11 @@ import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import feign.FeignException;
 import io.devground.core.model.exception.ServiceException;
 import io.devground.core.model.vo.ErrorCode;
 import io.devground.core.model.web.BaseResponse;
@@ -44,6 +46,18 @@ public class GlobalExceptionHandler {
 		return BaseResponse.fail(status, errorCode.getMessage());
 	}
 
+	@ExceptionHandler(io.devground.dbay.ddddeposit.application.exception.ServiceException.class)
+	public BaseResponse<String> handleDddDepositServiceException(
+		io.devground.dbay.ddddeposit.application.exception.ServiceException ex) {
+
+		io.devground.dbay.ddddeposit.application.exception.vo.ServiceErrorCode errorCode = ex.getErrorCode();
+		int status = errorCode.getHttpStatus();
+
+		response.setStatus(status);
+
+		return BaseResponse.fail(status, errorCode.getMessage());
+	}
+
 	@ExceptionHandler(MethodArgumentNotValidException.class)
 	public BaseResponse<String> handleValidationException(MethodArgumentNotValidException ex) {
 
@@ -62,6 +76,26 @@ public class GlobalExceptionHandler {
 		response.setStatus(status);
 
 		return BaseResponse.fail(status, errorMessages.toString());
+	}
+
+	@ExceptionHandler(ServletRequestBindingException.class)
+	public BaseResponse<String> handleServletRequestBindingException(ServletRequestBindingException ex) {
+
+		int status = HttpStatus.FORBIDDEN.value();
+
+		response.setStatus(status);
+
+		return BaseResponse.fail(status, "필수 헤더가 누락되었습니다: " + ex.getMessage());
+	}
+
+	@ExceptionHandler(FeignException.class)
+	public BaseResponse<String> handleFeignException(FeignException ex) {
+
+		int status = ex.status();
+
+		response.setStatus(status);
+
+		return BaseResponse.fail(status, "외부 API 호출 실패: " + ex.getMessage());
 	}
 
 	@ExceptionHandler(Exception.class)

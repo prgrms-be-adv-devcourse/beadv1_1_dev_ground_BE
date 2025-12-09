@@ -1,7 +1,9 @@
 package io.devground.dbay.ddddeposit.application.exception;
 
 import io.devground.dbay.ddddeposit.application.exception.vo.ServiceErrorCode;
+import lombok.Getter;
 
+@Getter
 public class ServiceException extends RuntimeException {
 	private final ServiceErrorCode errorCode;
 
