@@ -55,13 +55,9 @@ public class ProductEsAdapter implements ProductPrepareSearchPort {
 		} catch (ProductDomainException | ServiceException e) {
 			MDC.put("errorMsg", e.getMessage());
 			log.error("Product 인덱싱 실패");
-
-			throw e;
 		} catch (Exception e) {
 			MDC.put("errorMsg", e.getMessage());
 			log.error("Product 인덱싱 실패 - ExStack: ", e);
-
-			throw e;
 		} finally {
 			MDC.clear();
 		}
