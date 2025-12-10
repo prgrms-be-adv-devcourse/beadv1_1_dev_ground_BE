@@ -33,9 +33,16 @@ spring:
                 - Header=Referer, .*/dbay/swagger-ui/.*
 
             - id: admin
-              uri: lb://DBAY
+              uri: lb://PRODUCT
               predicates:
                 - Path=/api/admin/**
+              filters:
+                - AdminFilter
+
+            - id: product
+              uri: lb://PRODUCT
+              predicates:
+                - Path=/api/products/**
               filters:
                 - CustomAuthFilter
 

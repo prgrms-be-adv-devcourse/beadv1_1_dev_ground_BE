@@ -57,9 +57,16 @@ spring:
                 - Header=Referer, .*/dbay/swagger-ui/.*
 
             - id: admin
-              uri: lb://DBAY
+              uri: lb://PRODUCT
               predicates:
                 - Path=/api/admin/**
+              filters:
+                - LoginEssentialFilter
+
+            - id: product
+              uri: lb://PRODUCT
+              predicates:
+                - Path=/api/products/**
               filters:
                 - CustomAuthFilter
 
@@ -84,12 +91,12 @@ spring:
               filters:
                 - CustomAuthFilter
 
-            - id: products
-              uri: lb://DBAY
-              predicates:
-                - Path=/api/products/**
-              filters:
-                - CustomAuthFilter
+#            - id: products
+#              uri: lb://DBAY
+#              predicates:
+#                - Path=/api/products/**
+#              filters:
+#                - CustomAuthFilter
 
             - id: categories
               uri: lb://DBAY
