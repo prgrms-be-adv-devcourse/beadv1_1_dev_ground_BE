@@ -5,9 +5,6 @@ spring:
   application:
     name: payments
 
-  profiles:
-    active: test
-
   jpa:
     hibernate:
       ddl-auto: update
@@ -26,9 +23,6 @@ spring:
   batch:
     jdbc:
       initialize-schema: never
-
-  config:
-    import: optional:classpath:env.properties
 
   kafka:
     bootstrap-servers: localhost:9092
@@ -56,43 +50,13 @@ eureka:
     register-with-eureka: true
     fetch-registry: true
     service-url:
-      defaultZone: http://eureka:8761/eureka/
+      defaultZone: http://localhost:8761/eureka/
   instance:
     prefer-ip-address: true
-    ip-address: settlement
+    ip-address: payments
     non-secure-port: 8085
     metadata-map:
       port: 8085
-
-custom:
-  kafka:
-    config:
-      topic-partitions: 1
-      topic-replications: 1
-
-    batch:
-      chunk:
-        size: 100
-      skip:
-        limit: 10
-      retry:
-        limit: 3
-    settlement:
-      rate: 0.95
-
-  toss:
-    secretKey: ${TOSS_TEST_SECRET_KEY}
-    confirm-url: "https://api.tosspayments.com/v1/payments/confirm"
-
-payments:
-  event:
-    topic:
-      purchase: payments-purchase-events
-      name: payments-events
-  command:
-    topic:
-      purchase: payments-purchase-commands
-      name: payments-commands
 
 deposits:
   event:
@@ -106,10 +70,26 @@ deposits:
       purchase: deposits-purchase-commands
       name: deposits-commands
 
-settlements:
+payments:
   event:
     topic:
-      name: settlements-events
+      purchase: payments-purchase-events
+      name: payments-events
+  command:
+    topic:
+      purchase: payments-purchase-commands
+      name: payments-commands
+
+
+springdoc:
+  api-docs:
+    enabled: true
+    path: /v3/api-docs
+  swagger-ui:
+    enabled: true
+    path: /swagger-ui.html
+    url: /v3/api-docs
+    config-url: /v3/api-docs/swagger-config
 
 logging:
   level:
@@ -118,13 +98,8 @@ logging:
     org.hibernate.orm.jdbc.extract: INFO
     org.springframework.batch: INFO
 
-external:
-  openfeign-url: http://localhost:8080
-
-springdoc:
-  api-docs:
-    enabled: true
-  swagger-ui:
-    enabled: true
-    config-url: /dbay/v3/api-docs/swagger-config
-    url: /dbay/v3/api-docs
+custom:
+  kafka:
+    config:
+      topic-partitions: 1
+      topic-replications: 1
