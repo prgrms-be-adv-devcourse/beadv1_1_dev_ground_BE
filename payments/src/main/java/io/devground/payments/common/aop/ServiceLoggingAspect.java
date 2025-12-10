@@ -1,11 +1,11 @@
-package io.devground.dbay.common.aop;
+package io.devground.payments.common.aop;
 
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.springframework.stereotype.Component;
 
-import io.devground.dbay.common.util.LogUtil;
+import io.devground.payments.common.util.LogUtil;
 import lombok.RequiredArgsConstructor;
 
 @Aspect

@@ -1,4 +1,4 @@
-package io.devground.dbay.common.kafka;
+package io.devground.payments.common.kafka;
 
 import org.apache.kafka.common.TopicPartition;
 import org.springframework.beans.factory.annotation.Value;

@@ -1,4 +1,4 @@
-package io.devground.dbay.common.kafka;
+package io.devground.payments.common.kafka;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

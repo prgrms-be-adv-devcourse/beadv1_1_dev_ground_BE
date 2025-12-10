@@ -1,4 +1,4 @@
-package io.devground.dbay.common.exceptionhandler;
+package io.devground.payments.common.exceptionhandler;
 
 import java.util.List;
 
@@ -13,8 +13,9 @@ import feign.FeignException;
 import io.devground.core.model.exception.ServiceException;
 import io.devground.core.model.vo.ErrorCode;
 import io.devground.core.model.web.BaseResponse;
-import io.devground.dbay.ddddeposit.domain.exception.DomainException;
-import io.devground.dbay.ddddeposit.domain.exception.vo.DomainErrorCode;
+import io.devground.payments.deposit.application.exception.vo.ServiceErrorCode;
+import io.devground.payments.deposit.domain.exception.DomainException;
+import io.devground.payments.deposit.domain.exception.vo.DomainErrorCode;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 
@@ -46,11 +47,10 @@ public class GlobalExceptionHandler {
 		return BaseResponse.fail(status, errorCode.getMessage());
 	}
 
-	@ExceptionHandler(io.devground.dbay.ddddeposit.application.exception.ServiceException.class)
+	@ExceptionHandler(io.devground.payments.deposit.application.exception.ServiceException.class)
 	public BaseResponse<String> handleDddDepositServiceException(
-		io.devground.dbay.ddddeposit.application.exception.ServiceException ex) {
-
-		io.devground.dbay.ddddeposit.application.exception.vo.ServiceErrorCode errorCode = ex.getErrorCode();
+		io.devground.payments.deposit.application.exception.ServiceException ex) {
+		ServiceErrorCode errorCode = ex.getErrorCode();
 		int status = errorCode.getHttpStatus();
 
 		response.setStatus(status);

@@ -1,4 +1,4 @@
-package io.devground.dbay.common.saga.vo;
+package io.devground.payments.common.saga.vo;
 
 import lombok.Getter;
 

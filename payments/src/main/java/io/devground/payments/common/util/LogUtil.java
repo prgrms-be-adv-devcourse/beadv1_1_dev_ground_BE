@@ -1,4 +1,4 @@
-package io.devground.dbay.common.util;
+package io.devground.payments.common.util;
 
 import org.aspectj.lang.JoinPoint;
 import org.springframework.http.HttpStatus;
@@ -62,8 +62,6 @@ public class LogUtil {
 			}
 		}
 
-		log.error("ERROR = [{}.{}], status: [{}], message: [{}]",
-			className, methodName, status, msg
-		);
+		log.error("ERROR = [{}.{}], status: [{}], message: [{}]", className, methodName, status, msg);
 	}
 }

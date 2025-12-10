@@ -1,11 +1,11 @@
-package io.devground.dbay.common.saga.entity;
+package io.devground.payments.common.saga.entity;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-import io.devground.dbay.common.saga.vo.SagaStatus;
-import io.devground.dbay.common.saga.vo.SagaStep;
-import io.devground.dbay.common.saga.vo.SagaType;
+import io.devground.payments.common.saga.vo.SagaStatus;
+import io.devground.payments.common.saga.vo.SagaStep;
+import io.devground.payments.common.saga.vo.SagaType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;

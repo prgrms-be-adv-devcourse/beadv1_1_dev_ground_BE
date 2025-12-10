@@ -1,4 +1,4 @@
-package io.devground.dbay.common.saga.repository;
+package io.devground.payments.common.saga.repository;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -8,10 +8,10 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import io.devground.dbay.common.saga.entity.Saga;
-import io.devground.dbay.common.saga.vo.SagaStatus;
-import io.devground.dbay.common.saga.vo.SagaStep;
-import io.devground.dbay.common.saga.vo.SagaType;
+import io.devground.payments.common.saga.entity.Saga;
+import io.devground.payments.common.saga.vo.SagaStatus;
+import io.devground.payments.common.saga.vo.SagaStep;
+import io.devground.payments.common.saga.vo.SagaType;
 
 public interface SagaRepository extends JpaRepository<Saga, Long> {
 
