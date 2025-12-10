@@ -10,7 +10,6 @@ spring:
       ddl-auto: create-drop
     properties:
       hibernate:
-        dialect: org.hibernate.dialect.H2Dialect
         default_batch_fetch_size: 500
         format_sql: true
 
@@ -19,5 +18,20 @@ spring:
 
   elasticsearch:
     uris: http://localhost:9200
-    connection-timeout: 10s
-    socket-timeout: 60s
+
+  docker:
+    compose:
+      skip:
+        in-tests: false
+      enabled: true
+      file: docker/docker-compose-test.yml
+      profiles:
+        active: product
+      readiness:
+        timeout: 2m
+      lifecycle-management: start-and-stop
+      start:
+        command: up
+      stop:
+        command: down
+        timeout: 1m
