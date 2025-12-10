@@ -381,6 +381,8 @@ class ProductApplicationServiceTest {
 			CartProductsResponse cpResponse = responses.get(i);
 
 			assertEquals(p.getTitle(), cpResponse.title());
+			assertEquals(p.getDescription(), cpResponse.description());
+			assertEquals(p.getCategory().getName(), cpResponse.categoryName());
 			assertEquals(p.getProductSale().getPrice(), cpResponse.price());
 			assertEquals(p.getProductSale().getSellerCode(), cpResponse.sellerCode());
 		}
