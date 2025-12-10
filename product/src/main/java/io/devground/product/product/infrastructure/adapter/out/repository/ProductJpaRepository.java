@@ -24,10 +24,13 @@ public interface ProductJpaRepository extends JpaRepository<ProductEntity, Long>
 			ps.code,
 			ps.sellerCode,
 			p.title,
+			p.description,
+			c.name,
 			ps.price
 		)
 		FROM ProductEntity p
 		JOIN p.productSale ps
+		JOIN p.category c
 		WHERE p.code IN :productCodes
 		AND ps.productStatus = :status
 		"""

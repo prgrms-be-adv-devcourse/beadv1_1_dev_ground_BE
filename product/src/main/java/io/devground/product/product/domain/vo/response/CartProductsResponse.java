@@ -6,6 +6,8 @@ public record CartProductsResponse(
 	String productSaleCode,
 	String sellerCode,
 	String title,
+	String description,
+	String categoryName,
 	long price
 ) {
 }
