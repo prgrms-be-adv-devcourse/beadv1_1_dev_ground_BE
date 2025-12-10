@@ -61,7 +61,7 @@ spring:
               predicates:
                 - Path=/api/admin/**
               filters:
-                - LoginEssentialFilter
+                - AdminFilter
 
             - id: product
               uri: lb://PRODUCT
@@ -90,13 +90,6 @@ spring:
                 - Path=/api/carts/**
               filters:
                 - CustomAuthFilter
-
-#            - id: products
-#              uri: lb://DBAY
-#              predicates:
-#                - Path=/api/products/**
-#              filters:
-#                - CustomAuthFilter
 
             - id: categories
               uri: lb://DBAY
