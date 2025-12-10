@@ -1,4 +1,4 @@
-package io.devground.dbay.cart;// package io.devground.dbay.domain.cart;
+package io.devground.dbay;// package io.devground.dbay.domain.cart;
 //
 // import static org.assertj.core.api.Assertions.*;
 // import static org.mockito.BDDMockito.*;

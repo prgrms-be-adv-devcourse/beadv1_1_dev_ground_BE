@@ -3,7 +3,6 @@ package io.devground.dbay.order.domain.model;
 import io.devground.dbay.cart.domain.exception.DomainError;
 import io.devground.dbay.order.domain.vo.OrderCode;
 import io.devground.dbay.order.domain.vo.OrderProduct;
-import io.devground.dbay.order.domain.vo.ProductCode;
 
 public class OrderItem {
 
