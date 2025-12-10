@@ -14,7 +14,6 @@ import io.devground.core.events.user.UserCreatedEvent;
 import io.devground.core.events.user.UserDeletedEvent;
 import io.devground.core.model.vo.DeleteStatus;
 import io.devground.core.model.vo.ErrorCode;
-import io.devground.core.util.CodeUtil;
 import io.devground.user.mapper.UserMapper;
 import io.devground.user.model.dto.request.ChangePasswordRequest;
 import io.devground.user.model.dto.request.EmailCertificationRequest;
@@ -87,11 +86,11 @@ public class UserServiceImpl implements UserService {
 		}
 
 		//사용자 정보 저장
-		String userCode = CodeUtil.generateUUID();
-		User user = UserMapper.toEntity(userRequest, bCryptPasswordEncoder, userCode);
-		userRepository.save(user);
+		User user = UserMapper.toEntity(userRequest, bCryptPasswordEncoder);
+		User savedUser = userRepository.save(user);
 
 		//유저 생성 이벤트 발행
+		String userCode = savedUser.getCode();
 		UserCreatedEvent event = new UserCreatedEvent(userCode);
 		log.info("Sending event: {}", event);
 		kafkaTemplate.send(userJoinEventsTopicName, event.userCode(), event);

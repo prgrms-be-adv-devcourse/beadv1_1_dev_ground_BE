@@ -7,6 +7,7 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import io.devground.core.model.vo.DeleteStatus;
+import io.devground.core.util.CodeUtil;
 import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.EnumType;
@@ -37,6 +38,10 @@ public abstract class BaseEntity {
 
 	@PrePersist
 	protected void onCreate() {
+		if (this.code == null) {
+			this.code = CodeUtil.generateUUID();
+		}
+
 		if (this.createdAt == null)
 			this.createdAt = LocalDateTime.now();
 
