@@ -63,21 +63,5 @@ public class PaymentKafkaConfig {
 			.replicas(topic_replications)
 			.build();
 	}
-
-	@Bean
-	public NewTopic createDepositCommandTopic() {
-		return TopicBuilder.name(depositCommandTopicName)
-			.partitions(topic_partitions)
-			.replicas(topic_replications)
-			.build();
-	}
-
-	@Bean
-	public NewTopic createDepositEventTopic() {
-		return TopicBuilder.name(depositEventTopicName)
-			.partitions(topic_partitions)
-			.replicas(topic_replications)
-			.build();
-	}
 }
 
