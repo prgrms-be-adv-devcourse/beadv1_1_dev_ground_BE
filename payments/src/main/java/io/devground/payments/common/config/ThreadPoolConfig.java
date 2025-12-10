@@ -1,4 +1,4 @@
-package io.devground.dbay.common.config;
+package io.devground.payments.common.config;
 
 import java.util.concurrent.Executor;
 import java.util.concurrent.ThreadPoolExecutor;

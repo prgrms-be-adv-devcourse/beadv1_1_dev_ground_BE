@@ -1,4 +1,4 @@
-package io.devground.dbay.common.config;
+package io.devground.payments.common.config;
 
 import org.springframework.core.MethodParameter;
 import org.springframework.stereotype.Component;
@@ -10,8 +10,8 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 
 import io.devground.core.model.exception.ServiceException;
 import io.devground.core.model.vo.ErrorCode;
-import io.devground.dbay.ddddeposit.domain.pagination.PageQuery;
-import io.devground.dbay.ddddeposit.domain.pagination.SortSpec;
+import io.devground.payments.deposit.domain.pagination.PageQuery;
+import io.devground.payments.deposit.domain.pagination.SortSpec;
 
 @Component
 public class PageQueryArgumentResolver implements HandlerMethodArgumentResolver {
