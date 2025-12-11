@@ -2,6 +2,7 @@ package io.devground.payments.deposit.infrastructure.adapter.in.messaging;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.annotation.KafkaHandler;
+import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Component;
@@ -32,6 +33,13 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Component
+@KafkaListener(
+	topics = {
+		"${deposits.command.topic.name}",
+		"${deposits.command.topic.join}",
+		"${deposits.command.topic.purchase}"
+	}
+)
 public class DepositKafkaConsumer {
 
 	private final DepositEventApplication depositEventApplication;
@@ -56,6 +64,7 @@ public class DepositKafkaConsumer {
 	public void handleCreateCommand(@Payload CreateDeposit command) {
 
 		try {
+			log.info("CreateDeposit userCode: {}", command.userCode());
 			Deposit deposit = depositEventApplication.createDeposit(command.userCode());
 
 			DepositCreatedSuccess depositCreatedEvent = new DepositCreatedSuccess(

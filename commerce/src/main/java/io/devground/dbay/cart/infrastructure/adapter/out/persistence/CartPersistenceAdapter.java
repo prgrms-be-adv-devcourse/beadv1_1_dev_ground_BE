@@ -31,7 +31,7 @@ public class CartPersistenceAdapter implements CartPersistencePort {
                 .orElseGet(() -> cartJpaRepository.save(
                         CartEntity.builder()
                                 .cartCode(cart.getCartCode().value())
-                                .userCode(cart.getUserCode().toString())
+                                .userCode(cart.getUserCode().value())
                                 .build()
                 ));
 

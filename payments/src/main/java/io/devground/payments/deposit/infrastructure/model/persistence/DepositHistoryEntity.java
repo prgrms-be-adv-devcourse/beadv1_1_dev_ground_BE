@@ -5,6 +5,7 @@ import io.devground.core.model.entity.BaseEntity;
 import io.devground.payments.deposit.domain.depositHistory.DepositHistory;
 import io.devground.payments.deposit.domain.depositHistory.DepositHistoryType;
 import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
@@ -17,6 +18,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+@Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class DepositHistoryEntity extends BaseEntity {

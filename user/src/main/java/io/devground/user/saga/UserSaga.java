@@ -57,7 +57,7 @@ public class UserSaga {
 	@KafkaHandler
 	public void handleEvent(@Payload UserCreatedEvent event) {
 		//예치금 생성
-		log.info("user가 생성되어 예치금이 생성됩니다.");
+		log.info("user가 생성되어 예치금이 생성됩니다. userCode: {}", event.userCode());
 		CreateDeposit createDepositCommand = new CreateDeposit(event.userCode());
 
 		kafkaTemplate.send(depositsJoinUserCommandTopicName, event.userCode(), createDepositCommand);

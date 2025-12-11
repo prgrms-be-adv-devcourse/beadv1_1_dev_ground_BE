@@ -102,6 +102,7 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public User getByUserCode(String userCode) {
+		log.info("userCode: {}", userCode);
 		return userRepository.findByCode(userCode)
 			.orElseThrow(() -> new IllegalArgumentException("해당 회원은 존재하지 않습니다."));
 	}
@@ -129,9 +130,11 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
+	@Transactional
 	public void deleteByUserCode(String userCode) {
-		User findUser = getByUserCode(userCode);
-		findUser.delete();
+		userRepository.deleteByCode(userCode);
+		// User findUser = getByUserCode(userCode);
+		// findUser.delete();
 	}
 
 	@Override
