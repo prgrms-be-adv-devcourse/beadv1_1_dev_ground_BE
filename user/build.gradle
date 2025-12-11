@@ -79,7 +79,7 @@ dependencies {
 
     implementation 'org.apache.httpcomponents:httpclient:4.5.13'
 
-    compileOnly 'org.springframework.cloud:spring-cloud-starter-openfeign:4.2.0'
+    implementation 'org.springframework.cloud:spring-cloud-starter-openfeign:4.2.0'
 
 }
 
