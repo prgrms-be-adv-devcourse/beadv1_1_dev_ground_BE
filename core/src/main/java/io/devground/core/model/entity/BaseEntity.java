@@ -25,7 +25,7 @@ import lombok.Getter;
 public abstract class BaseEntity {
 
 	@Column(nullable = false, unique = true)
-	private String code = CodeUtil.generateUUID().toString();
+	private String code;
 
 	@Enumerated(EnumType.STRING)
 	private DeleteStatus deleteStatus = DeleteStatus.N;
@@ -38,11 +38,19 @@ public abstract class BaseEntity {
 
 	@PrePersist
 	protected void onCreate() {
+		if (this.code == null) {
+			this.code = CodeUtil.generateUUID();
+		}
+
 		if (this.createdAt == null)
 			this.createdAt = LocalDateTime.now();
 
 		if (this.updatedAt == null)
 			this.updatedAt = LocalDateTime.now();
+	}
+
+	public void register(String code) {
+		this.code = code;
 	}
 
 	@PreUpdate

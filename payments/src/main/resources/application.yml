@@ -1,0 +1,130 @@
+server:
+  port: 8085
+
+spring:
+  application:
+    name: payments
+
+  profiles:
+    active: test
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+    properties:
+      hibernate:
+        default_batch_fetch_size: 500
+        format_sql: true
+
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+
+  batch:
+    jdbc:
+      initialize-schema: never
+
+  config:
+    import: optional:classpath:env.properties
+
+  kafka:
+    bootstrap-servers: localhost:9092
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      acks: all
+      properties:
+        delivery.timeout.ms: 120000
+        linger.ms: 0
+        request.timeout.ms: 30000
+        enable.idempotence: true
+        allow.auto.create.topics: false
+
+    consumer:
+      group-id: dbay-consumer-group
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: io.devground.dbay.*, io.devground.core.*
+        allow.auto.create.topics: false
+
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://eureka:8761/eureka/
+  instance:
+    prefer-ip-address: true
+    ip-address: settlement
+    non-secure-port: 8085
+    metadata-map:
+      port: 8085
+
+custom:
+  kafka:
+    config:
+      topic-partitions: 1
+      topic-replications: 1
+
+    batch:
+      chunk:
+        size: 100
+      skip:
+        limit: 10
+      retry:
+        limit: 3
+    settlement:
+      rate: 0.95
+
+  toss:
+    secretKey: ${TOSS_TEST_SECRET_KEY}
+    confirm-url: "https://api.tosspayments.com/v1/payments/confirm"
+
+payments:
+  event:
+    topic:
+      purchase: payments-purchase-events
+      name: payments-events
+  command:
+    topic:
+      purchase: payments-purchase-commands
+      name: payments-commands
+
+deposits:
+  event:
+    topic:
+      join: deposits-join-events
+      purchase: deposits-purchase-events
+      name: deposits-events
+  command:
+    topic:
+      join: deposits-join-commands
+      purchase: deposits-purchase-commands
+      name: deposits-commands
+
+settlements:
+  event:
+    topic:
+      name: settlements-events
+
+logging:
+  level:
+    org.hibernate.SQL: INFO
+    org.hibernate.orm.jdbc.bind: INFO
+    org.hibernate.orm.jdbc.extract: INFO
+    org.springframework.batch: INFO
+
+external:
+  openfeign-url: http://localhost:8080
+
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    enabled: true
+    config-url: /dbay/v3/api-docs/swagger-config
+    url: /dbay/v3/api-docs

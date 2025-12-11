@@ -53,3 +53,5 @@ spy.log
 *secret.yml
 
 .gradle-cache/
+
+.DS_Store

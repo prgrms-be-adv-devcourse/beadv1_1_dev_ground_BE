@@ -7,7 +7,7 @@ import lombok.experimental.UtilityClass;
 @UtilityClass
 public class CodeUtil {
 
-	public UUID generateUUID() {
-		return UUID.randomUUID();
+	public String generateUUID() {
+		return UUID.randomUUID().toString();
 	}
 }

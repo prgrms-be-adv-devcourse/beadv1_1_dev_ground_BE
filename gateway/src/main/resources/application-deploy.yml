@@ -76,81 +76,10 @@
 #          filters:
 #            - StripPrefix=1
 #
-#        - id: user-service
-#          uri: lb://USER-SERVICE
-#          predicates:
-#            - Path=/api/users/**
-##          filters:
-##            - StripPrefix=1
-#
-#        #        - id: deposits
-#        #          uri: lb://DBAY
-#        #          predicates:
-#        #            - Path=/api/deposits/**
-#        #          filters:
-#        #            - CustomAuthFilter
-#
-#        - id: deposits
-#          uri: lb://DBAY
-#          predicates:
-#            - Path=/dbay/api/deposits/**
-#          filters:
-#            - StripPrefix=1
-#            - CustomAuthFilter
-#
-#
-#        - id: carts
-#          uri: lb://DBAY
-#          predicates:
-#            - Path=/dbay/api/carts/**
-#          filters:
-#            - StripPrefix=1
-#            - CustomAuthFilter
-#
-#        - id: products
-#          uri: lb://DBAY
-#          predicates:
-#            - Path=/dbay/api/products/**
-#          filters:
-#            - StripPrefix=1
-#            - CustomAuthFilter
-#
-#        - id: categories
-#          uri: lb://DBAY
-#          predicates:
-#            - Path=/dbay/api/categories/**
-#          filters:
-#            - StripPrefix=1
-#            - CustomAuthFilter
-#
 #        - id: adminCategories
 #          uri: lb://DBAY
 #          predicates:
 #            - Path=/dbay/api/admin/categories/**
-#          filters:
-#            - StripPrefix=1
-#            - CustomAuthFilter
-#
-#        - id: orders
-#          uri: lb://DBAY
-#          predicates:
-#            - Path=/dbay/api/orders/**
-#          filters:
-#            - StripPrefix=1
-#            - CustomAuthFilter
-#
-#        - id: payments
-#          uri: lb://DBAY
-#          predicates:
-#            - Path=/dbay/api/payments/**
-#          filters:
-#            - StripPrefix=1
-#            - CustomAuthFilter
-#
-#        - id: settlements
-#          uri: lb://DBAY
-#          predicates:
-#            - Path=/dbay/api/settlements/**
 #          filters:
 #            - StripPrefix=1
 #            - CustomAuthFilter

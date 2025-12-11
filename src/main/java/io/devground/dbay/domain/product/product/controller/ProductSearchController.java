@@ -1,5 +1,12 @@
 package io.devground.dbay.domain.product.product.controller;
 
+import static org.springframework.http.HttpStatus.*;
+
+import org.springdoc.core.annotations.ParameterObject;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
 import io.devground.core.model.web.BaseResponse;
 import io.devground.core.model.web.PageDto;
 import io.devground.dbay.domain.product.product.model.dto.ProductSearchRequest;
@@ -8,13 +15,8 @@ import io.devground.dbay.domain.product.product.model.dto.ProductSuggestRequest;
 import io.devground.dbay.domain.product.product.model.dto.ProductSuggestResponse;
 import io.devground.dbay.domain.product.product.service.ProductSearchService;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springdoc.core.annotations.ParameterObject;
-import org.springframework.web.bind.annotation.*;
-
-import static org.springframework.http.HttpStatus.OK;
 
 @RestController
 @RequiredArgsConstructor
