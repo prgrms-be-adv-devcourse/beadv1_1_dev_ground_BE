@@ -12,7 +12,7 @@ import io.devground.core.model.exception.ServiceException;
 import io.devground.product.product.application.port.out.ProductVectorPort;
 import io.devground.product.product.domain.exception.ProductDomainException;
 import io.devground.product.product.domain.model.Product;
-import io.devground.product.product.infrastructure.mapper.ProductMapper;
+import io.devground.product.product.infrastructure.util.ProductVectorUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -63,7 +63,7 @@ public class ProductVectorAdapter implements ProductVectorPort {
 		MDC.put("productCode", productCode);
 
 		try {
-			Document document = ProductMapper.toVectorDocument(product);
+			Document document = ProductVectorUtil.toVectorDocument(product);
 
 			vectorStore.add(List.of(document));
 		} catch (ProductDomainException | ServiceException e) {
