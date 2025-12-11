@@ -23,6 +23,9 @@
     <property name="ES_SEARCH_ERROR_LOG_FILE" value="${ELASTICSEARCH_LOG_DIR}/search/error/error"/>
     <property name="ES_SEARCH_JSON_LOG_FILE" value="${ELASTICSEARCH_LOG_DIR}/search/search"/>
 
+    <property name="ES_VECTOR_INDEX_INFO_LOG_FILE" value="${ELASTICSEARCH_LOG_DIR}/index/vector/info/info"/>
+    <property name="ES_VECTOR_INDEX_ERROR_LOG_FILE" value="${ELASTICSEARCH_LOG_DIR}/index/vector/error/error"/>
+
     <!-- Saga 패턴 -->
     <property name="SAGA_INFO_PATTERN"
               value="%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} [SagaId=%X{sagaId:-N/A}] [ProductCode=%X{productCode:-N/A}] %msg%n"/>
@@ -252,6 +255,42 @@
                 <pattern>${ES_SEARCH_ERROR_PATTERN}</pattern>
             </encoder>
         </appender>
+
+        <!-- ES 벡터 인덱싱 INFO 로그 -->
+        <appender name="ES_VECTOR_INDEX_INFO_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+            <file>${ES_VECTOR_INDEX_INFO_LOG_FILE}.log</file>
+            <filter class="ch.qos.logback.classic.filter.LevelFilter">
+                <level>ERROR</level>
+                <onMatch>DENY</onMatch>
+                <onMismatch>ACCEPT</onMismatch>
+            </filter>
+            <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+                <fileNamePattern>${ES_VECTOR_INDEX_INFO_LOG_FILE}-%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
+                <maxFileSize>10MB</maxFileSize>
+                <maxHistory>30</maxHistory>
+            </rollingPolicy>
+            <encoder>
+                <pattern>${ES_INDEX_INFO_PATTERN}</pattern>
+            </encoder>
+        </appender>
+
+        <!-- ES 벡터 인덱싱 ERROR 로그 -->
+        <appender name="ES_VECTOR_INDEX_ERROR_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+            <file>${ES_VECTOR_INDEX_ERROR_LOG_FILE}.log</file>
+            <filter class="ch.qos.logback.classic.filter.LevelFilter">
+                <level>ERROR</level>
+                <onMatch>ACCEPT</onMatch>
+                <onMismatch>DENY</onMismatch>
+            </filter>
+            <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+                <fileNamePattern>${ES_VECTOR_INDEX_ERROR_LOG_FILE}-%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
+                <maxFileSize>10MB</maxFileSize>
+                <maxHistory>30</maxHistory>
+            </rollingPolicy>
+            <encoder>
+                <pattern>${ES_INDEX_ERROR_PATTERN}</pattern>
+            </encoder>
+        </appender>
     </springProfile>
 
     <!-- ES JSON 로그 (Stage 전용) - LogStash에서 사용 -->
@@ -355,6 +394,12 @@
             <appender-ref ref="ES_SEARCH_INFO_FILE"/>
             <appender-ref ref="ES_SEARCH_ERROR_FILE"/>
             <appender-ref ref="ES_SEARCH_JSON_FILE"/>
+            <appender-ref ref="CONSOLE"/>
+        </logger>
+
+        <logger name="vectorIndex" level="INFO" additivity="false">
+            <appender-ref ref="ES_VECTOR_INDEX_INFO_FILE"/>
+            <appender-ref ref="ES_VECTOR_INDEX_ERROR_FILE"/>
             <appender-ref ref="CONSOLE"/>
         </logger>
     </springProfile>

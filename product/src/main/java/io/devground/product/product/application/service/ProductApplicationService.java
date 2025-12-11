@@ -61,7 +61,7 @@ public class ProductApplicationService implements ProductUseCase {
 
 		String productCode = product.getCode();
 
-		// 2. ES 인덱싱
+		// 2. ES, Vector 인덱싱
 		productEventPort.publishCreated(product);
 
 		// 3. PresignedUrl 발급
@@ -112,7 +112,7 @@ public class ProductApplicationService implements ProductUseCase {
 		// 1. 상품 수정
 		productPort.updateProduct(sellerCode, product, productSale);
 
-		// 2. ES 인덱싱
+		// 2. ES, Vector 인덱싱
 		productEventPort.publishUpdated(product);
 
 		// 3. 이미지 수정 및 필요 시 PresignedUrl 발급
@@ -132,7 +132,7 @@ public class ProductApplicationService implements ProductUseCase {
 		product.updateDeleteStatus(DeleteStatus.Y);
 		productPort.deleteProduct(sellerCode, product);
 
-		// 2. ES 인덱싱
+		// 2. ES, Vector 인덱싱
 		productEventPort.publishDeleted(product);
 
 		// 3. 이미지 삭제
@@ -169,7 +169,7 @@ public class ProductApplicationService implements ProductUseCase {
 			// 1. 상품 판매 완료 처리
 			productPort.updateToSold(updatedProductSoldDto);
 
-			// 2. ES 인덱싱
+			// 2. ES, Vector 인덱싱
 			productEventPort.publishUpdated(product);
 		}
 
@@ -184,7 +184,7 @@ public class ProductApplicationService implements ProductUseCase {
 
 		Product product = productPort.getProductByCode(productCode);
 
-		// 2. ES 인덱싱
+		// 2. ES, Vector 인덱싱
 		productEventPort.publishUpdated(product);
 	}
 }
