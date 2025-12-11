@@ -19,7 +19,7 @@ import io.devground.product.product.infrastructure.adapter.out.repository.Produc
 import io.devground.product.product.infrastructure.mapper.ProductMapper;
 import io.devground.product.product.infrastructure.model.persistence.ProductDocument;
 import io.devground.product.product.infrastructure.model.persistence.ProductEntity;
-import io.devground.product.product.infrastructure.util.ProductESUtil;
+import io.devground.product.product.infrastructure.util.ProductSearchUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Flux;
@@ -142,7 +142,7 @@ public class ProductIndexInit implements ApplicationRunner {
 							Product product = ProductMapper.toProductDomain(productEntity, productEntity.getProductSale());
 
 							try {
-								ProductDocument document = ProductESUtil.toProductDocument(product);
+								ProductDocument document = ProductSearchUtil.toProductDocument(product);
 
 								if (document == null) {
 									totalFailed.incrementAndGet();

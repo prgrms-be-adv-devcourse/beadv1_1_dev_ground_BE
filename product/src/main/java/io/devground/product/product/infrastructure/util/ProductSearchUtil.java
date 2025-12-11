@@ -20,7 +20,7 @@ import io.devground.product.product.infrastructure.model.persistence.ProductDocu
 import lombok.experimental.UtilityClass;
 
 @UtilityClass
-public class ProductESUtil {
+public class ProductSearchUtil {
 
 	public ProductDocument toProductDocument(Product product) {
 
