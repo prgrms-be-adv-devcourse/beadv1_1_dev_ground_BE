@@ -12,7 +12,7 @@ import lombok.RequiredArgsConstructor;
 
 @Component
 @RequiredArgsConstructor
-public class ProductEventListener {
+public class ProductSearchIndexEventListener {
 
 	private final ProductPrepareSearchPort searchPort;
 
