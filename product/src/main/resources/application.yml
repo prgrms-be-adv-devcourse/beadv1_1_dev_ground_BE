@@ -74,6 +74,11 @@ spring:
         options:
           model: text-embedding-ada-002
 
+  data:
+    redis:
+      host: redis
+      port: 6379
+
 eureka:
   client:
     register-with-eureka: true

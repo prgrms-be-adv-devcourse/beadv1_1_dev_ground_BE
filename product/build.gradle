@@ -48,6 +48,9 @@ dependencies {
     implementation 'org.springframework.ai:spring-ai-starter-vector-store-elasticsearch'
     implementation 'org.springframework.ai:spring-ai-starter-model-openai'
 
+    // Redis
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+
     // MySQL
     runtimeOnly 'com.mysql:mysql-connector-j'
 
