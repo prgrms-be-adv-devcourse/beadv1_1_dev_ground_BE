@@ -71,6 +71,11 @@ services:
       SPRING_JPA_HIBERNATE_DDL_AUTO: update
       SPRING_DATA_REDIS_HOST: redis
       SPRING_DATA_REDIS_PORT: 6379
+      S3_BUCKET_NAME: ${S3_BUCKET_NAME}
+      S3_ACCESS_KEY: ${S3_ACCESS_KEY}
+      S3_SECRET_KEY: ${S3_SECRET_KEY}
+      S3_REGION: ${S3_REGION}
+      TOSS_TEST_SECRET_KEY: ${TOSS_TEST_SECRET_KEY}
       SPRING_ELASTICSEARCH_URIS: http://elasticsearch:9200
     command: [ "java", "-jar", "app.jar" ]
     ports:
@@ -95,6 +100,8 @@ services:
       SPRING_DATASOURCE_PASSWORD: root1234
       SPRING_DATA_REDIS_HOST: redis
       SPRING_DATA_REDIS_PORT: 6379
+      MAIL_EMAIL: ${MAIL_EMAIL}
+      MAIL_PASSWORD: ${MAIL_PASSWORD}
       SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
     command: [ "java", "-jar", "app.jar" ]
     ports:
@@ -153,3 +160,15 @@ services:
       ELASTICSEARCH_HOSTS: '["http://elasticsearch:9200"]'
     depends_on:
       - elasticsearch
+
+  postgres:
+    image: postgres:16
+    container_name: postgres
+    restart: always
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: root1234
+      POSTGRES_DB: dbay_postgres
+      TZ: Asia/Seoul
+    ports:
+      - "5432:5432"

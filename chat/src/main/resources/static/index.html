@@ -1,0 +1,556 @@
+<!doctype html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat 모듈 데모</title>
+    <style>
+        :root {
+            --bg: #0b1021;
+            --panel: #10172b;
+            --accent: #5de4c7;
+            --accent-2: #84a0c6;
+            --text: #e6edf3;
+            --muted: #9fb3c8;
+            --error: #ff6b6b;
+        }
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            min-height: 100vh;
+            background: radial-gradient(circle at 20% 20%, rgba(93,228,199,0.12), transparent 30%),
+                        radial-gradient(circle at 80% 30%, rgba(132,160,198,0.12), transparent 28%),
+                        var(--bg);
+            color: var(--text);
+            font-family: 'Inter', 'Pretendard', system-ui, -apple-system, sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 32px;
+        }
+        .app {
+            width: min(1100px, 100%);
+            background: var(--panel);
+            border: 1px solid rgba(255,255,255,0.06);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.35);
+            border-radius: 20px;
+            padding: 28px;
+            display: grid;
+            gap: 20px;
+            grid-template-columns: 1fr 1fr;
+        }
+        header {
+            grid-column: 1 / -1;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        h1 {
+            margin: 0;
+            font-size: 22px;
+            letter-spacing: -0.02em;
+        }
+        .pill {
+            padding: 6px 12px;
+            border-radius: 999px;
+            background: rgba(93,228,199,0.12);
+            color: var(--accent);
+            font-weight: 600;
+            font-size: 12px;
+            border: 1px solid rgba(93,228,199,0.35);
+        }
+        .card {
+            background: rgba(255,255,255,0.02);
+            border: 1px solid rgba(255,255,255,0.05);
+            border-radius: 14px;
+            padding: 18px;
+            display: grid;
+            gap: 12px;
+        }
+        .card h2 {
+            margin: 0;
+            font-size: 16px;
+            color: var(--accent);
+        }
+        label {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            font-size: 13px;
+            color: var(--muted);
+        }
+        input, textarea {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 10px;
+            padding: 10px 12px;
+            color: var(--text);
+            font-size: 14px;
+            outline: none;
+        }
+        input:focus, textarea:focus {
+            border-color: rgba(93,228,199,0.4);
+            box-shadow: 0 0 0 3px rgba(93,228,199,0.15);
+        }
+        button {
+            background: linear-gradient(135deg, var(--accent), #45c6a9);
+            border: none;
+            color: #041012;
+            font-weight: 700;
+            padding: 10px 14px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: transform 0.08s ease, box-shadow 0.12s ease;
+        }
+        button.secondary {
+            background: rgba(255,255,255,0.08);
+            color: var(--text);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        button:active { transform: translateY(1px); }
+        .row { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+        .log {
+            background: rgba(0,0,0,0.45);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 12px;
+            padding: 12px;
+            min-height: 260px;
+            max-height: 320px;
+            overflow: auto;
+            font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+            font-size: 13px;
+        }
+        .log div { margin-bottom: 6px; }
+        .log .time { color: var(--accent-2); margin-right: 6px; }
+        .log .error { color: var(--error); }
+        .status {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: var(--muted);
+        }
+        .dot {
+            width: 10px; height: 10px; border-radius: 50%;
+            background: #b9b9b9;
+        }
+        .dot.live { background: var(--accent); box-shadow: 0 0 0 6px rgba(93,228,199,0.2); }
+        .feed {
+            display: grid;
+            gap: 10px;
+            min-height: 120px;
+        }
+        .bubble {
+            padding: 12px;
+            border-radius: 12px;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.06);
+        }
+        .bubble.mine {
+            border-color: rgba(93,228,199,0.35);
+            background: rgba(93,228,199,0.08);
+        }
+        .bubble .meta {
+            display: flex;
+            gap: 8px;
+            font-size: 12px;
+            color: var(--muted);
+            margin-bottom: 6px;
+            align-items: center;
+        }
+        .bubble .sender {
+            color: var(--accent);
+            font-weight: 700;
+        }
+        .bubble .read {
+            font-size: 12px;
+            color: var(--muted);
+        }
+        .bubble .body {
+            font-size: 14px;
+            color: var(--text);
+            line-height: 1.5;
+        }
+        .muted {
+            color: var(--muted);
+            font-size: 13px;
+        }
+        @media (max-width: 900px) { .app { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+<div class="app">
+    <header>
+        <div>
+            <div class="pill">WebSocket / REST Quick Test</div>
+            <h1>Chat 모듈 이벤트 테스트</h1>
+        </div>
+        <div class="status">
+            <span class="dot" id="ws-dot"></span>
+            <span id="ws-status">Disconnected</span>
+        </div>
+    </header>
+
+    <section class="card">
+        <h2>채팅방 생성/조회 (REST)</h2>
+        <div class="row">
+            <label>
+                Product Code
+                <input id="product-code" placeholder="예: P-001">
+            </label>
+            <label>
+                Seller Code
+                <input id="seller-code" placeholder="숫자 코드">
+            </label>
+        </div>
+        <label>
+            Buyer Code
+            <input id="buyer-code" placeholder="숫자 코드">
+        </label>
+        <button id="create-room-btn">방 생성/조회</button>
+        <label>
+            Chat ID (방 응답의 id 사용)
+            <input id="chat-id" placeholder="예: a6a05a9a-dee8-4d06-874e-ce33cebbd7c6">
+        </label>
+        <div class="row">
+            <button id="subscribe-btn">Chat ID로 구독</button>
+            <button id="disconnect-btn" class="secondary">연결 해제</button>
+        </div>
+        <div class="log" id="ws-log"></div>
+        <div class="log" id="room-log"></div>
+    </section>
+
+    <section class="card">
+        <h2>클라이언트 A</h2>
+        <label>
+            X-CODE (헤더)
+            <input id="a-xcode" value="eyJhbGciOiJIUzI1NiJ9.eyJjYXRlZ29yeSI6ImFjY2VzcyIsInVzZXJDb2RlIjoiYjc5MTE2ZGQtMWIxMi00MTE2LTlkYmYtNWNlY2E1NGQ3OTdlIiwicm9sZSI6IlVTRVIiLCJpYXQiOjE3NjUyNDAwMDcsImV4cCI6MTc2NTI0MzYwN30.P0sPd6gCS7ja3fEGnJQPjGEYO7DaD8PVTb1yzfWKS84">
+        </label>
+        <div class="row">
+            <label>
+                Sender Code (A)
+                <input id="a-sender" placeholder="A의 user code">
+            </label>
+            <label>
+                Reader Code (A)
+                <input id="a-reader" placeholder="A의 user code">
+            </label>
+        </div>
+        <label>
+            Message
+            <textarea id="a-message" rows="3" placeholder="A가 보낼 메시지"></textarea>
+        </label>
+        <div class="row">
+            <button id="a-connect">연결</button>
+            <button id="a-disconnect" class="secondary">해제</button>
+        </div>
+        <div class="row">
+            <button id="a-send">전송</button>
+            <button id="a-read" class="secondary">읽음 처리</button>
+        </div>
+        <div class="log" id="a-log"></div>
+        <div class="feed" id="a-feed"></div>
+    </section>
+
+    <section class="card">
+        <h2>클라이언트 B</h2>
+        <label>
+            X-CODE (헤더)
+            <input id="b-xcode" value="eyJhbGciOiJIUzI1NiJ9.eyJjYXRlZ29yeSI6ImFjY2VzcyIsInVzZXJDb2RlIjoiYjc5MTE2ZGQtMWIxMi00MTE2LTlkYmYtNWNlY2E1NGQ3OTdlIiwicm9sZSI6IlVTRVIiLCJpYXQiOjE3NjUyNDAwMDcsImV4cCI6MTc2NTI0MzYwN30.P0sPd6gCS7ja3fEGnJQPjGEYO7DaD8PVTb1yzfWKS84">
+        </label>
+        <div class="row">
+            <label>
+                Sender Code (B)
+                <input id="b-sender" placeholder="B의 user code">
+            </label>
+            <label>
+                Reader Code (B)
+                <input id="b-reader" placeholder="B의 user code">
+            </label>
+        </div>
+        <label>
+            Message
+            <textarea id="b-message" rows="3" placeholder="B가 보낼 메시지"></textarea>
+        </label>
+        <div class="row">
+            <button id="b-connect">연결</button>
+            <button id="b-disconnect" class="secondary">해제</button>
+        </div>
+        <div class="row">
+            <button id="b-send">전송</button>
+            <button id="b-read" class="secondary">읽음 처리</button>
+        </div>
+        <div class="log" id="b-log"></div>
+        <div class="feed" id="b-feed"></div>
+    </section>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
+<script>
+    const wsDot = document.getElementById('ws-dot');
+    const wsStatus = document.getElementById('ws-status');
+    const wsLog = document.getElementById('ws-log');
+    const roomLog = document.getElementById('room-log');
+
+    const chatIdInput = document.getElementById('chat-id');
+    const productInput = document.getElementById('product-code');
+    const sellerInput = document.getElementById('seller-code');
+    const buyerInput = document.getElementById('buyer-code');
+    const defaultXCode = 'eyJhbGciOiJIUzI1NiJ9.eyJjYXRlZ29yeSI6ImFjY2VzcyIsInVzZXJDb2RlIjoiYjc5MTE2ZGQtMWIxMi00MTE2LTlkYmYtNWNlY2E1NGQ3OTdlIiwicm9sZSI6IlVTRVIiLCJpYXQiOjE3NjUyNDAwMDcsImV4cCI6MTc2NTI0MzYwN30.P0sPd6gCS7ja3fEGnJQPjGEYO7DaD8PVTb1yzfWKS84';
+
+    const baseUrl = `${location.protocol}//${location.host}`;
+
+    function log(target, msg, isError = false) {
+        const now = new Date().toLocaleTimeString();
+        const line = document.createElement('div');
+        line.innerHTML = `<span class="time">[${now}]</span><span class="${isError ? 'error' : ''}">${msg}</span>`;
+        target.appendChild(line);
+        target.scrollTop = target.scrollHeight;
+    }
+
+    function setWsState(connected) {
+        wsDot.classList.toggle('live', connected);
+        wsStatus.textContent = connected ? 'Connected' : 'Disconnected';
+    }
+
+    function renderMessages(state, feedEl, senderCodeInput) {
+        if (!state.messages.length) {
+            feedEl.innerHTML = '<div class="muted">메시지가 없습니다.</div>';
+            return;
+        }
+        const mineCode = senderCodeInput.value.trim();
+        feedEl.innerHTML = state.messages.map(msg => {
+            const mine = msg.senderCode === mineCode;
+            const readMark = msg.read ? '읽음' : '안읽음';
+            const time = msg.createdAt ? new Date(msg.createdAt).toLocaleTimeString() : '';
+            return `<div class="bubble ${mine ? 'mine' : ''}">
+                        <div class="meta">
+                            <span class="sender">${msg.senderCode}</span>
+                            <span class="time">${time}</span>
+                            <span class="read">${readMark}</span>
+                        </div>
+                        <div class="body">${msg.message}</div>
+                    </div>`;
+        }).join('');
+    }
+
+    async function postJson(url, payload) {
+        const res = await fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+        if (!res.ok) {
+            const text = await res.text();
+            throw new Error(`${res.status} ${text}`);
+        }
+        return res.json();
+    }
+
+    async function loadMessages(chatId, state, feedEl, senderInput, logFn, xcode) {
+        try {
+            const res = await fetch(`${baseUrl}/api/chat/rooms/${chatId}/messages`, {
+                method: 'GET',
+                headers: { 'X-CODE': xcode || defaultXCode }
+            });
+            if (!res.ok) {
+                const text = await res.text();
+                throw new Error(`${res.status} ${text}`);
+            }
+            const data = await res.json();
+            state.messages = data.map(m => ({
+                senderCode: m.senderCode,
+                message: m.message,
+                createdAt: m.createdAt,
+                read: m.isRead
+            }));
+            renderMessages(state, feedEl, senderInput);
+            logFn(`기존 메시지 로드: ${state.messages.length}개`);
+        } catch (e) {
+            logFn(`메시지 로드 실패: ${e.message}`, true);
+        }
+    }
+
+    function createClient(prefix, label) {
+        const els = {
+            xcode: document.getElementById(`${prefix}-xcode`),
+            sender: document.getElementById(`${prefix}-sender`),
+            reader: document.getElementById(`${prefix}-reader`),
+            message: document.getElementById(`${prefix}-message`),
+            log: document.getElementById(`${prefix}-log`),
+            feed: document.getElementById(`${prefix}-feed`),
+            connect: document.getElementById(`${prefix}-connect`),
+            disconnect: document.getElementById(`${prefix}-disconnect`),
+            send: document.getElementById(`${prefix}-send`),
+            read: document.getElementById(`${prefix}-read`)
+        };
+
+        const state = { stomp: null, messages: [] };
+        const logFn = (msg, isError = false) => log(els.log, `[${label}] ${msg}`, isError);
+
+        const render = () => renderMessages(state, els.feed, els.sender);
+
+        const disconnect = () => {
+            if (state.stomp) {
+                state.stomp.disconnect(() => logFn('연결 해제'));
+                state.stomp = null;
+            }
+        };
+
+        const connect = () => {
+            const chatId = chatIdInput.value.trim();
+            if (!chatId) {
+                logFn('Chat ID를 입력하세요.', true);
+                return;
+            }
+            if (state.stomp) {
+                disconnect();
+            }
+            const xcode = els.xcode.value.trim() || defaultXCode;
+            const wsProtocol = location.protocol === 'https:' ? 'wss' : 'ws';
+            const socket = new WebSocket(`${wsProtocol}://${location.host}/ws-chat`);
+            state.stomp = Stomp.over(socket);
+            state.stomp.debug = () => {};
+
+            state.stomp.connect({}, () => {
+                state.messages = [];
+                render();
+                logFn(`연결 완료. /topic/chat/${chatId} 구독`);
+                state.stomp.subscribe(`/topic/chat/${chatId}`, message => {
+                    try {
+                        const payload = JSON.parse(message.body);
+                        state.messages.push({ ...payload, read: false });
+                        render();
+                        logFn(`메시지 이벤트 수신`);
+                    } catch (e) {
+                        logFn(`메시지 파싱 실패: ${e.message}`, true);
+                    }
+                });
+                state.stomp.subscribe(`/topic/chat/${chatId}/read`, message => {
+                    try {
+                        const payload = JSON.parse(message.body);
+                        state.messages = state.messages.map(m => {
+                            if (m.senderCode !== payload.readerCode) {
+                                return { ...m, read: true };
+                            }
+                            return m;
+                        });
+                        render();
+                        logFn(`읽음 이벤트 수신(reader=${payload.readerCode})`);
+                    } catch (e) {
+                        logFn(`읽음 이벤트 파싱 실패: ${e.message}`, true);
+                    }
+                });
+                loadMessages(chatId, state, els.feed, els.sender, logFn, xcode);
+            }, (error) => {
+                logFn(`연결 실패: ${error}`, true);
+            });
+        };
+
+        const sendMessage = () => {
+            if (!state.stomp) {
+                logFn('먼저 STOMP 연결 후 구독하세요.', true);
+                return;
+            }
+            const chatId = chatIdInput.value.trim();
+            const senderCode = els.sender.value.trim();
+            const messageText = els.message.value.trim();
+            if (!chatId || !senderCode || !messageText) {
+                logFn('chatId, senderCode, message 모두 입력하세요.', true);
+                return;
+            }
+            const xcode = els.xcode.value.trim() || defaultXCode;
+            try {
+                state.stomp.send(
+                    `/app/chat/messages`,
+                    { 'X-CODE': xcode },
+                    JSON.stringify({ chatId, senderCode, message: messageText })
+                );
+                logFn(`메시지 전송 요청: ${messageText}`);
+            } catch (e) {
+                logFn(`전송 실패: ${e.message}`, true);
+            }
+        };
+
+        const markRead = async () => {
+            const chatId = chatIdInput.value.trim();
+            const readerCode = els.reader.value.trim();
+            if (!chatId || !readerCode) {
+                logFn('chatId, readerCode 모두 입력하세요.', true);
+                return;
+            }
+            const xcode = els.xcode.value.trim() || readerCode || defaultXCode;
+            try {
+                const res = await fetch(`${baseUrl}/api/chat/rooms/${chatId}/messages`, {
+                    method: 'GET',
+                    headers: { 'X-CODE': xcode }
+                });
+                if (!res.ok) {
+                    const text = await res.text();
+                    throw new Error(`${res.status} ${text}`);
+                }
+                await res.json(); // 조회 시 컨트롤러에서 markAsRead 수행
+                logFn(`읽음 처리 완료(GET messages)`);
+            } catch (e) {
+                logFn(`읽음 처리 실패: ${e.message}`, true);
+            }
+        };
+
+        els.connect.addEventListener('click', connect);
+        els.disconnect.addEventListener('click', disconnect);
+        els.send.addEventListener('click', sendMessage);
+        els.read.addEventListener('click', markRead);
+
+        return { connect, disconnect, sendMessage, markRead };
+    }
+
+    async function createOrGetRoom() {
+        const productCode = productInput.value.trim();
+        const sellerCode = sellerInput.value.trim();
+        const buyerCode = buyerInput.value.trim();
+
+        if (!productCode || !sellerCode || !buyerCode) {
+            log(roomLog, 'productCode, sellerCode, buyerCode 모두 입력하세요.', true);
+            return;
+        }
+
+        try {
+            const result = await postJson(`${baseUrl}/api/chat/rooms`, {
+                productCode,
+                sellerCode,
+                buyerCode
+            });
+            log(roomLog, `방 생성/조회 성공: ${JSON.stringify(result)}`);
+            if (result.id) {
+                chatIdInput.value = result.id;
+                log(roomLog, `Chat ID 입력란을 room.id(${result.id}) 로 설정했습니다. (chatCode: ${result.chatCode})`);
+            }
+        } catch (e) {
+            log(roomLog, `방 생성/조회 실패: ${e.message}`, true);
+        }
+    }
+
+    const clientA = createClient('a', 'A');
+    const clientB = createClient('b', 'B');
+
+    document.getElementById('subscribe-btn').addEventListener('click', () => {
+        const chatId = chatIdInput.value.trim();
+        if (!chatId) {
+            log(wsLog, 'Chat ID를 입력하세요.', true);
+            return;
+        }
+        clientA.connect();
+        clientB.connect();
+        setWsState(true);
+        log(wsLog, `Chat ID=${chatId} 구독 시작 (A/B)`);
+    });
+    document.getElementById('disconnect-btn').addEventListener('click', () => {
+        clientA.disconnect();
+        clientB.disconnect();
+        setWsState(false);
+        log(wsLog, '구독 해제 (A/B)');
+    });
+    document.getElementById('create-room-btn').addEventListener('click', createOrGetRoom);
+</script>
+</body>
+</html>

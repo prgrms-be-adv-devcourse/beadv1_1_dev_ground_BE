@@ -2,19 +2,14 @@ server:
   port: 8090
 
 spring:
+  config:
+    import: optional:classpath:env.properties
   application:
     name: chat
 
-  jpa:
-    hibernate:
-      ddl-auto: update
-      naming:
-        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
-    properties:
-      hibernate:
-        default_batch_fetch_size: 500
-        format_sql: true
-
+  data:
+    mongodb:
+      uri: ${MONGO_KEY}
 
   kafka:
     bootstrap-servers: kafka:9092
@@ -31,3 +26,9 @@ eureka:
     non-secure-port: 8090
     metadata-map:
       port: 8090
+
+feign:
+  product-service:
+    url: http://product-service:8086
+  user-service:
+    url: http://user-service:18080

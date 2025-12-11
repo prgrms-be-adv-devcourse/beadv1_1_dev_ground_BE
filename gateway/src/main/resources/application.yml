@@ -126,6 +126,13 @@ spring:
               filters:
                 - CustomAuthFilter
 
+            - id: chat
+              uri: lb://CHAT-SERVICE
+              predicates:
+                - Path=/api/chat/**
+              filters:
+                - CustomAuthFilter
+
 management:
   endpoints:
     web:

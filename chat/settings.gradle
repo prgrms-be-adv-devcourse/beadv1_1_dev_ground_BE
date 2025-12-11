@@ -1,12 +1,6 @@
 rootProject.name = 'chat'
-rootProject.name = 'dbay'
 
 include(':core')
-include(':eureka-server')
-include(':gateway')
-include(':user')
 
 project(':core').projectDir = file('../core')
-project(':eureka-server').projectDir = file('../eureka-server')
-project(':gateway').projectDir = file('../gateway')
-project(':user').projectDir = file('../user')
+

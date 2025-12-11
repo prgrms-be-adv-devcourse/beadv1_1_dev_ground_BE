@@ -1,0 +1,11 @@
+POST http://localhost:8080/api/chat/rooms
+Content-Type: application/json
+
+{
+  "productCode": "새콤달콤",
+  "sellerCode": "A",
+  "buyerCode": "B"
+}
+
+###
+

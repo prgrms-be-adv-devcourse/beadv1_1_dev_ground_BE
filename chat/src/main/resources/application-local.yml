@@ -1,34 +1,22 @@
 spring:
+  config:
+    import: optional:classpath:env.properties
   application:
     name: chat
 
-  datasource:
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://mysql:3306/dbay_chat?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
-    username: root
-    password: root1234
-
-  jpa:
-    hibernate:
-      ddl-auto: update
-      naming:
-        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
-    properties:
-      hibernate:
-        default_batch_fetch_size: 500
-        format_sql: true
-
-  h2:
-    console:
-      enabled: false   # H2 비활성화
+  data:
+    mongodb:
+      uri: ${MONGO_KEY}
+      database: chat
 
   kafka:
-    bootstrap-servers: localhost:9090
+    bootstrap-servers: localhost:9092
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
       acks: all
       properties:
+        spring.json.trusted.packages: "io.devground.dbay.*, io.devground.core.*, com.example.chat.*"
         delivery.timeout.ms: 120000
         linger.ms: 0
         request.timeout.ms: 30000
@@ -40,7 +28,7 @@ spring:
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
       properties:
-        spring.json.trusted.packages: io.devground.dbay.*, io.devground.core.*
+        spring.json.trusted.packages: "io.devground.dbay.*, io.devground.core.*, com.example.chat.*"
         allow.auto.create.topics: false
 
 eureka:
@@ -55,7 +43,6 @@ eureka:
     non-secure-port: 8090
     metadata-map:
       port: 8090
-
 
 springdoc:
   api-docs:
@@ -79,3 +66,9 @@ custom:
     config:
       topic-partitions: 1
       topic-replications: 1
+
+feign:
+  product-service:
+    url: http://localhost:8080
+  user-service:
+    url: http://localhost:8080

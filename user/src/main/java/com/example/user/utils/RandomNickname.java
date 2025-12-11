@@ -1,12 +1,11 @@
 package com.example.user.utils;
 
-import java.text.MessageFormat;
-import java.util.Random;
-
-import org.springframework.stereotype.Component;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
+
+import java.text.MessageFormat;
+import java.util.Random;
 
 @Slf4j
 @Component

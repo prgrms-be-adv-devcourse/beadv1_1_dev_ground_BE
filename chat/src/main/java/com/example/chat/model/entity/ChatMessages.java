@@ -1,34 +1,47 @@
 package com.example.chat.model.entity;
 
-import io.devground.core.model.entity.BaseEntity;
-import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+
+import java.time.LocalDateTime;
 
 @Document(collection = "chatMessages")
 @NoArgsConstructor
 @Getter
-public class ChatMessages extends BaseEntity {
+@AllArgsConstructor
+public class ChatMessages {
 
     @Id
-    private Long id;
+    private String id;
 
-    private Long chatId;
+    private String chatId;
 
     private String message;
 
-    private Long senderCode;
+    private String senderCode;
 
     private Boolean isRead;
 
+    private LocalDateTime createdAt;
+
+    private LocalDateTime readAt;
+
     @Builder
-    public ChatMessages(Long chatId, Long senderCode, String message, Boolean isRead) {
+    public ChatMessages(String chatId, String senderCode, String message, Boolean isRead, LocalDateTime createdAt) {
         this.chatId = chatId;
         this.senderCode = senderCode;
         this.message = message;
-        this.isRead = false;
+        this.isRead = isRead != null ? isRead : false;
+        this.createdAt = createdAt != null ? createdAt : LocalDateTime.now();
+    }
+
+    public void markRead(LocalDateTime readAt) {
+        this.isRead = true;
+        this.readAt = readAt;
     }
 
 

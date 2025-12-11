@@ -1,11 +1,10 @@
 package com.example.chat.model.entity;
 
 import com.example.chat.enums.ChatRoomStatus;
-import io.devground.core.model.entity.BaseEntity;
-import jakarta.persistence.Id;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.UUID;
@@ -13,30 +12,34 @@ import java.util.UUID;
 @Document(collection = "chatRooms")
 @NoArgsConstructor
 @Getter
-public class ChatRoom extends BaseEntity {
+//@AllArgsConstructor
+public class ChatRoom  {
 
     @Id
     private String id;
 
     private String chatCode = UUID.randomUUID().toString();
 
-    private Long productCode;
+    private String productCode;
 
-    private Long sellerCode;
+    private String sellerCode;
 
-    private Long buyerCode;
+    private String buyerCode;
 
     private ChatRoomStatus status;
 
     @Builder
-    public ChatRoom(Long productCode, Long sellerCode, Long buyerCode, ChatRoomStatus status) {
+    public ChatRoom(String productCode, String sellerCode, String buyerCode, ChatRoomStatus status) {
+        this.id = UUID.randomUUID().toString();
         this.productCode = productCode;
+        this.chatCode = UUID.randomUUID().toString();
         this.sellerCode = sellerCode;
         this.buyerCode = buyerCode;
         this.status = status;
     }
 
-
-
+    public void close() {
+        this.status = ChatRoomStatus.CLOSED;
+    }
 
 }
