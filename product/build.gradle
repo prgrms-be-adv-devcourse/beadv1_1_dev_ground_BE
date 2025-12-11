@@ -26,6 +26,7 @@ repositories {
 
 ext {
     set('springCloudVersion', "2025.0.0")
+    springAiVersion = "1.1.2"
 }
 
 dependencies {
@@ -42,6 +43,10 @@ dependencies {
 
     // Validation
     implementation 'org.springframework.boot:spring-boot-starter-validation'
+
+    // AI
+    implementation 'org.springframework.ai:spring-ai-starter-vector-store-elasticsearch'
+    implementation 'org.springframework.ai:spring-ai-starter-model-openai'
 
     // MySQL
     runtimeOnly 'com.mysql:mysql-connector-j'
@@ -98,6 +103,7 @@ dependencies {
 dependencyManagement {
     imports {
         mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+        mavenBom "org.springframework.ai:spring-ai-bom:$springAiVersion"
     }
 }
 

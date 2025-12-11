@@ -57,6 +57,23 @@ spring:
     connection-timeout: 10s
     socket-timeout: 60s
 
+  ai:
+    vectorstore:
+      elasticsearch:
+        initialize-schema: true
+        index-name: product-vectors-index
+        dimensions: 1536
+        similarity: cosine
+    openai:
+      api-key: ${OPEN_AI_API_KEY}
+      base-url: https://api.openai.com/
+      chat:
+        options:
+          model: gpt-4o-mini
+      embedding:
+        options:
+          model: text-embedding-ada-002
+
 eureka:
   client:
     register-with-eureka: true
