@@ -10,7 +10,7 @@ import io.devground.product.product.domain.exception.ProductDomainException;
 import io.devground.product.product.domain.model.Product;
 import io.devground.product.product.infrastructure.adapter.out.repository.ProductSearchRepository;
 import io.devground.product.product.infrastructure.model.persistence.ProductDocument;
-import io.devground.product.product.infrastructure.util.ProductESUtil;
+import io.devground.product.product.infrastructure.util.ProductSearchUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -50,7 +50,7 @@ public class ProductEsAdapter implements ProductPrepareSearchPort {
 		MDC.put("productCode", productCode);
 
 		try {
-			ProductDocument productDocument = ProductESUtil.toProductDocument(product);
+			ProductDocument productDocument = ProductSearchUtil.toProductDocument(product);
 			productSearchRepository.save(productDocument);
 		} catch (ProductDomainException | ServiceException e) {
 			MDC.put("errorMsg", e.getMessage());
