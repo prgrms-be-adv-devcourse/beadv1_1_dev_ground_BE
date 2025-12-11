@@ -10,7 +10,7 @@ public class DepositMapper {
 	public static Deposit toDomain(DepositEntity depositEntity) {
 		return new Deposit(
 			depositEntity.getCode(),
-			depositEntity.getCode(),
+			depositEntity.getUserCode(),
 			depositEntity.getBalance()
 		);
 	}

@@ -27,6 +27,7 @@ public class DepositEventApplication implements DepositEventUseCase {
 	@Override
 	@Transactional
 	public Deposit createDeposit(String userCode) {
+		log.info("deposit userCode: {}", userCode);
 		Deposit deposit = new Deposit(userCode);
 		return depositCommandPort.saveDeposit(deposit);
 	}
