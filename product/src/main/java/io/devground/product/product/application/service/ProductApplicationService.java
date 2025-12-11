@@ -179,6 +179,12 @@ public class ProductApplicationService implements ProductUseCase {
 	@Override
 	public void updateThumbnail(String productCode, String thumbnail) {
 
+		// 1. 상품 썸네일 업데이트
 		productPort.updateThumbnail(productCode, thumbnail);
+
+		Product product = productPort.getProductByCode(productCode);
+
+		// 2. ES 인덱싱
+		productEventPort.publishUpdated(product);
 	}
 }
