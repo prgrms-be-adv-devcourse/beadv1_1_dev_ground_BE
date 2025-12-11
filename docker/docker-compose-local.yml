@@ -34,7 +34,7 @@ services:
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: root1234
-      MYSQL_DATABASE: dbay_user
+      MYSQL_DATABASE: dbay_db
       TZ: Asia/Seoul
     ports:
       - "3306:3306"
@@ -51,30 +51,54 @@ services:
       - "3307:3306"
 
 
-  dbay:
+#  dbay:
+#    image: eclipse-temurin:21-jdk
+#    container_name: dbay
+#    working_dir: /app
+#    depends_on:
+#      - eureka
+#      - mysql
+#      - redis
+#      - kafka
+#    volumes:
+#      - ./dbay-0.0.1-SNAPSHOT.jar:/app/app.jar
+#    environment:
+#      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/dbay_user?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+#      SPRING_DATASOURCE_USERNAME: root
+#      SPRING_DATASOURCE_PASSWORD: root1234
+#      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+#      SPRING_PROFILES_ACTIVE: local
+#      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+#      SPRING_DATA_REDIS_HOST: redis
+#      SPRING_DATA_REDIS_PORT: 6379
+#      SPRING_ELASTICSEARCH_URIS: http://elasticsearch:9200
+#    command: [ "java", "-jar", "app.jar" ]
+#    ports:
+#      - "8080:8080"
+
+  product:
     image: eclipse-temurin:21-jdk
-    container_name: dbay
+    container_name: product
     working_dir: /app
     depends_on:
       - eureka
       - mysql
-      - redis
       - kafka
+      - elasticsearch
     volumes:
-      - ./dbay-0.0.1-SNAPSHOT.jar:/app/app.jar
+      - ../product/build/libs/product-0.0.1-SNAPSHOT.jar:/app/app.jar
     environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/dbay_user?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/dbay_db?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
       SPRING_DATASOURCE_USERNAME: root
       SPRING_DATASOURCE_PASSWORD: root1234
-      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
-      SPRING_PROFILES_ACTIVE: local
-      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:29092
+      SPRING_PROFILES_ACTIVE: stage
       SPRING_DATA_REDIS_HOST: redis
       SPRING_DATA_REDIS_PORT: 6379
       SPRING_ELASTICSEARCH_URIS: http://elasticsearch:9200
     command: [ "java", "-jar", "app.jar" ]
     ports:
-      - "8080:8080"
+      - "8086:8086"
 
 
   user:
