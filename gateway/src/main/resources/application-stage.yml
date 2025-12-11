@@ -46,52 +46,45 @@ spring:
               filters:
                 - CustomAuthFilter
 
-            - id: image
-              uri: lb://DBAY
-              predicates:
-                - Path=/api/images/**
-              filters:
-                - CustomAuthFilter
-
-            - id: deposits
-              uri: lb://DBAY
-              predicates:
-                - Path=/api/deposits/**
-              filters:
-                - CustomAuthFilter
-
-            - id: carts
-              uri: lb://DBAY
-              predicates:
-                - Path=/api/carts/**
-              filters:
-                - CustomAuthFilter
-
             - id: categories
-              uri: lb://DBAY
+              uri: lb://PRODUCT
               predicates:
                 - Path=/api/categories/**
               filters:
                 - CustomAuthFilter
 
-            - id: orders
-              uri: lb://DBAY
+            - id: deposits
+              uri: lb://PAYMENTS
               predicates:
-                - Path=/api/orders/**
+                - Path=/api/deposits/**
               filters:
                 - CustomAuthFilter
 
             - id: payments
-              uri: lb://DBAY
+              uri: lb://PAYMENTS
               predicates:
                 - Path=/api/payments/**
               filters:
                 - CustomAuthFilter
 
             - id: settlements
-              uri: lb://DBAY
+              uri: lb://PAYMENTS
               predicates:
                 - Path=/api/settlements/**
+              filters:
+                - CustomAuthFilter
+
+            - id: carts
+              uri: lb://COMMERCE
+              predicates:
+                - Path=/api/carts/**
+              filters:
+                - CustomAuthFilter
+
+            - id: orders
+              uri: lb://COMMERCE
+              predicates:
+                - Path=/api/orders/**
               filters:
                 - CustomAuthFilter
 
