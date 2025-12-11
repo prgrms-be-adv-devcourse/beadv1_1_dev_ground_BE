@@ -19,9 +19,14 @@ public class DepositEventAdapter implements DepositCommandPort {
 	@Override
 	public Deposit saveDeposit(Deposit deposit) {
 		DepositEntity depositEntity = depositJpaRepository.findByCode(deposit.getCode())
-			.orElseGet(() -> depositJpaRepository.save(DepositEntity.of(deposit.getCode(), deposit.getUserCode())));
+			.map(d -> {
+				d.updateBalance(deposit.getBalance());
+				return d;
+			})
+			.orElseGet(() -> DepositEntity.from(deposit));
 
-		return DepositMapper.toDomain(depositEntity);
+		DepositEntity saved = depositJpaRepository.save(depositEntity);
+		return DepositMapper.toDomain(saved);
 	}
 
 	@Override
