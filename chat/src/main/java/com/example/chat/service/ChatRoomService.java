@@ -39,6 +39,29 @@ public class ChatRoomService {
     }
 
 
+    //OPEN상태인 채팅방 조회
+    public List<ChatRoomSummary> listOpenRoomsForUser(String userCode) {
+        List<ChatRoom> rooms = roomRepository.findByStatusAndSellerCodeOrStatusAndBuyerCode(
+                ChatRoomStatus.OPEN, userCode, ChatRoomStatus.OPEN, userCode
+        );
+
+        return rooms.stream().map(room -> {
+            ChatMessages last = messageRepository.findFirstByChatIdOrderByCreatedAtDesc(room.getId());
+            long unread = messageRepository.countByChatIdAndSenderCodeNotAndIsReadFalse(room.getId(), userCode);
+            return ChatRoomSummary.builder()
+                    .id(room.getId())
+                    .productCode(room.getProductCode())
+                    .sellerCode(room.getSellerCode())
+                    .buyerCode(room.getBuyerCode())
+                    .status(room.getStatus())
+                    .lastMessage(last != null ? last.getMessage() : null)
+                    .lastMessageAt(last != null ? last.getCreatedAt() : null)
+                    .unreadCount(unread)
+                    .build();
+        }).collect(Collectors.toList());
+    }
+
+
     }
 
 }
