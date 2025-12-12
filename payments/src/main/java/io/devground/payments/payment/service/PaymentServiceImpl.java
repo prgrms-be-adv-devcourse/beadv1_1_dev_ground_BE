@@ -306,6 +306,7 @@ public class PaymentServiceImpl implements PaymentService {
 	@Override
 	@Transactional
 	public void applyDepositCharge(String userCode){
+		log.info("예치금 충전 완료 처리");
 		Payment payment = getByUserCode(userCode);
 		payment.setPaymentStatus(PaymentStatus.PAYMENT_COMPLETED);
 	}
