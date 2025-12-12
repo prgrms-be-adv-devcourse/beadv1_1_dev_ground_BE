@@ -25,7 +25,10 @@ import java.util.Locale;
 
 public class ChatController {
 
-      private final ChatRoomService chatRoomService;
+    private final ChatRoomService chatRoomService;
+    private final ChatMessageService chatMessageService;
+    private final UserClient userClient;
+    private final ProductClient productClient;
 
 
     //채팅방 생성

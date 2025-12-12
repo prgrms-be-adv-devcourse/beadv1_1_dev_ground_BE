@@ -8,6 +8,7 @@ import com.example.chat.repository.MessageRepository;
 import com.example.chat.repository.RoomRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.GetMapping;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -81,4 +82,3 @@ public class ChatRoomService {
 
 }
 
-}
