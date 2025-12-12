@@ -58,5 +58,18 @@ public class ChatController {
         return chatRoomService.listOpenRoomsForUser(userCode);
     }
 
+    //채팅 나가기
+    @PostMapping("/rooms/{chatId}/leave")
+    public ChatRoom leaveRoom(
+            @RequestHeader("X-CODE") String userCode,
+            @PathVariable String chatId
+    ) {
+        if (userCode == null || userCode.isBlank()) {
+            throw new IllegalArgumentException("X-CODE 헤더가 비어 있습니다.");
+        }
+        userClient.getUser(userCode).throwIfNotSuccess();
+        return chatRoomService.leaveRoom(chatId, userCode);
+    }
+
 
 }
