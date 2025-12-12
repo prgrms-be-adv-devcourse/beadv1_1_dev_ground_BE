@@ -25,6 +25,7 @@ public interface ProductJpaRepository extends JpaRepository<ProductEntity, Long>
 			ps.sellerCode,
 			p.title,
 			p.description,
+			p.thumbnailUrl,
 			c.name,
 			ps.price
 		)
