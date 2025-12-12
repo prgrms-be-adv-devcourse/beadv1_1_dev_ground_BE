@@ -6,6 +6,8 @@ public record ProductRecommendSpec(
 	String title,
 	String description,
 	Long price,
-	String categoryFullPath
+	String categoryFullPath,
+	String thumbnailUrl,
+	String productStatus
 ) {
 }

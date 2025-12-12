@@ -22,7 +22,7 @@ public interface ProductUseCase {
 
 	Void saveImageUrls(String sellerCode, String productCode, ProductImageUrlsDto request);
 
-	ProductDetailResponse getProductDetail(String productCode);
+	ProductDetailResponse getProductDetail(String userCode, String productCode);
 
 	UpdateProductResponse updateProduct(String sellerCode, String productCode, UpdateProductDto request);
 

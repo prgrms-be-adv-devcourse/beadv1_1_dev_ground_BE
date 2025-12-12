@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
+import org.springframework.util.CollectionUtils;
 
 import io.devground.core.model.vo.ErrorCode;
 import io.devground.core.util.CodeUtil;
@@ -72,7 +73,6 @@ public class ProductPersistenceAdapter implements ProductPersistencePort {
 			.description(request.description())
 			.build();
 
-
 		ProductSaleEntity productSaleEntity = ProductSaleEntity.builder()
 			.code(CodeUtil.generateUUID())
 			.product(productEntity)
@@ -98,7 +98,7 @@ public class ProductPersistenceAdapter implements ProductPersistencePort {
 	@Override
 	public List<Product> getProductsByCodes(String sellerCode, List<String> productCodes) {
 
-		List<ProductEntity> products = this.getProducts(productCodes);
+		List<ProductEntity> products = this.getProductEntities(productCodes);
 
 		return products.stream()
 			.map(p -> ProductMapper.toProductDomain(p, p.getProductSale()))
@@ -106,9 +106,14 @@ public class ProductPersistenceAdapter implements ProductPersistencePort {
 	}
 
 	@Override
-	public void updateToSold(UpdateProductSoldDto updateProductsSoldDto) {
+	public void updateToSold(String sellerCode, UpdateProductSoldDto updateProductsSoldDto) {
 
 		ProductEntity product = getProduct(updateProductsSoldDto.productCode());
+		ProductSaleEntity productSale = product.getProductSale();
+
+		if (!productSale.getSellerCode().equals(sellerCode)) {
+			ErrorCode.IS_NOT_PRODUCT_OWNER.throwServiceException();
+		}
 
 		product.getProductSale().updateProductStatus(updateProductsSoldDto.productStatus());
 	}
@@ -154,12 +159,26 @@ public class ProductPersistenceAdapter implements ProductPersistencePort {
 		return responses;
 	}
 
+	@Override
+	public List<Product> getProductsByCodes(List<String> productCodes) {
+
+		if (CollectionUtils.isEmpty(productCodes)) {
+			return List.of();
+		}
+
+		List<ProductEntity> products = this.getProductEntities(productCodes);
+
+		return products.stream()
+			.map(product -> ProductMapper.toProductDomain(product, product.getProductSale()))
+			.toList();
+	}
+
 	private ProductEntity getProduct(String code) {
 		return productRepository.findByCode(code)
 			.orElseThrow(ProductDomainErrorCode.PRODUCT_NOT_FOUND::throwException);
 	}
 
-	private List<ProductEntity> getProducts(List<String> productCodes) {
+	private List<ProductEntity> getProductEntities(List<String> productCodes) {
 
 		return productRepository.findProductsByCodes(productCodes);
 	}
