@@ -41,12 +41,12 @@ spring:
         allow.auto.create.topics: false
 
     consumer:
-      group-id: dbay-consumer-group
+      group-id: payments-consumer-group
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
 
       properties:
-        spring.json.trusted.packages: io.devground.dbay.*, io.devground.core.*
+        spring.json.trusted.packages: io.devground.payments.*, io.devground.core.*
         allow.auto.create.topics: false
 
 custom:

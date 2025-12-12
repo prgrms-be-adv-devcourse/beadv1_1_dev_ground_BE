@@ -63,7 +63,7 @@ spring:
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
       properties:
-        spring.json.trusted.packages: io.devground.dbay.*, io.devground.core.*
+        spring.json.trusted.packages: io.devground.user.*, io.devground.core.*
         allow.auto.create.topics: false
 
 eureka:
