@@ -36,4 +36,6 @@ public class ChatMessageService {
         unread.forEach(msg -> msg.markRead(readAt));
         return messageRepository.saveAll(unread);
     }
+
+
 }

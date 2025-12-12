@@ -48,5 +48,15 @@ public class ChatController {
         return chatMessageService.getMessages(chatId);
     }
 
+    //채팅방 목록 (OPEN 상태, 참여자 기준)
+    @GetMapping("/rooms")
+    public List<ChatRoomSummary> listRooms(
+            @RequestHeader("X-CODE") String userCode,
+            @RequestParam(value = "status", defaultValue = "OPEN") String status
+    ) {
+        ChatRoomStatus roomStatus = ChatRoomStatus.valueOf(status.toUpperCase(Locale.ROOT));
+        return chatRoomService.listOpenRoomsForUser(userCode);
+    }
+
 
 }
