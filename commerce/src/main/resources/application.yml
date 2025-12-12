@@ -61,12 +61,12 @@ eureka:
     fetch-registry: true
     service-url:
       defaultZone: http://localhost:8761/eureka/
-#  instance:
-#    prefer-ip-address: true
-#    ip-address: cart
-#    non-secure-port: 8080
-#    metadata-map:
-#      port: 8080
+  instance:
+    prefer-ip-address: true
+    ip-address: commerce
+    non-secure-port: 8080
+    metadata-map:
+      port: 8080
 
 
 
