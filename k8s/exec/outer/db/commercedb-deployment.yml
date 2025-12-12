@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+
+kind: Deployment
+
+metadata:
+  name: postgresql-cart
+  labels:
+    app: postgresql-cart
+
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgresql-cart
+
+  template:
+    metadata:
+      name: postgresql-cart
+      labels:
+        app: postgresql-cart
+
+    spec:
+      containers:
+        - name: postgresql-cart
+          image: postgres
+          ports:
+            - containerPort: 3306
+          envFrom:
+            - configMapRef:
+                name: cartdb-configmap
+            - secretRef:
+                name: cartdb-secret
