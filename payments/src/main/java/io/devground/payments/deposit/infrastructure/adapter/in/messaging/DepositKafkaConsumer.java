@@ -97,12 +97,17 @@ public class DepositKafkaConsumer {
 				command.amount()
 			);
 
+			log.info("depositCharge userCode : {}",command.userCode());
+
+
 			DepositChargedSuccess depositChargedSuccessEvent = new DepositChargedSuccess(
 				depositHistory.getUserCode(),
 				depositHistory.getCode(),
 				depositHistory.getAmount(),
 				depositHistory.getBalanceAfter()
 			);
+
+			log.info("depositChargeSuccess userCode : {}",command.userCode());
 
 			kafkaTemplate.send(depositsEventTopicName, depositChargedSuccessEvent);
 

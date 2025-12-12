@@ -144,6 +144,7 @@ public class PaymentServiceImpl implements PaymentService {
 
 		// 결제 성공시 예치금 충전 처리
 		//카프카 전송
+		log.info("toss 충전 userCode: {}", userCode);
 		ChargeDeposit command = new ChargeDeposit(
 			userCode,
 			paymentKey,
@@ -152,6 +153,7 @@ public class PaymentServiceImpl implements PaymentService {
 		);
 
 		kafkaTemplate.send(depositsCommandTopic, command);
+		log.info("예치금 충전 카프카 커맨드 전송");
 
 		// 결제 내역 저장
 		Payment payment = Payment.builder()
@@ -162,6 +164,7 @@ public class PaymentServiceImpl implements PaymentService {
 			.build();
 
 		payment.setPaymentStatus(PaymentStatus.PAYMENT_PENDING);
+		log.info("toss 충전 userCode: {}", userCode);
 
 		return paymentRepository.save(payment);
 
@@ -301,6 +304,7 @@ public class PaymentServiceImpl implements PaymentService {
 	}
 
 	@Override
+	@Transactional
 	public void applyDepositCharge(String userCode){
 		Payment payment = getByUserCode(userCode);
 		payment.setPaymentStatus(PaymentStatus.PAYMENT_COMPLETED);
