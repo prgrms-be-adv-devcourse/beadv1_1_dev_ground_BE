@@ -2,7 +2,6 @@ package io.devground.product.product.infrastructure.adapter.in.web;
 
 import static org.springframework.http.HttpStatus.*;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -31,7 +30,7 @@ public class ProductRecommendApiController {
 			로그인한 사용자의 최근 조회 이력을 기반으로 벡터스토어를 통해 유사 상품을 추천합니다.
 			
 			- 로그인 + 조회 5건 이상 => 사용자 조회 기반 상품 추천
-			- 로그인 + 조회 5건 미만 or 비로그인 => 엘라스틱서치 폴백 상품 추천
+			- 로그인 + 조회 5건 미만 or 비로그인 => 인기순 상품 추천(폴백)
 			""")
 	public BaseResponse<ProductRecommendResponse> recommendByUserView(
 		@RequestHeader(value = "X-CODE", required = false) String userCode,

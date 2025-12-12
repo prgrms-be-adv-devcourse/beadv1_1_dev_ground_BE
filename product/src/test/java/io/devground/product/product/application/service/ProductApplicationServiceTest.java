@@ -274,7 +274,7 @@ class ProductApplicationServiceTest {
 		given(imageClient.getImageUrls(anyString(), any()))
 			.willReturn(BaseResponse.success(200, List.of("")));
 
-		ProductDetailResponse product = productService.getProductDetail(productCodes.getFirst());
+		ProductDetailResponse product = productService.getProductDetail(sellerCode, productCodes.getFirst());
 
 		// then
 		assertEquals(sellerCode, product.sellerCode());
@@ -294,7 +294,7 @@ class ProductApplicationServiceTest {
 
 		// when, then
 		assertThrows(ProductDomainException.class,
-			() -> productService.getProductDetail(productCode));
+			() -> productService.getProductDetail("userCode", productCode));
 	}
 
 	@Test

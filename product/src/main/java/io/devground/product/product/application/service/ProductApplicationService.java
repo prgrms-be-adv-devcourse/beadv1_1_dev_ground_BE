@@ -6,12 +6,14 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import io.devground.core.model.vo.DeleteStatus;
 import io.devground.core.model.vo.ImageType;
 import io.devground.product.product.application.port.out.ImageClientPort;
 import io.devground.product.product.application.port.out.ProductEventPort;
 import io.devground.product.product.application.port.out.ProductOrchestrationPort;
+import io.devground.product.product.application.port.out.ProductViewPort;
 import io.devground.product.product.application.port.out.persistence.ProductPersistencePort;
 import io.devground.product.product.domain.model.Product;
 import io.devground.product.product.domain.model.ProductSale;
@@ -40,6 +42,7 @@ import lombok.RequiredArgsConstructor;
 public class ProductApplicationService implements ProductUseCase {
 
 	private final ProductPersistencePort productPort;
+	private final ProductViewPort viewPort;
 	private final ProductOrchestrationPort productOrchestrationPort;
 	private final ImageClientPort imagePort;
 	private final ProductEventPort productEventPort;
@@ -87,11 +90,19 @@ public class ProductApplicationService implements ProductUseCase {
 
 	@Override
 	@Transactional(readOnly = true)
-	public ProductDetailResponse getProductDetail(String productCode) {
+	public ProductDetailResponse getProductDetail(String userCode, String productCode) {
 
 		Product product = productPort.getProductByCode(productCode);
 
-		// 이미지 불러오는 부분
+		// 1. 로그인 유저 대상으로 조회 기록 저장
+		if (StringUtils.hasText(userCode)) {
+			viewPort.saveView(userCode, productCode);
+		}
+
+		// 2. 인기 상품 카운트 증가
+		viewPort.increasePopularCount(productCode);
+
+		// 3. 이미지 호출
 		List<String> imageUrls = imagePort.getImageUrls(productCode, ImageType.PRODUCT);
 
 		return new ProductDetailResponse(product, imageUrls);
@@ -167,7 +178,7 @@ public class ProductApplicationService implements ProductUseCase {
 			);
 
 			// 1. 상품 판매 완료 처리
-			productPort.updateToSold(updatedProductSoldDto);
+			productPort.updateToSold(sellerCode, updatedProductSoldDto);
 
 			// 2. ES, Vector 인덱싱
 			productEventPort.publishUpdated(product);

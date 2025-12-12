@@ -100,18 +100,19 @@ public class ProductApiController {
 	@GetMapping("/{productCode}")
 	@Operation(summary = "상품 상세 조회", description = "상품의 상세 정보를 조회할 수 있습니다.")
 	public BaseResponse<ProductDetailResponse> getProductDetail(
-		@PathVariable String productCode
+		@PathVariable String productCode,
+		@RequestHeader("X-CODE") String userCode
 	) {
 
 		return BaseResponse.success(
 			OK.value(),
-			productApplication.getProductDetail(productCode),
+			productApplication.getProductDetail(userCode, productCode),
 			"상품 상세 정보를 성공적으로 불러왔습니다."
 		);
 	}
 
 	// TODO: sellerCode 정책 정해진 후 수정
-	@PatchMapping("{productCode}")
+	@PatchMapping("/{productCode}")
 	@Operation(summary = "상품 수정", description = "유저는 자신의 상품 판매 정보를 수정할 수 있습니다.")
 	public BaseResponse<UpdateProductResponse> updateProduct(
 		@PathVariable String productCode,
@@ -131,11 +132,11 @@ public class ProductApiController {
 	}
 
 	// TODO: sellerCode 정책 정해진 후 수정
-	@DeleteMapping("{productCode}")
+	@DeleteMapping("/{productCode}")
 	@Operation(summary = "상품 삭제", description = "유저는 자신의 상품 판매 정보를 삭제할 수 있습니다.")
 	public BaseResponse<Void> deleteProduct(
 		@PathVariable String productCode,
-		@RequestHeader("X-CODE") String sellerCode
+		@RequestHeader(value = "X-CODE") String sellerCode
 	) {
 
 		return BaseResponse.success(
@@ -172,7 +173,7 @@ public class ProductApiController {
 		return BaseResponse.success(
 			NO_CONTENT.value(),
 			productApplication.updateStatusToSold(sellerCode, requestDto),
-			"상품 정보가 성공적으로 삭제되었습니다."
+			"상품이 판매 완료 상태로 성공적으로 처리되었습니다."
 		);
 	}
 }

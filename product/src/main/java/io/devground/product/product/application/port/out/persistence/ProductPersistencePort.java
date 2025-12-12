@@ -24,11 +24,13 @@ public interface ProductPersistencePort {
 
 	List<Product> getProductsByCodes(String sellerCode, List<String> productCodes);
 
-	void updateToSold(UpdateProductSoldDto updatedProductsSoldDto);
+	void updateToSold(String sellerCode, UpdateProductSoldDto updatedProductsSoldDto);
 
 	void updateProduct(String sellerCode, Product product, ProductSale productSale);
 
 	void deleteProduct(String sellerCode, Product product);
 
 	List<CartProductsResponse> getCartProducts(CartProductsDto request);
+
+	List<Product> getProductsByCodes(List<String> productCodes);
 }
