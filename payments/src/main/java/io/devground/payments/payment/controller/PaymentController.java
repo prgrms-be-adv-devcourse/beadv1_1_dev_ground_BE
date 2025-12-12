@@ -92,11 +92,11 @@ public class PaymentController {
 		return BaseResponse.success(200, paymentService.getPayments(userCode, pageable), "결제 내역 조회 성공");
 	}
 
-	@PostMapping("/tossRefund/{userCode}/{paymentKey}")
+	@PostMapping("/tossRefund/{paymentKey}")
 	public BaseResponse<String> refundPayment(
-		@PathVariable String userCode,
+		@RequestHeader("X-CODE") String userCode,
 		@PathVariable String paymentKey
-	){
+	) {
 		TossRefundRequest request = new TossRefundRequest(userCode, paymentKey, 10000L);
 		paymentService.tossRefund(request);
 
