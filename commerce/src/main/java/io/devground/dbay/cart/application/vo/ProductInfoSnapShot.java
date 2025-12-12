@@ -7,6 +7,9 @@ public record ProductInfoSnapShot(
         String productSaleCode,
         String sellerCode,
         String title,
-        long price
+        String thumbnail,
+        long price,
+        String description,
+        String categoryName
 ) {
 }

@@ -1,8 +1,10 @@
 package io.devground.dbay.cart.domain.port.in;
 
+import io.devground.dbay.cart.application.vo.ProductInfoSnapShot;
 import io.devground.dbay.cart.domain.model.Cart;
 import io.devground.dbay.cart.domain.model.CartItem;
 import io.devground.dbay.cart.domain.vo.CartDescription;
+import io.devground.dbay.cart.domain.vo.CartItemInfo;
 import io.devground.dbay.cart.domain.vo.ProductCode;
 import io.devground.dbay.cart.domain.vo.UserCode;
 
@@ -14,7 +16,7 @@ public interface CartUseCase {
     void removeCartItem(UserCode userCode, ProductCode productCode);
     void removeCartItems(UserCode userCode, List<ProductCode> productCodes);
     void removeAllCartItems(UserCode userCode);
-    Cart getCart(UserCode userCode);
     void deleteCart(UserCode userCode);
     CartDescription getCartInfos(UserCode userCode);
+    List<CartItemInfo> recommendProductsByCartItem(UserCode userCode);
 }

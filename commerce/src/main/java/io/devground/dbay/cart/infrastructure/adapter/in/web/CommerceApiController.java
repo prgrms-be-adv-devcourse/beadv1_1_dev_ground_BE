@@ -2,9 +2,8 @@ package io.devground.dbay.cart.infrastructure.adapter.in.web;
 
 import io.devground.core.model.web.BaseResponse;
 import io.devground.dbay.cart.application.service.CartApplication;
-import io.devground.dbay.cart.domain.vo.CartDescription;
-import io.devground.dbay.cart.domain.vo.ProductCode;
-import io.devground.dbay.cart.domain.vo.UserCode;
+import io.devground.dbay.cart.application.vo.ProductInfoSnapShot;
+import io.devground.dbay.cart.domain.vo.*;
 import io.devground.dbay.cart.infrastructure.adapter.in.vo.AddCartItemRequest;
 import io.devground.dbay.cart.infrastructure.adapter.in.vo.AddCartItemResponse;
 import io.devground.dbay.cart.infrastructure.adapter.in.vo.DeleteItemsByCartRequest;
@@ -94,6 +93,18 @@ public class CommerceApiController {
         return BaseResponse.success(
                 204,
                 "장바구니 전체 삭제 성공"
+        );
+    }
+
+    @GetMapping("cart/recommendProduct")
+    @Operation(summary = "장바구니 추천 상품", description = "장바구니 추천 상품을 생성")
+    public BaseResponse<List<CartItemInfo>> recommendProduct(
+            @RequestHeader("X-CODE") String userCode
+    ) {
+        return BaseResponse.success(
+                200,
+                cartApplication.recommendProductsByCartItem(new UserCode(userCode)),
+                "추천 상품 생성 완료"
         );
     }
 
