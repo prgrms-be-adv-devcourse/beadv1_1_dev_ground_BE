@@ -47,13 +47,16 @@ public class DepositKafkaConsumer {
 	private final String depositsEventTopicName;
 	private final String depositsJoinEventTopicName;
 	private final String depositsPurchaseEventTopicName;
+	private final String depositsPaymentEventTopicName;
 
 	public DepositKafkaConsumer(DepositEventApplication depositEventApplication, KafkaTemplate<String, Object> kafkaTemplate,
 		@Value("${deposits.event.topic.name}") String depositsEventTopicName,
+		@Value("${deposits.event.topic.payment}") String depositsPaymentEventTopicName,
 		@Value("${deposits.event.topic.join}") String depositsJoinEventTopicName,
 		@Value("${deposits.event.topic.purchase}") String depositsPurchaseEventTopicName
 	) {
 		this.depositEventApplication = depositEventApplication;
+		this.depositsPaymentEventTopicName = depositsPaymentEventTopicName;
 		this.kafkaTemplate = kafkaTemplate;
 		this.depositsEventTopicName = depositsEventTopicName;
 		this.depositsJoinEventTopicName = depositsJoinEventTopicName;
@@ -109,7 +112,7 @@ public class DepositKafkaConsumer {
 
 			log.info("depositChargeSuccess userCode : {}",command.userCode());
 
-			kafkaTemplate.send(depositsEventTopicName, depositChargedSuccessEvent);
+			kafkaTemplate.send(depositsPaymentEventTopicName, depositChargedSuccessEvent);
 
 			log.info("예치금 충전 완료: userCode={}, amount={}", command.userCode(), command.amount());
 
@@ -122,7 +125,7 @@ public class DepositKafkaConsumer {
 				"예치금 충전에 실패했어요"
 			);
 
-			kafkaTemplate.send(depositsEventTopicName, depositChargeFailed);
+			kafkaTemplate.send(depositsPaymentEventTopicName, depositChargeFailed);
 		}
 	}
 
@@ -182,7 +185,7 @@ public class DepositKafkaConsumer {
 				depositHistory.getBalanceAfter()
 			);
 
-			kafkaTemplate.send(depositsEventTopicName, command.userCode(), depositRefundedSuccessEvent);
+			kafkaTemplate.send(depositsPaymentEventTopicName, command.userCode(), depositRefundedSuccessEvent);
 
 			log.info("예치금 환불 완료: userCode={}, amount={}", command.userCode(), command.amount());
 
@@ -196,7 +199,7 @@ public class DepositKafkaConsumer {
 				"예치금 환불에 실패했어요"
 			);
 
-			kafkaTemplate.send(depositsEventTopicName, depositRefundFailed);
+			kafkaTemplate.send(depositsPaymentEventTopicName, depositRefundFailed);
 		}
 	}
 

@@ -29,7 +29,7 @@ import lombok.extern.slf4j.Slf4j;
 	topics = {
 		"${payments.command.topic.purchase}",
 		"${payments.event.topic.name}",
-		"${deposits.event.topic.name}"
+		"${deposits.event.topic.payment}"
 	}
 )
 @RequiredArgsConstructor
@@ -80,12 +80,14 @@ public class PaymentKafkaHandler {
 	//예치금 충전 성공
 	@KafkaHandler
 	public void handleEvent(@Payload DepositChargedSuccess depositChargedSuccessEvent) {
+		log.info("예치금 충전 완료 userCode : {}",depositChargedSuccessEvent.userCode());
 		paymentService.applyDepositCharge(depositChargedSuccessEvent.userCode());
 	}
 
 	//예치금 충전 실패
 	@KafkaHandler
 	public void handleEvent(@Payload DepositChargeFailed depositChargeFailed) {
+		log.info("예치금 충전 실패 userCode: {}", depositChargeFailed.userCode());
 		TossRefundRequest request = new TossRefundRequest(depositChargeFailed.userCode(), depositChargeFailed.paymentKey(), depositChargeFailed.amount());
 		paymentService.tossRefund(request);
 	}
