@@ -16,6 +16,12 @@ services:
     volumes:
       - product-mysql-data:/var/lib/mysql
 
+  redis:
+    image: redis:7.2
+    profiles: ["product"]
+    ports:
+      - "6379:6379"
+
   kafka:
     image: apache/kafka
     profiles: ["product"]
@@ -74,12 +80,6 @@ services:
     restart: unless-stopped
 
   # 임시 보류
-  redis:
-    image: redis:7.2
-    profiles: ["apps"]
-    ports:
-      - "6379:6379"
-
   eureka:
     image: eclipse-temurin:21-jdk
     profiles: ["apps"]
