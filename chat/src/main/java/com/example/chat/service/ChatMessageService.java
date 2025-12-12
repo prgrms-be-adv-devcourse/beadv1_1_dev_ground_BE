@@ -30,6 +30,10 @@ public class ChatMessageService {
         return messageRepository.findByChatIdOrderByCreatedAtAsc(chatId);
     }
 
-
+    public List<ChatMessages> markAsRead(String chatId, String readerCode) {
+        List<ChatMessages> unread = messageRepository.findByChatIdAndSenderCodeNotAndIsReadFalse(chatId, readerCode);
+        LocalDateTime readAt = LocalDateTime.now();
+        unread.forEach(msg -> msg.markRead(readAt));
+        return messageRepository.saveAll(unread);
     }
 }

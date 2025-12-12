@@ -38,5 +38,15 @@ public class ChatController {
         );
     }
 
+    //전체 메세지 조회
+    @GetMapping("/rooms/{chatId}/messages")
+    public List<ChatMessages> getMessages(
+            @RequestHeader("X-CODE") String userCode,
+            @PathVariable String chatId) {
+        chatRoomService.getRoom(chatId); // 존재하는 chatId인지
+        chatMessageService.markAsRead(chatId, userCode);
+        return chatMessageService.getMessages(chatId);
+    }
+
 
 }
