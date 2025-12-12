@@ -124,8 +124,26 @@ services:
     ports:
       - "8082:8082"
 
+
+  chat:
+    image: eclipse-temurin:21-jdk
+    container_name: chat
+    working_dir: /app
+    depends_on:
+      - kafka
+      - eureka
+    volumes:
+      - ./chat-0.0.1-SNAPSHOT.jar:/app/app.jar
+    environment:
+      SPRING_PROFILES_ACTIVE: local
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+    command: [ "java", "-jar", "app.jar" ]
+    ports:
+      - "8099:8099"
+
   kafka:
     image: apache/kafka
+    container_name: kafka
     ports:
       - "9092:9092"
     environment:
