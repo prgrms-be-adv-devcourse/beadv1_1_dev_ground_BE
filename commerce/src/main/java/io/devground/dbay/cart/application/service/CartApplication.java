@@ -1,6 +1,8 @@
 package io.devground.dbay.cart.application.service;
 
 import io.devground.dbay.cart.application.exception.ServiceError;
+import io.devground.dbay.cart.application.port.out.ai.PromptPort;
+import io.devground.dbay.cart.application.port.out.ai.VectorSearchPort;
 import io.devground.dbay.cart.application.port.out.product.CartProductPort;
 import io.devground.dbay.cart.application.port.out.persistence.CartPersistencePort;
 import io.devground.dbay.cart.application.vo.ProductInfoSnapShot;
@@ -8,10 +10,7 @@ import io.devground.dbay.cart.application.vo.ProductSnapShot;
 import io.devground.dbay.cart.domain.model.Cart;
 import io.devground.dbay.cart.domain.model.CartItem;
 import io.devground.dbay.cart.domain.port.in.CartUseCase;
-import io.devground.dbay.cart.domain.vo.CartDescription;
-import io.devground.dbay.cart.domain.vo.CartItemInfo;
-import io.devground.dbay.cart.domain.vo.ProductCode;
-import io.devground.dbay.cart.domain.vo.UserCode;
+import io.devground.dbay.cart.domain.vo.*;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -26,6 +25,8 @@ public class CartApplication implements CartUseCase {
 
     private final CartPersistencePort cartPersistencePort;
     private final CartProductPort cartProductPort;
+    private final PromptPort promptPort;
+    private final VectorSearchPort vectorSearchPort;
 
     @Override
     @Transactional
@@ -116,11 +117,6 @@ public class CartApplication implements CartUseCase {
     }
 
     @Override
-    public Cart getCart(UserCode userCode) {
-        return null;
-    }
-
-    @Override
     @Transactional
     public void deleteCart(UserCode userCode) {
         if (userCode == null) {
@@ -147,7 +143,13 @@ public class CartApplication implements CartUseCase {
         List<ProductInfoSnapShot> productInfoSnapShots = cartProductPort.getCartProducts(productCodes);
 
         List<CartItemInfo> cartItemInfos = productInfoSnapShots.stream()
-                .map(pi -> new CartItemInfo(pi.productCode() ,pi.title(), pi.price()))
+                .map(pi ->
+                        new CartItemInfo(
+                                pi.productCode(),
+                                pi.thumbnail(),
+                                pi.title(),
+                                pi.price()
+                        ))
                 .toList();
 
         long totalAmount = cartItemInfos.stream().mapToLong(CartItemInfo::productPrice).sum();
@@ -157,5 +159,45 @@ public class CartApplication implements CartUseCase {
                 cartItemInfos,
                 totalAmount
         );
+    }
+
+    @Override
+    public List<CartItemInfo> recommendProductsByCartItem(UserCode userCode) {
+        if (userCode == null) {
+            throw ServiceError.CODE_INVALID.throwServiceException();
+        }
+
+        Cart cart = cartPersistencePort.getCart(userCode)
+                .orElseThrow(ServiceError.CART_NOT_FOUND::throwServiceException);
+
+        if (cart.getCartItems().size() < 3) {
+            return List.of();
+        }
+
+        List<ProductCode> productCodes = cart.getCartItems().stream()
+                .map(CartItem::getProductCode)
+                .toList();
+
+        List<ProductInfoSnapShot> productInfoSnapShots = cartProductPort.getCartProducts(productCodes);
+
+        CartContext ctx = CartContext.of(productInfoSnapShots);
+
+        String keywordQuery = promptPort.generateRecommendPrompt(ctx);
+
+        List<CartRecommendVectorHits> cartRecommendVectorHits = vectorSearchPort.vectorSearch(keywordQuery, 20, 5);
+
+        List<ProductCode> recommendProductCodes = cartRecommendVectorHits.stream()
+                .map(crv -> new ProductCode(crv.productCode()))
+                .toList();
+
+        List<ProductInfoSnapShot> cartProducts = cartProductPort.getCartProducts(recommendProductCodes);
+
+        return cartProducts.stream()
+                .map(ci -> new CartItemInfo(
+                        ci.productCode(),
+                        ci.thumbnail(),
+                        ci.title(),
+                        ci.price()
+                )).toList();
     }
 }

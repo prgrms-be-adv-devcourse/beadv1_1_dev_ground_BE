@@ -21,6 +21,18 @@ public class OrderKafkaTopicConfig {
 	@Value("${orders.command.topic.purchase}")
 	private String orderPurchaseCommandTopicName;
 
+	@Value("${deposits.event.topic.purchase}")
+	private String depositPurchaseEventTopicName;
+
+	@Value("${deposits.command.topic.purchase}")
+	private String depositPurchaseCommandTopicName;
+
+	@Value("${payments.event.topic.purchase}")
+	private String paymentsPurchaseEventTopicName;
+
+	@Value("${payments.command.topic.purchase}")
+	private String paymentsPurchaseCommandTopicName;
+
 	private static final String DLT = ".DLT";
 
 	@Bean
@@ -50,6 +62,70 @@ public class OrderKafkaTopicConfig {
 	@Bean
 	public NewTopic orderPurchaseCommandDltTopic() {
 		return TopicBuilder.name(orderPurchaseCommandTopicName + DLT)
+				.partitions(topic_partitions)
+				.replicas(topic_replications)
+				.build();
+	}
+
+	@Bean
+	public NewTopic depositPurchaseEventTopic() {
+		return TopicBuilder.name(depositPurchaseEventTopicName)
+				.partitions(topic_partitions)
+				.replicas(topic_replications)
+				.build();
+	}
+
+	@Bean
+	public NewTopic depositPurchaseCommandTopic() {
+		return TopicBuilder.name(depositPurchaseCommandTopicName)
+				.partitions(topic_partitions)
+				.replicas(topic_replications)
+				.build();
+	}
+
+	@Bean
+	public NewTopic depositPurchaseEventDltTopic() {
+		return TopicBuilder.name(depositPurchaseEventTopicName + DLT)
+				.partitions(topic_partitions)
+				.replicas(topic_replications)
+				.build();
+	}
+
+	@Bean
+	public NewTopic depositPurchaseCommandDltTopic() {
+		return TopicBuilder.name(depositPurchaseCommandTopicName + DLT)
+				.partitions(topic_partitions)
+				.replicas(topic_replications)
+				.build();
+	}
+
+	@Bean
+	public NewTopic paymentPurchaseEventTopic() {
+		return TopicBuilder.name(paymentsPurchaseEventTopicName)
+				.partitions(topic_partitions)
+				.replicas(topic_replications)
+				.build();
+	}
+
+	@Bean
+	public NewTopic paymentPurchaseCommandTopic() {
+		return TopicBuilder.name(paymentsPurchaseCommandTopicName)
+				.partitions(topic_partitions)
+				.replicas(topic_replications)
+				.build();
+	}
+
+	@Bean
+	public NewTopic paymentPurchaseEventDltTopic() {
+		return TopicBuilder.name(paymentsPurchaseEventTopicName + DLT)
+				.partitions(topic_partitions)
+				.replicas(topic_replications)
+				.build();
+	}
+
+	@Bean
+	public NewTopic paymentPurchaseCommandDltTopic() {
+		return TopicBuilder.name(paymentsPurchaseCommandTopicName + DLT)
 				.partitions(topic_partitions)
 				.replicas(topic_replications)
 				.build();

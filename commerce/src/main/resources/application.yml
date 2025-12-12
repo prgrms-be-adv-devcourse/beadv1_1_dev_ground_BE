@@ -14,15 +14,17 @@ spring:
     vectorstore:
       elasticsearch:
         initialize-schema: true
-        index-name: custom-index
+        index-name: product-vectors-index
         dimensions: 1536
         similarity: cosine
+        embedding-field-name: content
     openai:
       api-key: ${OPEN_AI_API_KEY}
       base-url: https://api.openai.com/
       chat:
         options:
           model: gpt-4o-mini
+          temperature: 0.6
       embedding:
           options:
             model: text-embedding-ada-002
@@ -92,39 +94,17 @@ payments:
   event:
     topic:
       purchase: payments-purchase-events
-      name: payments-events
   command:
     topic:
       purchase: payments-purchase-commands
-      name: payments-commands
 
 deposits:
   event:
     topic:
-      join: deposits-join-events
       purchase: deposits-purchase-events
-      name: deposits-events
   command:
     topic:
-      join: deposits-join-commands
       purchase: deposits-purchase-commands
-      name: deposits-commands
-
-settlements:
-  event:
-    topic:
-      name: settlements-events
-  command:
-    topic:
-      name: settlements-commands
-
-products:
-  topic:
-    image:
-      push: product-images-push
-      delete: product-images-delete
-      push-dlt: ${products.topic.image.push}.DLT
-      delete-dlt: ${products.topic.image.delete}.DLT
 
 springdoc:
   api-docs:
@@ -136,19 +116,11 @@ springdoc:
     url: /v3/api-docs
     config-url: /v3/api-docs/swagger-config
 
-
 custom:
   kafka:
     config:
       topic-partitions: 1
       topic-replications: 1
-
-images:
-  topic:
-    push: images-push
-    delete: images-delete
-    processed: images-processed
-    processed-dlt: ${images.topic.processed}.DLT
 
 logging:
   level:
@@ -156,6 +128,3 @@ logging:
     org.hibernate.orm.jdbc.bind: INFO
     org.hibernate.orm.jdbc.extract: INFO
     org.springframework.batch: INFO
-
-external:
-  openfeign-url: http://localhost:8080

@@ -50,7 +50,10 @@ public class CartMapper {
                c.productSaleCode(),
                c.sellerCode(),
                c.title(),
-               c.price()
+               c.thumbnail(),
+               c.price(),
+               c.description(),
+               c.categoryName()
             )
         ).toList();
     }
