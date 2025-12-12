@@ -6,7 +6,7 @@ spring:
     name: payments
 
   profiles:
-    active: test
+    active: local
 
   jpa:
     hibernate:
@@ -99,6 +99,7 @@ deposits:
     topic:
       join: deposits-join-events
       purchase: deposits-purchase-events
+      payment: deposits-payment-events
       name: deposits-events
   command:
     topic:
