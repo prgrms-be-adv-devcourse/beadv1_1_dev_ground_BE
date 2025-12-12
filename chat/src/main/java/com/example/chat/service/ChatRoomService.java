@@ -61,7 +61,24 @@ public class ChatRoomService {
         }).collect(Collectors.toList());
     }
 
-
+    public ChatRoom leaveRoom(String chatId, String userCode) {
+        ChatRoom room = getRoom(chatId);
+        boolean isParticipant = userCode.equals(room.getSellerCode()) || userCode.equals(room.getBuyerCode());
+        if (!isParticipant) {
+            throw new IllegalArgumentException("이 채팅방의 참여자가 아닙니다.");
+        }
+        room.close();
+        return roomRepository.save(room);
     }
+
+
+    @GetMapping("/test")
+    public String test() {
+        return "Hello World";
+    }
+
+
+
+}
 
 }
