@@ -126,7 +126,6 @@ services:
 
   kafka:
     image: apache/kafka
-    container_name: kafka
     ports:
       - "9092:9092"
     environment:
