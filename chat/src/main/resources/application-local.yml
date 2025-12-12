@@ -1,0 +1,73 @@
+spring:
+  config:
+    import: optional:classpath:env.properties
+  application:
+    name: chat
+
+  data:
+    mongodb:
+      uri: ${MONGO_KEY}
+      database: chat
+
+  kafka:
+    bootstrap-servers: localhost:9092
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      acks: all
+      properties:
+        spring.json.trusted.packages: "io.devground.dbay.*, io.devground.core.*, com.example.chat.*"
+        delivery.timeout.ms: 120000
+        linger.ms: 0
+        request.timeout.ms: 30000
+        enable.idempotence: true
+        allow.auto.create.topics: false
+
+    consumer:
+      group-id: dbay-consumer-group
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: "io.devground.dbay.*, io.devground.core.*, com.example.chat.*"
+        allow.auto.create.topics: false
+
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+  instance:
+    instance-id: "${spring.application.name}:${server.port}:${random.uuid}"
+    prefer-ip-address: false
+    hostname: localhost
+    non-secure-port: ${server.port}
+
+springdoc:
+  api-docs:
+    enabled: true
+    path: /v3/api-docs
+  swagger-ui:
+    enabled: true
+    path: /swagger-ui.html
+    url: /v3/api-docs
+    config-url: /v3/api-docs/swagger-config
+
+logging:
+  level:
+    org.hibernate.SQL: INFO
+    org.hibernate.orm.jdbc.bind: INFO
+    org.hibernate.orm.jdbc.extract: INFO
+    org.springframework.batch: INFO
+
+custom:
+  kafka:
+    config:
+      topic-partitions: 1
+      topic-replications: 1
+
+feign:
+  product-service:
+    url: http://localhost:8080
+  user-service:
+    url: http://localhost:18080

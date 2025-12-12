@@ -1,0 +1,6 @@
+rootProject.name = 'chat'
+
+include(':core')
+
+project(':core').projectDir = file('../core')
+
