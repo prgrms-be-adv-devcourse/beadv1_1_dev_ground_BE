@@ -28,8 +28,8 @@ spring:
   datasource:
     driver-class-name: org.mariadb.jdbc.Driver
     url: jdbc:mariadb://mariadb:3306/dbay_user?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
-    username: root
-    password: root1234
+    username: mariaId
+    password: mariaPwd
 
   jpa:
     hibernate:
