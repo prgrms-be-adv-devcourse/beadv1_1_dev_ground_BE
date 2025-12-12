@@ -44,7 +44,7 @@ services:
       MARIADB_ROOT_PASSWORD: R00t!2025@Secure2
       MARIADB_USER: mariaId
       MARIADB_PASSWORD: mariaPwd
-      MARIADB_DATABASE: dbay_db
+      MARIADB_DATABASE: dbay_user
       TZ: Asia/Seoul
     ports:
       - "3307:3306"
