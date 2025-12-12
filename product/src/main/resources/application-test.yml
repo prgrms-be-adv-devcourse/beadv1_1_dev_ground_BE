@@ -35,3 +35,12 @@ spring:
       stop:
         command: down
         timeout: 1m
+
+  ai:
+    vectorstore:
+      elasticsearch:
+        dimensions: 8
+    openai:
+      embedding:
+        options:
+          dimensions: 8
