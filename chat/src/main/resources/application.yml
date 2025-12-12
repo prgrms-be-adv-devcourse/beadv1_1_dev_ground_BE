@@ -10,7 +10,6 @@ spring:
 
   profiles:
     active: local
-
   data:
     mongodb:
       uri: ${MONGO_KEY}
