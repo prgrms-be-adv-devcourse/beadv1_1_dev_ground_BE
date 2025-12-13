@@ -1,11 +1,15 @@
 package com.example.chat.service;
 
+import com.example.chat.client.ProductClient;
 import com.example.chat.enums.ChatRoomStatus;
 import com.example.chat.model.dto.response.ChatRoomSummary;
+import com.example.chat.model.dto.response.ProductDetailResponse;
 import com.example.chat.model.entity.ChatMessages;
 import com.example.chat.model.entity.ChatRoom;
 import com.example.chat.repository.MessageRepository;
 import com.example.chat.repository.RoomRepository;
+import io.devground.core.model.web.BaseResponse;
+import lombok.extern.slf4j.Slf4j;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,11 +18,29 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class ChatRoomService {
 
     private final RoomRepository roomRepository;
     private final MessageRepository messageRepository;
+    private final ProductClient productClient;
+
+    private String resolveProductTitle(String productCode, String userCode) {
+        try {
+            BaseResponse<ProductDetailResponse> response = productClient.getProductDetail(productCode, userCode);
+            if (response != null) {
+                response.throwIfNotSuccess();
+            }
+            ProductDetailResponse detail = response != null ? response.data() : null;
+            if (detail != null && detail.title() != null && !detail.title().isBlank()) {
+                return detail.title();
+            }
+        } catch (Exception e) {
+            log.warn("상품 제목 조회 실패: productCode={}, userCode={}", productCode, userCode, e);
+        }
+        return productCode;
+    }
 
     public ChatRoom getOrCreateRoom(String productCode, String sellerCode, String buyerCode) {
         return roomRepository
@@ -49,9 +71,11 @@ public class ChatRoomService {
         return rooms.stream().map(room -> {
             ChatMessages last = messageRepository.findFirstByChatIdOrderByCreatedAtDesc(room.getId());
             long unread = messageRepository.countByChatIdAndSenderCodeNotAndIsReadFalse(room.getId(), userCode);
+            String productTitle = resolveProductTitle(room.getProductCode(), userCode);
             return ChatRoomSummary.builder()
                     .id(room.getId())
                     .productCode(room.getProductCode())
+                    .productTitle(productTitle)
                     .sellerCode(room.getSellerCode())
                     .buyerCode(room.getBuyerCode())
                     .status(room.getStatus())
@@ -81,4 +105,3 @@ public class ChatRoomService {
 
 
 }
-

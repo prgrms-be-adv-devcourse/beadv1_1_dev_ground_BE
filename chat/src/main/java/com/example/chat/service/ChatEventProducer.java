@@ -1,7 +1,7 @@
 package com.example.chat.service;
 
 import com.example.chat.model.event.ChatMessageEvent;
-//import com.example.chat.model.event.ChatReadEvent;
+import com.example.chat.model.event.ChatReadEvent;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
@@ -21,6 +21,10 @@ public class ChatEventProducer {
     }
 
     public void sendMessageEvent(ChatMessageEvent event) {
+        kafkaTemplate.send(chatChatEventTopicName, event.getChatId(), event);
+    }
+
+    public void sendReadEvent(ChatReadEvent event) {
         kafkaTemplate.send(chatChatEventTopicName, event.getChatId(), event);
     }
 

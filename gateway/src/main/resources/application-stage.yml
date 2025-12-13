@@ -95,6 +95,21 @@ spring:
               filters:
                 - CustomAuthFilter
 
+            - id: chat-ws
+              uri: lb://CHAT
+              predicates:
+                - Path=/api/chat/ws-chat
+              filters:
+                - StripPrefix=2
+                - CustomAuthFilter
+
+            - id: chat
+              uri: lb://CHAT
+              predicates:
+                - Path=/api/chat/**
+              filters:
+                - CustomAuthFilter
+
 
 eureka:
   client:
