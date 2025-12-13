@@ -34,6 +34,7 @@ public class Product {
 		this.productSpec = productSpec;
 
 		this.category = category;
+		this.deleteStatus = DeleteStatus.N;
 	}
 
 	public void updateCode(String code) {
