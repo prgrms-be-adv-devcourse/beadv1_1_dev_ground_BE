@@ -15,6 +15,7 @@ public enum ImageDomainErrorCode {
 	REFERENCE_CODE_MUST_BE_INPUT(400, "이미지 참조 코드는 반드시 입력되어야 합니다."),
 	IMAGE_TYPE_MUST_BE_INPUT(400, "이미지 타입은 반드시 입력되어야 합니다."),
 	IMAGE_URL_MUST_BE_INPUT(400, "이미지 URL은 반드시 입력되어야 합니다."),
+	INVALID_IMAGE_EXTENSION(400, "지원하지 않는 이미지 확장자입니다."),
 
 	// image
 	IMAGE_NOT_FOUND(404, "이미지를 찾을 수 없습니다.");
