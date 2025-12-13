@@ -15,6 +15,8 @@ public interface UserService {
 
 	void checkCertificateEmail(EmailCertificationRequest emailCertificationRequest);
 
+	Boolean isNicknameAvailable(String nickname);
+
 	User registerUser(UserRequest userRequest);
 
 	User getByUserCode(String userCode);

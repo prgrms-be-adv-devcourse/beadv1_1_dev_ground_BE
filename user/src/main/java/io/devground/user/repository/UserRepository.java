@@ -19,6 +19,8 @@ public interface UserRepository extends JpaRepository<User, Integer> {
 
 	Boolean existsByEmailAndOauthIdIsNull(String email);
 
+	Boolean existsByNickname(String nickname);
+
 	Optional<User> findByOauthId(Long oauthId);
 
 	void deleteByCode(String code);
