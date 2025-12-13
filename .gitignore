@@ -54,4 +54,6 @@ spy.log
 
 .gradle-cache/
 
+*.properties
+
 .DS_Store
