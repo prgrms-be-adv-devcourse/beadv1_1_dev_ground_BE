@@ -6,6 +6,7 @@ public record UserResponse(
 	String nickname,
 	String phone,
 	String address,
-	String addressDetail
+	String addressDetail,
+	String profileImage
 ) {
 }
