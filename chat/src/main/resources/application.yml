@@ -1,5 +1,5 @@
 server:
-  port: 8099
+  port: 8090
 
 spring:
 
@@ -45,9 +45,9 @@ eureka:
   instance:
     prefer-ip-address: true
     ip-address: chat
-    non-secure-port: 8099
+    non-secure-port: 8090
     metadata-map:
-      port: 8099
+      port: 8090
 
 springdoc:
   api-docs:
@@ -74,9 +74,9 @@ custom:
 
 feign:
   product-service:
-    url: http://localhost:8080
+    url: ${FEIGN_PRODUCT_SERVICE_URL:http://localhost:8080}
   user-service:
-    url: http://localhost:18080
+    url: ${FEIGN_USER_SERVICE_URL:http://localhost:18080}
 
 chats:
   event:
