@@ -17,7 +17,7 @@ import io.devground.user.model.dto.request.ChangePasswordRequest;
 import io.devground.user.model.dto.request.EmailCertificationRequest;
 import io.devground.user.model.dto.request.KakaoCodeRequest;
 import io.devground.user.model.dto.request.ModifyUserInfoRequest;
-import io.devground.user.model.dto.request.UserRequest;
+import io.devground.user.model.dto.request.NicknameAvailableRequest;import io.devground.user.model.dto.request.UserRequest;
 import io.devground.user.model.dto.response.ChangePasswordResponse;
 import io.devground.user.model.dto.response.LoginResponse;
 import io.devground.user.model.dto.response.ModifyUserInfoResponse;
@@ -109,5 +109,12 @@ public class UserController {
 	public BaseResponse<Boolean> isLogin(@RequestHeader(value = "X-CODE", required = false) String userCode) {
 		boolean isLogin = (userCode != null && !userCode.isBlank());
 		return BaseResponse.success(200, isLogin);
+	}
+
+	@PostMapping("/isNicknameAvailable")
+	public BaseResponse<Boolean> isNicknameAvailable(
+		@RequestBody NicknameAvailableRequest request
+	) {
+		return BaseResponse.success(200, !userService.isNicknameAvailable(request.nickname()));
 	}
 }

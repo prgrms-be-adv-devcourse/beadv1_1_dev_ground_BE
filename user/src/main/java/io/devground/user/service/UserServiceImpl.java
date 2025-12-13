@@ -73,6 +73,11 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
+	public Boolean isNicknameAvailable(String nickname) {
+		return userRepository.existsByNickname(nickname);
+	}
+
+	@Override
 	public User registerUser(UserRequest userRequest) {
 		String email = userRequest.email();
 
