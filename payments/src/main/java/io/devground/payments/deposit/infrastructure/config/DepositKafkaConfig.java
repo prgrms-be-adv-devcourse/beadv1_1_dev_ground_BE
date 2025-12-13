@@ -33,6 +33,9 @@ public class DepositKafkaConfig {
 	@Value("${deposits.command.topic.purchase}")
 	private String depositsPurchaseCommandTopicName;
 
+	@Value("${deposits.event.topic.payment}")
+	private String depositsPaymentCommandTopicName;
+
 	@Bean
 	public NewTopic createDepositEventTopic() {
 		return TopicBuilder.name(depositEventTopicName)
@@ -76,6 +79,14 @@ public class DepositKafkaConfig {
 	@Bean
 	public NewTopic createDepositPurchaseCommandTopic() {
 		return TopicBuilder.name(depositsPurchaseCommandTopicName)
+			.partitions(topicPartitions)
+			.replicas(topicReplications)
+			.build();
+	}
+
+	@Bean
+	public NewTopic createDepositPaymentEventTopic() {
+		return TopicBuilder.name(depositsPaymentCommandTopicName)
 			.partitions(topicPartitions)
 			.replicas(topicReplications)
 			.build();
