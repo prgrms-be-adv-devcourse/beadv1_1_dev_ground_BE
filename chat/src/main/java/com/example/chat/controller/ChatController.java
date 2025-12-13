@@ -6,16 +6,20 @@ import com.example.chat.enums.ChatRoomStatus;
 import com.example.chat.model.dto.request.ChatRoomRequest;
 import com.example.chat.model.dto.response.ChatRoomSummary;
 import com.example.chat.model.entity.ChatMessages;
+import com.example.chat.model.event.ChatReadEvent;
 import com.example.chat.model.entity.ChatRoom;
 import com.example.chat.service.ChatMessageService;
 import com.example.chat.service.ChatRoomService;
+import com.example.chat.service.ChatEventProducer;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 @Slf4j
 @RestController
@@ -27,6 +31,7 @@ public class ChatController {
 
     private final ChatRoomService chatRoomService;
     private final ChatMessageService chatMessageService;
+    private final ChatEventProducer chatEventProducer;
     private final UserClient userClient;
     private final ProductClient productClient;
 
@@ -48,7 +53,18 @@ public class ChatController {
             @PathVariable String chatId) {
         chatRoomService.getRoom(chatId); // 존재하는 chatId인지
         chatMessageService.markAsRead(chatId, userCode);
+        chatEventProducer.sendReadEvent(new ChatReadEvent(chatId, userCode));
         return chatMessageService.getMessages(chatId);
+    }
+
+    @PostMapping("/rooms/{chatId}/read")
+    public void markRead(
+            @RequestHeader("X-CODE") String userCode,
+            @PathVariable String chatId
+    ) {
+        chatRoomService.getRoom(chatId); // 존재하는 chatId인지 확인
+        chatMessageService.markAsRead(chatId, userCode);
+        chatEventProducer.sendReadEvent(new ChatReadEvent(chatId, userCode));
     }
 
     //채팅방 목록 (OPEN 상태, 참여자 기준)

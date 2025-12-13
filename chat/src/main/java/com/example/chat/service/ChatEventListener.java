@@ -1,7 +1,7 @@
 package com.example.chat.service;
 
 import com.example.chat.model.event.ChatMessageEvent;
-//import com.example.chat.model.event.ChatReadEvent;
+import com.example.chat.model.event.ChatReadEvent;
 import lombok.RequiredArgsConstructor;
 import org.springframework.kafka.annotation.KafkaHandler;
 import org.springframework.kafka.annotation.KafkaListener;
@@ -18,6 +18,11 @@ public class ChatEventListener {
     @KafkaHandler
     public void onMessage(ChatMessageEvent event) {
         messagingTemplate.convertAndSend("/topic/chat/" + event.getChatId(), event);
+    }
+
+    @KafkaHandler
+    public void onRead(ChatReadEvent event) {
+        messagingTemplate.convertAndSend("/topic/chat/" + event.getChatId() + "/read", event);
     }
 
 }

@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 
 @Slf4j
@@ -20,8 +21,8 @@ public class ChatWsController {
 
     private final ChatRoomService chatRoomService;
     private final ChatMessageService chatMessageService;
-    private final ChatEventProducer chatEventProducer;
     private final UserClient userClient;
+    private final ChatEventProducer chatEventProducer;
 
     @MessageMapping("/chat/messages")
     public void handleMessage(

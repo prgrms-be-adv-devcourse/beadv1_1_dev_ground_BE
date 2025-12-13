@@ -13,6 +13,7 @@ import java.time.LocalDateTime;
 public class ChatRoomSummary {
     private String id;
     private String productCode;
+    private String productTitle;
     private String sellerCode;
     private String buyerCode;
     private ChatRoomStatus status;
