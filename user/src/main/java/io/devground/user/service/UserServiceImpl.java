@@ -117,7 +117,7 @@ public class UserServiceImpl implements UserService {
 		User user = userRepository.findByCodeAndDeleteStatus(userCode, DeleteStatus.N)
 			.orElseThrow(ErrorCode.USER_NOT_FOUNT::throwServiceException);
 		return new UserResponse(user.getName(), user.getEmail(), user.getNickname(), user.getPhone(),
-			user.getAddress(), user.getAddressDetail());
+			user.getAddress(), user.getAddressDetail(), user.getProfileImage());
 	}
 
 	@Override
