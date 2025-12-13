@@ -13,7 +13,7 @@ import org.springframework.util.CollectionUtils;
 import io.devground.core.model.exception.ServiceException;
 import io.devground.core.model.vo.ErrorCode;
 import io.devground.core.model.vo.ImageType;
-import io.devground.product.image.infrastructure.util.S3Util;
+import io.devground.product.image.application.util.ImageUtil;
 import lombok.RequiredArgsConstructor;
 import software.amazon.awssdk.core.exception.SdkException;
 import software.amazon.awssdk.services.s3.S3Client;
@@ -76,7 +76,7 @@ public class S3Service {
 	// S3 객체 모두 삭제 (다건 삭제), type + code 참조
 	public void deleteAllObjectsByIdentifier(ImageType imageType, String referenceCode) {
 
-		String folderPath = S3Util.getFolderPath(imageType, referenceCode);
+		String folderPath = ImageUtil.getFolderPath(imageType, referenceCode);
 
 		try {
 			List<S3Object> objects = this.getAllS3ObjectsInFolderPath(folderPath);
@@ -101,7 +101,7 @@ public class S3Service {
 	// S3 객체 삭제 (단건 삭제), type + code 참조
 	public void deleteObjectByIdentifier(ImageType imageType, String referenceCode) {
 
-		String folderPath = S3Util.getFolderPath(imageType, referenceCode);
+		String folderPath = ImageUtil.getFolderPath(imageType, referenceCode);
 
 		try {
 			List<S3Object> objects = this.getAllS3ObjectsInFolderPath(folderPath);
@@ -130,7 +130,7 @@ public class S3Service {
 		try {
 			// 삭제할 키가 포함되는 ObjectIdentifier 생성
 			List<ObjectIdentifier> objectIdentifiers = urls.stream()
-				.map(S3Util::extractS3KeyFromUrl)
+				.map(ImageUtil::extractS3KeyFromUrl)
 				.map(this::buildObjectIdentifier)
 				.toList();
 
@@ -151,7 +151,7 @@ public class S3Service {
 		}
 
 		try {
-			String key = S3Util.extractS3KeyFromUrl(url);
+			String key = ImageUtil.extractS3KeyFromUrl(url);
 
 			if (key == null) {
 				return;
@@ -216,7 +216,7 @@ public class S3Service {
 
 		return PutObjectRequest.builder()
 			.bucket(bucketName)
-			.key(S3Util.buildS3Key(imageType, referenceCode, fileExtension))
+			.key(ImageUtil.buildS3Key(imageType, referenceCode, fileExtension))
 			.build();
 	}
 

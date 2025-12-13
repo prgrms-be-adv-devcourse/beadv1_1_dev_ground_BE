@@ -57,28 +57,32 @@ public enum ErrorCode {
 	ORDER_ALREADY_CONFIRMED(400, "이미 구매확정된 주문입니다."),
 	ORDER_CONFIRM_NOT_ALLOWED_BEFORE_TWO_WEEKS(400, "배송완료 후 2주가 지나 자동 구매확정 처리된 주문입니다."),
 
-	// product domain validation
-	DESCRIPTION_MUST_BE_INPUT(400, "상품 설명은 반드시 입력되어야 합니다"),
-	TITLE_MUST_BE_INPUT(400, "상품 이름은 반드시 입력되어야 합니다"),
-	PRICE_MUST_BE_INPUT(400, "상품 가격은 반드시 입력되어야 합니다."),
-	PRICE_MUST_BE_POSITIVE(400, "상품 가격은 반드시 양수여야 합니다."),
-	SELLER_CODE_MUST_BE_INPUT(400, "판매자 코드는 반드시 입력되어야 합니다."),
-
 	// product
 	ONLY_ON_SALE_PRODUCT_CHANGEABLE(400, "판매 중인 상품만 판매 완료 처리할 수 있습니다."),
 	SOLD_PRODUCT_CANNOT_PURCHASE(400, "이미 판매된 상품입니다."),
 	SOLD_PRODUCT_CANNOT_UPDATE(400, "이미 판매된 상품 내용은 변경할 수 없습니다."),
 	PRODUCT_MUST_WITH_LEAF_CATEGORY(400, "상품은 반드시 최종 카테고리를 가져야 합니다."),
+	DESCRIPTION_MUST_BE_INPUT(400, "상품 설명은 반드시 입력되어야 합니다"),
+	TITLE_MUST_BE_INPUT(400, "상품 이름은 반드시 입력되어야 합니다"),
+	PRICE_MUST_BE_INPUT(400, "상품 가격은 반드시 입력되어야 합니다."),
+	PRICE_MUST_BE_POSITIVE(400, "상품 가격은 반드시 양수여야 합니다."),
+	SELLER_CODE_MUST_BE_INPUT(400, "판매자 코드는 반드시 입력되어야 합니다."),
+	PRODUCT_CODE_MUST_BE_INPUT(400, "상품 코드는 반드시 입력되어야 합니다."),
+	PRODUCT_STATUS_MUST_BE_INPUT(400, "상품 판매 상태는 반드시 입력되어야 합니다."),
 	IS_NOT_PRODUCT_OWNER(403, "해당 상품의 판매자가 아닙니다"),
 	PRODUCT_NOT_FOUND(404, "상품을 찾을 수 없습니다."),
 
 	// category
 	CANNOT_EXCEED_MAX_DEPTH(400, "카테고리는 최대 뎁스를 초과할 수 없습니다."),
 	MISMATCH_ON_DEPTH(400, "해당 카테고리의 하위에 등록할 수 없습니다."),
+	CATEGORY_MUST_BE_INPUT(400, "카테고리는 반드시 입력되어야 합니다"),
 	CATEGORY_NOT_FOUND(404, "카테고리를 찾을 수 없습니다."),
 
 	// image
+	REFERENCE_CODE_MUST_BE_INPUT(400, "이미지 참조 코드는 반드시 입력되어야 합니다."),
 	IMAGE_TYPE_MUST_BE_INPUT(400, "이미지 타입은 반드시 입력되어야 합니다."),
+	IMAGE_URL_MUST_BE_INPUT(400, "이미지 URL은 반드시 입력되어야 합니다."),
+	INVALID_IMAGE_EXTENSION(400, "지원하지 않는 이미지 확장자입니다."),
 	IMAGE_NOT_FOUND(404, "이미지를 찾을 수 없습니다."),
 
 	// s3

@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import io.devground.core.model.vo.ImageType;
 import io.devground.product.image.application.persistence.ImagePersistencePort;
+import io.devground.product.image.application.util.ImageUtil;
 import io.devground.product.image.domain.model.Image;
 import io.devground.product.image.domain.port.in.ImageUseCase;
 import io.devground.product.image.domain.vo.ImageSpec;
@@ -23,6 +24,8 @@ public class ImageApplicationService implements ImageUseCase {
 	@Override
 	public List<URL> generatePresignedUrls(ImageType imageType, String referenceCode, List<String> fileExtensions) {
 
+		ImageUtil.validateImageExtensions(fileExtensions);
+
 		return imagePort.generatePresignedUrls(imageType, referenceCode, fileExtensions);
 	}
 
@@ -32,6 +35,8 @@ public class ImageApplicationService implements ImageUseCase {
 		if (imageUrls == null || imageUrls.isEmpty()) {
 			return null;
 		}
+
+		ImageUtil.validateImageUrls(imageUrls);
 
 		// 1. 이미지 조회
 		List<Image> foundImages = imagePort.getImages(imageType, referenceCode);
@@ -64,6 +69,9 @@ public class ImageApplicationService implements ImageUseCase {
 	public List<URL> updateUrls(
 		ImageType imageType, String referenceCode, List<String> deleteUrls, List<String> newImageExtensions
 	) {
+
+		ImageUtil.validateImageUrls(deleteUrls);
+		ImageUtil.validateImageExtensions(newImageExtensions);
 
 		// 1. 삭제할 이미지가 존재하면 삭제
 		if (deleteUrls != null && !deleteUrls.isEmpty()) {
@@ -101,6 +109,8 @@ public class ImageApplicationService implements ImageUseCase {
 
 	@Override
 	public void deleteImagesByReferencesAndUrls(ImageType imageType, String referenceCode, List<String> urls) {
+
+		ImageUtil.validateImageUrls(urls);
 
 		List<Image> images = imagePort.getTargetImages(imageType, referenceCode, urls);
 
