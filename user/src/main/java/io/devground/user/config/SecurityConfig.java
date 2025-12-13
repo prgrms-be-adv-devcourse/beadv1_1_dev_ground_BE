@@ -51,7 +51,8 @@ public class SecurityConfig {
 				"https://dbay.site",
 				"https://www.dbay.site",
 				"http://localhost:8080",
-				"http://localhost:8000"
+				"http://localhost:8000",
+				"http://localhost:5173"
 		));
 
 		configuration.setAllowedMethods(Arrays.asList(
