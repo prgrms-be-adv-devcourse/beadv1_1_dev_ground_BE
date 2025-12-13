@@ -38,11 +38,24 @@ public class ChatController {
 
     //채팅방 생성
     @PostMapping("/rooms")
-    public ChatRoom createOrGetRoom(@RequestBody ChatRoomRequest request) {
+    public ChatRoom createOrGetRoom(
+            @RequestHeader(value = "X-CODE", required = false) String userCode,
+            @RequestBody ChatRoomRequest request
+    ) {
+        String buyerCode = request.getBuyerCode();
+        if (buyerCode == null || buyerCode.isBlank()) {
+            buyerCode = userCode;
+        }
+        if (buyerCode == null || buyerCode.isBlank()) {
+            throw new IllegalArgumentException("xcode 못받음 ");
+        }
+        if (request.getSellerCode() != null && request.getSellerCode().equals(buyerCode)) {
+            throw new IllegalArgumentException("본인 상품에는 채팅을 시작할 수 없습니다.");
+        }
         return chatRoomService.getOrCreateRoom(
                 request.getProductCode(),
                 request.getSellerCode(),
-                request.getBuyerCode()
+                buyerCode
         );
     }
 
