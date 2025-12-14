@@ -28,13 +28,16 @@ jobs:
 
       - name: Update deployment image
         run: |
-          k3s kubectl set image deployment.apps/${{ inputs.service-name }} \
+          export KUBECONFIG=/etc/rancher/k3s/k3s.yaml
+          sudo -E kubectl set image deployment.apps/${{ inputs.service-name }} \
             ${{ inputs.service-name }}=${{ env.REGISTRY }}/${{ secrets.DOCKER_USERNAME }}/${{ inputs.service-name }}:${{ inputs.image-tag }}
 
       - name: Wait for rollout
         run: |
-          k3s kubectl rollout status deployment.apps/${{ inputs.service-name }}
+          export KUBECONFIG=/etc/rancher/k3s/k3s.yaml
+          sudo -E kubectl rollout status deployment.apps/${{ inputs.service-name }}
 
       - name: Verify deployment
         run: |
-          k3s kubectl get pods -l app=${{ inputs.service-name }}
+          export KUBECONFIG=/etc/rancher/k3s/k3s.yaml
+          sudo -E kubectl get pods -l app=${{ inputs.service-name }}
