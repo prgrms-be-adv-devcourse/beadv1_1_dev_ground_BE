@@ -21,8 +21,9 @@ jobs:
     secrets: inherit
     with:
       service-name: eureka-server
-      service-dir: ./eureka-server
-      file-name: ../docker/Dockerfile-common
+      service-dir: .
+      file-name: docker/Dockerfile-common
+      app-dir: eureka-server
 
 #  releasing_gateway:
 #    uses: ./.github/workflows/releasing-workflow.yml
