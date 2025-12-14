@@ -30,7 +30,7 @@ jobs:
         run: |
           export KUBECONFIG=/etc/rancher/k3s/k3s.yaml
           sudo -E kubectl set image deployment.apps/${{ inputs.service-name }} \
-            ${{ inputs.service-name }}=${{ env.REGISTRY }}/${{ secrets.DOCKER_USERNAME }}/${{ inputs.service-name }}:${{ inputs.image-tag }}
+            ${{ inputs.service-name }}=${{ env.REGISTRY }}/${{ secrets.DOCKERHUB_USERNAME }}/${{ inputs.service-name }}:${{ inputs.image-tag }}
 
       - name: Wait for rollout
         run: |
