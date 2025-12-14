@@ -1,4 +1,9 @@
 FROM gradle:jdk21 AS builder
+
+# ARG는 COPY 전에 선언
+ARG APP_DIR
+ENV APP_DIR=${APP_DIR}
+
 WORKDIR /libs
 
 # Gradle wrapper 및 빌드 스크립트 복사
@@ -10,13 +15,13 @@ COPY settings.gradle .
 # core 모듈 복사
 COPY core core
 
-# 서비스 모듈 복사 (빌드 시 ARG로 전달받음)
-ARG APP_DIR
+# 서비스 모듈 복사
 COPY ${APP_DIR} ${APP_DIR}
 
 # Gradle 빌드
-RUN chmod +x ./gradlew
-RUN ./gradlew :${APP_DIR}:build --no-daemon -x test
+RUN chmod +x ./gradlew && \
+    echo "Building project: ${APP_DIR}" && \
+    ./gradlew :${APP_DIR}:build --no-daemon -x test --stacktrace
 
 FROM openjdk:21-ea-21-slim
 WORKDIR /app
