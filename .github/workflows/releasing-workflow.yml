@@ -68,16 +68,16 @@ jobs:
       - name: Check out Repository
         uses: actions/checkout@v5
 
-      # application-prod.yml 동적 생성 (application-deploy.yml 기반)
+      # application-prod.yml 동적 생성 (application.yml 기반)
       - name: Create application-prod.yml
         run: |
           if [ ! -f "${{ inputs.app-dir }}/src/main/resources/application-prod.yml" ]; then
             echo "Creating application-prod.yml for ${{ inputs.service-name }}"
-            if [ -f "${{ inputs.app-dir }}/src/main/resources/application-deploy.yml" ]; then
-              echo "Copying from application-deploy.yml"
-              cp "${{ inputs.app-dir }}/src/main/resources/application-deploy.yml" "${{ inputs.app-dir }}/src/main/resources/application-prod.yml"
+            if [ -f "${{ inputs.app-dir }}/src/main/resources/application.yml" ]; then
+              echo "Copying from application.yml"
+              cp "${{ inputs.app-dir }}/src/main/resources/application.yml" "${{ inputs.app-dir }}/src/main/resources/application-prod.yml"
             else
-              echo "application-deploy.yml not found, creating minimal prod config"
+              echo "application.yml not found, creating minimal prod config"
               cat > ${{ inputs.app-dir }}/src/main/resources/application-prod.yml << 'EOF'
           spring:
             profiles:
