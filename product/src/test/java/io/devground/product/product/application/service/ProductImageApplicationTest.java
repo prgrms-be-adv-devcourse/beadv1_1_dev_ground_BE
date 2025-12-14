@@ -12,10 +12,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Primary;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,28 +30,11 @@ import io.devground.product.product.infrastructure.adapter.out.repository.Produc
 import io.devground.product.product.infrastructure.adapter.out.repository.client.ImageClient;
 import io.devground.product.product.infrastructure.model.persistence.ProductEntity;
 import io.devground.product.product.infrastructure.saga.repository.SagaRepository;
-import software.amazon.awssdk.services.s3.S3Client;
-import software.amazon.awssdk.services.s3.presigner.S3Presigner;
 
 @Transactional
 @SpringBootTest
 @ActiveProfiles("test")
 public class ProductImageApplicationTest {
-
-	@TestConfiguration
-	static class TestConfig {
-		@Bean
-		@Primary
-		public S3Client s3Client() {
-			return mock(S3Client.class);
-		}
-
-		@Bean
-		@Primary
-		public S3Presigner s3Presigner() {
-			return mock(S3Presigner.class);
-		}
-	}
 
 	@Autowired
 	ProductApplicationService productService;
