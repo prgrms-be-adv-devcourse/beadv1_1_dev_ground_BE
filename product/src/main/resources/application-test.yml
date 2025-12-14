@@ -45,15 +45,7 @@ spring:
         options:
           dimensions: 8
 
-  main:
-    allow-bean-definition-overriding: true
-
   cloud:
     aws:
       s3:
-        bucket: test_bucket
-      credentials:
-        access-key: test_access_key
-        secret-key: test_secret_key
-      region:
-        static: test_region
+        enabled: false
