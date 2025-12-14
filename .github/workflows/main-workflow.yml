@@ -112,23 +112,3 @@ jobs:
     with:
       service-name: commerce
       image-tag: ${{ needs.releasing_commerce.outputs.tag_name }}
-
-
-  # todo : 채팅 user 모듈로 합쳐지면 아래 릴리즈, 배포 설정 제거 할 것.
-  # Chat 릴리즈
-  releasing_chat:
-    uses: ./.github/workflows/releasing-workflow.yml
-    secrets: inherit
-    with:
-      service-name: chat
-      service-dir: ./chat
-      file-name: ../docker/Dockerfile-common
-
-  # Chat 배포
-  deploying_chat:
-    needs: releasing_chat
-    uses: ./.github/workflows/deploy-workflow.yml
-    secrets: inherit
-    with:
-      service-name: chat
-      image-tag: ${{ needs.releasing_chat.outputs.tag_name }}

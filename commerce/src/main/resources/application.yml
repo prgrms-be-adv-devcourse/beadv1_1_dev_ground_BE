@@ -29,11 +29,22 @@ spring:
           options:
             model: text-embedding-ada-002
 
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://mysql:3306/dbay_db?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+    username: mysqlId
+    password: mysqlPwd
 
   jpa:
     hibernate:
+      ddl-auto: update
       naming:
         physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+    properties:
+      hibernate:
+        default_batch_fetch_size: 500
+        format_sql: true
+
 
   kafka:
     bootstrap-servers: localhost:9092

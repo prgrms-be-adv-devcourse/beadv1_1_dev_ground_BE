@@ -48,12 +48,3 @@ spec:
           image: jihei1/commerce:latest
           ports:
             - containerPort: 8081
-
-# Pod안에 컨테이너 환경 변수(env)를 외부 설정에서 가져오는 방식
-# configMapRef : configMap의 key/value를 컨테이너 환경 변수로 모두 주입.
-# secretRef : Secret 에 들어있는 key/value도 환경 변수로 주입
-          envFrom:
-            - configMapRef:
-                name: commerce-configmap
-            - secretRef:
-                name: commerce-secret

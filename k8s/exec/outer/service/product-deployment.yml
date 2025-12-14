@@ -29,8 +29,3 @@ spec:
           image: jihei1/product:latest
           ports:
             - containerPort: 8086
-          envFrom:
-            - configMapRef:
-                name: product-configmap
-            - secretRef:
-                name: product-secret
