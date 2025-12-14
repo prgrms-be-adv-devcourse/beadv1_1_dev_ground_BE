@@ -26,6 +26,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(
+	name = "productSale",
 	indexes = {
 		@Index(
 			name = "idx_product_sale_status_seller_created",
