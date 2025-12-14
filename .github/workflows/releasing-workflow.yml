@@ -8,10 +8,13 @@ on:
       service-name: # docker image name
         required: true
         type: string
-      service-dir: # docker context 경로
+      service-dir: # docker context 경로 (보통 프로젝트 루트 .)
         required: true
         type: string
       file-name: # dockerfile name
+        required: true
+        type: string
+      app-dir: # 애플리케이션 디렉토리 (eureka-server, payments 등)
         required: true
         type: string
     outputs:
@@ -68,14 +71,14 @@ jobs:
       # application-prod.yml 동적 생성 (application-deploy.yml 기반)
       - name: Create application-prod.yml
         run: |
-          if [ ! -f "${{ inputs.service-dir }}/src/main/resources/application-prod.yml" ]; then
+          if [ ! -f "${{ inputs.app-dir }}/src/main/resources/application-prod.yml" ]; then
             echo "Creating application-prod.yml for ${{ inputs.service-name }}"
-            if [ -f "${{ inputs.service-dir }}/src/main/resources/application-deploy.yml" ]; then
+            if [ -f "${{ inputs.app-dir }}/src/main/resources/application-deploy.yml" ]; then
               echo "Copying from application-deploy.yml"
-              cp "${{ inputs.service-dir }}/src/main/resources/application-deploy.yml" "${{ inputs.service-dir }}/src/main/resources/application-prod.yml"
+              cp "${{ inputs.app-dir }}/src/main/resources/application-deploy.yml" "${{ inputs.app-dir }}/src/main/resources/application-prod.yml"
             else
               echo "application-deploy.yml not found, creating minimal prod config"
-              cat > ${{ inputs.service-dir }}/src/main/resources/application-prod.yml << 'EOF'
+              cat > ${{ inputs.app-dir }}/src/main/resources/application-prod.yml << 'EOF'
           spring:
             profiles:
               active: prod

@@ -1,16 +1,28 @@
-FROM gradle:jdk21 as builder
+FROM gradle:jdk21 AS builder
 WORKDIR /libs
+
+# Gradle wrapper 및 빌드 스크립트 복사
 COPY gradlew .
 COPY gradle gradle
 COPY build.gradle .
 COPY settings.gradle .
-COPY core/build.gradle core/build.gradle
+
+# core 모듈 복사
+COPY core core
+
+# 서비스 모듈 복사 (빌드 시 ARG로 전달받음)
+ARG APP_DIR
+COPY ${APP_DIR} ${APP_DIR}
+
+# Gradle 빌드
 RUN chmod +x ./gradlew
-RUN ./gradlew dependencies --no-daemon || true
-COPY src src
-COPY core/src core/src
-RUN ./gradlew build --no-daemon -x test
+RUN ./gradlew :${APP_DIR}:build --no-daemon -x test
+
 FROM openjdk:21-ea-21-slim
 WORKDIR /app
-COPY --from=builder /libs/build/libs/*.jar app.jar
+
+# 빌드된 jar 복사
+ARG APP_DIR
+COPY --from=builder /libs/${APP_DIR}/build/libs/*.jar app.jar
+
 ENTRYPOINT [ "java", "-Dspring.profiles.active=prod", "-jar", "app.jar" ]
