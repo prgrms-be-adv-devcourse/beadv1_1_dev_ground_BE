@@ -120,6 +120,9 @@ jobs:
           context: ${{ inputs.service-dir }}
           # dockerfile address
           file: ${{ inputs.service-dir }}/${{ inputs.file-name }}
+          # build args - APP_DIR 전달
+          build-args: |
+            APP_DIR=${{ inputs.app-dir }}
           # build 후 바로 push
           push: true
           # docker 이미지를 빌드하고 docker hub에 3개 태그로 푸시하겠다.
