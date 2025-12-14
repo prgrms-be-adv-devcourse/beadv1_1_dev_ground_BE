@@ -1,8 +1,0 @@
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: chat-configmap
-data:
-  SPRING_PROFILES_ACTIVE: "deploy"
-  SPRING_KAFKA_BOOTSTRAP_SERVERS: "kafka-service:9090"
-

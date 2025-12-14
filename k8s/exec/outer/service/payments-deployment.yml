@@ -29,8 +29,3 @@ spec:
           image: jihei1/payments:latest
           ports:
             - containerPort: 8085
-          envFrom:
-            - configMapRef:
-                name: payments-configmap
-            - secretRef:
-                name: payments-secret
