@@ -1,0 +1,43 @@
+name: Deploy and Rolling Update
+
+on:
+  workflow_call:
+    inputs:
+      service-name:
+        description: 'Service name for deployment'
+        required: true
+        type: string
+      image-tag:
+        description: 'Docker image tag to deploy'
+        required: true
+        type: string
+  workflow_dispatch:
+
+
+env:
+  REGISTRY: docker.io
+
+jobs:
+  deploy:
+    name: 쿠버네티스 배포
+    runs-on: self-hosted
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Update deployment image
+        run: |
+          export KUBECONFIG=/etc/rancher/k3s/k3s.yaml
+          sudo -E kubectl set image deployment.apps/${{ inputs.service-name }} \
+            ${{ inputs.service-name }}=${{ env.REGISTRY }}/${{ secrets.DOCKERHUB_USERNAME }}/${{ inputs.service-name }}:${{ inputs.image-tag }}
+
+      - name: Wait for rollout
+        run: |
+          export KUBECONFIG=/etc/rancher/k3s/k3s.yaml
+          sudo -E kubectl rollout status deployment.apps/${{ inputs.service-name }}
+
+      - name: Verify deployment
+        run: |
+          export KUBECONFIG=/etc/rancher/k3s/k3s.yaml
+          sudo -E kubectl get pods -l app=${{ inputs.service-name }}
