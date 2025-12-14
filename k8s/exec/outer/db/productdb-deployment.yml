@@ -26,7 +26,5 @@ spec:
           ports:
             - containerPort: 3306
           envFrom:
-            - configMapRef:
-                name: productdb-configmap
             - secretRef:
                 name: productdb-secret

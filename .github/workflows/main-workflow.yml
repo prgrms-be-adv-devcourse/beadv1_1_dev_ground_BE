@@ -1,10 +1,10 @@
 name: dev-msa ci/cd
 
 on:
-  pull_request:
+#  pull_request:
 #    todo : 우선 main으로 세팅하고 dev-msa로 교체
 #    branches: [dev-msa]
-    branches: [main]
+#    branches: [main]
   workflow_dispatch:
 
 jobs:
