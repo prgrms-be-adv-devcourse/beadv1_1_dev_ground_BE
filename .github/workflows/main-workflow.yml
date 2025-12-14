@@ -25,45 +25,50 @@ jobs:
       file-name: docker/Dockerfile-common
       app-dir: eureka-server
 
-#  releasing_gateway:
-#    uses: ./.github/workflows/releasing-workflow.yml
-#    secrets: inherit
-#    with:
-#      service-name: gateway
-#      service-dir: ./gateway
-#      file-name: ../docker/Dockerfile-common
-#
-#  releasing_product:
-#    uses: ./.github/workflows/releasing-workflow.yml
-#    secrets: inherit
-#    with:
-#      service-name: product
-#      service-dir: ./product
-#      file-name: ../docker/Dockerfile-common
-#
-#  releasing_payments:
-#    uses: ./.github/workflows/releasing-workflow.yml
-#    secrets: inherit
-#    with:
-#      service-name: payments
-#      service-dir: ./payments
-#      file-name: ../docker/Dockerfile-common
-#
-#  releasing_user:
-#    uses: ./.github/workflows/releasing-workflow.yml
-#    secrets: inherit
-#    with:
-#      service-name: user
-#      service-dir: ./user
-#      file-name: ../docker/Dockerfile-common
-#
-#  releasing_commerce:
-#    uses: ./.github/workflows/releasing-workflow.yml
-#    secrets: inherit
-#    with:
-#      service-name: commerce
-#      service-dir: ./commerce
-#      file-name: ../docker/Dockerfile-common
+  releasing_gateway:
+    uses: ./.github/workflows/releasing-workflow.yml
+    secrets: inherit
+    with:
+      service-name: gateway
+      service-dir: .
+      file-name: docker/Dockerfile-common
+      app-dir: gateway
+
+  releasing_product:
+    uses: ./.github/workflows/releasing-workflow.yml
+    secrets: inherit
+    with:
+      service-name: product
+      service-dir: .
+      file-name: docker/Dockerfile-common
+      app-dir: product
+
+  releasing_payments:
+    uses: ./.github/workflows/releasing-workflow.yml
+    secrets: inherit
+    with:
+      service-name: payments
+      service-dir: .
+      file-name: docker/Dockerfile-common
+      app-dir: payments
+
+  releasing_user:
+    uses: ./.github/workflows/releasing-workflow.yml
+    secrets: inherit
+    with:
+      service-name: user
+      service-dir: .
+      file-name: docker/Dockerfile-common
+      app-dir: user
+
+  releasing_commerce:
+    uses: ./.github/workflows/releasing-workflow.yml
+    secrets: inherit
+    with:
+      service-name: commerce
+      service-dir: .
+      file-name: docker/Dockerfile-common
+      app-dir: commerce
 
   # deploying step
 #  deploying_eureka:
