@@ -39,3 +39,4 @@ jobs:
       - name: Verify deployment
         run: |
           kubectl get pods -l app=${{ inputs.service-name }}
+          

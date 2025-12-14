@@ -3,9 +3,9 @@ apiVersion: apps/v1
 kind: Deployment
 
 metadata:
-  name: product-service
+  name: image-service
   labels:
-    app: product-service
+    app: image-service
 
 spec:
   replicas: 1
@@ -15,22 +15,22 @@ spec:
 
   selector:
     matchLabels:
-      app: product-service
+      app: image-service
 
   template:
     metadata:
-      name: product-service
+      name: image-service
       labels:
-        app: product-service
+        app: image-service
 
     spec:
       containers:
-        - name: product
-          image: jihei1/product:latest
+        - name: image
+          image: jihei1/image
           ports:
-            - containerPort: 8086
+            - containerPort: 8083
           envFrom:
             - configMapRef:
-                name: product-configmap
+                name: image-local-configmap
             - secretRef:
-                name: product-secret
+                name: image-secret

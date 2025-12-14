@@ -3,9 +3,9 @@ apiVersion: apps/v1
 kind: Deployment
 
 metadata:
-  name: product-service
+  name: cart-service
   labels:
-    app: product-service
+    app: cart-service
 
 spec:
   replicas: 1
@@ -15,22 +15,22 @@ spec:
 
   selector:
     matchLabels:
-      app: product-service
+      app: cart-service
 
   template:
     metadata:
-      name: product-service
+      name: cart-service
       labels:
-        app: product-service
+        app: cart-service
 
     spec:
       containers:
-        - name: product
-          image: jihei1/product:latest
+        - name: cart
+          image: jihei1/cart
           ports:
-            - containerPort: 8086
+            - containerPort: 8081
           envFrom:
             - configMapRef:
-                name: product-configmap
+                name: cart-local-configmap
             - secretRef:
-                name: product-secret
+                name: cart-secret

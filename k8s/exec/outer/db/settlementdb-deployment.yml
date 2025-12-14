@@ -3,30 +3,30 @@ apiVersion: apps/v1
 kind: Deployment
 
 metadata:
-  name: mysql-image
+  name: postgresql-settlement
   labels:
-    app: mysql-image
+    app: postgresql-settlement
 
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: mysql-image
+      app: postgresql-settlement
 
   template:
     metadata:
-      name: mysql-product
+      name: postgresql-settlement
       labels:
-        app: mysql-product
+        app: postgresql-settlement
 
     spec:
       containers:
-        - name: mysql-product
-          image: mysql
+        - name: postgresql-settlement
+          image: postgres
           ports:
             - containerPort: 3306
           envFrom:
             - configMapRef:
-                name: productdb-configmap
+                name: settlementdb-configmap
             - secretRef:
-                name: productdb-secret
+                name: settlementdb-secret

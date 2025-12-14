@@ -1,0 +1,13 @@
+apiVersion: v1
+
+kind: ConfigMap
+
+metadata:
+  name: mysql-configmap
+
+data:
+  MYSQL_USER: "root"
+  MYSQL_PASSWORD: "root1234"
+  MYSQL_DATABASE: "dbay_db"
+  MYSQL_ALLOW_EMPTY_PASSWORD: "true"
+  TZ: "Asia/Seoul"

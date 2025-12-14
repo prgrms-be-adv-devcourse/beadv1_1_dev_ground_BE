@@ -24,6 +24,8 @@ spec:
           ports:
             - containerPort: 3306
           envFrom:
+            - configMapRef:
+                name: userdb-configmap
             - secretRef:
                 name: userdb-secret
           env:
@@ -32,3 +34,8 @@ spec:
                 secretKeyRef:
                   name: userdb-secret
                   key: ROOT_PASSWORD
+            - name: MARIADB_DATABASE
+              valueFrom:
+                configMapKeyRef:
+                  name: userdb-configmap
+                  key: DATABASE

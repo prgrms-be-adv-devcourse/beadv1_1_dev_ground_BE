@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+
+kind: Deployment
+
+metadata:
+  name: deposit-service
+  labels:
+    app: deposit-service
+
+spec:
+  replicas: 1
+
+  strategy:
+    type: RollingUpdate
+
+  selector:
+    matchLabels:
+      app: deposit-service
+
+  template:
+    metadata:
+      name: deposit-service
+      labels:
+        app: deposit-service
+
+    spec:
+      containers:
+        - name: deposit-service
+          image: jihei1/deposit:latest
+          ports:
+            - containerPort: 8082
+          envFrom:
+            - configMapRef:
+                name: deposit-configmap
+            - secretRef:
+                name: deposit-secret

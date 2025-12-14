@@ -3,9 +3,9 @@ apiVersion: apps/v1
 kind: Deployment
 
 metadata:
-  name: payments-service
+  name: payment-service
   labels:
-    app: payments-service
+    app: payment-service
 
 spec:
   replicas: 1
@@ -15,22 +15,22 @@ spec:
 
   selector:
     matchLabels:
-      app: payments-service
+      app: payment-service
 
   template:
     metadata:
-      name: payments-service
+      name: payment-service
       labels:
-        app: payments-service
+        app: payment-service
 
     spec:
       containers:
-        - name: payments
-          image: jihei1/payments:latest
+        - name: payment
+          image: jihei1/payment
           ports:
             - containerPort: 8085
           envFrom:
             - configMapRef:
-                name: payments-configmap
+                name: payment-local-configmap
             - secretRef:
-                name: payments-secret
+                name: payment-secret

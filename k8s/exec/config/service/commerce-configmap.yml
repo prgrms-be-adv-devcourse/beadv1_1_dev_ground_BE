@@ -1,9 +1,15 @@
 apiVersion: v1
+
 kind: ConfigMap
+
 metadata:
   name: commerce-configmap
+
 data:
-  # 인프라 주소 (환경별로 다름)
   SPRING_DATASOURCE_URL: "jdbc:postgresql://postgresql-cart:5432/dbay_commerce?serverTimezone=Asia/Seoul&characterEncoding=UTF-8"
   SPRING_KAFKA_BOOTSTRAP_SERVERS: "kafka-service:9090"
+  SPRING_PROFILES_ACTIVE: "deploy"
+  SPRING_JPA_HIBERNATE_DDL_AUTO: "update"
+  SPRING_DATA_REDIS_HOST: "redis"
+  SPRING_DATA_REDIS_PORT: "6379"
 
