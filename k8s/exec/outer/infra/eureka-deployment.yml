@@ -25,7 +25,7 @@ spec:
 
     spec:
       containers:
-        - name: eureka-server
-          image: jihei1/eureka-server:latest
+        - name: eureka
+          image: jihei1/eureka
           ports:
             - containerPort: 8761

@@ -26,7 +26,7 @@ spec:
     spec:
       containers:
         - name: product
-          image: jihei1/product:latest
+          image: jihei1/product
           ports:
             - containerPort: 8086
           envFrom:

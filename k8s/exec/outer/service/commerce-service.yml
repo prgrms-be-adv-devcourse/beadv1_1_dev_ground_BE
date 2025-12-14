@@ -4,7 +4,7 @@ kind: Service
 
 # name : 서비스 이름. 클러스터 내부에서 DNS로도 활용됨. (http://cart-service:8081)
 metadata:
-  name: commerce-service
+  name: cart-service
 
 # selector : service가 어떤 Pod에게 트래픽을 보낼지 지정하는 라벨 조건.
 # deployment의 pod template에 다음 라벨이 존재해야 매칭됨.
@@ -13,7 +13,7 @@ metadata:
 # 그 Pod들에 그래픽을 전달한다.
 spec:
   selector:
-    app: commerce-service
+    app: cart-service
 
 # Service가 외부(클러스터 내부)로 노출하는 포트
 # targetPort : Service가 실제로 Pod의 어떤 포트로 연결할지 Pod 컨테이너 내부에서 열려 있는 포트와 대응해야 함.

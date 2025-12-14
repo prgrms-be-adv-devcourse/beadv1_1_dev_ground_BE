@@ -3,9 +3,9 @@ apiVersion: apps/v1
 kind: Deployment
 
 metadata:
-  name: user-service
+  name: deposit-service
   labels:
-    app: user-service
+    app: deposit-service
 
 spec:
   replicas: 1
@@ -15,23 +15,22 @@ spec:
 
   selector:
     matchLabels:
-      app: user-service
+      app: deposit-service
 
   template:
     metadata:
-      name: user-service
+      name: deposit-service
       labels:
-        app: user-service
+        app: deposit-service
 
     spec:
       containers:
-        - name: user
-          image: jihei1/user
+        - name: deposit
+          image: jihei1/deposit
           ports:
-            - containerPort: 18080
-
+            - containerPort: 8082
           envFrom:
             - configMapRef:
-                name: user-configmap
+                name: deposit-local-configmap
             - secretRef:
-                name: user-secret
+                name: deposit-secret

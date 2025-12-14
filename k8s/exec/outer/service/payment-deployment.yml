@@ -25,8 +25,8 @@ spec:
 
     spec:
       containers:
-        - name: payments
-          image: jihei1/payments:latest
+        - name: payment
+          image: jihei1/payment
           ports:
             - containerPort: 8085
           envFrom:

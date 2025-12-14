@@ -7,9 +7,9 @@ kind: Deployment
 # name : 리소스 이름. 클러스터 내에서 depoyment를 식별할 때 사용
 # labels : key-value 형태의 식별 태그. 서비스 선택, Pod그룹화 등에 사용됨.
 metadata:
-  name: commerce-service
+  name: cart-service
   labels:
-    app: commerce-service
+    app: cart-service
 
 # Deployment 스펙
 # replicas : 실행할 Pod 수
@@ -25,7 +25,7 @@ spec:
 # Deployment가 관리할 Pod의 범위를 Label 기준으로 지정. template.metadata.labels와 동일해야 함.
   selector:
     matchLabels:
-      app: commerce-service
+      app: cart-service
 
 # Pod 템플릿
 # Deployment가 생성할 Pod의 "설계도"
@@ -33,9 +33,9 @@ spec:
 # labels는 selector와 반드시 일치해야 Deployment가 Pod를 관리함.
   template:
     metadata:
-      name: commerce-service
+      name: cart-service
       labels:
-        app: commerce-service
+        app: cart-service
 
 # Pod 사양
 # Pod안에 들어갈 컨테이너 목록.
@@ -44,8 +44,8 @@ spec:
 # ports.containerPort 컨테이너 내부에서 열리는 포트
     spec:
       containers:
-        - name: commerce
-          image: jihei1/commerce:latest
+        - name: cart
+          image: jihei1/cart
           ports:
             - containerPort: 8081
 
@@ -54,6 +54,6 @@ spec:
 # secretRef : Secret 에 들어있는 key/value도 환경 변수로 주입
           envFrom:
             - configMapRef:
-                name: commerce-configmap
+                name: cart-configmap
             - secretRef:
-                name: commerce-secret
+                name: cart-secret
