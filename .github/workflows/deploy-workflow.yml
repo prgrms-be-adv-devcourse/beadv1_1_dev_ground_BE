@@ -1,6 +1,15 @@
-#name: Deploy and Rolling Update
-#
-#on:
+name: Deploy and Rolling Update (Disabled)
+
+on:
+  workflow_dispatch:
+
+jobs:
+  placeholder:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Placeholder
+        run: echo "Deploy workflow is disabled"
+
 #  workflow_call:
 #    inputs:
 #      service-name:
@@ -11,13 +20,11 @@
 #        description: 'Docker image tag to deploy'
 #        required: true
 #        type: string
-#  workflow_dispatch:
 #
 #
 #env:
 #  REGISTRY: docker.io
 #
-#jobs:
 #  deploy:
 #    name: 쿠버네티스 배포
 #    runs-on: self-hosted
