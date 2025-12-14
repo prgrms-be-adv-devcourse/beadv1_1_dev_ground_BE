@@ -31,17 +31,17 @@ spring:
         command: down
         timeout: 1m
 
-  cloud:
-    discovery:
-      enabled: false
+#  cloud:
+#    discovery:
+#      enabled: false
+#
+#eureka:
+#  client:
+#    enabled: false
 
 eureka:
   client:
-    enabled: false
-
-#eureka:
-#  client:
-#    service-url:
-#      defaultZone: http://localhost:8761/eureka/
-#  instance:
-#    ip-address: localhost
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+  instance:
+    ip-address: localhost
