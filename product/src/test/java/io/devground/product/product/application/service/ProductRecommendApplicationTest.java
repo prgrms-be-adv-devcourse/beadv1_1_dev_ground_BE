@@ -51,6 +51,7 @@ class ProductRecommendApplicationTest {
 	List<Product> products;
 	List<Product> popularProducts;
 	List<String> productCodes;
+	List<String> popularProductCodes;
 	List<ProductRecommendSpec> recommendSpecs;
 	List<ProductRecommendSpec> popularSpecs;
 
@@ -69,6 +70,10 @@ class ProductRecommendApplicationTest {
 		products = List.of(product);
 
 		popularProducts = this.createPopularProducts(3);
+
+		popularProductCodes = popularProducts.stream()
+			.map(Product::getCode)
+			.toList();
 
 		productCodes = List.of(
 			PRODUCT_CODE + "1", PRODUCT_CODE + "2", PRODUCT_CODE + "3", PRODUCT_CODE + "4", PRODUCT_CODE + "5"
@@ -145,8 +150,8 @@ class ProductRecommendApplicationTest {
 		List<String> fewProductCodes = List.of(PRODUCT_CODE + "1", PRODUCT_CODE + "2", PRODUCT_CODE + "3");
 
 		given(viewPort.getLatestViewedProductCodes(userCode, size)).willReturn(fewProductCodes);
-		given(viewPort.getTopProductCodes(size)).willReturn(productCodes);
-		given(productPort.getProductsByCodes(productCodes)).willReturn(popularProducts);
+		given(viewPort.getTopProductCodes(size)).willReturn(popularProductCodes);
+		given(productPort.getProductsByCodes(popularProductCodes)).willReturn(popularProducts);
 
 		// when
 		ProductRecommendResponse response = productRecommendService.recommendByUserView(userCode, size);
@@ -157,7 +162,7 @@ class ProductRecommendApplicationTest {
 
 		verify(viewPort, times(1)).getLatestViewedProductCodes(userCode, size);
 		verify(viewPort, times(1)).getTopProductCodes(size);
-		verify(productPort, times(1)).getProductsByCodes(productCodes);
+		verify(productPort, times(1)).getProductsByCodes(popularProductCodes);
 		verify(vectorPort, never()).recommendByUserView(any(), anyInt());
 	}
 
