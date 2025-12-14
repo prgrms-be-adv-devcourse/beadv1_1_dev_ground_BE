@@ -1,6 +1,9 @@
 package io.devground.product.product.application.service;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -101,10 +104,18 @@ public class ProductRecommendApplication implements ProductRecommendUseCase {
 			return List.of();
 		}
 
-		return products.stream()
-			.map(ProductVectorUtil::toRecommendSpec)
-			.limit(size)
-			.toList();
+		Map<String, Product> productMap = products.stream()
+			.collect(Collectors.toMap(Product::getCode, product -> product));
+
+		List<ProductRecommendSpec> sortedSpecs = new ArrayList<>();
+		for (String productCode : productCodes) {
+			Product product = productMap.get(productCode);
+			if (product != null) {
+				sortedSpecs.add(ProductVectorUtil.toRecommendSpec(product));
+			}
+		}
+
+		return sortedSpecs.stream().limit(size).toList();
 	}
 
 	private int convertToSafeSize(Integer size) {
