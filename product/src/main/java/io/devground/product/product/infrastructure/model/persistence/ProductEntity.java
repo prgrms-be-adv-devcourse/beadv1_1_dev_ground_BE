@@ -24,6 +24,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(
+	name = "product",
 	indexes = {
 		@Index(name = "idx_product_delete_status_created", columnList = "deleteStatus, createdAt"),
 		@Index(name = "idx_product_code_deleted", columnList = "code, deleteStatus")

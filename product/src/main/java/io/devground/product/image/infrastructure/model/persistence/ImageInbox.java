@@ -18,6 +18,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(
+	name = "imageInbox",
 	uniqueConstraints = @UniqueConstraint(
 		name = "uk_saga_image_inbox",
 		columnNames = {"sagaId", "eventType"}
