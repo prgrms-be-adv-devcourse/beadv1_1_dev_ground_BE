@@ -120,7 +120,7 @@ spring:
                 - CustomAuthFilter
 
             - id: chat-ws
-              uri: lb://CHAT
+              uri: lb://USER-SERVICE
               predicates:
                 - Path=/api/chat/ws-chat
               filters:
@@ -128,7 +128,7 @@ spring:
                 - CustomAuthFilter
 
             - id: chat
-              uri: lb://CHAT
+              uri: lb://USER-SERVICE
               predicates:
                 - Path=/api/chat/**
               filters:

@@ -11,6 +11,11 @@ spring:
     bootstrap-servers:
       - localhost:9092
 
+  data:
+    mongodb:
+      uri: ${MONGO_KEY}
+      database: chat
+
   datasource:
     driver-class-name: org.mariadb.jdbc.Driver
     url: ${MARIA_DB_URL}
@@ -30,3 +35,9 @@ eureka:
     prefer-ip-address: false
     hostname: localhost
     non-secure-port: ${server.port}
+
+feign:
+  product-service:
+    url: http://localhost:8080
+  user-service:
+    url: http://localhost:18080
