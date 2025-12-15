@@ -23,12 +23,14 @@ spec:
           image: mariadb:11
           ports:
             - containerPort: 3306
-#          envFrom:
-#            - secretRef:
-#                name: userdb-secret
-#          env:
-#            - name: MARIADB_ROOT_PASSWORD
-#              valueFrom:
-#                secretKeyRef:
-#                  name: userdb-secret
-#                  key: ROOT_PASSWORD
+          envFrom:
+            - secretRef:
+                name: mariadb-secret
+          volumeMounts:
+            - name: init-script
+              mountPath: /docker-entrypoint-initdb.d
+      volumes:
+        - name: init-script
+          configMap:
+            name: mariadb-init-script
+

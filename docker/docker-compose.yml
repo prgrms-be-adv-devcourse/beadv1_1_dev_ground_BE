@@ -34,6 +34,7 @@ services:
       - "3306:3306"
     volumes:
       - ./mysql-data:/var/lib/mysql
+      - ./init-mysql.sql:/docker-entrypoint-initdb.d/init.sql
 
 
   mariadb:
@@ -44,25 +45,13 @@ services:
       MARIADB_ROOT_PASSWORD: R00t!2025@Secure2
       MARIADB_USER: mariaId
       MARIADB_PASSWORD: mariaPwd
-      MARIADB_DATABASE: dbay_db
+      MARIADB_DATABASE: dbay_user
       TZ: Asia/Seoul
     ports:
       - "3307:3306"
     volumes:
       - ./maria-data:/var/lib/mysql
-
-
-  postgres:
-    image: postgres:15.15
-    container_name: postgres
-    restart: unless-stopped
-    environment:
-      POSTGRES_USER: R00t!2025@Secure3
-      POSTGRES_PASSWORD: postgresPwd
-      POSTGRES_DB: dbay_db
-      TZ: Asia/Seoul
-    ports:
-      - "3308:5432"
+      - ./init-mariadb.sql:/docker-entrypoint-initdb.d/init.sql
 
 
   kafka:

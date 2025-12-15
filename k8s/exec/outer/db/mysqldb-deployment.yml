@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+
+kind: Deployment
+
+metadata:
+  name: mysql-image
+  labels:
+    app: mysql-image
+
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mysql-image
+
+  template:
+    metadata:
+      name: mysql-db
+      labels:
+        app: mysql-db
+
+    spec:
+      containers:
+        - name: mysql-db
+          image: mysql
+          ports:
+            - containerPort: 3306
+          envFrom:
+            - secretRef:
+                name: mysqldb-secret
+          volumeMounts:
+            - name: init-script
+              mountPath: /docker-entrypoint-initdb.d
+      volumes:
+        - name: init-script
+          configMap:
+            name: mysql-init-script
