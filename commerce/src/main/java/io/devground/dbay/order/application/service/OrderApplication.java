@@ -130,12 +130,12 @@ public class OrderApplication implements OrderUseCase {
 
     @Override
     @Transactional(readOnly = true)
-    public PageDto<OrderDescription> getOrderLists(UserCode userCode, RoleType roleType, PageQuery pageQuery) {
+    public PageDto<OrderDescription> getOrderLists(UserCode userCode, RoleType roleType, PageQuery pageQuery, OrderStatus orderStatus) {
         if (userCode == null) {
             throw ServiceError.USER_NOT_FOUNT.throwServiceException();
         }
 
-        PageDto<OrderDescription> orderPage = orderPersistencePort.getOrders(userCode, roleType, pageQuery);
+        PageDto<OrderDescription> orderPage = orderPersistencePort.getOrders(userCode, roleType, pageQuery, orderStatus);
 
         List<OrderDescription> orders = orderPage.items();
 

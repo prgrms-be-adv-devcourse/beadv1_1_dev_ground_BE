@@ -59,12 +59,13 @@ public class OrderApiController {
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "createdAt") String sort,
-            @RequestParam(defaultValue = "DESC") SortSpec.Direction dir
+            @RequestParam(defaultValue = "DESC") SortSpec.Direction dir,
+            @RequestParam(defaultValue = "ALL") OrderStatus orderStatus
             ) {
         PageQuery pageQuery = new PageQuery(page, size, new SortSpec(sort, dir));
         return BaseResponse.success(
                 200,
-                orderApplication.getOrderLists(new UserCode(userCode), roleType, pageQuery),
+                orderApplication.getOrderLists(new UserCode(userCode), roleType, pageQuery, orderStatus),
                 "주문 목록 조회 성공"
         );
     }

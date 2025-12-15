@@ -2,7 +2,6 @@ package io.devground.dbay.cart.infrastructure.adapter.in.web;
 
 import io.devground.core.model.web.BaseResponse;
 import io.devground.dbay.cart.application.service.CartApplication;
-import io.devground.dbay.cart.application.vo.ProductInfoSnapShot;
 import io.devground.dbay.cart.domain.vo.*;
 import io.devground.dbay.cart.infrastructure.adapter.in.vo.AddCartItemRequest;
 import io.devground.dbay.cart.infrastructure.adapter.in.vo.AddCartItemResponse;

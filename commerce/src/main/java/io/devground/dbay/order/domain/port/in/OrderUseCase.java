@@ -9,7 +9,7 @@ import java.util.List;
 public interface OrderUseCase {
     void createOrderByOne(UserCode userCode, ProductCode productCode);
     void createOrderBySelected(UserCode userCode, List<ProductCode> productCodes);
-    PageDto<OrderDescription> getOrderLists(UserCode userCode, RoleType roleType, PageQuery pageQuery);
+    PageDto<OrderDescription> getOrderLists(UserCode userCode, RoleType roleType, PageQuery pageQuery, OrderStatus orderStatus);
     OrderDetailDescription getOrderDetail(UserCode userCode, OrderCode orderCode);
     void confirmOrder(UserCode userCode, OrderCode orderCode);
     void cancelOrder(UserCode userCode, OrderCode orderCode);
