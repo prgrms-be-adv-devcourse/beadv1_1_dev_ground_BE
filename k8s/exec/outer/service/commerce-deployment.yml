@@ -48,3 +48,7 @@ spec:
           image: jihei1/commerce:latest
           ports:
             - containerPort: 8081
+
+          envFrom:
+            - secretRef:
+                name: commerce-secret
