@@ -15,6 +15,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
+import io.devground.core.model.exception.ServiceException;
+import io.devground.core.model.vo.ErrorCode;
 
 import java.util.List;
 import java.util.Locale;
@@ -42,13 +44,14 @@ public class ChatController {
     ) {
         String buyerCode = request.getBuyerCode();
         if (buyerCode == null || buyerCode.isBlank()) {
-            buyerCode = userCode;
+            buyerCode = userCode; // fallback to header
         }
         if (buyerCode == null || buyerCode.isBlank()) {
-            throw new IllegalArgumentException("xcode 못받음 ");
+            throw new ServiceException(ErrorCode.PARAMETER_INVALID, "X-CODE가 비어 있습니다.");
         }
+        // 본인 상품 채팅 방지
         if (request.getSellerCode() != null && request.getSellerCode().equals(buyerCode)) {
-            throw new IllegalArgumentException("본인 상품에는 채팅을 시작할 수 없습니다.");
+            throw new ServiceException(ErrorCode.PARAMETER_INVALID, "본인 상품에는 채팅을 시작할 수 없습니다.");
         }
         return chatRoomService.getOrCreateRoom(
                 request.getProductCode(),
@@ -95,7 +98,7 @@ public class ChatController {
             @PathVariable String chatId
     ) {
         if (userCode == null || userCode.isBlank()) {
-            throw new IllegalArgumentException("X-CODE 헤더가 비어 있습니다.");
+            throw new ServiceException(ErrorCode.PARAMETER_INVALID, "X-CODE 헤더가 비어 있습니다.");
         }
         userClient.getUser(userCode).throwIfNotSuccess();
         return chatRoomService.leaveRoom(chatId, userCode);

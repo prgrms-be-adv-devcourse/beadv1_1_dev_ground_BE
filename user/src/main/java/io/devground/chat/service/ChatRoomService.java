@@ -8,6 +8,8 @@ import io.devground.chat.model.entity.ChatMessages;
 import io.devground.chat.model.entity.ChatRoom;
 import io.devground.chat.repository.MessageRepository;
 import io.devground.chat.repository.RoomRepository;
+import io.devground.core.model.exception.ServiceException;
+import io.devground.core.model.vo.ErrorCode;
 import io.devground.core.model.web.BaseResponse;
 import lombok.extern.slf4j.Slf4j;
 import lombok.RequiredArgsConstructor;
@@ -57,7 +59,7 @@ public class ChatRoomService {
 
     public ChatRoom getRoom(String chatId) {
         return roomRepository.findById(chatId)
-                .orElseThrow(() -> new IllegalArgumentException("채팅방을 찾을 수 없습니다: " + chatId));
+                .orElseThrow(() -> new ServiceException(ErrorCode.PARAMETER_INVALID, "채팅방을 찾을 수 없습니다: " + chatId));
     }
 
 
@@ -89,7 +91,7 @@ public class ChatRoomService {
         ChatRoom room = getRoom(chatId);
         boolean isParticipant = userCode.equals(room.getSellerCode()) || userCode.equals(room.getBuyerCode());
         if (!isParticipant) {
-            throw new IllegalArgumentException("이 채팅방의 참여자가 아닙니다.");
+            throw new ServiceException(ErrorCode.PARAMETER_INVALID, "이 채팅방의 참여자가 아닙니다.");
         }
         room.close();
         return roomRepository.save(room);

@@ -7,6 +7,8 @@ import io.devground.chat.model.event.ChatMessageEvent;
 import io.devground.chat.service.ChatEventProducer;
 import io.devground.chat.service.ChatMessageService;
 import io.devground.chat.service.ChatRoomService;
+import io.devground.core.model.exception.ServiceException;
+import io.devground.core.model.vo.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.handler.annotation.Header;
@@ -31,7 +33,7 @@ public class ChatWsController {
         log.info("메세지 받음: {}", request);
         String chatId = request.getChatId();
         if (chatId == null || chatId.isBlank()) {
-            throw new IllegalArgumentException("chatId가 비어 있습니다.");
+            throw new ServiceException(ErrorCode.PARAMETER_INVALID, "chatId가 비어 있습니다.");
         }
         validateUser(userCode, request.getSenderCode());
         chatRoomService.getRoom(chatId);
@@ -47,10 +49,10 @@ public class ChatWsController {
 
     private void validateUser(String userCodeHeader, String userCodeBody) {
         if (userCodeBody == null || userCodeBody.isBlank()) {
-            throw new IllegalArgumentException("senderCode가 비어 있습니다.");
+            throw new ServiceException(ErrorCode.PARAMETER_INVALID, "senderCode가 비어 있습니다.");
         }
         if (userCodeHeader == null || userCodeHeader.isBlank()) {
-            throw new IllegalArgumentException("X-CODE 헤더가 비어 있습니다.");
+            throw new ServiceException(ErrorCode.PARAMETER_INVALID, "X-CODE 헤더가 비어 있습니다.");
         }
 
         userClient.getUser(userCodeHeader).throwIfNotSuccess();
