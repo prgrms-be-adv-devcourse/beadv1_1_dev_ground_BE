@@ -33,7 +33,7 @@ public class ChatWsController {
         log.info("메세지 받음: {}", request);
         String chatId = request.getChatId();
         if (chatId == null || chatId.isBlank()) {
-            throw new ServiceException(ErrorCode.PARAMETER_INVALID, "chatId가 비어 있습니다.");
+            throw new ServiceException(ErrorCode.CHAT_ID_MISSING);
         }
         validateUser(userCode, request.getSenderCode());
         chatRoomService.getRoom(chatId);
@@ -49,10 +49,10 @@ public class ChatWsController {
 
     private void validateUser(String userCodeHeader, String userCodeBody) {
         if (userCodeBody == null || userCodeBody.isBlank()) {
-            throw new ServiceException(ErrorCode.PARAMETER_INVALID, "senderCode가 비어 있습니다.");
+            throw new ServiceException(ErrorCode.SENDER_CODE_MISSING);
         }
         if (userCodeHeader == null || userCodeHeader.isBlank()) {
-            throw new ServiceException(ErrorCode.PARAMETER_INVALID, "X-CODE 헤더가 비어 있습니다.");
+            throw new ServiceException(ErrorCode.XCODE_NOT_FOUND);
         }
 
         userClient.getUser(userCodeHeader).throwIfNotSuccess();

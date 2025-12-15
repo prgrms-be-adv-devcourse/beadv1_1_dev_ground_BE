@@ -13,6 +13,7 @@ public enum ErrorCode {
 
 	// common
 	CODE_MUST_BE_INPUT(400, "코드는 반드시 입력되어야 합니다."),
+	XCODE_NOT_FOUND(400, "XCODE가 비어 있습니다."),
 	CODE_INVALID(400, "잘못된 코드 형식입니다."),
 	METHOD_NOT_ALLOWED(400, "잘못된 Http Method 입니다."),
 	PAGE_MUST_BE_POSITIVE(400, "페이지 번호는 0보다 커야합니다."),
@@ -104,7 +105,20 @@ public enum ErrorCode {
 	PAYMENT_NOT_FOUND(400, "결제 내역을 찾을 수 없습니다."),
 
 	// saga
-	SAGA_NOT_FOUND(404, "사가 정보를 찾을 수 없습니다.");
+	SAGA_NOT_FOUND(404, "사가 정보를 찾을 수 없습니다."),
+
+
+	//chat
+	SENDER_CODE_MISSING(400, "senderCode가 비어 있습니다."),
+	CHAT_ROOM_NOT_FOUND(404, "채팅방을 찾을 수 없습니다."),
+	CHAT_ROOM_ACCESS_DENIED(403, "이 채팅방의 참여자가 아닙니다."),
+	CHAT_ID_MISSING(400, "chatId가 비어 있습니다."),
+	CHAT_SELF_PRODUCT_NOT_ALLOWED(403, "본인 상품에는 채팅을 시작할 수 없습니다.");
+
+
+
+
+
 
 	private final int httpStatus;
 	private final String message;
