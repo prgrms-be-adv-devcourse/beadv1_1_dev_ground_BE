@@ -17,9 +17,6 @@ spring:
   application:
     name: api-gateway
 
-  profiles:
-    active: stage
-
   config:
     import: optional:classpath:env.properties
 
