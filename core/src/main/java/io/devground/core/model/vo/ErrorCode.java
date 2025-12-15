@@ -77,6 +77,7 @@ public enum ErrorCode {
 	CANNOT_EXCEED_MAX_DEPTH(400, "카테고리는 최대 뎁스를 초과할 수 없습니다."),
 	MISMATCH_ON_DEPTH(400, "해당 카테고리의 하위에 등록할 수 없습니다."),
 	CATEGORY_MUST_BE_INPUT(400, "카테고리는 반드시 입력되어야 합니다"),
+	CATEGORY_PARENT_CYCLE_DETECTED(400, "상위 카테고리 조회 중 순환이 발생하였습니다."),
 	CATEGORY_NOT_FOUND(404, "카테고리를 찾을 수 없습니다."),
 
 	// image

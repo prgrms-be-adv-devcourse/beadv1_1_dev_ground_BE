@@ -1,6 +1,7 @@
 package io.devground.product.product.infrastructure.model.persistence;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.elasticsearch.annotations.CompletionField;
@@ -69,6 +70,9 @@ public class ProductDocument {
 		}
 	)
 	private String categoryFullPath;
+
+	@Field(type = FieldType.Long)
+	private List<Long> categoryPathIds;
 
 	@Field(type = FieldType.Keyword)
 	private String sellerCode;

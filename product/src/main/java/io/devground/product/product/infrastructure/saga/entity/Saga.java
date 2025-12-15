@@ -28,6 +28,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(
+	name = "saga",
 	indexes = {
 		@Index(name = "idx_step_started_status", columnList = "currentStep, startedAt, sagaStatus"),
 		@Index(name = "idx_status_updated", columnList = "sagaStatus, updatedAt"),

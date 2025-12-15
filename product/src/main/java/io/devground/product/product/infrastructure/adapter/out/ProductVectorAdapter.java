@@ -52,6 +52,7 @@ public class ProductVectorAdapter implements ProductVectorPort {
 
 		try {
 			vectorStore.delete(List.of(product.getCode()));
+			log.info("Product 벡터 인덱싱 성공");
 		} catch (ProductDomainException | ServiceException e) {
 			MDC.put("errorMsg", e.getMessage());
 			log.error("Product 벡터 삭제 인덱싱 실패");
