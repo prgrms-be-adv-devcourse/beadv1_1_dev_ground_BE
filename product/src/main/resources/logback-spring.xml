@@ -28,25 +28,25 @@
 
     <!-- Saga 패턴 -->
     <property name="SAGA_INFO_PATTERN"
-              value="%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} [SagaId=%X{sagaId:-N/A}] [ProductCode=%X{productCode:-N/A}] %msg%n"/>
+              value="%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} [SagaId=%X{sagaId:-N/A}] [ProductCode=%X{productCode:-N/A}] %msg%n"/>
     <property name="SAGA_ERROR_PATTERN"
-              value="%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} [SagaId=%X{sagaId:-N/A}] [ProductCode=%X{productCode:-N/A}] [Exception=%X{errorMsg:-N/A}] %msg%n"/>
+              value="%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} [SagaId=%X{sagaId:-N/A}] [ProductCode=%X{productCode:-N/A}] [Exception=%X{errorMsg:-N/A}] %msg%n"/>
 
     <!-- ES 인덱싱 패턴 -->
     <property name="ES_INDEX_INFO_PATTERN"
-              value="%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} [ProductId=%X{productId:-N/A}] [ProductCode=%X{productCode:-N/A}] %msg%n"/>
+              value="%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} [ProductId=%X{productId:-N/A}] [ProductCode=%X{productCode:-N/A}] %msg%n"/>
     <property name="ES_INDEX_ERROR_PATTERN"
-              value="%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} [ProductId=%X{productId:-N/A}] [ProductCode=%X{productCode:-N/A}] [Exception=%X{errorMsg:-N/A}] %msg%n"/>
+              value="%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} [ProductId=%X{productId:-N/A}] [ProductCode=%X{productCode:-N/A}] [Exception=%X{errorMsg:-N/A}] %msg%n"/>
 
     <!-- ES 배치 패턴 -->
     <property name="ES_BATCH_PATTERN"
-              value="%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"/>
+              value="%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"/>
 
     <!-- ES 검색 패턴 -->
     <property name="ES_SEARCH_INFO_PATTERN"
-              value="%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} [Keyword=%X{keyword:-N/A}] [SuggestType=%X{suggestType:-N/A}] %msg%n"/>
+              value="%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} [Keyword=%X{keyword:-N/A}] [SuggestType=%X{suggestType:-N/A}] %msg%n"/>
     <property name="ES_SEARCH_ERROR_PATTERN"
-              value="%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} [Keyword=%X{keyword:-N/A}] [SuggestType=%X{suggestType:-N/A}] [Exception=%X{errorMsg:-N/A}] %msg%n"/>
+              value="%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} [Keyword=%X{keyword:-N/A}] [SuggestType=%X{suggestType:-N/A}] [Exception=%X{errorMsg:-N/A}] %msg%n"/>
 
     <!-- 콘솔 출력 Appender -->
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
