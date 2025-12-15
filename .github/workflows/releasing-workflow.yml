@@ -57,15 +57,28 @@ jobs:
           PREV_TAG="${{ steps.tag_version.outputs.previous_tag }}"
           SERVICE_DIR="${{ inputs.app-dir }}"
 
-          if [ -z "$PREV_TAG" ]; then
-            # 첫 릴리즈인 경우
-            CHANGED_FILES=$(git diff-tree --no-commit-id --name-only -r HEAD -- "$SERVICE_DIR/")
-          else
-            # 이전 태그 이후 해당 서비스 디렉토리의 변경사항 확인
-            CHANGED_FILES=$(git diff --name-only ${PREV_TAG}..HEAD -- "$SERVICE_DIR/")
+          echo "Checking changes in: $SERVICE_DIR"
+          echo "Previous tag: $PREV_TAG"
+
+          # 태그 존재 여부 확인
+          if [ -n "$PREV_TAG" ] && ! git rev-parse "$PREV_TAG" >/dev/null 2>&1; then
+            echo "⚠️ Previous tag $PREV_TAG not found in repository, treating as first release"
+            PREV_TAG=""
           fi
 
-          echo "Checking changes in: $SERVICE_DIR"
+          if [ -z "$PREV_TAG" ]; then
+            # 첫 릴리즈인 경우 - 해당 서비스 디렉토리에 파일이 있는지만 확인
+            if [ -d "$SERVICE_DIR" ] && [ "$(ls -A $SERVICE_DIR 2>/dev/null)" ]; then
+              CHANGED_FILES="initial"
+              echo "First release detected"
+            else
+              CHANGED_FILES=""
+            fi
+          else
+            # 이전 태그 이후 해당 서비스 디렉토리의 변경사항 확인
+            CHANGED_FILES=$(git diff --name-only ${PREV_TAG}..HEAD -- "$SERVICE_DIR/" 2>/dev/null || echo "")
+          fi
+
           echo "Changed files:"
           echo "$CHANGED_FILES"
 
