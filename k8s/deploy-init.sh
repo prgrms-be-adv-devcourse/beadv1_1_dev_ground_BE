@@ -20,6 +20,7 @@ kubectl apply -f ./k8s/exec/config/elk/el-configmap.yml
 kubectl apply -f ./k8s/exec/config/elk/kb-configmap.yml
 kubectl apply -f ./k8s/exec/config/elk/logstash-configmap.yml
 kubectl apply -f ./k8s/exec/config/audit/prometheus-configmap.yml
+kubectl apply -f ./k8s/exec/config/lb/nginx-configmap.yml
 kubectl apply -f ./k8s/exec/config/lb/nginx-deployment.yml
 kubectl apply -f ./k8s/exec/config/lb/nginx-service.yml
 
@@ -74,8 +75,6 @@ kubectl apply -f ./k8s/exec/outer/infra/eureka-deployment.yml
 kubectl apply -f ./k8s/exec/outer/infra/eureka-service.yml
 kubectl apply -f ./k8s/exec/outer/infra/gateway-deployment.yml
 kubectl apply -f ./k8s/exec/outer/infra/gateway-service.yml
-kubectl apply -f ./k8s/exec/outer/lb/nginx-deployment.yml
-kubectl apply -f ./k8s/exec/outer/lb/nginx-service.yml
 
 echo "✓ Infrastructure 배포 완료"
 echo "  Eureka가 준비될 때까지 30초 대기 중..."
