@@ -59,7 +59,7 @@ public class ChatRoomService {
 
     public ChatRoom getRoom(String chatId) {
         return roomRepository.findById(chatId)
-                .orElseThrow(() -> new ServiceException(ErrorCode.PARAMETER_INVALID, "채팅방을 찾을 수 없습니다: " + chatId));
+                .orElseThrow(() -> new ServiceException(ErrorCode.CHAT_ROOM_NOT_FOUND));
     }
 
 
@@ -91,7 +91,7 @@ public class ChatRoomService {
         ChatRoom room = getRoom(chatId);
         boolean isParticipant = userCode.equals(room.getSellerCode()) || userCode.equals(room.getBuyerCode());
         if (!isParticipant) {
-            throw new ServiceException(ErrorCode.PARAMETER_INVALID, "이 채팅방의 참여자가 아닙니다.");
+            throw new ServiceException(ErrorCode.CHAT_ROOM_ACCESS_DENIED);
         }
         room.close();
         return roomRepository.save(room);
