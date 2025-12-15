@@ -11,9 +11,6 @@ spring:
     username: mysqlId
     password: mysqlPwd
 
-  profiles:
-    active: stage
-
   config:
     import: optional:classpath:env.properties
 

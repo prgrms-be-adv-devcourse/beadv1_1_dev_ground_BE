@@ -46,8 +46,8 @@ echo "✓ Gateway 배포 완료"
 # 4. Nginx LoadBalancer 배포
 echo ""
 echo "[4/5] Nginx LoadBalancer 배포 중..."
-kubectl apply -f ./k8s/exec/outer/lb/nginx-deployment.yml
-kubectl apply -f ./k8s/exec/outer/lb/nginx-service.yml
+kubectl apply -f ./k8s/exec/config/lb/nginx-deployment.yml
+kubectl apply -f ./k8s/exec/config/lb/nginx-service.yml
 
 echo "✓ Nginx 배포 완료"
 
