@@ -1,9 +1,11 @@
 package io.devground.core.model.web;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import io.devground.core.model.exception.ServiceException;
 import io.devground.core.model.vo.ErrorCode;
 import lombok.NonNull;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public record BaseResponse<T>(
 
 	int resultCode,
