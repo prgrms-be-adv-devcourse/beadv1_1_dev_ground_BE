@@ -2,8 +2,8 @@ server:
   port: 18080
 
 spring:
-  profiles:
-    active: local
+#  profiles:
+#    active: local
 
   config:
     import: optional:classpath:env.properties
