@@ -126,7 +126,7 @@ logging:
 kakao:
   api-key: ${KAKAO_API_KEY}
   client-secret: ${KAKAO_CLIENT_SECRET}
-  redirect-uri: http://localhost:8000/api/users/kakaoLogin
+  redirect-uri: http://dbay.site:8000/api/users/kakaoLogin
   authentication:
     method: client_secret_post
     grant-type: authorization_code
