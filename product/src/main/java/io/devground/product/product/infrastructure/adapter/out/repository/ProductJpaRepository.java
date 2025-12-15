@@ -71,10 +71,12 @@ public interface ProductJpaRepository extends JpaRepository<ProductEntity, Long>
 			FROM ProductEntity p
 			JOIN FETCH p.category c
 			JOIN FETCH p.productSale ps
+			WHERE p.deleteStatus = 'N'
 			""",
 		countQuery = """
 			SELECT count(p)
 			FROM ProductEntity p
+			WHERE p.deleteStatus = 'N'
 			"""
 	)
 	Page<ProductEntity> findAllWithCategories(Pageable pageable);

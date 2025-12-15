@@ -179,16 +179,14 @@ public class ProductSearchAdapter implements ProductSearchPort {
 
 		// 3. 카테고리 필터
 		if (!CollectionUtils.isEmpty(request.categoryIds())) {
-			List<FieldValue> categoryValues = request.categoryIds().stream()
+			List<FieldValue> values = request.categoryIds().stream()
 				.map(FieldValue::of)
 				.toList();
 
 			boolBuilder.filter(f -> f
 				.terms(t -> t
-					.field("categoryId")
-					.terms(tv -> tv.value(categoryValues))
-				)
-			);
+					.field("categoryPathIds")
+					.terms(v -> v.value(values))));
 		}
 
 		// TODO: 버전 변경으로 인한 로직 점검 필요
@@ -292,7 +290,10 @@ public class ProductSearchAdapter implements ProductSearchPort {
 		}
 
 		if (request.categoryId() != null) {
-			applyExactlyBuilder(boolBuilder, "categoryId", FieldValue.of(request.categoryId()));
+			boolBuilder.filter(f -> f
+				.term(t -> t
+					.field("categoryPathIds")
+					.value(FieldValue.of(request.categoryId()))));
 		}
 
 		boolBuilder.should(s -> s

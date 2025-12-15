@@ -10,6 +10,7 @@ import java.util.Set;
 import org.springframework.data.elasticsearch.core.suggest.Completion;
 
 import io.devground.core.model.vo.DeleteStatus;
+import io.devground.core.model.vo.ErrorCode;
 import io.devground.product.product.domain.model.Category;
 import io.devground.product.product.domain.model.Product;
 import io.devground.product.product.domain.model.ProductSale;
@@ -45,6 +46,7 @@ public class ProductSearchUtil {
 			.categoryId(category.getId())
 			.categoryName(category.getName())
 			.categoryFullPath(category.getFullPath())
+			.categoryPathIds(buildCategoryPathIds(category))
 			.sellerCode(productSale != null ? productSale.getSellerCode() : null)
 			.price(productSaleSpec != null ? productSaleSpec.price() : null)
 			.productStatus(productSale != null ? productSaleSpec.productStatus().name() : null)
@@ -110,5 +112,30 @@ public class ProductSearchUtil {
 		}
 
 		return weight;
+	}
+
+	private List<Long> buildCategoryPathIds(Category category) {
+
+		if (category == null) {
+			return null;
+		}
+
+		List<Long> categoryIds = new ArrayList<>();
+		Set<Long> visited = new LinkedHashSet<>();
+
+		Category curCategory = category;
+		while (curCategory != null) {
+			Long id = curCategory.getId();
+
+			if (id == null || !visited.add(id)) {
+				throw ErrorCode.CATEGORY_PARENT_CYCLE_DETECTED.throwServiceException();
+			}
+
+			categoryIds.add(0, id);
+
+			curCategory = curCategory.getParent();
+		}
+
+		return categoryIds;
 	}
 }
