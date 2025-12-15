@@ -29,3 +29,7 @@ spec:
           image: jihei1/user:latest
           ports:
             - containerPort: 18080
+
+          envFrom:
+            - secretRef:
+                name: user-secret
