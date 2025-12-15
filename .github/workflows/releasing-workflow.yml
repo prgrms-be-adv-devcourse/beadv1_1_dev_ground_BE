@@ -49,16 +49,32 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           dry_run: true
 
-      # 릴리즈 필요 여부 확인
+      # 릴리즈 필요 여부 확인 (서비스별 변경사항 체크)
       - name: Check if release is needed
         id: check_release
         run: |
-          if [[ "${{ steps.tag_version.outputs.new_version }}" != "${{ steps.tag_version.outputs.previous_version }}" ]]; then
+          # 이전 태그 확인
+          PREV_TAG="${{ steps.tag_version.outputs.previous_tag }}"
+          SERVICE_DIR="${{ inputs.app-dir }}"
+
+          if [ -z "$PREV_TAG" ]; then
+            # 첫 릴리즈인 경우
+            CHANGED_FILES=$(git diff-tree --no-commit-id --name-only -r HEAD -- "$SERVICE_DIR/")
+          else
+            # 이전 태그 이후 해당 서비스 디렉토리의 변경사항 확인
+            CHANGED_FILES=$(git diff --name-only ${PREV_TAG}..HEAD -- "$SERVICE_DIR/")
+          fi
+
+          echo "Checking changes in: $SERVICE_DIR"
+          echo "Changed files:"
+          echo "$CHANGED_FILES"
+
+          if [ -n "$CHANGED_FILES" ]; then
             echo "should_release=true" >> $GITHUB_OUTPUT
-            echo "New version detected: ${{ steps.tag_version.outputs.new_version }}"
+            echo "✅ Changes detected in $SERVICE_DIR, proceeding with release"
           else
             echo "should_release=false" >> $GITHUB_OUTPUT
-            echo "No changes detected, skipping release"
+            echo "ℹ️ No changes in $SERVICE_DIR since last tag, skipping release"
           fi
 
       # 실제 태깅 (릴리즈가 필요할 때만)
