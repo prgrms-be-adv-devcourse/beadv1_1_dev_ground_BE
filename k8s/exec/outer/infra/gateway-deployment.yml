@@ -32,5 +32,6 @@ spec:
           env:
             - name: SPRING_PROFILES_ACTIVE
               value: "deploy"
-            - name: JWT_SECRET_KEY
-              value: "BBpgN9RJg1nYobpf7KHfJUaoiWSO-gD9EiEApPkV1rWJmH0vAVjMT2Pn-MtaaeElM7GFN88aQFl7d9adK_hB9w"
+          envFrom:
+            - secretRef:
+                name: gateway-secret

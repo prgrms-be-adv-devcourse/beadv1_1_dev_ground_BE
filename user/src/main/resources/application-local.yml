@@ -1,12 +1,4 @@
 spring:
-  application:
-    name: user-service
-
-  jpa:
-    hibernate:
-      naming:
-        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
-
   kafka:
     bootstrap-servers:
       - localhost:9092
@@ -18,10 +10,9 @@ spring:
 
   datasource:
     driver-class-name: org.mariadb.jdbc.Driver
-    url: ${MARIA_DB_URL}
-    username: ${MARIA_DB_USERNAME}
-    password: ${MARIA_DB_PASSWORD}
-
+    url: jdbc:mariadb://localhost:3307/dbay_user?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+    username: mariaId
+    password: mariaPwd
 
 eureka:
   client:
