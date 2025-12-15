@@ -145,7 +145,7 @@ public class CartApplication implements CartUseCase {
         List<CartItemInfo> cartItemInfos = productInfoSnapShots.stream()
                 .map(pi ->
                         new CartItemInfo(
-                                pi.productCode(),
+                                pi.productCode().value(),
                                 pi.thumbnail(),
                                 pi.title(),
                                 pi.price()
@@ -194,7 +194,7 @@ public class CartApplication implements CartUseCase {
 
         return cartProducts.stream()
                 .map(ci -> new CartItemInfo(
-                        ci.productCode(),
+                        ci.productCode().value(),
                         ci.thumbnail(),
                         ci.title(),
                         ci.price()

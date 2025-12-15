@@ -15,7 +15,7 @@ public interface OrderPersistencePort {
     LocalDateTime getUpdatedAtByOrder(OrderCode orderCode);
     void createSingleOrder(UserInfo userInfo, Order order, OrderProduct orderProduct);
     void createSelectedOrder(UserInfo userInfo, Order order, List<OrderProduct> orderProducts);
-    PageDto<OrderDescription> getOrders(UserCode userCode, RoleType roleType, PageQuery pageQuery);
+    PageDto<OrderDescription> getOrders(UserCode userCode, RoleType roleType, PageQuery pageQuery, OrderStatus orderStatus);
     List<OrderItemInfo> getOrderItems(List<String> orderCodes);
     OrderDetailDescription getOrderDetail(UserCode userCode, OrderCode orderCode);
     void cancel(OrderCode orderCode);

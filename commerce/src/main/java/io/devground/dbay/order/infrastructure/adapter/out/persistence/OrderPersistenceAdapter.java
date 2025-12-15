@@ -126,8 +126,8 @@ public class OrderPersistenceAdapter implements OrderPersistencePort {
     }
 
     @Override
-    public PageDto<OrderDescription> getOrders(UserCode userCode, RoleType roleType, PageQuery pageQuery) {
-        return orderListByRole(userCode, roleType, pageQuery);
+    public PageDto<OrderDescription> getOrders(UserCode userCode, RoleType roleType, PageQuery pageQuery, OrderStatus orderStatus) {
+        return orderListByRole(userCode, roleType, pageQuery, orderStatus);
     }
 
     @Override
@@ -232,12 +232,12 @@ public class OrderPersistenceAdapter implements OrderPersistencePort {
         return orderJpaRepository.changeDeliveryToDelivered(ids);
     }
 
-    private PageDto<OrderDescription> orderListByRole(UserCode userCode, RoleType roleType, PageQuery pageQuery) {
+    private PageDto<OrderDescription> orderListByRole(UserCode userCode, RoleType roleType, PageQuery pageQuery, OrderStatus orderStatus) {
         Pageable pageable = PageMapper.toPageable(pageQuery);
 
         Page<OrderEntity> orderPage = roleType == RoleType.USER ?
-                orderJpaRepository.findByNotDeletedOrders(userCode.value(),pageable)
-                : orderJpaRepository.findAllByNotDeletedOrders(pageable);
+                orderJpaRepository.findByNotDeletedOrders(userCode.value(),pageable, orderStatus)
+                : orderJpaRepository.findAllByNotDeletedOrders(pageable, orderStatus);
 
         List<OrderDescription> orders = orderPage.getContent().stream()
                 .map(OrderMapper::toOrderDescription)

@@ -1,5 +1,6 @@
 package io.devground.dbay.order.infrastructure.adapter.out.persistence;
 
+import io.devground.dbay.order.domain.vo.OrderStatus;
 import io.devground.dbay.order.domain.vo.UnsettledOrderItemResponse;
 import io.devground.dbay.order.infrastructure.model.persistence.OrderEntity;
 import org.springframework.data.domain.Page;
@@ -34,15 +35,17 @@ public interface OrderJpaRepository extends JpaRepository<OrderEntity, Long> {
         FROM OrderEntity o
         WHERE o.userCode = :userCode
         AND o.deleteStatus = io.devground.core.model.vo.DeleteStatus.N
+        AND (:orderStatus = io.devground.dbay.order.domain.vo.OrderStatus.ALL OR o.orderStatus = :orderStatus)
         """)
-    Page<OrderEntity> findByNotDeletedOrders(String userCode, Pageable pageable);
+    Page<OrderEntity> findByNotDeletedOrders(String userCode, Pageable pageable, OrderStatus orderStatus);
 
     @Query("""
         SELECT o
         FROM OrderEntity o
         WHERE o.deleteStatus = io.devground.core.model.vo.DeleteStatus.N
+        AND (:orderStatus = io.devground.dbay.order.domain.vo.OrderStatus.ALL OR o.orderStatus = :orderStatus)
         """)
-    Page<OrderEntity> findAllByNotDeletedOrders(Pageable pageable);
+    Page<OrderEntity> findAllByNotDeletedOrders(Pageable pageable, OrderStatus orderStatus);
 
     @Modifying
     @Query("""

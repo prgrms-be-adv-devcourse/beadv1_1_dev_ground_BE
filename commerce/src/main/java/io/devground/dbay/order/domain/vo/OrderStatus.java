@@ -1,6 +1,7 @@
 package io.devground.dbay.order.domain.vo;
 
 public enum OrderStatus {
+    ALL,
     PENDING,
     PAID,
     START_DELIVERY,

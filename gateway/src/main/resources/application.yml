@@ -95,19 +95,19 @@ spring:
               filters:
                 - CustomAuthFilter
 
-            - id: carts
+            - id: commerce
               uri: lb://COMMERCE
               predicates:
-                - Path=/api/carts/**
+                - Path=/api/commerce/**
               filters:
                 - CustomAuthFilter
 
-            - id: orders
-              uri: lb://COMMERCE
-              predicates:
-                - Path=/api/orders/**
-              filters:
-                - CustomAuthFilter
+#            - id: orders
+#              uri: lb://COMMERCE
+#              predicates:
+#                - Path=/api/orders/**
+#              filters:
+#                - CustomAuthFilter
 
             - id: users
               uri: lb://USER-SERVICE
