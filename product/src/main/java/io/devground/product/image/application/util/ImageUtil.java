@@ -42,7 +42,7 @@ public class ImageUtil {
 	public void validateImageExtension(String extension) {
 
 		if (extension == null || extension.isBlank()) {
-			ImageDomainErrorCode.INVALID_IMAGE_EXTENSION.throwException();
+			return;
 		}
 
 		String lowerExtension = extension.toLowerCase();
