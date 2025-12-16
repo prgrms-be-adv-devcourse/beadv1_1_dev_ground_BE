@@ -112,7 +112,19 @@ public class ProductOrchestrator implements ProductOrchestrationPort {
 		try {
 			List<URL> updatedPresignedUrls = new ArrayList<>();
 
-			if (!CollectionUtils.isEmpty(deleteUrls) || !CollectionUtils.isEmpty(newExtensions)) {
+			boolean hasValidDeleteUrls = deleteUrls != null && !deleteUrls.isEmpty()
+				&& deleteUrls.stream().anyMatch(url -> url != null && !url.isBlank());
+
+			List<String> validNewExtensions = null;
+			if (newExtensions != null && !newExtensions.isEmpty()) {
+				validNewExtensions = newExtensions.stream()
+					.filter(extension -> extension != null && !extension.isBlank())
+					.toList();
+			}
+
+			boolean hasValidNewExtensions = validNewExtensions != null && !validNewExtensions.isEmpty();
+
+			if (hasValidDeleteUrls || hasValidNewExtensions) {
 				updatedPresignedUrls = imagePort.updateImages(PRODUCT, productCode, deleteUrls, newExtensions);
 			}
 
