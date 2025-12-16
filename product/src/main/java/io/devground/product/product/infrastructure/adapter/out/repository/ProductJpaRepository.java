@@ -59,11 +59,28 @@ public interface ProductJpaRepository extends JpaRepository<ProductEntity, Long>
 			""",
 		countQuery = """
 			SELECT count(p)
-			From ProductEntity p
-			where p.deleteStatus = 'N'
+			FROM ProductEntity p
+			WHERE p.deleteStatus = 'N'
 			"""
 	)
 	Page<ProductEntity> findAllWithSale(Pageable pageable);
+
+	@Query(value = """
+		SELECT p
+		FROM ProductEntity p
+		JOIN FETCH p.productSale ps
+		WHERE p.deleteStatus = 'N'
+		AND ps.sellerCode = :sellerCode
+		""",
+		countQuery = """
+			SELECT count(p)
+			FROM ProductEntity p
+			JOIN p.productSale ps
+			WHERE p.deleteStatus = 'N'
+			AND ps.sellerCode = :sellerCode
+			"""
+	)
+	Page<ProductEntity> findAllWithSaleByUserCode(@Param("sellerCode") String sellerCode, Pageable pageable);
 
 	@Query(
 		value = """

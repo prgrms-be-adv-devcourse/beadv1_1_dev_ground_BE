@@ -18,6 +18,8 @@ public interface ProductUseCase {
 
 	PageDto<GetAllProductsResponse> getProducts(PageQuery pageRequest);
 
+	PageDto<GetAllProductsResponse> getUserProducts(String sellerCode, PageQuery pageRequest);
+
 	RegistProductResponse registProduct(String sellerCode, RegistProductDto request);
 
 	Void saveImageUrls(String sellerCode, String productCode, ProductImageUrlsDto request);
