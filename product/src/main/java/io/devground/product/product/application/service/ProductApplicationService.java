@@ -55,6 +55,13 @@ public class ProductApplicationService implements ProductUseCase {
 	}
 
 	@Override
+	@Transactional(readOnly = true)
+	public PageDto<GetAllProductsResponse> getUserProducts(String sellerCode, PageQuery pageRequest) {
+
+		return productPort.getUserProducts(sellerCode, pageRequest);
+	}
+
+	@Override
 	public RegistProductResponse registProduct(String sellerCode, RegistProductDto request) {
 
 		// 1. 상품 저장
@@ -158,8 +165,8 @@ public class ProductApplicationService implements ProductUseCase {
 
 		return productPort.getCartProducts(request);
 	}
-
 	// TODO: 다시 한 번 확인해보기 - 단순한 작업을 이렇게 복잡하게 처리할 필요가 있을 것인가에 대하여
+
 	@Override
 	public Void updateStatusToSold(String sellerCode, CartProductsDto request) {
 

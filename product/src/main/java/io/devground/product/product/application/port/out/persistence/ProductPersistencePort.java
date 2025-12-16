@@ -16,6 +16,8 @@ public interface ProductPersistencePort {
 
 	PageDto<GetAllProductsResponse> getProducts(PageQuery pageRequest);
 
+	PageDto<GetAllProductsResponse> getUserProducts(String sellerCode, PageQuery pageRequest);
+
 	Product getProductByCode(String code);
 
 	Product save(String sellerCode, RegistProductDto request);

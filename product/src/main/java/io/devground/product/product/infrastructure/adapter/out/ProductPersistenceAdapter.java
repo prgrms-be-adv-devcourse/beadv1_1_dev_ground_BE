@@ -53,6 +53,19 @@ public class ProductPersistenceAdapter implements ProductPersistencePort {
 	}
 
 	@Override
+	public PageDto<GetAllProductsResponse> getUserProducts(String sellerCode, PageQuery pageRequest) {
+
+		Pageable pageable = PageUtils.convertToSafePageable(pageRequest);
+
+		Page<ProductEntity> products = productRepository.findAllWithSaleByUserCode(sellerCode, pageable);
+
+		Page<GetAllProductsResponse> responses = products
+			.map(product -> new GetAllProductsResponse(product, product.getProductSale()));
+
+		return PageMapper.from(responses);
+	}
+
+	@Override
 	public Product getProductByCode(String code) {
 
 		ProductEntity product = getProduct(code);

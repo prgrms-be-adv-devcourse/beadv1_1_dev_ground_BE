@@ -55,6 +55,20 @@ public class ProductApiController {
 		);
 	}
 
+	@GetMapping("/user")
+	@Operation(summary = "사용자 등록 상품 목록 조회", description = "DB에서 사용자가 등록한 상품 목록을 반환합니다. 페이징, 정렬을 사용합니다.")
+	public BaseResponse<PageDto<GetAllProductsResponse>> getUserProducts(
+		PageQuery pageRequest,
+		@RequestHeader("X-CODE") String sellerCode
+	) {
+
+		return BaseResponse.success(
+			OK.value(),
+			productApplication.getUserProducts(sellerCode, pageRequest),
+			"사용자가 등록한 상품 목록이 성공적으로 조회되었습니다."
+		);
+	}
+
 	// TODO: sellerCode 정책 정해진 후 수정
 	@PostMapping
 	@Operation(summary = "상품 등록",
