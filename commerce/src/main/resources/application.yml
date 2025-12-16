@@ -17,7 +17,7 @@ spring:
         index-name: product-vectors-index
         dimensions: 1536
         similarity: cosine
-        embedding-field-name: content
+        embedding-field-name: embedding_vector
     openai:
       api-key: ${OPEN_AI_API_KEY}
       base-url: https://api.openai.com/

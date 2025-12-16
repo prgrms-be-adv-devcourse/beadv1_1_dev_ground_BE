@@ -7,17 +7,17 @@ services:
       - "6379:6379"
 
 
-#  nginx:
-#    image: nginx:latest
-#    container_name: nginx
-#    ports:
-#      - "80:80"
-#      - "443:443"
-#    volumes:
-#      - ./nginx:/etc/nginx/conf.d
-#      - /etc/letsencrypt:/etc/letsencrypt:ro
-#    depends_on:
-#      - gateway
+  #  nginx:
+  #    image: nginx:latest
+  #    container_name: nginx
+  #    ports:
+  #      - "80:80"
+  #      - "443:443"
+  #    volumes:
+  #      - ./nginx:/etc/nginx/conf.d
+  #      - /etc/letsencrypt:/etc/letsencrypt:ro
+  #    depends_on:
+  #      - gateway
 
 
   mysql:
@@ -32,8 +32,8 @@ services:
       TZ: Asia/Seoul
     ports:
       - "3306:3306"
-#    volumes:
-#      - ./mysql-data:/var/lib/mysql
+    volumes:
+      - product-mysql-data:/var/lib/mysql
 
 
   mariadb:
@@ -48,21 +48,21 @@ services:
       TZ: Asia/Seoul
     ports:
       - "3307:3306"
-#    volumes:
-#      - ./maria-data:/var/lib/mysql
+    volumes:
+      - user-maria-data:/var/lib/mysql
 
 
-  postgres:
-    image: postgres:15.15
-    container_name: postgres
-    restart: unless-stopped
-    environment:
-      POSTGRES_USER: R00t!2025@Secure3
-      POSTGRES_PASSWORD: postgresPwd
-      POSTGRES_DB: dbay_db
-      TZ: Asia/Seoul
-    ports:
-      - "3308:5432"
+  #  postgres:
+  #    image: postgres:15.15
+  #    container_name: postgres
+  #    restart: unless-stopped
+  #    environment:
+  #      POSTGRES_USER: R00t!2025@Secure3
+  #      POSTGRES_PASSWORD: postgresPwd
+  #      POSTGRES_DB: dbay_db
+  #      TZ: Asia/Seoul
+  #    ports:
+  #      - "3308:5432"
 
 
   kafka:
@@ -126,3 +126,10 @@ services:
     depends_on:
       - elasticsearch
     restart: unless-stopped
+
+
+volumes:
+  product-mysql-data:
+  user-maria-data:
+  logstash-data:
+  elasticsearch-data:
