@@ -16,13 +16,10 @@ kubectl apply -f ./k8s/exec/config/db/mariadb-init-configmap.yml
 kubectl apply -f ./k8s/exec/config/db/mysql-init-configmap.yml
 kubectl apply -f ./k8s/exec/config/svc/secret.yml
 kubectl apply -f ./k8s/exec/config/mq/kafka-configmap.yml
-kubectl apply -f ./k8s/exec/config/elk/el-configmap.yml
-kubectl apply -f ./k8s/exec/config/elk/kb-configmap.yml
+kubectl apply -f ./k8s/exec/config/elk/elasticsearch-configmap.yml
+kubectl apply -f ./k8s/exec/config/elk/kibana-configmap.yml
 kubectl apply -f ./k8s/exec/config/elk/logstash-configmap.yml
-kubectl apply -f ./k8s/exec/config/audit/prometheus-configmap.yml
-kubectl apply -f ./k8s/exec/config/lb/nginx-configmap.yml
-kubectl apply -f ./k8s/exec/config/lb/nginx-deployment.yml
-kubectl apply -f ./k8s/exec/config/lb/nginx-service.yml
+#kubectl apply -f ./k8s/exec/config/audit/prometheus-configmap.yml
 
 echo "✓ ConfigMap 및 Secret 배포 완료"
 
@@ -61,10 +58,10 @@ echo "✓ ELK Stack 배포 완료"
 # 5. Monitoring (Prometheus, Grafana) 배포
 echo ""
 echo "[5/6] Monitoring Stack 배포 중..."
-kubectl apply -f ./k8s/exec/outer/audit/prometheus-deployment.yml
-kubectl apply -f ./k8s/exec/outer/audit/prometheus-service.yml
-kubectl apply -f ./k8s/exec/outer/audit/grafana-deployment.yml
-kubectl apply -f ./k8s/exec/outer/audit/grafana-service.yml
+#kubectl apply -f ./k8s/exec/outer/audit/prometheus-deployment.yml
+#kubectl apply -f ./k8s/exec/outer/audit/prometheus-service.yml
+#kubectl apply -f ./k8s/exec/outer/audit/grafana-deployment.yml
+#kubectl apply -f ./k8s/exec/outer/audit/grafana-service.yml
 
 echo "✓ Monitoring Stack 배포 완료"
 
