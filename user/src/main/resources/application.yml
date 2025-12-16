@@ -17,7 +17,7 @@ spring:
       database: chat
 
   mail:
-    host: smtp.gmail.com§
+    host: smtp.gmail.com
     port: 587
     username: ${MAIL_EMAIL}
     password: ${MAIL_PASSWORD}
