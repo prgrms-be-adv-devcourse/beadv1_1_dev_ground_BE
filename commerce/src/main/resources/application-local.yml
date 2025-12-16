@@ -1,10 +1,13 @@
 spring:
   datasource:
-    url: jdbc:h2:mem:test;MODE=PostgreSQL;
-#    url: jdbc:h2:./dbay-cart;MODE=PostgreSQL;
-    driver-class-name: org.h2.Driver
-    username: sa
-    password:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/dbay_db?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+    username: mysqlId
+    password: mysqlPwd
+
+
+  elasticsearch:
+    uris: http://localhost:9200
 
   h2:
     console:
@@ -13,9 +16,20 @@ spring:
 
   jpa:
     hibernate:
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
       ddl-auto: update
     properties:
       hibernate:
-        dialect: org.hibernate.dialect.H2Dialect
         default_batch_fetch_size: 500
         format_sql: true
+
+  kafka:
+    bootstrap-servers: localhost:9092
+
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://localhost:8761/eureka/

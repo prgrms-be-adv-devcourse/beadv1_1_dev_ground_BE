@@ -51,7 +51,7 @@ public class CartApplication implements CartUseCase {
             throw ServiceError.CODE_INVALID.throwServiceException();
         }
 
-        ProductSnapShot product = cartProductPort.getProduct(productCode);
+        ProductSnapShot product = cartProductPort.getProduct(userCode, productCode);
 
         if  (product == null) {
             throw ServiceError.PRODUCT_NOT_FOUND.throwServiceException();
@@ -63,6 +63,10 @@ public class CartApplication implements CartUseCase {
 
         Cart cart = cartPersistencePort.getCart(userCode)
                 .orElseThrow(ServiceError.CART_NOT_FOUND::throwServiceException);
+
+        if (cart.getCartItems().stream().anyMatch(p -> productCode.equals(p.getProductCode()))) {
+            throw ServiceError.CART_ITEM_ALREADY_EXIST.throwServiceException();
+        }
 
         return cartPersistencePort.saveCartItem(cart.getCartCode(), productCode);
     }

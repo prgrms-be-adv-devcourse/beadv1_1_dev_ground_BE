@@ -1,19 +1,12 @@
 spring:
+  docker:
+    compose:
+      enabled: false
   datasource:
-    url: jdbc:h2:./product-db;MODE=MYSQL;
-    driver-class-name: org.h2.Driver
-    username: sa
-    password:
-
-  h2:
-    console:
-      enabled: true
-      path: /h2-console
-
-  jpa:
-    properties:
-      hibernate:
-        dialect: org.hibernate.dialect.H2Dialect
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/dbay_db?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+    username: mysqlId
+    password: mysqlPwd
 
   kafka:
     bootstrap-servers: localhost:9092
@@ -22,6 +15,32 @@ spring:
     uris: http://localhost:9200
     connection-timeout: 10s
     socket-timeout: 60s
+
+#  docker:
+#    compose:
+#      enabled: true
+#      file: docker/docker-compose-stage.yml
+#      profiles:
+#        active: product
+#      readiness:
+#        timeout: 60s
+#        tcp:
+#          connect-timeout: 3s
+#
+#      lifecycle-management: start-and-stop
+#      start:
+#        command: up
+#      stop:
+#        command: down
+#        timeout: 1m
+
+#  cloud:
+#    discovery:
+#      enabled: false
+#
+#eureka:
+#  client:
+#    enabled: false
 
 eureka:
   client:
