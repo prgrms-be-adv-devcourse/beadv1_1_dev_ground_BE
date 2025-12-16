@@ -25,34 +25,6 @@ spring:
       server:
         webflux:
           routes:
-            # 1) Swagger UI
-            - id: user-swagger-ui
-              uri: http://host.docker.internal:8082
-              predicates:
-                - Path=/user/swagger-ui/**
-              filters:
-                - StripPrefix=1
-
-            - id: user-openapi
-              uri: http://host.docker.internal:8082
-              predicates:
-                - Path=/v3/api-docs/**
-                - Header=Referer, .*/user/swagger-ui/.*
-
-            # 1) Swagger UI
-            - id: dbay-swagger-ui
-              uri: http://host.docker.internal:8080
-              predicates:
-                - Path=/dbay/swagger-ui/**
-              filters:
-                - StripPrefix=1
-
-            - id: dbay-openapi
-              uri: http://host.docker.internal:8080
-              predicates:
-                - Path=/v3/api-docs/**
-                - Header=Referer, .*/dbay/swagger-ui/.*
-
             - id: admin
               uri: lb://PRODUCT
               predicates:
@@ -81,7 +53,7 @@ spring:
               filters:
                 - CustomAuthFilter
 
-            - id: payments
+            - id: payment
               uri: lb://PAYMENTS
               predicates:
                 - Path=/api/payments/**
@@ -92,13 +64,6 @@ spring:
               uri: lb://PAYMENTS
               predicates:
                 - Path=/api/settlements/**
-              filters:
-                - CustomAuthFilter
-
-            - id: carts
-              uri: lb://COMMERCE
-              predicates:
-                - Path=/api/carts/**
               filters:
                 - CustomAuthFilter
 
