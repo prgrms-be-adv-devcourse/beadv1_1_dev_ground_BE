@@ -115,7 +115,7 @@ public class ProductApiController {
 	@Operation(summary = "상품 상세 조회", description = "상품의 상세 정보를 조회할 수 있습니다.")
 	public BaseResponse<ProductDetailResponse> getProductDetail(
 		@PathVariable String productCode,
-		@RequestHeader("X-CODE") String userCode
+		@RequestHeader(name = "X-CODE", required = false) String userCode
 	) {
 
 		return BaseResponse.success(

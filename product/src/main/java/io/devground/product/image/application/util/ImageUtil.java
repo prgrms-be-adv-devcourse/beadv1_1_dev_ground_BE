@@ -11,7 +11,7 @@ import lombok.experimental.UtilityClass;
 public class ImageUtil {
 
 	private static final List<String> ALLOWED_IMAGE_EXTENSIONS = List.of(
-		"jpg", "jpeg", "png", "gif", "webp", "bmp", "svg"
+		"", "jpg", "jpeg", "png", "gif", "webp", "bmp", "svg"
 	);
 
 	public String buildS3Key(ImageType imageType, String referenceCode, String fileExtension) {
