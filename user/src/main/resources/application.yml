@@ -44,7 +44,7 @@ spring:
         format_sql: true
 
   application:
-    name: user-service
+    name: USER-SERVICE
 
   kafka:
     bootstrap-servers:
