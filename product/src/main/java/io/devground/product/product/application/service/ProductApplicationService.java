@@ -78,7 +78,13 @@ public class ProductApplicationService implements ProductUseCase {
 		List<String> imageExtensions = request.imageExtensions();
 		List<URL> presignedUrls = new ArrayList<>();
 		if (imageExtensions != null && !imageExtensions.isEmpty()) {
-			presignedUrls = imagePort.prepareUploadUrls(ImageType.PRODUCT, productCode, imageExtensions);
+			List<String> validExtensions = imageExtensions.stream()
+				.filter(extension -> extension != null && !extension.isBlank())
+				.toList();
+
+			if (!validExtensions.isEmpty()) {
+				presignedUrls = imagePort.prepareUploadUrls(ImageType.PRODUCT, productCode, imageExtensions);
+			}
 		}
 
 		return new RegistProductResponse(product, productSale, presignedUrls);
