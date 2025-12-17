@@ -76,7 +76,7 @@ jobs:
     uses: ./.github/workflows/deploy-workflow.yml
     secrets: inherit
     with:
-      service-name: eureka-server
+      service-name: eureka
       image-tag: ${{ needs.releasing_eureka.outputs.tag_name }}
 
   deploying_gateway:
