@@ -10,6 +10,8 @@ spring:
       - localhost:9092
 
   data:
+    redis:
+      host: localhost
     mongodb:
       uri: ${MONGO_KEY}
       database: chat
