@@ -29,12 +29,12 @@ jobs:
       - name: Restart deployment
         run: |
           export KUBECONFIG=/etc/rancher/k3s/k3s.yaml
-          sudo -E kubectl rollout restart deployment.apps/${{ inputs.service-name }}
+          sudo -E kubectl rollout restart deployment ${{ inputs.service-name }}
 
       - name: Wait for rollout
         run: |
           export KUBECONFIG=/etc/rancher/k3s/k3s.yaml
-          sudo -E kubectl rollout status deployment.apps/${{ inputs.service-name }}
+          sudo -E kubectl rollout status deployment ${{ inputs.service-name }}
 
       - name: Verify deployment
         run: |
