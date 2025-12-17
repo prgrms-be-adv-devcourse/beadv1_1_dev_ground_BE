@@ -3,7 +3,8 @@ name: dev-msa ci/cd
 on:
   pull_request:
 #    todo : 우선 main으로 세팅하고 dev-msa로 교체
-    branches: [dev-msa]
+    types: [ closed ]
+    branches: [ dev-msa ]
   workflow_dispatch:
 
 permissions:
