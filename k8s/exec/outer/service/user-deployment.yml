@@ -26,7 +26,7 @@ spec:
     spec:
       containers:
         - name: user-service
-          image: jihei1/user:latest
+          image: jihei1/user-service:latest
           ports:
             - containerPort: 18080
 
