@@ -87,7 +87,7 @@ public class ChatController {
             @RequestHeader("X-CODE") String userCode,
             @RequestParam(value = "status", defaultValue = "OPEN") String status
     ) {
-        ChatRoomStatus roomStatus = ChatRoomStatus.valueOf(status.toUpperCase(Locale.ROOT));
+        //ChatRoomStatus roomStatus = ChatRoomStatus.valueOf(status.toUpperCase(Locale.ROOT));
         return chatRoomService.listOpenRoomsForUser(userCode);
     }
 
