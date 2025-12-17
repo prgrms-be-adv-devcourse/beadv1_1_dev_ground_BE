@@ -19,7 +19,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -71,18 +70,21 @@ public class ChatRoomService {
         List<ChatRoom> rooms = roomRepository.findByStatusAndSellerCodeOrStatusAndBuyerCode(
                 ChatRoomStatus.OPEN, userCode, ChatRoomStatus.OPEN, userCode
         );
-        List<String> productCodes = rooms.stream().map(ChatRoom::getProductCode).toList();
-        BaseResponse<List<CartProductsResponse>> cartProducts = productClient.getCartProducts(new CartProductsRequest(productCodes));
+
+//        List<String> productCodes = rooms.stream().map(ChatRoom::getProductCode).toList();
+
+//        log.info("채팅방: {}", productCodes);
+//        BaseResponse<List<CartProductsResponse>> cartProducts = productClient.getCartProducts(new CartProductsRequest(productCodes));
 
         List<ChatRoomSummary> list = new ArrayList<>();
         for (ChatRoom chatRoom : rooms) {
             ChatMessages last = messageRepository.findFirstByChatIdOrderByCreatedAtDesc(chatRoom.getId());
             long unread = messageRepository.countByChatIdAndSenderCodeNotAndIsReadFalse(chatRoom.getId(), userCode);
-            //String productTitle = resolveProductTitle(chatRoom.getProductCode(), userCode);
+            String productTitle = resolveProductTitle(chatRoom.getProductCode(), userCode);
             ChatRoomSummary apply = ChatRoomSummary.builder()
                     .id(chatRoom.getId())
                     .productCode(chatRoom.getProductCode())
-                    //.productTitle(productTitle)
+                    .productTitle(productTitle)
                     .sellerCode(chatRoom.getSellerCode())
                     .buyerCode(chatRoom.getBuyerCode())
                     .status(chatRoom.getStatus())

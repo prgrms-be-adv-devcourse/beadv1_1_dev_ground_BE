@@ -42,21 +42,17 @@ public class ChatController {
             @RequestHeader(value = "X-CODE", required = false) String userCode,
             @RequestBody ChatRoomRequest request
     ) {
-        String buyerCode = request.getBuyerCode();
-        if (buyerCode == null || buyerCode.isBlank()) {
-            buyerCode = userCode; // fallback to header
-        }
-        if (buyerCode == null || buyerCode.isBlank()) {
+        if (userCode == null || userCode.isBlank()) {
             throw new ServiceException(ErrorCode.XCODE_NOT_FOUND);
         }
         // 본인 상품 채팅 방지
-        if (request.getSellerCode() != null && request.getSellerCode().equals(buyerCode)) {
+        if (request.getSellerCode() != null && request.getSellerCode().equals(userCode)) {
             throw new ServiceException(ErrorCode.CHAT_SELF_PRODUCT_NOT_ALLOWED);
         }
         return chatRoomService.getOrCreateRoom(
                 request.getProductCode(),
                 request.getSellerCode(),
-                buyerCode
+                userCode
         );
     }
 
