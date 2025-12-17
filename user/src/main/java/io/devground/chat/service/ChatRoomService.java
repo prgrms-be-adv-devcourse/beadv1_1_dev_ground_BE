@@ -2,6 +2,8 @@ package io.devground.chat.service;
 
 import io.devground.chat.client.ProductClient;
 import io.devground.chat.enums.ChatRoomStatus;
+import io.devground.chat.model.dto.request.CartProductsRequest;
+import io.devground.chat.model.dto.response.CartProductsResponse;
 import io.devground.chat.model.dto.response.ChatRoomSummary;
 import io.devground.chat.model.dto.response.ProductDetailResponse;
 import io.devground.chat.model.entity.ChatMessages;
@@ -15,6 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -68,23 +71,28 @@ public class ChatRoomService {
         List<ChatRoom> rooms = roomRepository.findByStatusAndSellerCodeOrStatusAndBuyerCode(
                 ChatRoomStatus.OPEN, userCode, ChatRoomStatus.OPEN, userCode
         );
+        List<String> productCodes = rooms.stream().map(ChatRoom::getProductCode).toList();
+        BaseResponse<List<CartProductsResponse>> cartProducts = productClient.getCartProducts(new CartProductsRequest(productCodes));
 
-        return rooms.stream().map(room -> {
-            ChatMessages last = messageRepository.findFirstByChatIdOrderByCreatedAtDesc(room.getId());
-            long unread = messageRepository.countByChatIdAndSenderCodeNotAndIsReadFalse(room.getId(), userCode);
-            String productTitle = resolveProductTitle(room.getProductCode(), userCode);
-            return ChatRoomSummary.builder()
-                    .id(room.getId())
-                    .productCode(room.getProductCode())
-                    .productTitle(productTitle)
-                    .sellerCode(room.getSellerCode())
-                    .buyerCode(room.getBuyerCode())
-                    .status(room.getStatus())
+        List<ChatRoomSummary> list = new ArrayList<>();
+        for (ChatRoom chatRoom : rooms) {
+            ChatMessages last = messageRepository.findFirstByChatIdOrderByCreatedAtDesc(chatRoom.getId());
+            long unread = messageRepository.countByChatIdAndSenderCodeNotAndIsReadFalse(chatRoom.getId(), userCode);
+            //String productTitle = resolveProductTitle(chatRoom.getProductCode(), userCode);
+            ChatRoomSummary apply = ChatRoomSummary.builder()
+                    .id(chatRoom.getId())
+                    .productCode(chatRoom.getProductCode())
+                    //.productTitle(productTitle)
+                    .sellerCode(chatRoom.getSellerCode())
+                    .buyerCode(chatRoom.getBuyerCode())
+                    .status(chatRoom.getStatus())
                     .lastMessage(last != null ? last.getMessage() : null)
                     .lastMessageAt(last != null ? last.getCreatedAt() : null)
                     .unreadCount(unread)
                     .build();
-        }).collect(Collectors.toList());
+            list.add(apply);
+        }
+        return list;
     }
 
     public ChatRoom leaveRoom(String chatId, String userCode) {

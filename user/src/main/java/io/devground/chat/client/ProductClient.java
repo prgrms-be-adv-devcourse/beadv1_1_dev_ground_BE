@@ -1,11 +1,13 @@
 package io.devground.chat.client;
 
+import io.devground.chat.model.dto.request.CartProductsRequest;
+import io.devground.chat.model.dto.response.CartProductsResponse;
 import io.devground.chat.model.dto.response.ProductDetailResponse;
 import io.devground.core.model.web.BaseResponse;
 import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 
 @FeignClient(
@@ -20,4 +22,7 @@ public interface ProductClient {
             @PathVariable("productCode") String productCode,
             @RequestHeader("X-CODE") String userCode
     );
+
+    @PostMapping("/carts")
+    BaseResponse<List<CartProductsResponse>> getCartProducts(@RequestBody CartProductsRequest request);
 }
