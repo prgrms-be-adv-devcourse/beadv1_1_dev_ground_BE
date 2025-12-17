@@ -90,11 +90,9 @@ eureka:
     service-url:
       defaultZone: http://eureka:8761/eureka/
   instance:
-    prefer-ip-address: true
-    ip-address: product
+    prefer-ip-address: false
+    hostname: product-service
     non-secure-port: 8086
-    metadata-map:
-      port: 8086
 
 products:
   topic:
