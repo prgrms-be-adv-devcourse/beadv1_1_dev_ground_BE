@@ -78,6 +78,7 @@ custom:
 
   toss:
     secretKey: ${TOSS_TEST_SECRET_KEY}
+    clientKey: 'test_gck_docs_Ovk5rk1EwkEbP0W43n07xlzm'
     confirm-url: "https://api.tosspayments.com/v1/payments/confirm"
 
 payments:
