@@ -116,5 +116,5 @@ jobs:
 #    uses: ./.github/workflows/deploy-workflow.yml
 #    secrets: inherit
 #    with:
-#      service-name: commerce
+#      service-name: commerce-service
 #      image-tag: ${{ needs.releasing_commerce.outputs.tag_name }}
