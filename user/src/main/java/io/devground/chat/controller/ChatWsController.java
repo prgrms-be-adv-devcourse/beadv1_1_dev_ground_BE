@@ -14,6 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestHeader;
 
 @Slf4j
 @Controller
@@ -30,7 +31,7 @@ public class ChatWsController {
             @Header("X-CODE") String userCode,
             ChatMessageRequest request
     ) {
-        log.info("메세지 받음: {}", request);
+//        log.info("메세지 받음: {} {}", userCode, request);
         String chatId = request.getChatId();
         if (chatId == null || chatId.isBlank()) {
             throw new ServiceException(ErrorCode.CHAT_ID_MISSING);
@@ -54,7 +55,7 @@ public class ChatWsController {
         if (userCodeHeader == null || userCodeHeader.isBlank()) {
             throw new ServiceException(ErrorCode.XCODE_NOT_FOUND);
         }
-
+//        log.info("유저 코드: {}", userCodeHeader);
         userClient.getUser(userCodeHeader).throwIfNotSuccess();
     }
 
