@@ -1,5 +1,8 @@
 package io.devground.payments.payment.controller;
 
+import java.util.UUID;
+
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -17,6 +20,7 @@ import io.devground.payments.payment.mapper.PaymentMapper;
 import io.devground.payments.payment.model.dto.request.PaymentRequest;
 import io.devground.payments.payment.model.dto.request.TossRefundRequest;
 import io.devground.payments.payment.model.dto.response.GetPaymentsResponse;
+import io.devground.payments.payment.model.dto.response.TossCheckoutResponse;
 import io.devground.payments.payment.model.entity.Payment;
 import io.devground.payments.payment.model.vo.DepositPaymentRequest;
 import io.devground.payments.payment.model.vo.PaymentConfirmRequest;
@@ -35,12 +39,15 @@ import lombok.extern.slf4j.Slf4j;
 public class PaymentController {
 	private final PaymentService paymentService;
 
+	@Value("${custom.toss.clientKey}")
+	String clientKey;
+
 	@PostMapping("/process")
 	public BaseResponse<PaymentDescription> processPayment(
 		@RequestHeader("X-CODE") String userCode,
 		@RequestBody @Valid PaymentConfirmRequest request
 	) {
-
+		log.info("payments Usercode: {}", userCode);
 		Payment payment = paymentService.process(userCode, request);
 
 		return BaseResponse.success(
@@ -101,5 +108,23 @@ public class PaymentController {
 		paymentService.tossRefund(request);
 
 		return BaseResponse.success(200, "환불 성공");
+	}
+
+	@GetMapping("/checkout")
+	public BaseResponse<TossCheckoutResponse> viewCheckoutPage(
+		@RequestHeader("X-CODE") String userCode
+	) {
+		//ChargePaymentRequest description = new ChargePaymentRequest(userCode, 10000L);
+		String orderCode = UUID.randomUUID().toString();
+
+
+		TossCheckoutResponse response = new TossCheckoutResponse(
+			userCode, orderCode, clientKey, 10000L
+		);
+		return BaseResponse.success(
+			200,
+			response,
+			"결제 정보를 불러왔습니다."
+		);
 	}
 }
