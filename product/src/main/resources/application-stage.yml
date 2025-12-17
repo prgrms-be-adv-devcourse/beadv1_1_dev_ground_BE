@@ -44,4 +44,6 @@ eureka:
     service-url:
       defaultZone: http://localhost:8761/eureka/
   instance:
-    ip-address: localhost
+    prefer-ip-address: true
+    hostname: localhost
+    non-secure-port: 8086
