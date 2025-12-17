@@ -56,11 +56,9 @@ eureka:
     service-url:
       defaultZone: http://eureka:8761/eureka/
   instance:
-    prefer-ip-address: true
-    ip-address: payments
+    prefer-ip-address: false
+    hostname: payments-service
     non-secure-port: 8085
-    metadata-map:
-      port: 8085
 
 custom:
   kafka:
