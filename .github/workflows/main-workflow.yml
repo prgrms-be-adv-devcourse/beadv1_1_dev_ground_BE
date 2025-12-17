@@ -92,7 +92,7 @@ jobs:
 #    uses: ./.github/workflows/deploy-workflow.yml
 #    secrets: inherit
 #    with:
-#      service-name: product
+#      service-name: product-service
 #      image-tag: ${{ needs.releasing_product.outputs.tag_name }}
 #
 #  deploying_payments:
@@ -100,7 +100,7 @@ jobs:
 #    uses: ./.github/workflows/deploy-workflow.yml
 #    secrets: inherit
 #    with:
-#      service-name: payments
+#      service-name: payments-service
 #      image-tag: ${{ needs.releasing_payments.outputs.tag_name }}
 #
   deploying_user:
@@ -108,7 +108,7 @@ jobs:
     uses: ./.github/workflows/deploy-workflow.yml
     secrets: inherit
     with:
-      service-name: user
+      service-name: user-service
       image-tag: ${{ needs.releasing_user.outputs.tag_name }}
 #
 #  deploying_commerce:
