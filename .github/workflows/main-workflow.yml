@@ -72,67 +72,49 @@ jobs:
 
   #   deploying step
   deploying_eureka:
-#    needs: [releasing_gateway, deploying_eureka]
+    needs: releasing_eureka
     uses: ./.github/workflows/deploy-workflow.yml
     secrets: inherit
-    concurrency:
-      group: k8s-deployment
-      cancel-in-progress: false
     with:
       service-name: eureka
       image-tag: ${{ needs.releasing_eureka.outputs.tag_name }}
 
   deploying_gateway:
-#    needs: [releasing_gateway, deploying_eureka]
+    needs: [releasing_gateway, deploying_eureka]
     uses: ./.github/workflows/deploy-workflow.yml
     secrets: inherit
-    concurrency:
-      group: k8s-deployment
-      cancel-in-progress: false
     with:
       service-name: gateway
       image-tag: ${{ needs.releasing_gateway.outputs.tag_name }}
 
   deploying_product:
-#    needs: [releasing_product, deploying_gateway]
+    needs: [releasing_product, deploying_gateway]
     uses: ./.github/workflows/deploy-workflow.yml
     secrets: inherit
-    concurrency:
-      group: k8s-deployment
-      cancel-in-progress: false
     with:
       service-name: product-service
       image-tag: ${{ needs.releasing_product.outputs.tag_name }}
 
   deploying_payments:
-#    needs: [releasing_payments, deploying_product]
+    needs: [releasing_payments, deploying_product]
     uses: ./.github/workflows/deploy-workflow.yml
     secrets: inherit
-    concurrency:
-      group: k8s-deployment
-      cancel-in-progress: false
     with:
       service-name: payments-service
       image-tag: ${{ needs.releasing_payments.outputs.tag_name }}
 
   deploying_user:
-#    needs: [releasing_user, deploying_payments]
+    needs: [releasing_user, deploying_payments]
     uses: ./.github/workflows/deploy-workflow.yml
     secrets: inherit
-    concurrency:
-      group: k8s-deployment
-      cancel-in-progress: false
     with:
       service-name: user-service
       image-tag: ${{ needs.releasing_user.outputs.tag_name }}
 
   deploying_commerce:
-#    needs: [releasing_commerce, deploying_user]
+    needs: [releasing_commerce, deploying_user]
     uses: ./.github/workflows/deploy-workflow.yml
     secrets: inherit
-    concurrency:
-      group: k8s-deployment
-      cancel-in-progress: false
     with:
       service-name: commerce-service
       image-tag: ${{ needs.releasing_commerce.outputs.tag_name }}
