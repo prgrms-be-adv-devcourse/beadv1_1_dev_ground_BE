@@ -29,6 +29,6 @@ eureka:
 
 feign:
   product-service:
-    url: http://localhost:8080
+    url: http://localhost:8086
   user-service:
     url: http://localhost:18080

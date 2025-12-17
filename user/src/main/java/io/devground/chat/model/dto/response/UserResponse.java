@@ -1,6 +1,6 @@
 package io.devground.chat.model.dto.response;
 
-public record UserInfoResponse(
+public record UserResponse(
         String name,
         String email,
         String nickname,
