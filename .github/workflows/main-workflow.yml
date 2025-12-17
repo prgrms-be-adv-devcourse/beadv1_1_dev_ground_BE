@@ -56,7 +56,7 @@ jobs:
     uses: ./.github/workflows/releasing-workflow.yml
     secrets: inherit
     with:
-      service-name: user
+      service-name: user-service
       service-dir: .
       file-name: docker/Dockerfile-common
       app-dir: user
