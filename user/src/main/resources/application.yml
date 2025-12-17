@@ -151,6 +151,6 @@ kakao:
 
 feign:
   product-service:
-    url: ${FEIGN_PRODUCT_SERVICE_URL:http://product-service:8086}
+    url: http://localhost:8086
   user-service:
-    url: ${FEIGN_USER_SERVICE_URL:http://user-service:18080}
+    url: http://localhost:18080
