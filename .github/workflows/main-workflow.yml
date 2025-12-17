@@ -72,7 +72,7 @@ jobs:
 
   #   deploying step
   deploying_eureka:
-    needs: releasing_eureka
+#    needs: releasing_eureka
     uses: ./.github/workflows/deploy-workflow.yml
     secrets: inherit
     concurrency:
@@ -83,7 +83,7 @@ jobs:
       image-tag: ${{ needs.releasing_eureka.outputs.tag_name }}
 
   deploying_gateway:
-    needs: releasing_gateway
+#    needs: releasing_gateway
     uses: ./.github/workflows/deploy-workflow.yml
     secrets: inherit
     concurrency:
@@ -94,7 +94,7 @@ jobs:
       image-tag: ${{ needs.releasing_gateway.outputs.tag_name }}
 
   deploying_product:
-    needs: releasing_product
+#    needs: releasing_product
     uses: ./.github/workflows/deploy-workflow.yml
     secrets: inherit
     concurrency:
@@ -105,7 +105,7 @@ jobs:
       image-tag: ${{ needs.releasing_product.outputs.tag_name }}
 
   deploying_payments:
-    needs: releasing_payments
+#    needs: releasing_payments
     uses: ./.github/workflows/deploy-workflow.yml
     secrets: inherit
     concurrency:
@@ -116,7 +116,7 @@ jobs:
       image-tag: ${{ needs.releasing_payments.outputs.tag_name }}
 #
   deploying_user:
-    needs: releasing_user
+#    needs: releasing_user
     uses: ./.github/workflows/deploy-workflow.yml
     secrets: inherit
     concurrency:
@@ -127,7 +127,7 @@ jobs:
       image-tag: ${{ needs.releasing_user.outputs.tag_name }}
 
   deploying_commerce:
-    needs: releasing_commerce
+#    needs: releasing_commerce
     uses: ./.github/workflows/deploy-workflow.yml
     secrets: inherit
     concurrency:
