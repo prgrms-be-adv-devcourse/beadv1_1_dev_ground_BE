@@ -117,7 +117,7 @@ logging:
     org.springframework.batch: INFO
 
 external:
-  openfeign-url: http://localhost:8080
+  openfeign-url: http://localhost:8085
 
 springdoc:
   api-docs:

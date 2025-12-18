@@ -11,6 +11,7 @@ import io.devground.dbay.order.application.port.out.kafka.OrderKafkaEventPort;
 import io.devground.dbay.order.domain.vo.DepositType;
 import io.devground.dbay.order.infrastructure.mapper.EnumMapper;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
@@ -19,6 +20,7 @@ import java.util.List;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class OrderKafkaEventPublisherAdapter implements OrderKafkaEventPort {
 
     private final KafkaTemplate<String, Object> kafkaTemplate;
@@ -37,6 +39,8 @@ public class OrderKafkaEventPublisherAdapter implements OrderKafkaEventPort {
 
     @Override
     public void publishOrderCreated(String userCode, String orderCode, long totalAmount, List<String> productCodes) {
+
+        log.info("이벤트 객체: {}", userCode);
         kafkaTemplate.send(paymentsCommandTopicName, orderCode, new PaymentCreateCommand(
                 userCode,
                 orderCode,

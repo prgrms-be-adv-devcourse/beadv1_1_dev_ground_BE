@@ -53,7 +53,7 @@ public class OrderApplication implements OrderUseCase {
         UserInfo userInfo = getUserInfoOrThrow(userCode);
 
         // 2. 상품 정보 가져와
-        ProductSnapShot product = orderProductPort.getProduct(productCode);
+        ProductSnapShot product = orderProductPort.getProduct(userCode, productCode);
 
         if (product == null) {
             throw ServiceError.PRODUCT_NOT_FOUND.throwServiceException();
@@ -76,8 +76,8 @@ public class OrderApplication implements OrderUseCase {
         orderPersistencePort.createSingleOrder(userInfo, order, orderProduct);
 
         orderPublishEventPort.publishEvent(
-                order.getOrderCode(),
                 order.getUserCode(),
+                order.getOrderCode(),
                 orderProduct.productPrice(),
                 List.of(productCode.value())
         );
@@ -121,8 +121,8 @@ public class OrderApplication implements OrderUseCase {
         orderPersistencePort.createSelectedOrder(userInfo, order, orderProducts);
 
         orderPublishEventPort.publishEvent(
-                order.getOrderCode(),
                 order.getUserCode(),
+                order.getOrderCode(),
                 totalAmount,
                 productCodeLists
         );
