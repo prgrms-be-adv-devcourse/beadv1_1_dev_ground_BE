@@ -52,6 +52,7 @@ public class ProductEsAdapter implements ProductPrepareSearchPort {
 		try {
 			ProductDocument productDocument = ProductSearchUtil.toProductDocument(product);
 			productSearchRepository.save(productDocument);
+			log.info("Product 인덱싱 성공");
 		} catch (ProductDomainException | ServiceException e) {
 			MDC.put("errorMsg", e.getMessage());
 			log.error("Product 인덱싱 실패");
