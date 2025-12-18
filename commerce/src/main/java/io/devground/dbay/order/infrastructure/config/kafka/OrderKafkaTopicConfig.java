@@ -33,6 +33,9 @@ public class OrderKafkaTopicConfig {
 	@Value("${payments.command.topic.purchase}")
 	private String paymentsPurchaseCommandTopicName;
 
+	@Value("${payments.event.topic.name}")
+	private String paymentsEventTopicName;
+
 	private static final String DLT = ".DLT";
 
 	@Bean
@@ -126,6 +129,22 @@ public class OrderKafkaTopicConfig {
 	@Bean
 	public NewTopic paymentPurchaseCommandDltTopic() {
 		return TopicBuilder.name(paymentsPurchaseCommandTopicName + DLT)
+				.partitions(topic_partitions)
+				.replicas(topic_replications)
+				.build();
+	}
+
+	@Bean
+	public NewTopic paymentEventTopic() {
+		return TopicBuilder.name(paymentsEventTopicName)
+				.partitions(topic_partitions)
+				.replicas(topic_replications)
+				.build();
+	}
+
+	@Bean
+	public NewTopic paymentEventDltTopic() {
+		return TopicBuilder.name(paymentsEventTopicName + DLT)
 				.partitions(topic_partitions)
 				.replicas(topic_replications)
 				.build();

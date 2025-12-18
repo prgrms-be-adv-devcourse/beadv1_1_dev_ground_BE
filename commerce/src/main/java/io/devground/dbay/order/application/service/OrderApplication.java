@@ -7,6 +7,7 @@ import io.devground.dbay.order.application.port.out.product.OrderProductPort;
 import io.devground.dbay.order.application.port.out.user.OrderUserPort;
 import io.devground.dbay.order.application.vo.ProductInfoSnapShot;
 import io.devground.dbay.order.application.vo.ProductSnapShot;
+import io.devground.dbay.order.domain.model.OrderItem;
 import io.devground.dbay.order.domain.vo.Progress;
 import io.devground.dbay.order.application.vo.UserInfo;
 import io.devground.dbay.order.domain.model.Order;
@@ -14,6 +15,7 @@ import io.devground.dbay.order.domain.port.in.OrderUseCase;
 import io.devground.dbay.order.domain.vo.*;
 import io.devground.dbay.order.domain.vo.pagination.PageDto;
 import io.devground.dbay.order.domain.vo.pagination.PageQuery;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -228,6 +230,10 @@ public class OrderApplication implements OrderUseCase {
         order.cancel();
 
         orderPersistencePort.cancel(orderCode);
+
+        long amount = order.getOrderItems().stream().mapToLong(OrderItem::getProductPrice).sum();
+
+        orderPublishEventPort.publishRefundEvent(userCode, amount, orderCode);
     }
 
     @Override

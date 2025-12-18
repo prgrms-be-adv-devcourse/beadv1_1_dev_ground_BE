@@ -7,4 +7,5 @@ import java.util.List;
 
 public interface OrderPublishEventPort {
     void publishEvent(UserCode userCode, OrderCode orderCode, long totalAmount, List<String> productCodes);
+    void publishRefundEvent(UserCode userCode, Long amount, OrderCode orderCode);
 }

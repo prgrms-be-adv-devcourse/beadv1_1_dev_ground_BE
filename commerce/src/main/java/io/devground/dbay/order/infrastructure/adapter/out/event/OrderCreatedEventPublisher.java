@@ -1,5 +1,6 @@
 package io.devground.dbay.order.infrastructure.adapter.out.event;
 
+import io.devground.core.commands.payment.DepositRefundCommand;
 import io.devground.core.event.order.OrderCreatedEvent;
 import io.devground.dbay.order.application.port.out.kafka.OrderKafkaEventPort;
 import lombok.RequiredArgsConstructor;
@@ -25,5 +26,10 @@ public class OrderCreatedEventPublisher {
     public void onOrderCreated(OrderCreatedEvent event) {
         log.info("이벤트객체2: {}", event);
         orderEventPort.publishOrderCreated(event.userCode(), event.orderCode(), event.totalAmount(), event.productCodes());
+    }
+
+    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+    public void onRefundCreated(DepositRefundCommand command) {
+        orderEventPort.publishDepositRefundCreated(command.userCode(), command.amount(), command.orderCode());
     }
 }
