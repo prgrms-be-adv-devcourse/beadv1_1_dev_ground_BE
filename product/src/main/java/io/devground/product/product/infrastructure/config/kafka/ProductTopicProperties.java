@@ -13,6 +13,7 @@ import lombok.Setter;
 public class ProductTopicProperties {
 
 	private ImageTopic image;
+	private PurchaseTopic purchase;
 
 	@Getter
 	@Setter
@@ -21,5 +22,12 @@ public class ProductTopicProperties {
 		private String delete;
 		private String pushDlt;
 		private String deleteDlt;
+	}
+
+	@Getter
+	@Setter
+	public static class PurchaseTopic {
+		private String sold;
+		private String soldDlt;
 	}
 }

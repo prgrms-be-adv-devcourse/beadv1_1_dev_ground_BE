@@ -39,6 +39,14 @@ public class KafkaProductTopicConfig {
 	}
 
 	@Bean
+	public NewTopic productsPurchaseTopic() {
+		return TopicBuilder.name(productTopicProperties.getPurchase().getSold())
+				.partitions(partitions)
+				.replicas(replicas)
+				.build();
+	}
+
+	@Bean
 	public NewTopic productsImagePushDltTopic() {
 
 		return TopicBuilder.name(productTopicProperties.getImage().getPushDlt())
@@ -54,5 +62,13 @@ public class KafkaProductTopicConfig {
 			.partitions(partitions)
 			.replicas(replicas)
 			.build();
+	}
+
+	@Bean
+	public NewTopic productsPurchaseDltTopic() {
+		return TopicBuilder.name(productTopicProperties.getPurchase().getSoldDlt())
+				.partitions(partitions)
+				.replicas(replicas)
+				.build();
 	}
 }

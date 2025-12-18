@@ -100,6 +100,9 @@ products:
       delete: product-images-delete
       push-dlt: ${products.topic.image.push}.DLT
       delete-dlt: ${products.topic.image.delete}.DLT
+    purchase:
+      sold: products-purchase-command
+      sold-dlt: ${products.topic.purchase.sold}.DLT
 
 images:
   topic:
