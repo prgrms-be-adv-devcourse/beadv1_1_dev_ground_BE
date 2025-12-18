@@ -17,9 +17,20 @@ public interface SagaRepository extends JpaRepository<Saga, Long> {
 
 	Optional<Saga> findBySagaId(String sagaId);
 
-	Optional<Saga> findFirstByReferenceCodeAndSagaStatusOrderByStartedAtDesc(
-		String referenceCode,
-		SagaStatus sagaStatus
+	Optional<Saga> findTopByReferenceCodeOrderByStartedAtDesc(String referenceCode);
+
+	@Query("""
+		SELECT s
+		FROM Saga s
+		WHERE s.referenceCode = :referenceCode
+		AND s.sagaType = :sagaType
+		AND s.sagaStatus IN :statuses
+		ORDER BY s.startedAt DESC
+		""")
+	Optional<Saga> findInProgressByReferenceCodeAndType(
+		@Param("referenceCode") String referenceCode,
+		@Param("sagaType") SagaType sagaType,
+		@Param("statuses") List<SagaStatus> statuses
 	);
 
 	Optional<Saga> findFirstByReferenceCodeAndSagaTypeAndSagaStatusOrderByStartedAtDesc(
