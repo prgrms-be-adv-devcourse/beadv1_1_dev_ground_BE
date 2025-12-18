@@ -3,7 +3,7 @@ name: dev-msa ci/cd
 on:
   pull_request:
     types: [ closed ]
-    branches: [ main ]
+    branches: [ main, dev-msa ]
   workflow_dispatch:
 
 permissions:
