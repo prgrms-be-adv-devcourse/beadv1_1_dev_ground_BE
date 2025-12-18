@@ -21,9 +21,9 @@ import org.springframework.web.bind.annotation.RequestHeader;
 @RequiredArgsConstructor
 public class ChatWsController {
 
-    private final ChatRoomService chatRoomService;
+//    private final ChatRoomService chatRoomService;
     private final ChatMessageService chatMessageService;
-    private final UserClient userClient;
+//    private final UserClient userClient;
     private final ChatEventProducer chatEventProducer;
 
     @MessageMapping("/chat/messages")
@@ -40,6 +40,8 @@ public class ChatWsController {
         chatRoomService.getRoom(chatId);
 
         ChatMessages saved = chatMessageService.sendMessage(chatId, request.getSenderCode(), request.getMessage());
+//        log.info("메세지 받음: {} {}", userCode, request);
+        ChatMessages saved = chatMessageService.sendValidatedMessage(userCode, request);
         chatEventProducer.sendMessageEvent(new ChatMessageEvent(
                 saved.getChatId(),
                 saved.getSenderCode(),

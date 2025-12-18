@@ -114,8 +114,8 @@ public enum ErrorCode {
 	CHAT_ROOM_NOT_FOUND(404, "채팅방을 찾을 수 없습니다."),
 	CHAT_ROOM_ACCESS_DENIED(403, "이 채팅방의 참여자가 아닙니다."),
 	CHAT_ID_MISSING(400, "chatId가 비어 있습니다."),
-	CHAT_SELF_PRODUCT_NOT_ALLOWED(403, "본인 상품에는 채팅을 시작할 수 없습니다.");
-
+	CHAT_SELF_PRODUCT_NOT_ALLOWED(403, "본인 상품에는 채팅을 시작할 수 없습니다."),
+	CHAT_MESSAGE_MISSING(400, "메세지가 비어 있습니다.");
 
 
 
