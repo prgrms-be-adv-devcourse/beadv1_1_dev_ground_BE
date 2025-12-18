@@ -9,6 +9,7 @@ import java.util.List;
 import org.slf4j.MDC;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
 import io.devground.core.event.image.ImageProcessedEvent;
 import io.devground.core.event.product.ProductImagesDeleteEvent;
@@ -112,20 +113,17 @@ public class ProductOrchestrator implements ProductOrchestrationPort {
 		try {
 			List<URL> updatedPresignedUrls = new ArrayList<>();
 
-			boolean hasValidDeleteUrls = deleteUrls != null && !deleteUrls.isEmpty()
-				&& deleteUrls.stream().anyMatch(url -> url != null && !url.isBlank());
+			List<String> validDeleteUrls = (deleteUrls == null) ?
+				List.of()
+				: deleteUrls.stream().filter(StringUtils::hasText).toList();
 
-			List<String> validNewExtensions = null;
-			if (newExtensions != null && !newExtensions.isEmpty()) {
-				validNewExtensions = newExtensions.stream()
-					.filter(extension -> extension != null && !extension.isBlank())
-					.toList();
-			}
+			List<String> validNewExtensions = (newExtensions == null)
+				? List.of()
+				: newExtensions.stream().filter(StringUtils::hasText).toList();
 
-			boolean hasValidNewExtensions = validNewExtensions != null && !validNewExtensions.isEmpty();
-
-			if (hasValidDeleteUrls || hasValidNewExtensions) {
-				updatedPresignedUrls = imagePort.updateImages(PRODUCT, productCode, deleteUrls, newExtensions);
+			if (!validDeleteUrls.isEmpty() || !validNewExtensions.isEmpty()) {
+				updatedPresignedUrls =
+					imagePort.updateImages(PRODUCT, productCode, validDeleteUrls, validNewExtensions);
 			}
 
 			return updatedPresignedUrls;
