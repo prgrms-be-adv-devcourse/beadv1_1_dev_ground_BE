@@ -5,12 +5,14 @@ import io.devground.chat.client.UserClient;
 import io.devground.chat.enums.ChatRoomStatus;
 import io.devground.chat.model.dto.request.ChatRoomRequest;
 import io.devground.chat.model.dto.response.ChatRoomSummary;
+import io.devground.chat.model.dto.response.UserResponse;
 import io.devground.chat.model.entity.ChatMessages;
 import io.devground.chat.model.event.ChatReadEvent;
 import io.devground.chat.model.entity.ChatRoom;
 import io.devground.chat.service.ChatMessageService;
 import io.devground.chat.service.ChatRoomService;
 import io.devground.chat.service.ChatEventProducer;
+import io.devground.core.model.web.BaseResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -98,6 +100,21 @@ public class ChatController {
         }
         userClient.getUser(userCode).throwIfNotSuccess();
         return chatRoomService.leaveRoom(chatId, userCode);
+    }
+
+    // 채팅에서 상대 프로필 조회 (게이트웨이에서 X-CODE 덮어써도 대상 코드로 조회)
+    @GetMapping("/users/{code}")
+    public BaseResponse<UserResponse> getChatUserProfile(
+            @RequestHeader("X-CODE") String requesterCode,
+            @PathVariable String code
+    ) {
+        // 요청자 검증
+        userClient.getUser(requesterCode).throwIfNotSuccess();
+        BaseResponse<UserResponse> target = userClient.getUser(code);
+        if (target != null) {
+            target.throwIfNotSuccess();
+        }
+        return target;
     }
 
 
