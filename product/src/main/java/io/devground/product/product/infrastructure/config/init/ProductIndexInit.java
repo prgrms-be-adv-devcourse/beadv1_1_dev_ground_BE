@@ -29,7 +29,7 @@ import reactor.core.scheduler.Schedulers;
 // TODO: 추후 Spring Batch 사용하여 작업 변경. 현재는 비동기로 Bulk 처리
 @Component
 @Slf4j(topic = "esBatch")
-@Profile({"stage", "deploy"})
+@Profile("!test")
 @RequiredArgsConstructor
 public class ProductIndexInit implements ApplicationRunner {
 
