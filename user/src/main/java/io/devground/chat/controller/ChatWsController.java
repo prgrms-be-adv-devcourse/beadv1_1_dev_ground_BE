@@ -1,5 +1,9 @@
 package io.devground.chat.controller;
 
+import org.springframework.messaging.handler.annotation.Header;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.stereotype.Controller;
+
 import io.devground.chat.client.UserClient;
 import io.devground.chat.model.dto.request.ChatMessageRequest;
 import io.devground.chat.model.entity.ChatMessages;
@@ -11,19 +15,15 @@ import io.devground.core.model.exception.ServiceException;
 import io.devground.core.model.vo.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.messaging.handler.annotation.Header;
-import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestHeader;
 
 @Slf4j
 @Controller
 @RequiredArgsConstructor
 public class ChatWsController {
 
-//    private final ChatRoomService chatRoomService;
+   private final ChatRoomService chatRoomService;
     private final ChatMessageService chatMessageService;
-//    private final UserClient userClient;
+   private final UserClient userClient;
     private final ChatEventProducer chatEventProducer;
 
     @MessageMapping("/chat/messages")
@@ -39,7 +39,7 @@ public class ChatWsController {
         validateUser(userCode, request.getSenderCode());
         chatRoomService.getRoom(chatId);
 
-        ChatMessages saved = chatMessageService.sendMessage(chatId, request.getSenderCode(), request.getMessage());
+        // ChatMessages saved = chatMessageService.sendMessage(chatId, request.getSenderCode(), request.getMessage());
 //        log.info("메세지 받음: {} {}", userCode, request);
         ChatMessages saved = chatMessageService.sendValidatedMessage(userCode, request);
         chatEventProducer.sendMessageEvent(new ChatMessageEvent(
