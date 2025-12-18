@@ -6,6 +6,7 @@ import io.devground.core.commands.order.CompleteOrderCommand;
 import io.devground.core.commands.order.NotifyOrderCreateFailedAlertCommand;
 import io.devground.core.commands.payment.CancelCreatePaymentCommand;
 import io.devground.core.commands.payment.CompletePaymentCommand;
+import io.devground.core.commands.payment.DepositRefundCommand;
 import io.devground.core.commands.payment.PaymentCreateCommand;
 import io.devground.dbay.order.application.port.out.kafka.OrderKafkaEventPort;
 import io.devground.dbay.order.domain.vo.DepositType;
@@ -106,5 +107,10 @@ public class OrderKafkaEventPublisherAdapter implements OrderKafkaEventPort {
                 userCode,
                 productCodes
         ));
+    }
+
+    @Override
+    public void publishDepositRefundCreated(String userCode, Long amount, String orderCode) {
+        kafkaTemplate.send(paymentsCommandTopicName, orderCode, new DepositRefundCommand(userCode, amount, orderCode));
     }
 }
