@@ -15,8 +15,8 @@ import io.devground.core.event.product.ProductImagesPushEvent;
 import io.devground.core.event.vo.EventType;
 import io.devground.core.model.vo.ImageType;
 import io.devground.product.image.application.service.ImageApplicationService;
-import io.devground.product.image.infrastructure.adapter.out.repository.ImageInboxJpaRepository;
 import io.devground.product.image.infrastructure.adapter.out.ImageKafkaProducer;
+import io.devground.product.image.infrastructure.adapter.out.repository.ImageInboxJpaRepository;
 import io.devground.product.image.infrastructure.model.persistence.ImageInbox;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -90,6 +90,8 @@ public class ImageKafkaListener {
 			return;
 		}
 
+		String newThumbnail = null;
+
 		if (CollectionUtils.isEmpty(deleteUrls)) {
 			imageService.deleteImageByReferences(imageType, referenceCode);
 
@@ -99,13 +101,22 @@ public class ImageKafkaListener {
 				imageType, referenceCode, deleteUrls
 			);
 
+			List<String> candidateThumbnailUrls = imageService.getImageUrls(imageType, referenceCode);
+
+			if (!candidateThumbnailUrls.isEmpty()) {
+				newThumbnail = candidateThumbnailUrls.getFirst();
+
+				log.info("이미지 삭제 후 썸네일 재설정 - SagaId: {}, ProductCode: {}, NewThumbnail: {}",
+					sagaId, referenceCode, newThumbnail);
+			}
+
 			log.info("선택된 상품 이미지 삭제 완료 - SagaId: {}, ProductCode: {}, size: {}",
 				sagaId, referenceCode, deleteUrls.size());
 		}
 
 		imageKafkaProducer.publishImageProcessed(
 			new ImageProcessedEvent(
-				sagaId, imageType, referenceCode, EventType.DELETE, event.deleteUrls(), null, true, null
+				sagaId, imageType, referenceCode, EventType.DELETE, event.deleteUrls(), newThumbnail, true, null
 			)
 		);
 	}

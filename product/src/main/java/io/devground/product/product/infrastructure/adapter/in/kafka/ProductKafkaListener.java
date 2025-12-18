@@ -1,16 +1,16 @@
 package io.devground.product.product.infrastructure.adapter.in.kafka;
 
-import io.devground.core.commands.product.ProductSoldCommand;
-import io.devground.product.product.domain.vo.request.CartProductsDto;
 import org.springframework.kafka.annotation.KafkaHandler;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import io.devground.core.commands.product.ProductSoldCommand;
 import io.devground.core.event.image.ImageProcessedEvent;
 import io.devground.product.product.application.port.out.ProductOrchestrationPort;
 import io.devground.product.product.domain.port.in.ProductUseCase;
+import io.devground.product.product.domain.vo.request.CartProductsDto;
 import io.devground.product.product.infrastructure.saga.entity.Saga;
 import io.devground.product.product.infrastructure.saga.service.SagaService;
 import lombok.RequiredArgsConstructor;
@@ -58,7 +58,7 @@ public class ProductKafkaListener {
 		if (event.isSuccess()) {
 			String thumbnailUrl = event.thumbnailUrl();
 
-			if (thumbnailUrl != null) {
+			if (thumbnailUrl != null && !thumbnailUrl.isEmpty()) {
 				productApplication.updateThumbnail(event.referenceCode(), thumbnailUrl);
 			}
 
