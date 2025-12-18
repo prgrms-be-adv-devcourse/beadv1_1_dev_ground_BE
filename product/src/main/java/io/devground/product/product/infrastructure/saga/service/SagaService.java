@@ -121,7 +121,7 @@ public class SagaService {
 		saga.updateToCompensated(message);
 	}
 
-	@Transactional(readOnly = true)
+	@Transactional(propagation = Propagation.REQUIRES_NEW, readOnly = true)
 	public Saga getSaga(String sagaId) {
 
 		return sagaRepository.findBySagaId(sagaId)
