@@ -56,19 +56,22 @@ public class ImagePersistenceAdapter implements ImagePersistencePort {
 	@Override
 	public void deleteAllImages(List<Image> images) {
 
-		List<ImageEntity> imageEntities = images.stream()
-			.map(ImageMapper::toImageEntity)
-			.toList();
-
-		imageRepository.deleteAllInBatch(imageEntities);
-
 		List<String> urls = images.stream()
 			.map(image -> image.getImageSpec().imageUrl())
 			.toList();
 
-		if (!urls.isEmpty()) {
-			s3Service.deleteObjectsByUrls(urls);
+		if (urls.isEmpty()) {
+			return;
 		}
+
+		ImageType imageType = images.getFirst().getImageSpec().imageType();
+		String referenceCode = images.getFirst().getImageSpec().referenceCode();
+
+		imageRepository.deleteAllImagesByImageSpec(
+			imageType, referenceCode, urls
+		);
+
+		s3Service.deleteObjectsByUrls(urls);
 	}
 
 	@Override

@@ -104,7 +104,7 @@ public class ProductApiController {
 		ProductImageUrlsDto requestDto = new ProductImageUrlsDto(request.urls());
 
 		return BaseResponse.success(
-			NO_CONTENT.value(),
+			OK.value(),
 			productApplication.saveImageUrls(sellerCode, productCode, requestDto),
 			"상품 이미지가 성공적으로 등록되었습니다."
 		);

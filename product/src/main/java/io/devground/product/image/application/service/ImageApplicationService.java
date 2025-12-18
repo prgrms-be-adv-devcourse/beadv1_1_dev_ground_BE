@@ -5,12 +5,15 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
 import io.devground.core.model.vo.ImageType;
 import io.devground.product.image.application.persistence.ImagePersistencePort;
 import io.devground.product.image.application.util.ImageUtil;
 import io.devground.product.image.domain.model.Image;
 import io.devground.product.image.domain.port.in.ImageUseCase;
+import io.devground.product.image.domain.vo.ImageDomainErrorCode;
 import io.devground.product.image.domain.vo.ImageSpec;
 import lombok.RequiredArgsConstructor;
 
@@ -70,6 +73,10 @@ public class ImageApplicationService implements ImageUseCase {
 		ImageType imageType, String referenceCode, List<String> deleteUrls, List<String> newImageExtensions
 	) {
 
+		if (!StringUtils.hasText(referenceCode)) {
+			ImageDomainErrorCode.REFERENCE_CODE_MUST_BE_INPUT.throwException();
+		}
+
 		ImageUtil.validateImageUrls(deleteUrls);
 		ImageUtil.validateImageExtensions(newImageExtensions);
 
@@ -83,6 +90,10 @@ public class ImageApplicationService implements ImageUseCase {
 		}
 
 		// 2. 새로운 PresignedUrl 발급
+		if (CollectionUtils.isEmpty(newImageExtensions)) {
+			return List.of();
+		}
+
 		return this.generatePresignedUrls(imageType, referenceCode, newImageExtensions);
 	}
 
