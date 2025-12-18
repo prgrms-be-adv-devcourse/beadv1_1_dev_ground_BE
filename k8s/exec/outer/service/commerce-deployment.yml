@@ -1,0 +1,54 @@
+# 이 리소스가 어느 k8s 사용하는지 명시 / apps/v1 이 표준
+apiVersion: apps/v1
+
+# 이 파일이 어떤 리소스 타입인지
+kind: Deployment
+
+# name : 리소스 이름. 클러스터 내에서 depoyment를 식별할 때 사용
+# labels : key-value 형태의 식별 태그. 서비스 선택, Pod그룹화 등에 사용됨.
+metadata:
+  name: commerce-service
+  labels:
+    app: commerce-service
+
+# Deployment 스펙
+# replicas : 실행할 Pod 수
+spec:
+  replicas: 1
+
+# strategy : Deployment가 Pod를 업데이트할 때 어떤 방식으로 교체할지 정의
+# RollingUpdate : 기본 전략. Pod를 한 번에 모두 죽이지 않고 순차적으로 교체
+  strategy:
+    type: RollingUpdate
+
+# selector : 어떤 Pod를 관리할 지 정의
+# Deployment가 관리할 Pod의 범위를 Label 기준으로 지정. template.metadata.labels와 동일해야 함.
+  selector:
+    matchLabels:
+      app: commerce-service
+
+# Pod 템플릿
+# Deployment가 생성할 Pod의 "설계도"
+# Pod 이름은 실제 생성 시 랜덤 suffix가 붙어 생성됨.
+# labels는 selector와 반드시 일치해야 Deployment가 Pod를 관리함.
+  template:
+    metadata:
+      name: commerce-service
+      labels:
+        app: commerce-service
+
+# Pod 사양
+# Pod안에 들어갈 컨테이너 목록.
+# name 컨테이너 이름
+# image 사용할 도커 이미지
+# ports.containerPort 컨테이너 내부에서 열리는 포트
+    spec:
+      containers:
+        - name: commerce
+          image: jihei1/commerce:latest
+          ports:
+            - containerPort: 8081
+
+          envFrom:
+            - secretRef:
+                name: commerce-secret

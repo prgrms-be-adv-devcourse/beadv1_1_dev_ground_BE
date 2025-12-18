@@ -1,1 +1,19 @@
 rootProject.name = 'dbay'
+
+include(':core')
+include(':eureka-server')
+include(':gateway')
+include(':user')
+include(':commerce')
+include(':deposit')
+include(':payments')
+include(':product')
+
+project(':core').projectDir = file('./core')
+project(':eureka-server').projectDir = file('./eureka-server')
+project(':gateway').projectDir = file('./gateway')
+project(':user').projectDir = file('./user')
+project(':commerce').projectDir = file('./commerce')
+project(':deposit').projectDir = file('./deposit')
+project(':payments').projectDir = file('./payments')
+project(':product').projectDir = file('./product')

@@ -1,0 +1,156 @@
+server:
+  port: 18080
+
+spring:
+#  profiles:
+#    active: local
+
+  config:
+    import: optional:classpath:env.properties
+
+  data:
+    redis:
+      port: 6379
+      host: redis
+    mongodb:
+      uri: ${MONGO_KEY}
+      database: chat
+
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${MAIL_EMAIL}
+    password: ${MAIL_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
+  datasource:
+    driver-class-name: org.mariadb.jdbc.Driver
+    url: jdbc:mariadb://mariadb:3306/dbay_user?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+    username: mariaId
+    password: mariaPwd
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQLDialect
+        show_sql: true
+        format_sql: true
+
+  application:
+    name: USER-SERVICE
+
+  kafka:
+    bootstrap-servers:
+      - kafka:9090
+
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      acks: all
+      properties:
+        delivery.timeout.ms: 120000
+        linger.ms: 0
+        request.timeout.ms: 30000
+        enable.idempotence: true
+        allow.auto.create.topics: false
+
+    consumer:
+      group-id: dbay-consumer-group
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: io.devground.user.*, io.devground.core.*, io.devground.chat.*, com.example.chat.*
+        allow.auto.create.topics: false
+
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://eureka:8761/eureka/
+  instance:
+    prefer-ip-address: false
+    hostname: user-service
+
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    enabled: true
+
+custom:
+  jwt:
+    secrets:
+      app-key: ${JWT_SECRET_KEY}
+  kafka:
+    config:
+      topic-partitions: 1
+      topic-replications: 1
+
+users:
+  config:
+    topic-partitions: 1
+    topic-replications: 1
+
+  commands:
+    topic:
+      join: users-join-commands
+
+  events:
+    topic:
+      join: users-join-events
+
+deposits:
+  commands:
+    topic:
+      join: deposits-join-commands
+
+  events:
+    topic:
+      join: deposits-join-events
+
+carts:
+  commands:
+    topic:
+      join: carts-join-commands
+
+  events:
+    topic:
+      join: carts-join-events
+
+chats:
+  event:
+    topic:
+      chat: chats-chat-events
+  command:
+    topic:
+      chat: chats-chat-command
+
+logging:
+  level:
+    org.hibernate.SQL: debug
+    org.hibernate.orm.jdbc.bind: TRACE
+    org.hibernate.orm.jdbc.extract: TRACE
+    org.springframework.batch: INFO
+    org.springframework.kafka: INFO
+
+kakao:
+  api-key: ${KAKAO_API_KEY}
+  client-secret: ${KAKAO_CLIENT_SECRET}
+  redirect-uri: http://localhost:5173/login
+  authentication:
+    method: client_secret_post
+    grant-type: authorization_code
+
+feign:
+  product-service:
+    url: ${FEIGN_PRODUCT_SERVICE_URL:http://product-service:8086}
+  user-service:
+    url: ${FEIGN_USER_SERVICE_URL:http://user-service:18080}

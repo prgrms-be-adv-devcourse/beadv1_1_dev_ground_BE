@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+
+kind: Deployment
+
+metadata:
+  name: payments-service
+  labels:
+    app: payments-service
+
+spec:
+  replicas: 1
+
+  strategy:
+    type: RollingUpdate
+
+  selector:
+    matchLabels:
+      app: payments-service
+
+  template:
+    metadata:
+      name: payments-service
+      labels:
+        app: payments-service
+
+    spec:
+      containers:
+        - name: payments
+          image: jihei1/payments:latest
+          ports:
+            - containerPort: 8085
+
+          envFrom:
+            - secretRef:
+                name: payments-secret

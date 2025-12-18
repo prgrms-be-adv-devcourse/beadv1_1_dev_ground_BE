@@ -1,0 +1,119 @@
+spring:
+  cloud:
+    gateway:
+      server:
+        webflux:
+          routes:
+            # 1) Swagger UI
+            - id: user-swagger-ui
+              uri: http://localhost:18080
+              predicates:
+                - Path=/user/swagger-ui/**
+              filters:
+                - StripPrefix=1
+
+            - id: user-openapi
+              uri: http://localhost:18080
+              predicates:
+                - Path=/v3/api-docs/**
+                - Header=Referer, .*/user/swagger-ui/.*
+
+            # 1) Swagger UI
+            - id: dbay-swagger-ui
+              uri: http://localhost:8080
+              predicates:
+                - Path=/dbay/swagger-ui/**
+              filters:
+                - StripPrefix=1
+
+            - id: dbay-openapi
+              uri: http://localhost:8080
+              predicates:
+                - Path=/v3/api-docs/**
+                - Header=Referer, .*/dbay/swagger-ui/.*
+
+            - id: admin
+              uri: lb://PRODUCT
+              predicates:
+                - Path=/api/admin/**
+              filters:
+                - AdminFilter
+
+            - id: product
+              uri: lb://PRODUCT
+              predicates:
+                - Path=/api/products/**
+              filters:
+                - CustomAuthFilter
+
+            - id: categories
+              uri: lb://PRODUCT
+              predicates:
+                - Path=/api/categories/**
+              filters:
+                - CustomAuthFilter
+
+            - id: deposits
+              uri: lb://PAYMENTS
+              predicates:
+                - Path=/api/deposits/**
+              filters:
+                - CustomAuthFilter
+
+            - id: payments
+              uri: lb://PAYMENTS
+              predicates:
+                - Path=/api/payments/**
+              filters:
+                - CustomAuthFilter
+
+            - id: settlements
+              uri: lb://PAYMENTS
+              predicates:
+                - Path=/api/settlements/**
+              filters:
+                - CustomAuthFilter
+
+            - id: commerce
+              uri: lb://COMMERCE
+              predicates:
+                - Path=/api/commerce/**
+              filters:
+                - CustomAuthFilter
+
+#            - id: orders
+#              uri: lb://COMMERCE
+#              predicates:
+#                - Path=/api/orders/**
+#              filters:
+#                - CustomAuthFilter
+
+            - id: users
+              uri: lb://USER-SERVICE
+              predicates:
+                - Path=/api/users/**
+              filters:
+                - CustomAuthFilter
+
+            - id: chat-ws
+              uri: lb://USER-SERVICE
+              predicates:
+                - Path=/api/chat/ws-chat
+              filters:
+                - StripPrefix=2
+                - CustomAuthFilter
+
+            - id: chat
+              uri: lb://USER-SERVICE
+              predicates:
+                - Path=/api/chat/**
+              filters:
+                - CustomAuthFilter
+
+
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://localhost:8761/eureka/

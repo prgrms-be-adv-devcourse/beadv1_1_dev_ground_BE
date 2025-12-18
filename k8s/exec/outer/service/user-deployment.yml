@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+
+kind: Deployment
+
+metadata:
+  name: user-service
+  labels:
+    app: user-service
+
+spec:
+  replicas: 1
+
+  strategy:
+    type: RollingUpdate
+
+  selector:
+    matchLabels:
+      app: user-service
+
+  template:
+    metadata:
+      name: user-service
+      labels:
+        app: user-service
+
+    spec:
+      containers:
+        - name: user-service
+          image: jihei1/user-service:latest
+          ports:
+            - containerPort: 18080
+
+          envFrom:
+            - secretRef:
+                name: user-secret
