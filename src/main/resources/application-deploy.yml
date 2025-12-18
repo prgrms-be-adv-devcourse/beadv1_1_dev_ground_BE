@@ -1,0 +1,43 @@
+server:
+  port: 8080
+
+spring:
+  config:
+    import: optional:classpath:env.properties
+
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://mysql:3306/dbay_db?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+    username: root
+    password: root1234
+
+  elasticsearch:
+    uris: http://elasticsearch:9200
+    connection-timeout: 10s
+    socket-timeout: 60s
+
+  kafka:
+    bootstrap-servers: kafka:9090
+
+  cloud:
+    aws:
+      s3:
+        bucket: ${S3_BUCKET_NAME}
+      credentials:
+        access-key: ${S3_ACCESS_KEY}
+        secret-key: ${S3_SECRET_KEY}
+      region:
+        static: ${S3_REGION}
+
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://eureka:8761/eureka/
+  instance:
+    prefer-ip-address: true
+    ip-address: dbay
+    non-secure-port: 8080
+    metadata-map:
+      port: 8080

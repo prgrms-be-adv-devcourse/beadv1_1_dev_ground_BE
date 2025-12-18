@@ -1,0 +1,108 @@
+package io.devground.dbay.order.infrastructure.adapter.out.persistence;
+
+import io.devground.dbay.order.domain.vo.OrderStatus;
+import io.devground.dbay.order.domain.vo.UnsettledOrderItemResponse;
+import io.devground.dbay.order.infrastructure.model.persistence.OrderEntity;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
+
+public interface OrderJpaRepository extends JpaRepository<OrderEntity, Long> {
+    Optional<OrderEntity> findByCode(String orderCode);
+
+    @Query("""
+        SELECT o.updatedAt
+        FROM OrderEntity o
+        WHERE o.code = :orderCode
+        """)
+    LocalDateTime findUpdatedAtByCode(String orderCode);
+
+    @Query("""
+        SELECT o.id
+        FROM OrderEntity o
+        WHERE o.code IN :orderCodes
+        """)
+    List<Long> findIdByOrderCodes(List<String> orderCodes);
+
+    @Query("""
+        SELECT o
+        FROM OrderEntity o
+        WHERE o.userCode = :userCode
+        AND o.deleteStatus = io.devground.core.model.vo.DeleteStatus.N
+        AND (:orderStatus = io.devground.dbay.order.domain.vo.OrderStatus.ALL OR o.orderStatus = :orderStatus)
+        """)
+    Page<OrderEntity> findByNotDeletedOrders(String userCode, Pageable pageable, OrderStatus orderStatus);
+
+    @Query("""
+        SELECT o
+        FROM OrderEntity o
+        WHERE o.deleteStatus = io.devground.core.model.vo.DeleteStatus.N
+        AND (:orderStatus = io.devground.dbay.order.domain.vo.OrderStatus.ALL OR o.orderStatus = :orderStatus)
+        """)
+    Page<OrderEntity> findAllByNotDeletedOrders(Pageable pageable, OrderStatus orderStatus);
+
+    @Modifying
+    @Query("""
+        UPDATE OrderEntity o
+        SET o.orderStatus = io.devground.dbay.order.domain.vo.OrderStatus.CANCELLED,
+        o.updatedAt = CURRENT_TIMESTAMP
+        WHERE o.code = :orderCode
+        """)
+    void cancelByCode(String orderCode);
+
+    @Modifying
+    @Query("""
+        UPDATE OrderEntity o
+        SET o.orderStatus = io.devground.dbay.order.domain.vo.OrderStatus.CONFIRMED,
+        o.updatedAt = CURRENT_TIMESTAMP
+        WHERE o.code = :orderCode
+        """)
+    void confirmByCode(String orderCode);
+
+    @Modifying
+    @Query("""
+        UPDATE OrderEntity o
+        SET o.orderStatus = io.devground.dbay.order.domain.vo.OrderStatus.PAID,
+        o.updatedAt = CURRENT_TIMESTAMP
+        WHERE o.code = :orderCode
+        """)
+    void paidByCode(String orderCode);
+
+    @Query("""
+        SELECT o.id
+        FROM OrderEntity o
+        WHERE o.orderStatus = io.devground.dbay.order.domain.vo.OrderStatus.PAID
+        AND o.updatedAt <= :oneDayAgo
+        """)
+    List<Long> findOrdersToPaid(LocalDateTime oneDayAgo);
+
+    @Modifying
+    @Query("""
+        UPDATE OrderEntity o
+        SET o.orderStatus = io.devground.dbay.order.domain.vo.OrderStatus.START_DELIVERY
+        WHERE o.id IN :ids
+        """)
+    int changePaidToDelivery(List<Long> ids);
+
+    @Query("""
+        SELECT o.id
+        FROM OrderEntity o
+        WHERE o.orderStatus = io.devground.dbay.order.domain.vo.OrderStatus.START_DELIVERY
+        AND o.updatedAt <= :threeDaysAgo
+        """)
+    List<Long> findOrdersToDelivered(LocalDateTime threeDaysAgo);
+
+    @Modifying
+    @Query("""
+        UPDATE OrderEntity o
+        SET o.orderStatus = io.devground.dbay.order.domain.vo.OrderStatus.DELIVERED
+        WHERE o.id IN :ids
+        """)
+    int changeDeliveryToDelivered(List<Long> ids);
+}

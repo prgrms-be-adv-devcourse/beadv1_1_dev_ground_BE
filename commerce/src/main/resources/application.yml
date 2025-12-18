@@ -1,0 +1,142 @@
+server:
+  port: 8081
+
+spring:
+  application:
+    name: commerce
+
+  config:
+    import: optional:classpath:env.properties
+
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://mysql:3306/dbay_db?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+    username: mysqlId
+    password: mysqlPwd
+
+  elasticsearch:
+    uris: http://elasticsearch:9200
+  ai:
+    vectorstore:
+      elasticsearch:
+        initialize-schema: true
+        index-name: product-vectors-index
+        dimensions: 1536
+        similarity: cosine
+        embedding-field-name: embedding
+    openai:
+      api-key: ${OPEN_AI_API_KEY}
+      base-url: https://api.openai.com/
+      chat:
+        options:
+          model: gpt-4o-mini
+          temperature: 0.6
+      embedding:
+        options:
+          model: text-embedding-ada-002
+
+
+  jpa:
+    hibernate:
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+      ddl-auto: update
+    properties:
+      hibernate:
+        default_batch_fetch_size: 500
+        format_sql: true
+
+  kafka:
+    bootstrap-servers: kafka:9090
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      acks: all
+      properties:
+        delivery.timeout.ms: 120000
+        linger.ms: 0
+        request.timeout.ms: 30000
+        enable.idempotence: true
+        allow.auto.create.topics: false
+
+    consumer:
+      group-id: dbay-consumer-group
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: io.devground.dbay.*, io.devground.core.*
+        allow.auto.create.topics: false
+
+
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://eureka:8761/eureka/
+  instance:
+    prefer-ip-address: false
+    hostname: commerce-service
+
+carts:
+  event:
+    topic:
+      join: carts-join-events
+      purchase: carts-purchase-events
+  command:
+    topic:
+      join: carts-join-commands
+      purchase: carts-purchase-commands
+
+orders:
+  event:
+    topic:
+      purchase: orders-purchase-events
+  command:
+    topic:
+      purchase: orders-purchase-commands
+
+payments:
+  event:
+    topic:
+      purchase: payments-purchase-events
+      name: payments-events
+  command:
+    topic:
+      purchase: payments-purchase-commands
+
+deposits:
+  event:
+    topic:
+      purchase: deposits-purchase-events
+  command:
+    topic:
+      purchase: deposits-purchase-commands
+
+products:
+  command:
+    purchase: products-purchase-command
+
+springdoc:
+  api-docs:
+    enabled: true
+    path: /v3/api-docs
+  swagger-ui:
+    enabled: true
+    path: /swagger-ui.html
+    url: /v3/api-docs
+    config-url: /v3/api-docs/swagger-config
+
+custom:
+  kafka:
+    config:
+      topic-partitions: 1
+      topic-replications: 1
+
+logging:
+  level:
+    org.hibernate.SQL: INFO
+    org.hibernate.orm.jdbc.bind: INFO
+    org.hibernate.orm.jdbc.extract: INFO
+    org.springframework.batch: INFO
+

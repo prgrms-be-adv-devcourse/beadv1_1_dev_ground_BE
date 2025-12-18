@@ -1,0 +1,115 @@
+server:
+  port: 8000
+
+logging:
+  level:
+    org.springframework.cloud.gateway: INFO
+    org.springframework.cloud.gateway.filter: INFO
+
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://eureka:8761/eureka/
+
+spring:
+  application:
+    name: api-gateway
+
+  config:
+    import: optional:classpath:env.properties
+
+  cloud:
+    gateway:
+      server:
+        webflux:
+          routes:
+            - id: admin
+              uri: lb://PRODUCT
+              predicates:
+                - Path=/api/admin/**
+              filters:
+                - AdminFilter
+
+            - id: product
+              uri: lb://PRODUCT
+              predicates:
+                - Path=/api/products/**
+              filters:
+                - CustomAuthFilter
+
+            - id: categories
+              uri: lb://PRODUCT
+              predicates:
+                - Path=/api/categories/**
+              filters:
+                - CustomAuthFilter
+
+            - id: deposits
+              uri: lb://PAYMENTS
+              predicates:
+                - Path=/api/deposits/**
+              filters:
+                - CustomAuthFilter
+
+            - id: payment
+              uri: lb://PAYMENTS
+              predicates:
+                - Path=/api/payments/**
+              filters:
+                - CustomAuthFilter
+
+            - id: settlements
+              uri: lb://PAYMENTS
+              predicates:
+                - Path=/api/settlements/**
+              filters:
+                - CustomAuthFilter
+
+            - id: commerce
+              uri: lb://COMMERCE
+              predicates:
+                - Path=/api/commerce/**
+              filters:
+                - CustomAuthFilter
+
+            - id: orders
+              uri: lb://COMMERCE
+              predicates:
+                - Path=/api/orders/**
+              filters:
+                - CustomAuthFilter
+
+            - id: users
+              uri: lb://USER-SERVICE
+              predicates:
+                - Path=/api/users/**
+              filters:
+                - CustomAuthFilter
+
+            - id: chat-ws
+              uri: lb://USER-SERVICE
+              predicates:
+                - Path=/api/chat/ws-chat
+              filters:
+                - StripPrefix=2
+                - CustomAuthFilter
+
+            - id: chat
+              uri: lb://USER-SERVICE
+              predicates:
+                - Path=/api/chat/**
+              filters:
+                - CustomAuthFilter
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+
+custom:
+  jwt:
+    secrets:
+      app-key: ${JWT_SECRET_KEY}

@@ -18,7 +18,7 @@ bin/
 !**/src/test/**/bin/
 
 ### IntelliJ IDEA ###
-.idea
+.idea/*
 *.iws
 *.iml
 *.ipr
@@ -35,3 +35,25 @@ out/
 
 ### VS Code ###
 .vscode/
+
+### Custom ###
+dbay-db.mv.db
+dbay-db.trace.db
+.env
+env.properties
+docker/maria-data
+docker/mysql-data
+docker/product-mysql-data
+docker/image-mysql-data
+spy.log
+/logs
+.jar
+/k8s/exec/config/**/*secret.yml
+/k8s/exec/config/**/*-secret.yml
+*secret.yml
+
+.gradle-cache/
+
+*.properties
+
+.DS_Store

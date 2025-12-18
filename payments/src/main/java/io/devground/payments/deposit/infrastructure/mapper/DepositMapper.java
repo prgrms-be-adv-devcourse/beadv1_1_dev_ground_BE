@@ -1,0 +1,34 @@
+package io.devground.payments.deposit.infrastructure.mapper;
+
+import io.devground.core.dto.deposit.response.DepositBalanceResponse;
+import io.devground.core.dto.deposit.response.DepositResponse;
+import io.devground.payments.deposit.domain.deposit.Deposit;
+import io.devground.payments.deposit.infrastructure.model.persistence.DepositEntity;
+
+public class DepositMapper {
+
+	public static Deposit toDomain(DepositEntity depositEntity) {
+		return new Deposit(
+			depositEntity.getCode(),
+			depositEntity.getUserCode(),
+			depositEntity.getBalance()
+		);
+	}
+
+	public static DepositResponse toDepositResponse(Deposit deposit) {
+		return DepositResponse.builder()
+			.depositCode(deposit.getCode())
+			.balance(deposit.getBalance())
+			.userCode(deposit.getUserCode())
+			.createdAt(deposit.getCreatedAt())
+			.updatedAt(deposit.getUpdatedAt())
+			.build();
+	}
+
+	public static DepositBalanceResponse toDepositBalanceResponse(Deposit deposit) {
+		return DepositBalanceResponse.builder()
+			.userCode(deposit.getUserCode())
+			.balance(deposit.getBalance())
+			.build();
+	}
+}

@@ -1,0 +1,118 @@
+package io.devground.dbay.domain.product.product.mapper;
+
+import java.net.URL;
+import java.util.List;
+
+import io.devground.core.dto.image.DeleteImagesRequest;
+import io.devground.core.dto.image.GeneratePresignedRequest;
+import io.devground.core.dto.image.UpdateImagesRequest;
+import io.devground.core.model.vo.ImageType;
+import io.devground.dbay.domain.product.product.model.dto.GetAllProductsResponse;
+import io.devground.dbay.domain.product.product.model.dto.ProductDetailResponse;
+import io.devground.dbay.domain.product.product.model.dto.RegistProductResponse;
+import io.devground.dbay.domain.product.product.model.dto.UpdateProductResponse;
+import io.devground.dbay.domain.product.product.model.entity.Product;
+import io.devground.dbay.domain.product.product.model.entity.ProductSale;
+import lombok.experimental.UtilityClass;
+
+@UtilityClass
+public class ProductMapper {
+
+	public GetAllProductsResponse getProductsFromProductInfo(Product product, ProductSale productSale) {
+
+		return GetAllProductsResponse.builder()
+			.productCode(product.getCode())
+			.title(product.getTitle())
+			.price(productSale.getPrice())
+			.thumbnailUrl(product.getThumbnailUrl())
+			.build();
+	}
+
+	public RegistProductResponse registResponseFromProductInfo(
+		Product product, ProductSale productSale, List<URL> presignedUrls
+	) {
+
+		return RegistProductResponse.builder()
+			.productCode(product.getCode())
+			.productSaleCode(productSale.getCode())
+			.sellerCode(productSale.getSellerCode())
+			.title(product.getTitle())
+			.description(product.getDescription())
+			.price(productSale.getPrice())
+			.presignedUrls(presignedUrls)
+			.build();
+	}
+
+	public ProductDetailResponse detailFromProductAndUrls(Product product, List<String> imageUrls) {
+
+		ProductSale productSale = product.getProductSale();
+
+		return ProductDetailResponse.builder()
+			.productCode(product.getCode())
+			.productSaleCode(productSale.getCode())
+			.sellerCode(productSale.getSellerCode())
+			.title(product.getTitle())
+			.description(product.getDescription())
+			.categoryPath(product.getCategory().getFullPath())
+			.price(productSale.getPrice())
+			.productStatus(productSale.getProductStatus().getValue())
+			.imageUrls(imageUrls)
+			.build();
+	}
+
+	public UpdateProductResponse updateResponseFromProductInfo(
+		Product product, ProductSale productSale, List<URL> newPresignedUrls
+	) {
+
+		return UpdateProductResponse.builder()
+			.productCode(product.getCode())
+			.productSaleCode(productSale.getCode())
+			.sellerCode(productSale.getSellerCode())
+			.title(product.getTitle())
+			.description(product.getDescription())
+			.price(productSale.getPrice())
+			.presignedUrl(newPresignedUrls)
+			.build();
+	}
+
+	public GeneratePresignedRequest toGeneratePresignedRequest(
+		ImageType imageType,
+		String referenceCode,
+		List<String> fileExtensions
+	) {
+
+		return GeneratePresignedRequest.builder()
+			.imageType(imageType)
+			.referenceCode(referenceCode)
+			.fileExtensions(fileExtensions)
+			.build();
+	}
+
+	public UpdateImagesRequest toUpdateImagesRequest(
+		ImageType imageType,
+		String referenceCode,
+		List<String> deleteUrls,
+		List<String> newImageExtensions
+	) {
+
+		return UpdateImagesRequest.builder()
+			.imageType(imageType)
+			.referenceCode(referenceCode)
+			.deleteUrls(deleteUrls)
+			.newImageExtensions(newImageExtensions)
+			.build();
+	}
+
+	public DeleteImagesRequest toDeleteImagesRequest(
+		ImageType imageType,
+		String referenceCode,
+		List<String> deleteUrls
+	) {
+
+		return DeleteImagesRequest.builder()
+			.imageType(imageType)
+			.referenceCode(referenceCode)
+			.deleteUrls(deleteUrls)
+			.build();
+	}
+}

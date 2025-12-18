@@ -1,0 +1,38 @@
+spring:
+  kafka:
+    bootstrap-servers:
+      - localhost:9092
+
+  data:
+    mongodb:
+      uri: ${MONGO_KEY}
+      database: chat
+    redis:
+      port: 6379
+      host: localhost
+
+
+  datasource:
+    driver-class-name: org.mariadb.jdbc.Driver
+    url: jdbc:mariadb://localhost:3307/dbay_user?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+    username: mariaId
+    password: mariaPwd
+
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+
+  instance:
+    instance-id: "${spring.application.name}:${server.port}:${random.uuid}"
+    prefer-ip-address: false
+    hostname: localhost
+    non-secure-port: ${server.port}
+
+feign:
+  product-service:
+    url: http://localhost:8086
+  user-service:
+    url: http://localhost:18080
