@@ -6,5 +6,5 @@ import io.devground.dbay.order.domain.vo.UserCode;
 import java.util.List;
 
 public interface OrderPublishEventPort {
-    void publishEvent(OrderCode orderCode, UserCode userCode, long totalAmount, List<String> productCodes);
+    void publishEvent(UserCode userCode, OrderCode orderCode, long totalAmount, List<String> productCodes);
 }

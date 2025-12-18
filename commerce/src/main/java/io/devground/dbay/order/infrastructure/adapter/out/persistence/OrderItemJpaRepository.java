@@ -18,7 +18,7 @@ public interface OrderItemJpaRepository extends JpaRepository<OrderItemEntity, L
     @Query("""
         SELECT oi
         FROM OrderItemEntity oi
-        WHERE oi.orderEntity IN :orderIds
+        WHERE oi.orderEntity.id IN :orderIds
         """)
     List<OrderItemEntity> findAllByOrderIds(List<Long> orderIds);
 

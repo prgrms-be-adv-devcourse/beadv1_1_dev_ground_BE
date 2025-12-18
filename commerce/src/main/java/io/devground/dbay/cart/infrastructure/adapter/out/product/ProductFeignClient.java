@@ -13,7 +13,7 @@ import java.util.List;
 
 @FeignClient(
 	name = "product",
-	url = "localhost:8086",
+	url = "product-service:8086",
 	path = "/api/products"
 )
 public interface ProductFeignClient {

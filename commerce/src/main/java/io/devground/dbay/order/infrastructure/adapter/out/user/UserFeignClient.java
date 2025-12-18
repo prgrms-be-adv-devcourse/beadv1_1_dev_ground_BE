@@ -8,10 +8,10 @@ import org.springframework.web.bind.annotation.RequestHeader;
 
 @FeignClient(
         name = "user",
-        url = "localhost:8000",
+        url = "user-service:18080",
         path = "/api/users"
 )
 public interface UserFeignClient {
-    @GetMapping
+    @GetMapping("/")
     BaseResponse<UserResponse> login(@RequestHeader("X-CODE") String userCode);
 }

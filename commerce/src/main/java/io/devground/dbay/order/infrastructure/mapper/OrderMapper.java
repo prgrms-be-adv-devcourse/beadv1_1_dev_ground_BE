@@ -1,5 +1,6 @@
 package io.devground.dbay.order.infrastructure.mapper;
 
+import io.devground.dbay.order.application.vo.ProductInfoSnapShot;
 import io.devground.dbay.order.application.vo.ProductSnapShot;
 import io.devground.dbay.order.application.vo.UserInfo;
 import io.devground.dbay.order.domain.model.Order;
@@ -7,8 +8,11 @@ import io.devground.dbay.order.domain.model.OrderItem;
 import io.devground.dbay.order.domain.vo.*;
 import io.devground.dbay.order.infrastructure.model.persistence.OrderEntity;
 import io.devground.dbay.order.infrastructure.model.persistence.OrderItemEntity;
+import io.devground.dbay.order.infrastructure.vo.CartProductsResponse;
 import io.devground.dbay.order.infrastructure.vo.ProductDetailResponse;
 import io.devground.dbay.order.infrastructure.vo.UserResponse;
+
+import java.util.List;
 
 public class OrderMapper {
 
@@ -89,5 +93,20 @@ public class OrderMapper {
                         orderItemEntity.getProductPrice()
                 )
         );
+    }
+
+    public static List<ProductInfoSnapShot> toProductInfosSnapShot(List<CartProductsResponse>  cartProductsResponses) {
+        return cartProductsResponses.stream().map(c ->
+                new ProductInfoSnapShot(
+                        new ProductCode(c.productCode()),
+                        c.productSaleCode(),
+                        c.sellerCode(),
+                        c.title(),
+                        c.thumbnail(),
+                        c.price(),
+                        c.description(),
+                        c.categoryName()
+                )
+        ).toList();
     }
 }

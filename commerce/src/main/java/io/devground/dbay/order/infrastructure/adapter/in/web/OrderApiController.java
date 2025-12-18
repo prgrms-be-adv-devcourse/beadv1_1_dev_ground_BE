@@ -6,7 +6,7 @@ import io.devground.dbay.order.domain.vo.*;
 import io.devground.dbay.order.domain.vo.pagination.PageDto;
 import io.devground.dbay.order.domain.vo.pagination.PageQuery;
 import io.devground.dbay.order.domain.vo.pagination.SortSpec;
-import io.devground.dbay.order.infrastructure.vo.OrderProductsRequest;
+import io.devground.dbay.order.infrastructure.vo.CartProductsRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -40,7 +40,7 @@ public class OrderApiController {
     @Operation(summary = "주문 다건 생성", description = "다건의 주문을 생성합니다.")
     public BaseResponse<Void> createSelectedOrder(
             @RequestHeader("X-CODE") String userCode,
-            @RequestBody OrderProductsRequest request
+            @RequestBody CartProductsRequest request
     ) {
         List<ProductCode> productCodes = request.productCodes().stream()
                         .map(ProductCode::new)
