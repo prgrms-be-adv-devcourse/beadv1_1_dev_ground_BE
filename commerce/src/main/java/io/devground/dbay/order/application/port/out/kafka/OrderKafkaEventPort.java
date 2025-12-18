@@ -14,4 +14,5 @@ public interface OrderKafkaEventPort {
     void publishDepositSuccessCompleteOrder(String userCode, String orderCode);
     void publishDepositSuccessCompleteDeleteCart(String userCode, String orderCode, List<String> productCodes);
     void publishDepositRefundCreated(String userCode, Long amount, String orderCode);
+    void publishDepositSuccessCompleteProduct(String orderCode, List<String> productCodes);
 }

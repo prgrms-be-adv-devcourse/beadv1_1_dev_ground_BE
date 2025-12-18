@@ -8,6 +8,7 @@ import io.devground.core.commands.payment.CancelCreatePaymentCommand;
 import io.devground.core.commands.payment.CompletePaymentCommand;
 import io.devground.core.commands.payment.DepositRefundCommand;
 import io.devground.core.commands.payment.PaymentCreateCommand;
+import io.devground.core.commands.product.ProductSoldCommand;
 import io.devground.dbay.order.application.port.out.kafka.OrderKafkaEventPort;
 import io.devground.dbay.order.domain.vo.DepositType;
 import io.devground.dbay.order.infrastructure.mapper.EnumMapper;
@@ -37,6 +38,9 @@ public class OrderKafkaEventPublisherAdapter implements OrderKafkaEventPort {
 
     @Value("${carts.command.topic.purchase}")
     private String cartsCommandTopicName;
+
+    @Value("${products.command.purchase}")
+    private String productsCommandTopicName;
 
     @Override
     public void publishOrderCreated(String userCode, String orderCode, long totalAmount, List<String> productCodes) {
@@ -112,5 +116,10 @@ public class OrderKafkaEventPublisherAdapter implements OrderKafkaEventPort {
     @Override
     public void publishDepositRefundCreated(String userCode, Long amount, String orderCode) {
         kafkaTemplate.send(paymentsCommandTopicName, orderCode, new DepositRefundCommand(userCode, amount, orderCode));
+    }
+
+    @Override
+    public void publishDepositSuccessCompleteProduct(String orderCode, List<String> productCodes) {
+        kafkaTemplate.send(productsCommandTopicName, orderCode, new ProductSoldCommand(productCodes));
     }
 }

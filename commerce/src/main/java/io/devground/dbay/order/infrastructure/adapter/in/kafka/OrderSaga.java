@@ -62,5 +62,6 @@ public class OrderSaga {
         orderEventPort.publishDepositSuccessCompletePayment(event.orderCode());
         orderEventPort.publishDepositSuccessCompleteOrder(event.userCode(), event.orderCode());
         orderEventPort.publishDepositSuccessCompleteDeleteCart(event.userCode(), event.orderCode(), event.productCodes());
+        orderEventPort.publishDepositSuccessCompleteProduct(event.orderCode(), event.productCodes());
     }
 }

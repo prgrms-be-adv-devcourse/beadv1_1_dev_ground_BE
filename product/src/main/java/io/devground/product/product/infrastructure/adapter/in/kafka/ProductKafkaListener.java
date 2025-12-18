@@ -1,7 +1,10 @@
 package io.devground.product.product.infrastructure.adapter.in.kafka;
 
+import io.devground.core.commands.product.ProductSoldCommand;
+import io.devground.product.product.domain.vo.request.CartProductsDto;
 import org.springframework.kafka.annotation.KafkaHandler;
 import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,7 +21,10 @@ import lombok.extern.slf4j.Slf4j;
 @Transactional
 @RequiredArgsConstructor
 @KafkaListener(
-	topics = "${images.topic.processed}"
+	topics = {
+			"${images.topic.processed}",
+			"${products.topic.purchase.sold}"
+	}
 )
 public class ProductKafkaListener {
 
@@ -60,5 +66,10 @@ public class ProductKafkaListener {
 		} else {
 			orchestrator.handleImageProcessFailure(sagaId, event);
 		}
+	}
+
+	@KafkaHandler
+	public void handleProductSold(@Payload ProductSoldCommand command) {
+		productApplication.updateStatusToSoldByOrder(new CartProductsDto(command.productCodes()));
 	}
 }

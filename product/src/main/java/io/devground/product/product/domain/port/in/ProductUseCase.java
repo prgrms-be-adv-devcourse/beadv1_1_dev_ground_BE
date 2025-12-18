@@ -34,5 +34,7 @@ public interface ProductUseCase {
 
 	Void updateStatusToSold(String sellerCode, CartProductsDto request);
 
+	Void updateStatusToSoldByOrder(CartProductsDto request);
+
 	void updateThumbnail(String productCode, String thumbnail);
 }

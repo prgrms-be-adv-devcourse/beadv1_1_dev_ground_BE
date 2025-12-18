@@ -201,6 +201,32 @@ public class ProductApplicationService implements ProductUseCase {
 	}
 
 	@Override
+	public Void updateStatusToSoldByOrder(CartProductsDto request) {
+		List<Product> products = productPort.getOrderProductsByCodes(request.productCodes());
+
+		for (Product product : products) {
+			ProductSale productSale = product.getProductSale();
+			Long price = productSale.getProductSaleSpec().price();
+			ProductSaleSpec updatedSaleSpec = new ProductSaleSpec(price, ProductStatus.SOLD);
+
+			productSale.updateToSold(updatedSaleSpec);
+
+			UpdateProductSoldDto updatedProductSoldDto = new UpdateProductSoldDto(
+					productSale.getProductCode(),
+					updatedSaleSpec.productStatus()
+			);
+
+			// 1. 상품 판매 완료 처리
+			productPort.updateToSoldByOrder(updatedProductSoldDto);
+
+			// 2. ES, Vector 인덱싱
+			productEventPort.publishUpdated(product);
+		}
+
+		return null;
+	}
+
+	@Override
 	public void updateThumbnail(String productCode, String thumbnail) {
 
 		// 1. 상품 썸네일 업데이트

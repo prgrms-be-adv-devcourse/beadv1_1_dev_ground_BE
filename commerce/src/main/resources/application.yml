@@ -113,6 +113,10 @@ deposits:
     topic:
       purchase: deposits-purchase-commands
 
+products:
+  command:
+    purchase: products-purchase-command
+
 springdoc:
   api-docs:
     enabled: true

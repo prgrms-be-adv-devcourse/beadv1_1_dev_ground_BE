@@ -119,6 +119,15 @@ public class ProductPersistenceAdapter implements ProductPersistencePort {
 	}
 
 	@Override
+	public List<Product> getOrderProductsByCodes(List<String> productCodes) {
+		List<ProductEntity> products = this.getProductEntities(productCodes);
+
+		return products.stream()
+				.map(p -> ProductMapper.toProductDomain(p, p.getProductSale()))
+				.toList();
+	}
+
+	@Override
 	public void updateToSold(String sellerCode, UpdateProductSoldDto updateProductsSoldDto) {
 
 		ProductEntity product = getProduct(updateProductsSoldDto.productCode());
@@ -129,6 +138,14 @@ public class ProductPersistenceAdapter implements ProductPersistencePort {
 		}
 
 		product.getProductSale().updateProductStatus(updateProductsSoldDto.productStatus());
+	}
+
+	@Override
+	public void updateToSoldByOrder(UpdateProductSoldDto updatedProductsSoldDto) {
+		ProductEntity product = getProduct(updatedProductsSoldDto.productCode());
+		ProductSaleEntity productSale = product.getProductSale();
+
+		product.getProductSale().updateProductStatus(updatedProductsSoldDto.productStatus());
 	}
 
 	@Override
