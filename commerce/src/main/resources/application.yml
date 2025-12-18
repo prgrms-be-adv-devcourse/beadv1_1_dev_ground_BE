@@ -40,6 +40,11 @@ spring:
     hibernate:
       naming:
         physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+      ddl-auto: update
+    properties:
+      hibernate:
+        default_batch_fetch_size: 500
+        format_sql: true
 
   kafka:
     bootstrap-servers: kafka:9090
