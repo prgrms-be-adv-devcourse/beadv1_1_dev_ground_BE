@@ -97,3 +97,13 @@ echo ""
 echo "남은 리소스 확인:"
 echo "  kubectl get all --all-namespaces"
 echo ""
+
+# 기존 deployment 삭제
+sudo kubectl apply -f ./k8s/exec/outer/db/mysqldb-pvc.yml
+sudo kubectl apply -f ./k8s/exec/outer/db/mariadb-pvc.yml
+sudo kubectl apply -f ./k8s/exec/outer/elk/elasticsearch-pvc.yml
+
+# Deployment 재생성
+sudo kubectl apply -f ./k8s/exec/outer/db/mysqldb-deployment.yml
+sudo kubectl apply -f ./k8s/exec/outer/db/userdb-deployment.yml
+sudo kubectl apply -f ./k8s/exec/outer/elk/elasticsearch-deployment.yml
