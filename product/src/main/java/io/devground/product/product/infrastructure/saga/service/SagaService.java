@@ -1,6 +1,7 @@
 package io.devground.product.product.infrastructure.saga.service;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import io.devground.core.model.vo.ErrorCode;
@@ -20,6 +21,7 @@ public class SagaService {
 
 	private final SagaRepository sagaRepository;
 
+	@Transactional(propagation = Propagation.REQUIRES_NEW)
 	public String startSaga(String referenceCode, SagaType sagaType) {
 
 		return sagaRepository.findFirstByReferenceCodeAndSagaTypeAndSagaStatusOrderByStartedAtDesc(
@@ -33,7 +35,9 @@ public class SagaService {
 					.currentStep(SagaStep.INIT)
 					.build();
 
-				return sagaRepository.save(saga).getSagaId();
+				Saga savedSaga = sagaRepository.save(saga);
+
+				return savedSaga.getSagaId();
 			});
 	}
 
@@ -74,6 +78,7 @@ public class SagaService {
 		saga.updateStatus(SagaStatus.SUCCESS);
 	}
 
+	@Transactional(propagation = Propagation.REQUIRES_NEW)
 	public void updateToFail(String sagaId, String errorMsg) {
 
 		Saga saga = getSaga(sagaId);
@@ -87,6 +92,7 @@ public class SagaService {
 		saga.updateToFail(errorMsg);
 	}
 
+	@Transactional(propagation = Propagation.REQUIRES_NEW)
 	public void updateToCompensating(String sagaId) {
 
 		Saga saga = getSaga(sagaId);
@@ -101,6 +107,7 @@ public class SagaService {
 		saga.updateStatus(SagaStatus.COMPENSATING);
 	}
 
+	@Transactional(propagation = Propagation.REQUIRES_NEW)
 	public void updateToCompensated(String sagaId, String message) {
 
 		Saga saga = getSaga(sagaId);
@@ -112,16 +119,6 @@ public class SagaService {
 		}
 
 		saga.updateToCompensated(message);
-	}
-
-	@Transactional(readOnly = true)
-	public Saga findLatestSagaByReferenceCode(String referenceCode) {
-
-		return sagaRepository.findFirstByReferenceCodeAndSagaStatusOrderByStartedAtDesc(
-				referenceCode,
-				SagaStatus.IN_PROCESS
-			)
-			.orElseThrow(ErrorCode.SAGA_NOT_FOUND::throwServiceException);
 	}
 
 	@Transactional(readOnly = true)
