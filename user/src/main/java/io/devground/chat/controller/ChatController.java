@@ -33,7 +33,7 @@ public class ChatController {
     private final ChatMessageService chatMessageService;
     private final ChatEventProducer chatEventProducer;
     private final UserClient userClient;
-    private final ProductClient productClient;
+//    private final ProductClient productClient;
 
 
     //채팅방 생성

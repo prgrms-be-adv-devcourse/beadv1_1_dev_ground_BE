@@ -17,17 +17,11 @@ public class ChatMessages {
 
     @Id
     private String id;
-
     private String chatId;
-
     private String message;
-
     private String senderCode;
-
     private Boolean isRead;
-
     private LocalDateTime createdAt;
-
     private LocalDateTime readAt;
 
     @Builder

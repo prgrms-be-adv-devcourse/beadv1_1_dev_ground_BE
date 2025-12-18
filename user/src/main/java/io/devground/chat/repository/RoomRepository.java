@@ -15,7 +15,6 @@ public interface RoomRepository extends MongoRepository<ChatRoom, String> {
             String productCode, String sellerCode, String buyerCode
     );
 
-
     List<ChatRoom> findByStatusAndSellerCodeOrStatusAndBuyerCode(
             ChatRoomStatus status1, String sellerCode,
             ChatRoomStatus status2, String buyerCode
