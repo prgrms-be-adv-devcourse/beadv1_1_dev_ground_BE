@@ -16,8 +16,8 @@ services:
     volumes:
       - ./nginx:/etc/nginx/conf.d
       - /etc/letsencrypt:/etc/letsencrypt:ro
-    depends_on:
-      - gateway
+#    depends_on:
+#      - gateway
 
 
   mysql:

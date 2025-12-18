@@ -1,6 +1,9 @@
 package io.devground.user.controller;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -88,6 +91,21 @@ public class UserController {
 	@GetMapping("/")
 	public BaseResponse<UserResponse> login(@RequestHeader("X-CODE") String userCode) throws IOException {
 		return BaseResponse.success(200, userService.getByLoginUserCode(userCode), "회원정보 조회 성공");
+	}
+
+	@Operation(summary = "회원 정보 조회 API", description = "회원정보를 통해 2명을 한번에 조회합니다.")
+	@GetMapping("/sample")
+	public BaseResponse<Map<String, UserResponse>> getUsers(@RequestHeader("X-CODE") String userCode,
+											   @RequestParam String sellerCode,
+											   @RequestParam String buyerCode) throws IOException {
+		UserResponse sellerInfo = userService.getByLoginUserCode(sellerCode);
+		UserResponse buyerInfo = userService.getByLoginUserCode(buyerCode);
+		Map<String, UserResponse> userInfos = new HashMap<>();
+		userInfos.put("seller", sellerInfo);
+		userInfos.put("buyer", buyerInfo);
+
+//		List<UserResponse> userInfos = userInfosList.of(sellerInfo, buyerInfo);
+		return BaseResponse.success(200, userInfos, "회원정보 조회 성공");
 	}
 
 	@Operation(summary = "비밀번호 변경 API", description = "비밀번호를 변경하는 API입니다.")
