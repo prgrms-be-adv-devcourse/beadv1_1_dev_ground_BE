@@ -207,7 +207,7 @@ public class OrderApplication implements OrderUseCase {
         Order order = orderPersistencePort.getOrder(orderCode);
         LocalDateTime updatedAt = orderPersistencePort.getUpdatedAtByOrder(orderCode);
 
-        order.confirm(updatedAt);
+        order.confirm(updatedAt, LocalDateTime.now());
 
         orderPersistencePort.confirm(orderCode);
     }

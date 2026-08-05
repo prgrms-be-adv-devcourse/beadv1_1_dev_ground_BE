@@ -11,7 +11,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.util.StringUtils;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -67,43 +66,4 @@ public class OrderEntity extends BaseEntity {
         this.totalAmount = totalAmount;
     }
 
-    public void cancel() {
-        if (this.orderStatus == OrderStatus.CANCELLED) {
-            throw ErrorCode.ORDER_ALREADY_CANCELLED.throwServiceException();
-        }
-
-        if (this.orderStatus == OrderStatus.DELIVERED) {
-            throw ErrorCode.ORDER_CANCELLED_NOT_ALLOWED_WHEN_DELIVERED.throwServiceException();
-        }
-
-        if (this.orderStatus == OrderStatus.CONFIRMED) {
-            throw ErrorCode.ORDER_CANCELLED_NOT_ALLOWED_WHEN_CONFIRMED.throwServiceException();
-        }
-
-        this.orderStatus = OrderStatus.CANCELLED;
-    }
-
-    public void confirm() {
-        if (this.orderStatus == OrderStatus.CONFIRMED) {
-            throw ErrorCode.ORDER_ALREADY_CONFIRMED.throwServiceException();
-        }
-
-        if (this.orderStatus != OrderStatus.DELIVERED) {
-            throw ErrorCode.ORDER_CONFIRM_NOT_ALLOWED_BEFORE_DELIVERED.throwServiceException();
-        }
-
-        LocalDateTime deliveredAt = this.getUpdatedAt();
-        LocalDateTime twoWeeksAfterDelivery = deliveredAt.plusWeeks(2);
-
-        if (deliveredAt.isAfter(twoWeeksAfterDelivery)) {
-            throw ErrorCode.ORDER_CONFIRM_NOT_ALLOWED_BEFORE_TWO_WEEKS.throwServiceException();
-        }
-
-        this.orderStatus = OrderStatus.CONFIRMED;
-    }
-
-    public void paid() {
-        this.orderStatus = OrderStatus.PAID;
-    }
 }
-

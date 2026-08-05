@@ -39,13 +39,13 @@ public class CartPersistenceAdapter implements CartPersistencePort {
     }
 
     @Override
-    public CartItem saveCartItem(CartCode cartCode, ProductCode productCode) {
-        CartEntity cartEntity = cartJpaRepository.findByCode(cartCode.value())
+    public CartItem saveCartItem(CartItem cartItem) {
+        CartEntity cartEntity = cartJpaRepository.findByCode(cartItem.getCartCode().value())
                 .orElseThrow(() -> new ServiceException(ErrorCode.CART_NOT_FOUND));
 
         CartItemEntity cartItemEntity = CartItemEntity.builder()
                 .cartEntity(cartEntity)
-                .productCode(productCode.value())
+                .productCode(cartItem.getProductCode().value())
                 .build();
 
         cartItemJpaRepository.save(cartItemEntity);

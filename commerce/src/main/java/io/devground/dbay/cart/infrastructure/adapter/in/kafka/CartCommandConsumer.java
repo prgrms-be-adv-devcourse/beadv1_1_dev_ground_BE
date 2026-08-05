@@ -5,7 +5,7 @@ import io.devground.core.commands.cart.DeleteCartCommand;
 import io.devground.core.commands.cart.DeleteCartItemsCommand;
 import io.devground.dbay.cart.application.port.out.kafka.CartEventPort;
 import io.devground.dbay.cart.domain.model.Cart;
-import io.devground.dbay.cart.domain.port.in.CartUseCase;
+import io.devground.dbay.cart.application.port.in.CartUseCase;
 import io.devground.dbay.cart.domain.vo.ProductCode;
 import io.devground.dbay.cart.domain.vo.UserCode;
 import lombok.RequiredArgsConstructor;

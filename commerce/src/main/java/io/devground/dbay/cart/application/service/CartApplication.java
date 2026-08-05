@@ -1,13 +1,13 @@
 package io.devground.dbay.cart.application.service;
 
 import io.devground.dbay.cart.application.exception.ServiceError;
+import io.devground.dbay.cart.application.port.in.CartUseCase;
 import io.devground.dbay.cart.application.port.out.product.CartProductPort;
 import io.devground.dbay.cart.application.port.out.persistence.CartPersistencePort;
 import io.devground.dbay.cart.application.vo.ProductInfoSnapShot;
 import io.devground.dbay.cart.application.vo.ProductSnapShot;
 import io.devground.dbay.cart.domain.model.Cart;
 import io.devground.dbay.cart.domain.model.CartItem;
-import io.devground.dbay.cart.domain.port.in.CartUseCase;
 import io.devground.dbay.cart.domain.vo.CartDescription;
 import io.devground.dbay.cart.domain.vo.CartItemInfo;
 import io.devground.dbay.cart.domain.vo.ProductCode;
@@ -63,7 +63,9 @@ public class CartApplication implements CartUseCase {
         Cart cart = cartPersistencePort.getCart(userCode)
                 .orElseThrow(ServiceError.CART_NOT_FOUND::throwServiceException);
 
-        return cartPersistencePort.saveCartItem(cart.getCartCode(), productCode);
+        CartItem cartItem = cart.addCartItem(productCode);
+
+        return cartPersistencePort.saveCartItem(cartItem);
     }
 
     @Override

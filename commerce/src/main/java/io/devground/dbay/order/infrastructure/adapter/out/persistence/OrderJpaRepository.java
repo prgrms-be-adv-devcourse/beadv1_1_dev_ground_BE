@@ -82,7 +82,8 @@ public interface OrderJpaRepository extends JpaRepository<OrderEntity, Long> {
     @Modifying
     @Query("""
         UPDATE OrderEntity o
-        SET o.orderStatus = io.devground.dbay.order.domain.vo.OrderStatus.START_DELIVERY
+        SET o.orderStatus = io.devground.dbay.order.domain.vo.OrderStatus.START_DELIVERY,
+        o.updatedAt = CURRENT_TIMESTAMP
         WHERE o.id IN :ids
         """)
     int changePaidToDelivery(List<Long> ids);
@@ -98,7 +99,8 @@ public interface OrderJpaRepository extends JpaRepository<OrderEntity, Long> {
     @Modifying
     @Query("""
         UPDATE OrderEntity o
-        SET o.orderStatus = io.devground.dbay.order.domain.vo.OrderStatus.DELIVERED
+        SET o.orderStatus = io.devground.dbay.order.domain.vo.OrderStatus.DELIVERED,
+        o.updatedAt = CURRENT_TIMESTAMP
         WHERE o.id IN :ids
         """)
     int changeDeliveryToDelivered(List<Long> ids);

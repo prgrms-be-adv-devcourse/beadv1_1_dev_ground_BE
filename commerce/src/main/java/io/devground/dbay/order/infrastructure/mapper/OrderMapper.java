@@ -73,6 +73,7 @@ public class OrderMapper {
         return Order.restore(
                 new OrderCode(orderEntity.getCode()),
                 new UserCode(orderEntity.getUserCode()),
+                orderEntity.getOrderStatus(),
                 orderEntity.getOrderItems().stream()
                         .map(OrderMapper::toOrderItemDomain)
                         .toList()

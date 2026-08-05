@@ -1,6 +1,6 @@
 package io.devground.dbay.order.domain.model;
 
-import io.devground.dbay.cart.domain.exception.DomainError;
+import io.devground.dbay.order.domain.exception.DomainError;
 import io.devground.dbay.order.domain.vo.OrderCode;
 import io.devground.dbay.order.domain.vo.OrderProduct;
 import io.devground.dbay.order.domain.vo.OrderStatus;
@@ -15,7 +15,7 @@ public class Order {
 
     private final UserCode userCode;
 
-    private OrderStatus orderStatus = OrderStatus.PENDING;
+    private OrderStatus orderStatus;
 
     private final List<OrderItem> orderItems;
 
@@ -29,15 +29,16 @@ public class Order {
         }
     }
 
-    private Order(OrderCode orderCode, UserCode userCode, List<OrderItem> orderItems) {
+    private Order(OrderCode orderCode, UserCode userCode, OrderStatus orderStatus, List<OrderItem> orderItems) {
         validate(orderCode, userCode);
 
-        if (orderItems == null) {
+        if (orderStatus == null || orderItems == null) {
             throw DomainError.ORDER_NOT_FOUND.throwDomainException();
         }
 
         this.orderCode = orderCode;
         this.userCode = userCode;
+        this.orderStatus = orderStatus;
         this.orderItems = orderItems;
     }
 
@@ -53,7 +54,12 @@ public class Order {
 
         OrderCode orderCode = OrderCode.create();
 
-        return new Order(orderCode, userCode, List.of(OrderItem.create(orderCode, orderProduct)));
+        return new Order(
+                orderCode,
+                userCode,
+                OrderStatus.PENDING,
+                List.of(OrderItem.create(orderCode, orderProduct))
+        );
     }
 
     // 선택 생성
@@ -76,11 +82,16 @@ public class Order {
                 .map(op -> OrderItem.create(orderCode, op))
                 .toList();
 
-        return new Order(orderCode, userCode, orderItems);
+        return new Order(orderCode, userCode, OrderStatus.PENDING, orderItems);
     }
 
-    public static Order restore(OrderCode orderCode, UserCode userCode, List<OrderItem> orderItems) {
-        return new Order(orderCode, userCode, orderItems);
+    public static Order restore(
+            OrderCode orderCode,
+            UserCode userCode,
+            OrderStatus orderStatus,
+            List<OrderItem> orderItems
+    ) {
+        return new Order(orderCode, userCode, orderStatus, orderItems);
     }
 
     // 주문이 가지는 행동
@@ -101,7 +112,7 @@ public class Order {
         this.orderStatus = OrderStatus.CANCELLED;
     }
 
-    public void confirm(LocalDateTime updatedAt) {
+    public void confirm(LocalDateTime deliveredAt, LocalDateTime confirmedAt) {
         if (this.orderStatus == OrderStatus.CONFIRMED) {
             throw DomainError.ORDER_ALREADY_CONFIRMED.throwDomainException();
         }
@@ -110,9 +121,11 @@ public class Order {
             throw DomainError.ORDER_CONFIRM_NOT_ALLOWED_BEFORE_DELIVERED.throwDomainException();
         }
 
-        LocalDateTime twoWeeksAfterDelivery = updatedAt.plusWeeks(2);
+        if (deliveredAt == null || confirmedAt == null) {
+            throw DomainError.CODE_INVALID.throwDomainException();
+        }
 
-        if (updatedAt.isAfter(twoWeeksAfterDelivery)) {
+        if (confirmedAt.isAfter(deliveredAt.plusWeeks(2))) {
             throw DomainError.ORDER_CONFIRM_NOT_ALLOWED_BEFORE_TWO_WEEKS.throwDomainException();
         }
 
@@ -137,5 +150,9 @@ public class Order {
 
     public List<OrderItem> getOrderItems() {
         return List.copyOf(orderItems);
+    }
+
+    public OrderStatus getOrderStatus() {
+        return orderStatus;
     }
 }

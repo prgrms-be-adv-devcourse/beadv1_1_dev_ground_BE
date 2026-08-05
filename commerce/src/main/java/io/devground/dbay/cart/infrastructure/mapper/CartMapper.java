@@ -18,6 +18,9 @@ import io.devground.dbay.cart.infrastructure.model.persistence.CartItemEntity;
 import java.util.List;
 
 public class CartMapper {
+    private CartMapper() {
+    }
+
     public static Cart toCartDomain(CartEntity cartEntity) {
         return Cart.restore(
                 new CartCode(cartEntity.getCode()),

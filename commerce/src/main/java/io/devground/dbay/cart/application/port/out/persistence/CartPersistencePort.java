@@ -12,7 +12,7 @@ import java.util.Optional;
 
 public interface CartPersistencePort {
     Cart saveCart(Cart cart);
-    CartItem saveCartItem(CartCode cartCode, ProductCode productCode);
+    CartItem saveCartItem(CartItem cartItem);
     Optional<Cart> getCart(UserCode userCode);
     void removeCartItem(CartCode cartCode, ProductCode productCode);
     void removeCartItems(CartCode cartCode, List<ProductCode> productCodes);

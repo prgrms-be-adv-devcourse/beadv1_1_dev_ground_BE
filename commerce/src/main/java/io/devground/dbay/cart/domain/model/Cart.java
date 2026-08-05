@@ -46,7 +46,7 @@ public class Cart {
     // 장바구니가 가지는 행동
 
     // 장바구니 상품 추가
-    public void addCartItem(ProductCode productCode) {
+    public CartItem addCartItem(ProductCode productCode) {
         if (productCode == null) {
             throw DomainError.CODE_INVALID.throwDomainException();
         }
@@ -55,7 +55,9 @@ public class Cart {
         if (exists) {
             throw DomainError.CART_ITEM_ALREADY_EXIST.throwDomainException();
         }
-        cartItems.add(CartItem.of(productCode, this.cartCode));
+        CartItem cartItem = CartItem.of(productCode, this.cartCode);
+        cartItems.add(cartItem);
+        return cartItem;
     }
 
     // 개별 삭제

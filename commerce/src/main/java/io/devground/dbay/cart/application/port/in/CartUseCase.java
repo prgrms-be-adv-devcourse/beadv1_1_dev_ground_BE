@@ -1,4 +1,4 @@
-package io.devground.dbay.cart.domain.port.in;
+package io.devground.dbay.cart.application.port.in;
 
 import io.devground.dbay.cart.domain.model.Cart;
 import io.devground.dbay.cart.domain.model.CartItem;
